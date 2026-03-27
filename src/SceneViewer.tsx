@@ -62,9 +62,10 @@ function DeficitHotspot({
 
 // ── OrbitControls nur aktiv wenn NICHT in VR ──────────────────────────────────
 // In VR übernimmt das Headset die Kamerasteuerung automatisch
+// @react-three/xr v6: isPresenting via state.session (nicht state.isPresenting)
 function DesktopControls() {
-  const isPresenting = useXR((state) => state.isPresenting);
-  if (isPresenting) return null;
+  const session = useXR((state) => state.session);
+  if (session !== null) return null;
   return (
     <OrbitControls
       enableZoom={false}
