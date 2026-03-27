@@ -24,7 +24,6 @@ function SceneSphere({ url }: { url: string }) {
 
 // ── Deficit-Hotspot als 3D-Marker ─────────────────────────────────────────────
 // In VR: Controller-Ray feuert onClick via @react-three/xr Pointer-Events
-// In Desktop: Mausklick auf Html-Element
 function DeficitHotspot({
   deficit,
   onSelect,
@@ -46,7 +45,7 @@ function DeficitHotspot({
             "flex items-center justify-center w-8 h-8 rounded-full cursor-pointer transition-all hover:scale-110 shadow-lg",
             isFound
               ? "bg-green-500"
-              : "bg-orange-500/80 animate-pulse border-2 border-white"
+              : "bg-orange-500/80 animate-pulse border-2 border-white",
           )}
           onClick={() => onSelect(deficit)}
         >
@@ -61,8 +60,7 @@ function DeficitHotspot({
 }
 
 // ── OrbitControls nur aktiv wenn NICHT in VR ──────────────────────────────────
-// In VR übernimmt das Headset die Kamerasteuerung automatisch
-// @react-three/xr v6: isPresenting via state.session (nicht state.isPresenting)
+// @react-three/xr v6: session-Check statt isPresenting
 function DesktopControls() {
   const session = useXR((state) => state.session);
   if (session !== null) return null;
@@ -99,10 +97,8 @@ function SceneContent({
         </Html>
       }
     >
-      {/* 360°-Panorama */}
       <SceneSphere url={sceneUrl} />
 
-      {/* Deficit-Marker */}
       {deficits.map((d) => (
         <DeficitHotspot
           key={d.id}
@@ -113,10 +109,7 @@ function SceneContent({
         />
       ))}
 
-      {/* Startposition des VR-Spielers (Augenhöhe via XROrigin) */}
       <XROrigin position={[0, 0, 0.1]} />
-
-      {/* Desktop: OrbitControls / VR: deaktiviert */}
       <DesktopControls />
     </Suspense>
   );
@@ -127,6 +120,8 @@ interface SceneViewerProps {
   sceneUrl: string;
   deficits: Deficit[];
   onDeficitFound: (d: Deficit) => void;
+  /** Wird gefeuert wenn der User blind auf die Sphere klickt (kein Marker) */
+  onBlindClick?: (point: [number, number, number]) => void;
   foundIds: string[];
   showHints: boolean;
   store: XRStoreType;
@@ -136,24 +131,27 @@ export default function SceneViewer({
   sceneUrl,
   deficits,
   onDeficitFound,
+  onBlindClick,
   foundIds,
   showHints,
   store,
 }: SceneViewerProps) {
-  // Klick auf die Sphere → Defizit-Erkennung via Raycasting
-  // TODO Phase 2: Controller-Raycast in VR (useXRControllerState + Raycaster)
   const handleCanvasClick = (event: any) => {
-    if (event.intersections && event.intersections.length > 0) {
-      const point = event.intersections[0].point;
+    if (!event.intersections || event.intersections.length === 0) return;
+    const point = event.intersections[0].point as THREE.Vector3;
 
-      const foundDeficit = deficits.find((d) => {
-        const dist = new THREE.Vector3(...d.position).distanceTo(point);
-        return dist < d.tolerance;
-      });
+    // Prüfen ob Klick auf einem Defizit-Hotspot-Bereich liegt
+    const foundDeficit = deficits.find((d) => {
+      const dist = new THREE.Vector3(...d.position).distanceTo(point);
+      return dist < d.tolerance;
+    });
 
-      if (foundDeficit) {
-        onDeficitFound(foundDeficit);
-      }
+    if (foundDeficit && showHints) {
+      // Hints-Modus: Marker klicken → direktes Assessment
+      onDeficitFound(foundDeficit);
+    } else if (!showHints && onBlindClick) {
+      // Explorativ-Modus: blinder Klick → Click-Flow
+      onBlindClick([point.x, point.y, point.z]);
     }
   };
 
@@ -163,7 +161,6 @@ export default function SceneViewer({
         camera={{ position: [0, 0, 0.1] }}
         onClick={handleCanvasClick}
       >
-        {/* XR-Wrapper: aktiviert WebXR-Session (immersive-vr) */}
         <XR store={store}>
           <SceneContent
             sceneUrl={sceneUrl}
@@ -175,14 +172,16 @@ export default function SceneViewer({
         </XR>
       </Canvas>
 
-      {/* Fortschrittsanzeige (Desktop-Overlay, in VR nicht sichtbar) */}
+      {/* Fortschrittsanzeige (Desktop-Overlay) */}
       <div className="absolute top-4 left-4 z-10 bg-black/60 backdrop-blur-md p-4 rounded-xl border border-white/20 text-white max-w-xs">
         <h3 className="text-lg font-bold flex items-center gap-2">
           <Info size={18} className="text-blue-400" />
           RSI Training
         </h3>
         <p className="text-sm opacity-80 mt-1">
-          Bewege dich in der Szene und identifiziere die Sicherheitsdefizite.
+          {showHints
+            ? "Klicke auf die markierten Defizite."
+            : "Klicke auf verdächtige Stellen in der Szene."}
         </p>
         <div className="mt-3 h-2 w-full bg-white/10 rounded-full overflow-hidden">
           <div
