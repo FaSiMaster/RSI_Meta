@@ -1,12 +1,28 @@
+import { useState } from 'react'
 import { Canvas } from '@react-three/fiber'
 import { XR, createXRStore } from '@react-three/xr'
 import { Scene } from './components/Scene'
 import { VRButton } from './components/VRButton'
+import { OnboardingScreen } from './components/OnboardingScreen'
+import type { UserSession } from './types'
 
 // XR Store wird ausserhalb der Komponente erstellt (Singleton)
 const xrStore = createXRStore()
 
 export default function App() {
+  const [sessionReady, setSessionReady] = useState(false)
+  const [_session, setSession] = useState<UserSession | null>(null)
+
+  const handleStart = (session: UserSession) => {
+    setSession(session)
+    setSessionReady(true)
+  }
+
+  // Onboarding anzeigen bis Benutzer Name, Thema und Szene gewählt hat
+  if (!sessionReady) {
+    return <OnboardingScreen onStart={handleStart} />
+  }
+
   return (
     <div
       style={{
