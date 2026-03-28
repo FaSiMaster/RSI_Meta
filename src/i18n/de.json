@@ -90,9 +90,85 @@
     "deficitsCount": "Defizite in dieser Szene ({{count}})",
     "noDeficits": "Keine Defizite für diese Szene definiert.",
     "innerorts": "Innerorts",
-    "ausserorts": "Ausserorts"
+    "ausserorts": "Ausserorts",
+    "newDeficit": "Neues Defizit",
+    "editBtn": "Bearbeiten",
+    "deleteBtn": "Löschen",
+    "modalTitleNew": "Neues Defizit erfassen",
+    "modalTitleEdit": "Defizit bearbeiten",
+    "fieldTitle": "Bezeichnung",
+    "fieldDesc": "Beschreibung",
+    "fieldFeedback": "Fachliche Begründung",
+    "fieldSolution": "Massnahmenlogik",
+    "saveBtn": "Speichern",
+    "cancelBtn": "Abbrechen"
   },
   "score": {
     "points": "Pkt."
+  },
+  "landing": {
+    "tagline1": "Präzision.",
+    "tagline2": "Sicherheit.",
+    "tagline3": "Immersion.",
+    "feature1": "Interaktive Strassenszenen nach RSI-Methodik",
+    "feature2": "Bewertungsmatrizen – Wichtigkeit × Abweichung × NACA",
+    "feature3": "Persönliches Ranking und Fortschritt",
+    "loginLabel": "Ihr Name",
+    "startBtn": "Training starten",
+    "systemOnline": "System online",
+    "adminLink": "Admin-Zugang"
+  },
+  "topics": {
+    "title": "Themenbereiche",
+    "subtitle": "Wählen Sie einen Bereich, um spezifische Sicherheitsdefizite zu trainieren.",
+    "scenesCount": "Szenen"
+  },
+  "scenes": {
+    "back": "Zurück",
+    "addNew": "Neue Szene",
+    "startBtn": "Training starten",
+    "noDeficits": "Keine Defizite definiert"
+  },
+  "scoring": {
+    "stepOf": "Schritt {{step}} von 9",
+    "step1Title": "Wichtigkeit einschätzen",
+    "step2Title": "Relevanz SD – Matrix",
+    "step3Title": "Abweichung einschätzen",
+    "step4Title": "Relevanz SD – Ergebnis",
+    "step5Title": "Relevanz SD bestätigt",
+    "step6Title": "NACA-Einstufung",
+    "step7Title": "Unfallschwere wählen",
+    "step8Title": "Unfallrisiko – Matrix",
+    "step9Title": "Unfallrisiko – Ergebnis",
+    "step1SubIo": "Wie wichtig ist dieses Merkmal innerorts?",
+    "step1SubAo": "Wie wichtig ist dieses Merkmal ausserorts?",
+    "step2Sub": "Wichtigkeit × Abweichung ergibt die Relevanz SD.",
+    "step3Sub": "Wie stark weicht der Ist-Zustand von der Norm ab?",
+    "step4Sub": "Die Relevanz SD ist berechnet.",
+    "step5Sub": "Bestätigtes Zwischenergebnis.",
+    "step6Sub": "Unfallschwere nach NACA-Schema einstufen.",
+    "step7Sub": "Wählen Sie den NACA-Wert (0–7).",
+    "step8Sub": "Relevanz SD × NACA-Schwere ergibt das Unfallrisiko.",
+    "step9Sub": "Das Unfallrisiko ist berechnet.",
+    "nextBtn": "Weiter",
+    "resultTitle": "Auswertung",
+    "yourAnswer": "Ihre Antwort",
+    "correctAnswer": "Korrekte Antwort",
+    "pointsEarned": "Punkte erhalten",
+    "saveContinue": "Speichern & weiter",
+    "wichtigkeitHint": "Wichtigkeit (Konsequenz)",
+    "abweichungHint": "Abweichung (Norm)",
+    "nacaHint": "NACA-Wert (0–7)",
+    "nacaSource": "NACA 0–1 = leicht, 2–3 = mittel, 4–7 = schwer",
+    "nacaLeicht": "leicht (0–1)",
+    "nacaMittel": "mittel (2–3)",
+    "nacaSchwer": "schwer (4–7)"
+  },
+  "ranking": {
+    "title": "Ranking",
+    "rank": "Rang",
+    "name": "Name",
+    "score": "Score",
+    "scenes": "Szenen"
   }
 }

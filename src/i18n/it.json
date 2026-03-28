@@ -90,9 +90,85 @@
     "deficitsCount": "Deficit in questa scena ({{count}})",
     "noDeficits": "Nessun deficit definito per questa scena.",
     "innerorts": "In zona abitata",
-    "ausserorts": "Fuori zona abitata"
+    "ausserorts": "Fuori zona abitata",
+    "newDeficit": "Nuovo deficit",
+    "editBtn": "Modifica",
+    "deleteBtn": "Elimina",
+    "modalTitleNew": "Inserire nuovo deficit",
+    "modalTitleEdit": "Modifica deficit",
+    "fieldTitle": "Denominazione",
+    "fieldDesc": "Descrizione",
+    "fieldFeedback": "Motivazione tecnica",
+    "fieldSolution": "Logica delle misure",
+    "saveBtn": "Salva",
+    "cancelBtn": "Annulla"
   },
   "score": {
     "points": "pt"
+  },
+  "landing": {
+    "tagline1": "Precisione.",
+    "tagline2": "Sicurezza.",
+    "tagline3": "Immersione.",
+    "feature1": "Scene stradali interattive secondo la metodologia RSI",
+    "feature2": "Matrici di valutazione – Importanza × Scostamento × NACA",
+    "feature3": "Classifica personale e progressi",
+    "loginLabel": "Il vostro nome",
+    "startBtn": "Avvia la formazione",
+    "systemOnline": "Sistema online",
+    "adminLink": "Accesso Admin"
+  },
+  "topics": {
+    "title": "Aree tematiche",
+    "subtitle": "Scegliete un'area per esercitarvi su deficit di sicurezza specifici.",
+    "scenesCount": "scene"
+  },
+  "scenes": {
+    "back": "Indietro",
+    "addNew": "Nuova scena",
+    "startBtn": "Avvia la formazione",
+    "noDeficits": "Nessun deficit definito"
+  },
+  "scoring": {
+    "stepOf": "Passo {{step}} di 9",
+    "step1Title": "Valutare l'importanza",
+    "step2Title": "Rilevanza SD – Matrice",
+    "step3Title": "Valutare lo scostamento",
+    "step4Title": "Rilevanza SD – Risultato",
+    "step5Title": "Rilevanza SD confermata",
+    "step6Title": "Classificazione NACA",
+    "step7Title": "Scegliere la gravità",
+    "step8Title": "Rischio incidente – Matrice",
+    "step9Title": "Rischio incidente – Risultato",
+    "step1SubIo": "Quanto è importante questa caratteristica in zona abitata?",
+    "step1SubAo": "Quanto è importante questa caratteristica fuori zona abitata?",
+    "step2Sub": "Importanza × Scostamento dà la rilevanza SD.",
+    "step3Sub": "Quanto si discosta lo stato attuale dalla norma?",
+    "step4Sub": "La rilevanza SD è calcolata.",
+    "step5Sub": "Risultato intermedio confermato.",
+    "step6Sub": "Classificare la gravità secondo lo schema NACA.",
+    "step7Sub": "Scegliete il valore NACA (0–7).",
+    "step8Sub": "Rilevanza SD × Gravità NACA dà il rischio incidente.",
+    "step9Sub": "Il rischio incidente è calcolato.",
+    "nextBtn": "Avanti",
+    "resultTitle": "Valutazione",
+    "yourAnswer": "La vostra risposta",
+    "correctAnswer": "Risposta corretta",
+    "pointsEarned": "Punti ottenuti",
+    "saveContinue": "Salva & continua",
+    "wichtigkeitHint": "Importanza (conseguenza)",
+    "abweichungHint": "Scostamento (norma)",
+    "nacaHint": "Valore NACA (0–7)",
+    "nacaSource": "NACA 0–1 = lieve, 2–3 = medio, 4–7 = grave",
+    "nacaLeicht": "lieve (0–1)",
+    "nacaMittel": "medio (2–3)",
+    "nacaSchwer": "grave (4–7)"
+  },
+  "ranking": {
+    "title": "Classifica",
+    "rank": "Pos.",
+    "name": "Nome",
+    "score": "Punteggio",
+    "scenes": "Scene"
   }
 }

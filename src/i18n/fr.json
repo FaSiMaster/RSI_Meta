@@ -90,9 +90,85 @@
     "deficitsCount": "Déficits dans cette scène ({{count}})",
     "noDeficits": "Aucun déficit défini pour cette scène.",
     "innerorts": "En localité",
-    "ausserorts": "Hors localité"
+    "ausserorts": "Hors localité",
+    "newDeficit": "Nouveau déficit",
+    "editBtn": "Modifier",
+    "deleteBtn": "Supprimer",
+    "modalTitleNew": "Saisir un nouveau déficit",
+    "modalTitleEdit": "Modifier le déficit",
+    "fieldTitle": "Désignation",
+    "fieldDesc": "Description",
+    "fieldFeedback": "Justification technique",
+    "fieldSolution": "Logique de mesures",
+    "saveBtn": "Enregistrer",
+    "cancelBtn": "Annuler"
   },
   "score": {
     "points": "pts"
+  },
+  "landing": {
+    "tagline1": "Précision.",
+    "tagline2": "Sécurité.",
+    "tagline3": "Immersion.",
+    "feature1": "Scènes de rue interactives selon la méthode RSI",
+    "feature2": "Matrices d'évaluation – Importance × Écart × NACA",
+    "feature3": "Classement personnel et progression",
+    "loginLabel": "Votre nom",
+    "startBtn": "Démarrer la formation",
+    "systemOnline": "Système en ligne",
+    "adminLink": "Accès Admin"
+  },
+  "topics": {
+    "title": "Domaines thématiques",
+    "subtitle": "Choisissez un domaine pour vous entraîner sur des déficits de sécurité spécifiques.",
+    "scenesCount": "scènes"
+  },
+  "scenes": {
+    "back": "Retour",
+    "addNew": "Nouvelle scène",
+    "startBtn": "Démarrer la formation",
+    "noDeficits": "Aucun déficit défini"
+  },
+  "scoring": {
+    "stepOf": "Étape {{step}} sur 9",
+    "step1Title": "Évaluer l'importance",
+    "step2Title": "Pertinence SD – Matrice",
+    "step3Title": "Évaluer l'écart",
+    "step4Title": "Pertinence SD – Résultat",
+    "step5Title": "Pertinence SD confirmée",
+    "step6Title": "Classification NACA",
+    "step7Title": "Choisir la gravité",
+    "step8Title": "Risque d'accident – Matrice",
+    "step9Title": "Risque d'accident – Résultat",
+    "step1SubIo": "Quelle est l'importance de ce critère en localité?",
+    "step1SubAo": "Quelle est l'importance de ce critère hors localité?",
+    "step2Sub": "Importance × Écart donne la pertinence SD.",
+    "step3Sub": "Dans quelle mesure l'état actuel s'écarte-t-il de la norme?",
+    "step4Sub": "La pertinence SD est calculée.",
+    "step5Sub": "Résultat intermédiaire confirmé.",
+    "step6Sub": "Classer la gravité selon le schéma NACA.",
+    "step7Sub": "Choisissez la valeur NACA (0–7).",
+    "step8Sub": "Pertinence SD × Gravité NACA donne le risque d'accident.",
+    "step9Sub": "Le risque d'accident est calculé.",
+    "nextBtn": "Continuer",
+    "resultTitle": "Évaluation",
+    "yourAnswer": "Votre réponse",
+    "correctAnswer": "Réponse correcte",
+    "pointsEarned": "Points obtenus",
+    "saveContinue": "Enregistrer & continuer",
+    "wichtigkeitHint": "Importance (conséquence)",
+    "abweichungHint": "Écart (norme)",
+    "nacaHint": "Valeur NACA (0–7)",
+    "nacaSource": "NACA 0–1 = léger, 2–3 = moyen, 4–7 = grave",
+    "nacaLeicht": "léger (0–1)",
+    "nacaMittel": "moyen (2–3)",
+    "nacaSchwer": "grave (4–7)"
+  },
+  "ranking": {
+    "title": "Classement",
+    "rank": "Rang",
+    "name": "Nom",
+    "score": "Score",
+    "scenes": "Scènes"
   }
 }

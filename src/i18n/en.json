@@ -90,9 +90,85 @@
     "deficitsCount": "Deficits in this scene ({{count}})",
     "noDeficits": "No deficits defined for this scene.",
     "innerorts": "Built-up area",
-    "ausserorts": "Outside built-up area"
+    "ausserorts": "Outside built-up area",
+    "newDeficit": "New deficit",
+    "editBtn": "Edit",
+    "deleteBtn": "Delete",
+    "modalTitleNew": "Add new deficit",
+    "modalTitleEdit": "Edit deficit",
+    "fieldTitle": "Title",
+    "fieldDesc": "Description",
+    "fieldFeedback": "Technical justification",
+    "fieldSolution": "Measure logic",
+    "saveBtn": "Save",
+    "cancelBtn": "Cancel"
   },
   "score": {
     "points": "pts"
+  },
+  "landing": {
+    "tagline1": "Precision.",
+    "tagline2": "Safety.",
+    "tagline3": "Immersion.",
+    "feature1": "Interactive street scenes based on RSI methodology",
+    "feature2": "Assessment matrices – Importance × Deviation × NACA",
+    "feature3": "Personal ranking and progress tracking",
+    "loginLabel": "Your name",
+    "startBtn": "Start training",
+    "systemOnline": "System online",
+    "adminLink": "Admin access"
+  },
+  "topics": {
+    "title": "Topic Areas",
+    "subtitle": "Choose an area to train on specific safety deficits.",
+    "scenesCount": "scenes"
+  },
+  "scenes": {
+    "back": "Back",
+    "addNew": "New scene",
+    "startBtn": "Start training",
+    "noDeficits": "No deficits defined"
+  },
+  "scoring": {
+    "stepOf": "Step {{step}} of 9",
+    "step1Title": "Assess importance",
+    "step2Title": "Relevance SD – Matrix",
+    "step3Title": "Assess deviation",
+    "step4Title": "Relevance SD – Result",
+    "step5Title": "Relevance SD confirmed",
+    "step6Title": "NACA classification",
+    "step7Title": "Choose accident severity",
+    "step8Title": "Accident risk – Matrix",
+    "step9Title": "Accident risk – Result",
+    "step1SubIo": "How important is this feature in a built-up area?",
+    "step1SubAo": "How important is this feature outside a built-up area?",
+    "step2Sub": "Importance × Deviation yields the relevance SD.",
+    "step3Sub": "How much does the current state deviate from the norm?",
+    "step4Sub": "The relevance SD has been calculated.",
+    "step5Sub": "Interim result confirmed.",
+    "step6Sub": "Classify severity using the NACA schema.",
+    "step7Sub": "Choose the NACA value (0–7).",
+    "step8Sub": "Relevance SD × NACA severity yields the accident risk.",
+    "step9Sub": "The accident risk has been calculated.",
+    "nextBtn": "Next",
+    "resultTitle": "Assessment",
+    "yourAnswer": "Your answer",
+    "correctAnswer": "Correct answer",
+    "pointsEarned": "Points earned",
+    "saveContinue": "Save & continue",
+    "wichtigkeitHint": "Importance (consequence)",
+    "abweichungHint": "Deviation (norm)",
+    "nacaHint": "NACA value (0–7)",
+    "nacaSource": "NACA 0–1 = minor, 2–3 = moderate, 4–7 = severe",
+    "nacaLeicht": "minor (0–1)",
+    "nacaMittel": "moderate (2–3)",
+    "nacaSchwer": "severe (4–7)"
+  },
+  "ranking": {
+    "title": "Ranking",
+    "rank": "Rank",
+    "name": "Name",
+    "score": "Score",
+    "scenes": "Scenes"
   }
 }
