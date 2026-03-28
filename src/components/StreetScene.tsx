@@ -1,7 +1,8 @@
-// Platzhalter-Strassenszene fuer Phase 2
-// Wird in Phase 2 durch echte 360°-Equirectangular-Fotos ersetzt
+// Strassenszene mit 360°-Equirectangular-Hintergrund
+// Textur: /public/textures/street-360.jpg
 
-import { BackSide } from 'three'
+import { useLoader } from '@react-three/fiber'
+import { TextureLoader, EquirectangularReflectionMapping, BackSide } from 'three'
 
 const ROAD_WIDTH = 7      // Meter (2 Spuren à 3.5m)
 const ROAD_LENGTH = 200   // Meter Sichtweite
@@ -10,12 +11,15 @@ const ROAD_LENGTH = 200   // Meter Sichtweite
 const CENTER_DASHES = Array.from({ length: 30 }, (_, i) => i * 6 - 87)
 
 export function StreetScene() {
+  const skyTexture = useLoader(TextureLoader, '/textures/street-360.jpg')
+  skyTexture.mapping = EquirectangularReflectionMapping
+
   return (
     <group>
-      {/* ── Himmelskugel (innen sichtbar) ── */}
+      {/* ── 360°-Himmelskugel mit Equirectangular-Textur ── */}
       <mesh>
-        <sphereGeometry args={[140, 32, 16]} />
-        <meshBasicMaterial color="#6BA3C8" side={BackSide} />
+        <sphereGeometry args={[140, 64, 32]} />
+        <meshBasicMaterial map={skyTexture} side={BackSide} />
       </mesh>
 
       {/* ── Umgebungsboden (Grün, aussen der Fahrbahn) ── */}
