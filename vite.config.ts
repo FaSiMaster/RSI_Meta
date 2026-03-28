@@ -1,5 +1,6 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
+import tailwindcss from '@tailwindcss/vite'
 import { VitePWA } from 'vite-plugin-pwa'
 
 // Fuer GitHub Pages: base: '/RSI_Meta/'
@@ -7,6 +8,7 @@ import { VitePWA } from 'vite-plugin-pwa'
 export default defineConfig({
   plugins: [
     react(),
+    tailwindcss(),
     VitePWA({
       registerType: 'autoUpdate',
       manifest: {
@@ -41,7 +43,7 @@ export default defineConfig({
     }),
   ],
   server: {
-    host: true,   // Netzwerkzugriff fuer Meta Quest im selben WLAN
+    host: true,
     port: 5173,
   },
   base: '/',
