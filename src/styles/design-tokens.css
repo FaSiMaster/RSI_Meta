@@ -1,0 +1,80 @@
+/* ── ZH Design-Tokens (aus FaSi_VIZ / Kanton Zürich Corporate Design) ── */
+
+:root {
+  /* Primärfarben */
+  --zh-blau:        #0076BD;
+  --zh-dunkelblau:  #00407C;
+  --zh-cyan:        #009EE0;
+  --zh-gruen:       #1A7F1F;
+  --zh-rot:         #D40053;
+  --zh-orange:      #B87300;
+
+  /* Graustufen */
+  --zh-schwarz:     #000000;
+  --zh-grau-1:      #333333;
+  --zh-grau-2:      #666666;
+  --zh-grau-3:      #949494;
+  --zh-grau-4:      #CCCCCC;
+  --zh-grau-5:      #F0F0F0;
+  --zh-grau-6:      #F7F7F7;
+  --zh-weiss:       #FFFFFF;
+
+  /* Semantische Farben */
+  --zh-color-bg:          var(--zh-weiss);
+  --zh-color-bg-secondary: var(--zh-grau-6);
+  --zh-color-bg-tertiary:  var(--zh-grau-5);
+  --zh-color-surface:      var(--zh-weiss);
+  --zh-color-border:       var(--zh-grau-4);
+  --zh-color-text:         var(--zh-schwarz);
+  --zh-color-text-secondary: var(--zh-grau-1);
+  --zh-color-text-muted:   var(--zh-grau-2);
+  --zh-color-text-disabled: var(--zh-grau-3);
+  --zh-color-accent:       var(--zh-blau);
+  --zh-color-accent-dark:  var(--zh-dunkelblau);
+
+  /* Badge / Status */
+  --zh-badge-w:     #1A7F1F;
+  --zh-badge-a:     #B87300;
+  --zh-badge-n:     #D40053;
+
+  /* Typografie */
+  --zh-font:        "Inter", "Helvetica Now", "Helvetica", "Arial", sans-serif;
+  --zh-font-features: "ss07" 1, "ss08" 1, "cv03" 1, "cv04" 1, "cv10" 1;
+
+  /* Layout */
+  --zh-navbar-h:    52px;
+  --zh-radius-card: 12px;
+  --zh-radius-btn:  8px;
+  --zh-padding-page: 32px;
+  --zh-font-min:    14px;
+
+  /* Schatten */
+  --zh-shadow-sm:   0 1px 3px rgba(0,0,0,0.08);
+  --zh-shadow-md:   0 4px 16px rgba(0,0,0,0.10);
+  --zh-shadow-lg:   0 12px 40px rgba(0,0,0,0.12);
+}
+
+/* ── Dark Mode ── */
+[data-theme="dark"] {
+  --zh-blau:        #7AB6E2;
+  --zh-cyan:        #6BC9CB;
+  --zh-gruen:       #6EBD72;
+  --zh-rot:         #FF6B9D;
+  --zh-orange:      #FFBA55;
+
+  --zh-color-bg:           #000000;
+  --zh-color-bg-secondary: #1A1A1A;
+  --zh-color-bg-tertiary:  #252525;
+  --zh-color-surface:      #111111;
+  --zh-color-border:       #333333;
+  --zh-color-text:         #F0F0F0;
+  --zh-color-text-secondary: #CCCCCC;
+  --zh-color-text-muted:   #949494;
+  --zh-color-text-disabled: #666666;
+  --zh-color-accent:       #7AB6E2;
+  --zh-color-accent-dark:  #5FA0D0;
+
+  --zh-shadow-sm:   0 1px 3px rgba(0,0,0,0.40);
+  --zh-shadow-md:   0 4px 16px rgba(0,0,0,0.50);
+  --zh-shadow-lg:   0 12px 40px rgba(0,0,0,0.60);
+}

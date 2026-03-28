@@ -1,4 +1,5 @@
 @import "tailwindcss";
+@import "./styles/design-tokens.css";
 
 *,
 *::before,
@@ -14,6 +15,11 @@ body,
   width: 100%;
   height: 100%;
   overflow: hidden;
-  background: #0f0f1a;
-  font-family: system-ui, Arial, sans-serif;
+  background: var(--zh-color-bg);
+  color: var(--zh-color-text);
+  font-family: var(--zh-font);
+  font-feature-settings: var(--zh-font-features);
+  font-size: var(--zh-font-min);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }

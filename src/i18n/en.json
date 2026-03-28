@@ -1,0 +1,98 @@
+{
+  "nav": {
+    "dashboard": "Dashboard",
+    "ranking": "Ranking",
+    "admin": "Admin",
+    "adminAccess": "Admin Access"
+  },
+  "onboarding": {
+    "headline1": "Precision.",
+    "headline2": "Safety.",
+    "headline3": "Immersion.",
+    "subtitle": "Develop a trained eye for what matters. Road Safety Inspection – immersive.",
+    "exploration": "Exploration",
+    "analysis": "Analysis",
+    "systemAdmin": "System Administration",
+    "welcome": "Welcome.",
+    "identifyRanking": "Identify yourself for the ranking.",
+    "namePlaceholder": "Your name",
+    "questReady": "Meta Quest 3 ready to pair",
+    "startTraining": "Start training",
+    "darkMode": "Dark",
+    "lightMode": "Light"
+  },
+  "dashboard": {
+    "topics": "Topic Areas",
+    "selectCategory": "Choose a category to train on specific safety deficits.",
+    "currentScore": "Your current score",
+    "exploreSzenen": "Explore scenes",
+    "backToTopics": "Back to topics",
+    "noScenes": "No scenes available for this topic yet.",
+    "scenario": "Scenario",
+    "startTraining": "Start training"
+  },
+  "training": {
+    "loading": "Loading 360° scene...",
+    "vrStart": "Start VR",
+    "foundCount": "{{found}} / {{total}} deficits found",
+    "hintsActive": "Hints active",
+    "showHints": "Show deficits (−250 pts)",
+    "exitTraining": "Exit training"
+  },
+  "assessment": {
+    "title": "RSI Assessment ({{step}}/3)",
+    "result": "Analysis Result",
+    "wichtigkeit": "Importance (consequence)",
+    "abweichung": "Deviation (norm)",
+    "nacaScore": "NACA Score (accident severity)",
+    "wichtigkeitHint_io": "How important is this feature in built-up area (io)?",
+    "wichtigkeitHint_ao": "How important is this feature outside built-up area (ao)?",
+    "abweichungHint": "How much does the current state deviate from the norm?",
+    "nacaHint": "How severe would a potential accident be?",
+    "zwischenergebnis": "Interim result",
+    "relevanzSD": "Relevance SD",
+    "gross": "High",
+    "mittel": "Medium",
+    "klein": "Low",
+    "schwer": "Severe",
+    "leicht": "Minor"
+  },
+  "result": {
+    "unfallrisiko": "Accident risk",
+    "gering": "low",
+    "hoch": "high",
+    "feedback": "Technical justification",
+    "massnahmen": "Measure logic",
+    "continueExploration": "Continue exploration"
+  },
+  "completion": {
+    "title": "Training complete!",
+    "score": "Score",
+    "allFound": "You have successfully identified and assessed all {{count}} safety deficits.",
+    "saveScore": "Save score & view ranking"
+  },
+  "leaderboard": {
+    "title": "Global Ranking",
+    "backToDashboard": "Back to dashboard",
+    "rank": "Rank",
+    "name": "Name",
+    "score": "Score"
+  },
+  "admin": {
+    "title": "Admin Dashboard",
+    "subtitle": "Overview of topics, scenes and deficit catalogues per RSI methodology.",
+    "logout": "Sign out",
+    "topics": "Topics",
+    "scenes": "Scenes",
+    "deficits": "Deficits",
+    "selectTopic": "Select a topic...",
+    "selectScene": "Select a scene to view deficits.",
+    "deficitsCount": "Deficits in this scene ({{count}})",
+    "noDeficits": "No deficits defined for this scene.",
+    "innerorts": "Built-up area",
+    "ausserorts": "Outside built-up area"
+  },
+  "score": {
+    "points": "pts"
+  }
+}

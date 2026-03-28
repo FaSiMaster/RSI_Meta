@@ -1,0 +1,98 @@
+{
+  "nav": {
+    "dashboard": "Dashboard",
+    "ranking": "Ranking",
+    "admin": "Admin",
+    "adminAccess": "Admin-Zugang"
+  },
+  "onboarding": {
+    "headline1": "Präzision.",
+    "headline2": "Sicherheit.",
+    "headline3": "Immersion.",
+    "subtitle": "Entwickeln Sie den geschulten Blick für das Wesentliche. Road Safety Inspection – immersiv.",
+    "exploration": "Exploration",
+    "analysis": "Analyse",
+    "systemAdmin": "System-Administration",
+    "welcome": "Willkommen.",
+    "identifyRanking": "Identifizieren Sie sich für das Ranking.",
+    "namePlaceholder": "Ihr Name",
+    "questReady": "Meta Quest 3 bereit zur Kopplung",
+    "startTraining": "Training starten",
+    "darkMode": "Dark",
+    "lightMode": "Light"
+  },
+  "dashboard": {
+    "topics": "Themenbereiche",
+    "selectCategory": "Wählen Sie eine Kategorie, um spezifische Sicherheitsdefizite zu trainieren.",
+    "currentScore": "Ihr aktueller Score",
+    "exploreSzenen": "Szenen erkunden",
+    "backToTopics": "Zurück zur Themenübersicht",
+    "noScenes": "Noch keine Szenen für dieses Thema vorhanden.",
+    "scenario": "Szenario",
+    "startTraining": "Training starten"
+  },
+  "training": {
+    "loading": "Lade 360° Szene...",
+    "vrStart": "VR starten",
+    "foundCount": "{{found}} / {{total}} Defizite gefunden",
+    "hintsActive": "Hinweise aktiv",
+    "showHints": "Defizite einblenden (−250 Pkt.)",
+    "exitTraining": "Training beenden"
+  },
+  "assessment": {
+    "title": "RSI-Bewertung ({{step}}/3)",
+    "result": "Analyse-Ergebnis",
+    "wichtigkeit": "Wichtigkeit (Konsequenz)",
+    "abweichung": "Abweichung (Norm)",
+    "nacaScore": "NACA-Score (Unfallschwere)",
+    "wichtigkeitHint_io": "Wie wichtig ist dieses Merkmal innerorts (io)?",
+    "wichtigkeitHint_ao": "Wie wichtig ist dieses Merkmal ausserorts (ao)?",
+    "abweichungHint": "Wie stark weicht der Ist-Zustand von der Norm ab?",
+    "nacaHint": "Wie schwerwiegend wäre ein potenzieller Unfall?",
+    "zwischenergebnis": "Zwischenergebnis",
+    "relevanzSD": "Relevanz SD",
+    "gross": "Gross",
+    "mittel": "Mittel",
+    "klein": "Klein",
+    "schwer": "Schwer",
+    "leicht": "Leicht"
+  },
+  "result": {
+    "unfallrisiko": "Unfallrisiko",
+    "gering": "gering",
+    "hoch": "hoch",
+    "feedback": "Fachliche Begründung",
+    "massnahmen": "Massnahmenlogik",
+    "continueExploration": "Weiter zur Exploration"
+  },
+  "completion": {
+    "title": "Training abgeschlossen!",
+    "score": "Score",
+    "allFound": "Sie haben alle {{count}} Sicherheitsdefizite erfolgreich identifiziert und bewertet.",
+    "saveScore": "Score speichern & Ranking ansehen"
+  },
+  "leaderboard": {
+    "title": "Globales Ranking",
+    "backToDashboard": "Zurück zum Dashboard",
+    "rank": "Platz",
+    "name": "Name",
+    "score": "Score"
+  },
+  "admin": {
+    "title": "Admin-Dashboard",
+    "subtitle": "Übersicht Themenbereiche, Szenen und Defizit-Kataloge nach RSI-Methodik.",
+    "logout": "Abmelden",
+    "topics": "Themenbereiche",
+    "scenes": "Szenen",
+    "deficits": "Defizite",
+    "selectTopic": "Wählen Sie ein Thema aus...",
+    "selectScene": "Wählen Sie eine Szene aus, um Defizite zu sehen.",
+    "deficitsCount": "Defizite in dieser Szene ({{count}})",
+    "noDeficits": "Keine Defizite für diese Szene definiert.",
+    "innerorts": "Innerorts",
+    "ausserorts": "Ausserorts"
+  },
+  "score": {
+    "points": "Pkt."
+  }
+}

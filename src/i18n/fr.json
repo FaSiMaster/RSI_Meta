@@ -1,0 +1,98 @@
+{
+  "nav": {
+    "dashboard": "Tableau de bord",
+    "ranking": "Classement",
+    "admin": "Admin",
+    "adminAccess": "Accès Admin"
+  },
+  "onboarding": {
+    "headline1": "Précision.",
+    "headline2": "Sécurité.",
+    "headline3": "Immersion.",
+    "subtitle": "Développez un regard expert pour l'essentiel. Road Safety Inspection – en immersif.",
+    "exploration": "Exploration",
+    "analysis": "Analyse",
+    "systemAdmin": "Administration système",
+    "welcome": "Bienvenue.",
+    "identifyRanking": "Identifiez-vous pour le classement.",
+    "namePlaceholder": "Votre nom",
+    "questReady": "Meta Quest 3 prêt à être couplé",
+    "startTraining": "Démarrer la formation",
+    "darkMode": "Sombre",
+    "lightMode": "Clair"
+  },
+  "dashboard": {
+    "topics": "Domaines thématiques",
+    "selectCategory": "Choisissez une catégorie pour vous entraîner sur des déficits de sécurité spécifiques.",
+    "currentScore": "Votre score actuel",
+    "exploreSzenen": "Explorer les scènes",
+    "backToTopics": "Retour aux thèmes",
+    "noScenes": "Aucune scène disponible pour ce thème.",
+    "scenario": "Scénario",
+    "startTraining": "Démarrer la formation"
+  },
+  "training": {
+    "loading": "Chargement de la scène 360°...",
+    "vrStart": "Démarrer VR",
+    "foundCount": "{{found}} / {{total}} déficits trouvés",
+    "hintsActive": "Indices actifs",
+    "showHints": "Afficher les déficits (−250 pts)",
+    "exitTraining": "Terminer la formation"
+  },
+  "assessment": {
+    "title": "Évaluation RSI ({{step}}/3)",
+    "result": "Résultat d'analyse",
+    "wichtigkeit": "Importance (conséquence)",
+    "abweichung": "Écart (norme)",
+    "nacaScore": "Score NACA (gravité d'accident)",
+    "wichtigkeitHint_io": "Quelle est l'importance de ce critère en localité (io)?",
+    "wichtigkeitHint_ao": "Quelle est l'importance de ce critère hors localité (ao)?",
+    "abweichungHint": "Dans quelle mesure l'état actuel s'écarte-t-il de la norme?",
+    "nacaHint": "Quelle serait la gravité d'un accident potentiel?",
+    "zwischenergebnis": "Résultat intermédiaire",
+    "relevanzSD": "Pertinence SD",
+    "gross": "Grand",
+    "mittel": "Moyen",
+    "klein": "Petit",
+    "schwer": "Grave",
+    "leicht": "Léger"
+  },
+  "result": {
+    "unfallrisiko": "Risque d'accident",
+    "gering": "faible",
+    "hoch": "élevé",
+    "feedback": "Justification technique",
+    "massnahmen": "Logique de mesures",
+    "continueExploration": "Continuer l'exploration"
+  },
+  "completion": {
+    "title": "Formation terminée!",
+    "score": "Score",
+    "allFound": "Vous avez identifié et évalué avec succès les {{count}} déficits de sécurité.",
+    "saveScore": "Enregistrer le score & voir le classement"
+  },
+  "leaderboard": {
+    "title": "Classement global",
+    "backToDashboard": "Retour au tableau de bord",
+    "rank": "Rang",
+    "name": "Nom",
+    "score": "Score"
+  },
+  "admin": {
+    "title": "Tableau de bord admin",
+    "subtitle": "Aperçu des thèmes, scènes et catalogues de déficits selon la méthode RSI.",
+    "logout": "Se déconnecter",
+    "topics": "Thèmes",
+    "scenes": "Scènes",
+    "deficits": "Déficits",
+    "selectTopic": "Sélectionnez un thème...",
+    "selectScene": "Sélectionnez une scène pour voir les déficits.",
+    "deficitsCount": "Déficits dans cette scène ({{count}})",
+    "noDeficits": "Aucun déficit défini pour cette scène.",
+    "innerorts": "En localité",
+    "ausserorts": "Hors localité"
+  },
+  "score": {
+    "points": "pts"
+  }
+}

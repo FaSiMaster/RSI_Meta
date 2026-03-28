@@ -1,0 +1,98 @@
+{
+  "nav": {
+    "dashboard": "Dashboard",
+    "ranking": "Classifica",
+    "admin": "Admin",
+    "adminAccess": "Accesso Admin"
+  },
+  "onboarding": {
+    "headline1": "Precisione.",
+    "headline2": "Sicurezza.",
+    "headline3": "Immersione.",
+    "subtitle": "Sviluppate uno sguardo esperto per l'essenziale. Road Safety Inspection – in modo immersivo.",
+    "exploration": "Esplorazione",
+    "analysis": "Analisi",
+    "systemAdmin": "Amministrazione sistema",
+    "welcome": "Benvenuto.",
+    "identifyRanking": "Identificatevi per la classifica.",
+    "namePlaceholder": "Il vostro nome",
+    "questReady": "Meta Quest 3 pronto per l'accoppiamento",
+    "startTraining": "Avvia la formazione",
+    "darkMode": "Scuro",
+    "lightMode": "Chiaro"
+  },
+  "dashboard": {
+    "topics": "Aree tematiche",
+    "selectCategory": "Scegliete una categoria per esercitarvi su deficit di sicurezza specifici.",
+    "currentScore": "Il vostro punteggio attuale",
+    "exploreSzenen": "Esplora le scene",
+    "backToTopics": "Torna ai temi",
+    "noScenes": "Nessuna scena disponibile per questo tema.",
+    "scenario": "Scenario",
+    "startTraining": "Avvia la formazione"
+  },
+  "training": {
+    "loading": "Caricamento scena 360°...",
+    "vrStart": "Avvia VR",
+    "foundCount": "{{found}} / {{total}} deficit trovati",
+    "hintsActive": "Suggerimenti attivi",
+    "showHints": "Mostra deficit (−250 pt)",
+    "exitTraining": "Termina la formazione"
+  },
+  "assessment": {
+    "title": "Valutazione RSI ({{step}}/3)",
+    "result": "Risultato analisi",
+    "wichtigkeit": "Importanza (conseguenza)",
+    "abweichung": "Scostamento (norma)",
+    "nacaScore": "Punteggio NACA (gravità incidente)",
+    "wichtigkeitHint_io": "Quanto è importante questa caratteristica in zona abitata (io)?",
+    "wichtigkeitHint_ao": "Quanto è importante questa caratteristica fuori zona abitata (ao)?",
+    "abweichungHint": "Quanto si discosta lo stato attuale dalla norma?",
+    "nacaHint": "Quanto sarebbe grave un potenziale incidente?",
+    "zwischenergebnis": "Risultato intermedio",
+    "relevanzSD": "Rilevanza SD",
+    "gross": "Grande",
+    "mittel": "Medio",
+    "klein": "Piccolo",
+    "schwer": "Grave",
+    "leicht": "Lieve"
+  },
+  "result": {
+    "unfallrisiko": "Rischio incidente",
+    "gering": "basso",
+    "hoch": "alto",
+    "feedback": "Motivazione tecnica",
+    "massnahmen": "Logica delle misure",
+    "continueExploration": "Continua esplorazione"
+  },
+  "completion": {
+    "title": "Formazione completata!",
+    "score": "Punteggio",
+    "allFound": "Avete identificato e valutato con successo tutti i {{count}} deficit di sicurezza.",
+    "saveScore": "Salva punteggio & vedi classifica"
+  },
+  "leaderboard": {
+    "title": "Classifica globale",
+    "backToDashboard": "Torna alla dashboard",
+    "rank": "Pos.",
+    "name": "Nome",
+    "score": "Punteggio"
+  },
+  "admin": {
+    "title": "Dashboard admin",
+    "subtitle": "Panoramica temi, scene e cataloghi di deficit secondo la metodologia RSI.",
+    "logout": "Disconnettersi",
+    "topics": "Temi",
+    "scenes": "Scene",
+    "deficits": "Deficit",
+    "selectTopic": "Selezionate un tema...",
+    "selectScene": "Selezionate una scena per vedere i deficit.",
+    "deficitsCount": "Deficit in questa scena ({{count}})",
+    "noDeficits": "Nessun deficit definito per questa scena.",
+    "innerorts": "In zona abitata",
+    "ausserorts": "Fuori zona abitata"
+  },
+  "score": {
+    "points": "pt"
+  }
+}
