@@ -1,0 +1,21 @@
+{
+  "permissions": {
+    "allow": [
+      "Read(//c/Users/FaSi/.claude//**)",
+      "Bash(dir \"C:\\\\Users\\\\FaSi\\\\.claude\")",
+      "Bash(gh auth:*)",
+      "Bash(gh repo:*)",
+      "Bash(grep -r \"any\\\\|TODO\\\\|FIXME\" /c/ClaudeAI/RSI_Meta/1RSI_Meta/src --include=*.tsx --include=*.ts)",
+      "Bash(npm run:*)",
+      "Bash(grep:*)",
+      "Bash(/tmp/audit_report.md:*)",
+      "Read(//tmp/**)",
+      "Bash(npm install:*)",
+      "Bash(npx tsc:*)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(git tag:*)",
+      "Bash(git push:*)"
+    ]
+  }
+}

@@ -1,0 +1,5 @@
+{
+  "name": "RSI-Immersive: Verkehrssicherheits-Training",
+  "description": "Ein digitales Lern- und Trainingssystem für Road Safety Inspection (RSI) mit 360-Grad-Bildern für Meta Quest 3.",
+  "requestFramePermissions": []
+}
