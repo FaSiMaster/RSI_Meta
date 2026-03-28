@@ -39,3 +39,11 @@ export interface RankingEntry {
   score: number
   timestamp: string
 }
+
+export interface UserProgress {
+  username: string
+  score: number
+  completedScenes: string[]
+  foundDeficits: string[]
+  timestamp: string
+}

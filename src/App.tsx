@@ -6,11 +6,12 @@ import { useTranslation } from 'react-i18next'
 import {
   ArrowLeft, BookOpen, CheckCircle2, ChevronRight,
   LayoutDashboard, Settings, ShieldAlert, Trophy,
-  X, Info, MapPin, User, Eye, BarChart3, Sun, Moon
+  X, Info, MapPin, User, Eye, BarChart3, Sun, Moon,
+  Plus, Trash2, Save
 } from 'lucide-react'
 import { motion, AnimatePresence } from 'motion/react'
 import { cn } from './lib/utils'
-import { TOPICS, SCENES, DEFICITS, getRankings, saveRanking } from './data/static'
+import { TOPICS, SCENES, getDeficitsForScene, persistDeficit, deleteDeficit, getRankings, saveRanking } from './data/static'
 import SceneViewer from './components/SceneViewer'
 import LanguageSwitcher from './components/LanguageSwitcher'
 import type { Topic, Scene, Deficit, RankingEntry, RSIDimension, NACADimension, ResultDimension } from './types'
@@ -42,6 +43,8 @@ export default function App() {
   const [adminSelectedTopic, setAdminSelectedTopic] = useState<Topic | null>(null)
   const [adminSelectedScene, setAdminSelectedScene] = useState<Scene | null>(null)
   const [adminDeficits, setAdminDeficits] = useState<Deficit[]>([])
+  const [isEditingDeficit, setIsEditingDeficit] = useState(false)
+  const [editingDeficit, setEditingDeficit] = useState<Partial<Deficit>>({})
 
   // Theme auf html setzen
   useEffect(() => {
@@ -62,12 +65,46 @@ export default function App() {
   const handleAdminTopicSelect = (topic: Topic) => {
     setAdminSelectedTopic(topic)
     setScenes(SCENES.filter(s => s.topicId === topic.id))
+    setAdminSelectedScene(null)
+    setAdminDeficits([])
+    setIsEditingDeficit(false)
   }
 
   // ── Admin: Szene auswählen ──
   const handleAdminSceneSelect = (scene: Scene) => {
     setAdminSelectedScene(scene)
-    setAdminDeficits(DEFICITS.filter(d => d.sceneId === scene.id))
+    setAdminDeficits(getDeficitsForScene(scene.id))
+    setIsEditingDeficit(false)
+  }
+
+  // ── Admin: Defizit speichern ──
+  const handleSaveDeficit = () => {
+    if (!adminSelectedScene || !editingDeficit.title) return
+    const toSave: Deficit = {
+      id: editingDeficit.id ?? crypto.randomUUID(),
+      sceneId: adminSelectedScene.id,
+      position: editingDeficit.position ?? [0, 0, -10],
+      tolerance: editingDeficit.tolerance ?? 2.0,
+      title: editingDeficit.title ?? '',
+      description: editingDeficit.description ?? '',
+      correctAssessment: {
+        wichtigkeit: editingDeficit.correctAssessment?.wichtigkeit ?? 'mittel',
+        abweichung: editingDeficit.correctAssessment?.abweichung ?? 'mittel',
+        unfallschwere: editingDeficit.correctAssessment?.unfallschwere ?? 'mittel',
+      },
+      feedback: editingDeficit.feedback ?? '',
+      solution: editingDeficit.solution ?? '',
+    }
+    persistDeficit(toSave)
+    setAdminDeficits(getDeficitsForScene(adminSelectedScene.id))
+    setIsEditingDeficit(false)
+    setEditingDeficit({})
+  }
+
+  // ── Admin: Defizit löschen ──
+  const handleDeleteDeficit = (id: string) => {
+    deleteDeficit(id)
+    if (adminSelectedScene) setAdminDeficits(getDeficitsForScene(adminSelectedScene.id))
   }
 
   // ── Login ──
@@ -90,7 +127,7 @@ export default function App() {
     setFoundDeficits([])
     setScore(0)
     setHintsActive(false)
-    setDeficits(DEFICITS.filter(d => d.sceneId === scene.id))
+    setDeficits(getDeficitsForScene(scene.id))
     setView('training')
   }
 
@@ -1086,26 +1123,20 @@ export default function App() {
                   )}
                 </div>
 
-                {/* Defizite */}
-                <div className="lg:col-span-2">
+                {/* Defizite + Editor */}
+                <div className="lg:col-span-2 space-y-5">
                   {!adminSelectedScene ? (
                     <div
-                      className="p-10 text-center border-dashed"
+                      className="p-10 text-center"
                       style={{
                         borderRadius: 'var(--zh-radius-card)',
                         border: '2px dashed var(--zh-color-border)',
                         background: 'var(--zh-color-surface)',
                       }}
                     >
-                      <MapPin
-                        size={28}
-                        className="mx-auto mb-3 opacity-25"
-                        style={{ color: 'var(--zh-color-text-muted)' }}
-                      />
+                      <MapPin size={28} className="mx-auto mb-3 opacity-25" style={{ color: 'var(--zh-color-text-muted)' }} />
                       <h4 className="font-bold mb-1">{t('admin.deficits')}</h4>
-                      <p className="text-sm" style={{ color: 'var(--zh-color-text-muted)' }}>
-                        {t('admin.selectScene')}
-                      </p>
+                      <p className="text-sm" style={{ color: 'var(--zh-color-text-muted)' }}>{t('admin.selectScene')}</p>
                     </div>
                   ) : (
                     <div
@@ -1116,12 +1147,24 @@ export default function App() {
                         background: 'var(--zh-color-surface)',
                       }}
                     >
-                      <h3
-                        className="text-xs font-bold uppercase tracking-widest mb-5"
-                        style={{ color: 'var(--zh-color-text-muted)' }}
-                      >
-                        {t('admin.deficitsCount', { count: adminDeficits.length })}
-                      </h3>
+                      <div className="flex items-center justify-between mb-4">
+                        <h3 className="text-xs font-bold uppercase tracking-widest" style={{ color: 'var(--zh-color-text-muted)' }}>
+                          {t('admin.deficitsCount', { count: adminDeficits.length })}
+                        </h3>
+                        <button
+                          onClick={() => {
+                            setEditingDeficit({
+                              correctAssessment: { wichtigkeit: 'mittel', abweichung: 'mittel', unfallschwere: 'mittel' }
+                            })
+                            setIsEditingDeficit(true)
+                          }}
+                          className="flex items-center gap-1.5 px-3 py-1.5 text-[10px] font-bold uppercase tracking-widest rounded-lg text-white transition-colors"
+                          style={{ background: 'var(--zh-dunkelblau)' }}
+                        >
+                          <Plus size={12} /> Neues Defizit
+                        </button>
+                      </div>
+
                       <div className="space-y-3">
                         {adminDeficits.length === 0 ? (
                           <p className="text-xs italic" style={{ color: 'var(--zh-color-text-disabled)' }}>
@@ -1131,41 +1174,274 @@ export default function App() {
                           adminDeficits.map(d => (
                             <div
                               key={d.id}
-                              className="p-4 rounded-xl space-y-2"
+                              className="p-3.5 rounded-xl flex items-center justify-between group"
                               style={{
                                 border: '1px solid var(--zh-color-border)',
                                 background: 'var(--zh-color-bg-secondary)',
                               }}
                             >
-                              <div className="flex items-center justify-between">
-                                <h4 className="font-bold text-sm">{d.title}</h4>
-                                <div className="flex gap-1">
-                                  {[d.correctAssessment.wichtigkeit, d.correctAssessment.abweichung, d.correctAssessment.unfallschwere].map((val, i) => (
-                                    <span
-                                      key={i}
-                                      className="text-[9px] px-2 py-0.5 rounded-full capitalize font-bold"
-                                      style={{
-                                        background: 'var(--zh-color-bg-tertiary)',
-                                        color: 'var(--zh-color-text-muted)',
-                                        border: '1px solid var(--zh-color-border)',
-                                      }}
-                                    >
-                                      {val}
-                                    </span>
-                                  ))}
+                              <div>
+                                <h4 className="font-bold text-sm mb-1">{d.title}</h4>
+                                <div className="flex gap-1.5">
+                                  <span className="text-[8px] uppercase px-1.5 py-0.5 rounded font-bold" style={{ background: 'rgba(0,118,189,0.15)', color: 'var(--zh-blau)' }}>{d.correctAssessment.wichtigkeit}</span>
+                                  <span className="text-[8px] uppercase px-1.5 py-0.5 rounded font-bold" style={{ background: 'rgba(184,115,0,0.15)', color: 'var(--zh-orange)' }}>{d.correctAssessment.abweichung}</span>
+                                  <span className="text-[8px] uppercase px-1.5 py-0.5 rounded font-bold" style={{ background: 'rgba(212,0,83,0.15)', color: 'var(--zh-rot)' }}>{d.correctAssessment.unfallschwere}</span>
                                 </div>
                               </div>
-                              <p
-                                className="text-xs line-clamp-2"
-                                style={{ color: 'var(--zh-color-text-muted)' }}
-                              >
-                                {d.description}
-                              </p>
+                              <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                                <button
+                                  onClick={() => { setEditingDeficit(d); setIsEditingDeficit(true) }}
+                                  className="p-2 rounded-lg transition-colors hover:bg-[var(--zh-color-bg-tertiary)]"
+                                  style={{ color: 'var(--zh-color-accent)' }}
+                                >
+                                  <Settings size={14} />
+                                </button>
+                                <button
+                                  onClick={() => handleDeleteDeficit(d.id)}
+                                  className="p-2 rounded-lg transition-colors hover:bg-[var(--zh-color-bg-tertiary)]"
+                                  style={{ color: 'var(--zh-rot)' }}
+                                >
+                                  <Trash2 size={14} />
+                                </button>
+                              </div>
                             </div>
                           ))
                         )}
                       </div>
                     </div>
+                  )}
+
+                  {/* Defizit-Editor (aus Google_Voarbeiten portiert) */}
+                  {isEditingDeficit && (
+                    <motion.div
+                      initial={{ opacity: 0, y: 16 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      className="p-6 space-y-5"
+                      style={{
+                        borderRadius: 'var(--zh-radius-card)',
+                        border: '1px solid var(--zh-color-accent)',
+                        background: 'var(--zh-color-surface)',
+                      }}
+                    >
+                      <div className="flex items-center justify-between">
+                        <h3 className="text-lg font-bold">Defizit-Editor (RSI-Methodik)</h3>
+                        <button onClick={() => setIsEditingDeficit(false)} style={{ color: 'var(--zh-color-text-muted)' }}>
+                          <X size={18} />
+                        </button>
+                      </div>
+
+                      <div className="grid grid-cols-2 gap-5">
+                        {/* Linke Spalte: Texte */}
+                        <div className="space-y-4">
+                          {[
+                            { label: 'Titel', field: 'title' as const, multiline: false },
+                            { label: 'Beschreibung', field: 'description' as const, multiline: true },
+                          ].map(({ label, field, multiline }) => (
+                            <div key={field}>
+                              <label className="text-[10px] font-bold uppercase tracking-widest block mb-1.5" style={{ color: 'var(--zh-color-text-muted)' }}>
+                                {label}
+                              </label>
+                              {multiline ? (
+                                <textarea
+                                  value={(editingDeficit[field] as string) ?? ''}
+                                  onChange={e => setEditingDeficit({ ...editingDeficit, [field]: e.target.value })}
+                                  rows={3}
+                                  className="w-full px-3 py-2 rounded-lg text-sm focus:outline-none resize-none"
+                                  style={{
+                                    background: 'var(--zh-color-bg-secondary)',
+                                    border: '1px solid var(--zh-color-border)',
+                                    color: 'var(--zh-color-text)',
+                                  }}
+                                />
+                              ) : (
+                                <input
+                                  type="text"
+                                  value={(editingDeficit[field] as string) ?? ''}
+                                  onChange={e => setEditingDeficit({ ...editingDeficit, [field]: e.target.value })}
+                                  className="w-full px-3 py-2 rounded-lg text-sm focus:outline-none"
+                                  style={{
+                                    background: 'var(--zh-color-bg-secondary)',
+                                    border: '1px solid var(--zh-color-border)',
+                                    color: 'var(--zh-color-text)',
+                                  }}
+                                />
+                              )}
+                            </div>
+                          ))}
+                        </div>
+
+                        {/* Rechte Spalte: RSI-Beurteilung */}
+                        <div
+                          className="p-4 rounded-xl space-y-4"
+                          style={{
+                            background: 'var(--zh-color-bg-secondary)',
+                            border: '1px solid var(--zh-color-border)',
+                          }}
+                        >
+                          <h4 className="text-xs font-bold uppercase tracking-widest" style={{ color: 'var(--zh-color-accent)' }}>
+                            RSI-Beurteilung (Ablauf)
+                          </h4>
+
+                          {/* Wichtigkeit */}
+                          <div>
+                            <label className="text-[10px] font-bold uppercase tracking-widest block mb-1.5" style={{ color: 'var(--zh-color-text-muted)' }}>
+                              1. Wichtigkeit
+                            </label>
+                            <div className="flex gap-2">
+                              {(['klein', 'mittel', 'gross'] as const).map(v => (
+                                <button
+                                  key={v}
+                                  onClick={() => setEditingDeficit({ ...editingDeficit, correctAssessment: { ...editingDeficit.correctAssessment!, wichtigkeit: v } })}
+                                  className="flex-1 py-1.5 rounded-lg text-[10px] font-bold uppercase transition-all text-white"
+                                  style={{
+                                    background: editingDeficit.correctAssessment?.wichtigkeit === v ? 'var(--zh-dunkelblau)' : 'var(--zh-color-bg-tertiary)',
+                                    color: editingDeficit.correctAssessment?.wichtigkeit === v ? 'white' : 'var(--zh-color-text-muted)',
+                                  }}
+                                >
+                                  {v}
+                                </button>
+                              ))}
+                            </div>
+                          </div>
+
+                          {/* Abweichung */}
+                          <div>
+                            <label className="text-[10px] font-bold uppercase tracking-widest block mb-1.5" style={{ color: 'var(--zh-color-text-muted)' }}>
+                              2. Abweichung
+                            </label>
+                            <div className="flex gap-2">
+                              {(['klein', 'mittel', 'gross'] as const).map(v => (
+                                <button
+                                  key={v}
+                                  onClick={() => setEditingDeficit({ ...editingDeficit, correctAssessment: { ...editingDeficit.correctAssessment!, abweichung: v } })}
+                                  className="flex-1 py-1.5 rounded-lg text-[10px] font-bold uppercase transition-all"
+                                  style={{
+                                    background: editingDeficit.correctAssessment?.abweichung === v ? 'var(--zh-dunkelblau)' : 'var(--zh-color-bg-tertiary)',
+                                    color: editingDeficit.correctAssessment?.abweichung === v ? 'white' : 'var(--zh-color-text-muted)',
+                                  }}
+                                >
+                                  {v}
+                                </button>
+                              ))}
+                            </div>
+                          </div>
+
+                          {/* Relevanz SD Vorschau */}
+                          <div
+                            className="px-3 py-2 rounded-lg"
+                            style={{
+                              background: isDark ? 'rgba(122,182,226,0.1)' : 'rgba(0,118,189,0.06)',
+                              border: '1px solid rgba(0,118,189,0.2)',
+                            }}
+                          >
+                            <p className="text-[8px] uppercase tracking-widest mb-0.5" style={{ color: 'var(--zh-color-accent)' }}>
+                              Resultierende Relevanz SD
+                            </p>
+                            <p className="font-bold text-sm capitalize">
+                              {getRelevanzSD(
+                                editingDeficit.correctAssessment?.wichtigkeit ?? 'mittel',
+                                editingDeficit.correctAssessment?.abweichung ?? 'mittel'
+                              )}
+                            </p>
+                          </div>
+
+                          {/* NACA-Score */}
+                          <div>
+                            <label className="text-[10px] font-bold uppercase tracking-widest block mb-1.5" style={{ color: 'var(--zh-color-text-muted)' }}>
+                              3. NACA-Score (Unfallschwere)
+                            </label>
+                            <div className="flex gap-2">
+                              {(['leicht', 'mittel', 'schwer'] as const).map(v => (
+                                <button
+                                  key={v}
+                                  onClick={() => setEditingDeficit({ ...editingDeficit, correctAssessment: { ...editingDeficit.correctAssessment!, unfallschwere: v } })}
+                                  className="flex-1 py-1.5 rounded-lg text-[10px] font-bold uppercase transition-all"
+                                  style={{
+                                    background: editingDeficit.correctAssessment?.unfallschwere === v ? 'var(--zh-dunkelblau)' : 'var(--zh-color-bg-tertiary)',
+                                    color: editingDeficit.correctAssessment?.unfallschwere === v ? 'white' : 'var(--zh-color-text-muted)',
+                                  }}
+                                >
+                                  {v}
+                                </button>
+                              ))}
+                            </div>
+                          </div>
+
+                          {/* Unfallrisiko Vorschau */}
+                          <div
+                            className="px-3 py-2 rounded-lg"
+                            style={{
+                              background: 'rgba(212,0,83,0.08)',
+                              border: '1px solid rgba(212,0,83,0.2)',
+                            }}
+                          >
+                            <p className="text-[8px] uppercase tracking-widest mb-0.5" style={{ color: 'var(--zh-rot)' }}>
+                              Finales Unfallrisiko
+                            </p>
+                            <p className="font-bold text-sm capitalize">
+                              {getUnfallrisiko(
+                                getRelevanzSD(
+                                  editingDeficit.correctAssessment?.wichtigkeit ?? 'mittel',
+                                  editingDeficit.correctAssessment?.abweichung ?? 'mittel'
+                                ),
+                                editingDeficit.correctAssessment?.unfallschwere ?? 'mittel'
+                              )}
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Feedback + Lösung */}
+                      <div className="grid grid-cols-2 gap-5">
+                        {[
+                          { label: 'Fachliche Begründung (Feedback)', field: 'feedback' as const },
+                          { label: 'Massnahmenlogik (Lösung)', field: 'solution' as const },
+                        ].map(({ label, field }) => (
+                          <div key={field}>
+                            <label className="text-[10px] font-bold uppercase tracking-widest block mb-1.5" style={{ color: 'var(--zh-color-text-muted)' }}>
+                              {label}
+                            </label>
+                            <textarea
+                              value={(editingDeficit[field] as string) ?? ''}
+                              onChange={e => setEditingDeficit({ ...editingDeficit, [field]: e.target.value })}
+                              rows={3}
+                              className="w-full px-3 py-2 rounded-lg text-sm focus:outline-none resize-none"
+                              style={{
+                                background: 'var(--zh-color-bg-secondary)',
+                                border: '1px solid var(--zh-color-border)',
+                                color: 'var(--zh-color-text)',
+                              }}
+                            />
+                          </div>
+                        ))}
+                      </div>
+
+                      {/* Aktions-Buttons */}
+                      <div
+                        className="flex justify-end gap-3 pt-4"
+                        style={{ borderTop: '1px solid var(--zh-color-border)' }}
+                      >
+                        <button
+                          onClick={() => { setIsEditingDeficit(false); setEditingDeficit({}) }}
+                          className="px-5 py-2.5 text-sm font-bold rounded-lg transition-colors"
+                          style={{
+                            background: 'var(--zh-color-bg-secondary)',
+                            border: '1px solid var(--zh-color-border)',
+                            color: 'var(--zh-color-text)',
+                          }}
+                        >
+                          Abbrechen
+                        </button>
+                        <button
+                          onClick={handleSaveDeficit}
+                          disabled={!editingDeficit.title?.trim()}
+                          className="px-6 py-2.5 text-sm font-bold rounded-lg flex items-center gap-2 text-white transition-colors disabled:opacity-40"
+                          style={{ background: 'var(--zh-dunkelblau)' }}
+                        >
+                          <Save size={15} /> Defizit speichern
+                        </button>
+                      </div>
+                    </motion.div>
                   )}
                 </div>
               </div>

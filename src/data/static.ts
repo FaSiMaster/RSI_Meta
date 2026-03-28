@@ -77,13 +77,64 @@ export const DEFICITS: Deficit[] = [
   },
 ]
 
+// ── Custom Defizite (Admin-Editor → localStorage) ──
+const DEFICITS_CUSTOM_KEY = 'rsi-deficits-custom'
+
+function getCustomDeficits(): Deficit[] {
+  try {
+    const raw = localStorage.getItem(DEFICITS_CUSTOM_KEY)
+    return raw ? (JSON.parse(raw) as Deficit[]) : []
+  } catch {
+    return []
+  }
+}
+
+/** Gibt statische + custom Defizite für eine Szene zurück (custom überschreiben statische per ID) */
+export function getDeficitsForScene(sceneId: string): Deficit[] {
+  const custom = getCustomDeficits()
+  const staticForScene = DEFICITS.filter(d => d.sceneId === sceneId)
+
+  const result = staticForScene.map(d => {
+    const override = custom.find(c => c.id === d.id)
+    return override ?? d
+  })
+
+  const staticIds = new Set(staticForScene.map(d => d.id))
+  const newCustom = custom.filter(c => c.sceneId === sceneId && !staticIds.has(c.id))
+
+  return [...result, ...newCustom]
+}
+
+/** Defizit speichern (neu oder überschreiben) */
+export function persistDeficit(deficit: Deficit): void {
+  try {
+    const existing = getCustomDeficits()
+    const idx = existing.findIndex(d => d.id === deficit.id)
+    if (idx >= 0) existing[idx] = deficit
+    else existing.push(deficit)
+    localStorage.setItem(DEFICITS_CUSTOM_KEY, JSON.stringify(existing))
+  } catch {
+    // localStorage nicht verfügbar
+  }
+}
+
+/** Defizit löschen (nur aus Custom-Liste) */
+export function deleteDeficit(id: string): void {
+  try {
+    const filtered = getCustomDeficits().filter(d => d.id !== id)
+    localStorage.setItem(DEFICITS_CUSTOM_KEY, JSON.stringify(filtered))
+  } catch {
+    // localStorage nicht verfügbar
+  }
+}
+
+// ── Rankings ──
 const RANKINGS_KEY = 'rsi-rankings'
 
 export function getRankings(): RankingEntry[] {
   try {
     const raw = localStorage.getItem(RANKINGS_KEY)
     const data: RankingEntry[] = raw ? JSON.parse(raw) : []
-    // Startwerte falls leer
     if (data.length === 0) {
       return [
         { username: 'Max Muster', score: 1250, timestamp: new Date().toISOString() },
@@ -108,6 +159,6 @@ export function saveRanking(username: string, score: number): void {
     ].sort((a, b) => b.score - a.score)
     localStorage.setItem(RANKINGS_KEY, JSON.stringify(updated))
   } catch {
-    // localStorage nicht verfügbar – ignorieren
+    // localStorage nicht verfügbar
   }
 }

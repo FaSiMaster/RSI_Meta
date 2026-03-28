@@ -6,7 +6,7 @@ import { Canvas } from '@react-three/fiber'
 import { OrbitControls, useTexture, Html } from '@react-three/drei'
 import { XR, createXRStore, XROrigin } from '@react-three/xr'
 import * as THREE from 'three'
-import { CheckCircle2, ShieldAlert } from 'lucide-react'
+import { CheckCircle2, ShieldAlert, Info } from 'lucide-react'
 import { cn } from '../lib/utils'
 import type { Deficit } from '../types'
 
@@ -19,7 +19,7 @@ function SceneSphere({ url }: { url: string }) {
   texture.mapping = THREE.EquirectangularReflectionMapping
 
   return (
-    <mesh>
+    <mesh scale={[-1, 1, 1]}>
       <sphereGeometry args={[500, 60, 40]} />
       <meshBasicMaterial map={texture} side={THREE.BackSide} />
     </mesh>
@@ -139,14 +139,38 @@ export default function SceneViewer({
       {/* VR-Button (oben links) */}
       <button
         onClick={() => void xrStore.enterVR()}
-        className="absolute top-4 left-4 z-20 bg-[#003C71] hover:bg-[#005299] text-white text-xs font-bold uppercase tracking-widest px-4 py-2 rounded-full border border-white/20 transition-colors"
+        className="absolute top-4 left-4 z-20 text-white text-xs font-bold uppercase tracking-widest px-4 py-2 rounded-full border border-white/20 transition-colors"
+        style={{ background: 'var(--zh-dunkelblau)' }}
       >
         VR starten
       </button>
 
-      {/* Fortschrittsanzeige */}
+      {/* Fortschrittsanzeige (Mitte oben) */}
       <div className="absolute top-4 left-1/2 -translate-x-1/2 z-10 bg-black/60 backdrop-blur-md px-4 py-2 rounded-full border border-white/20 text-white text-xs font-bold">
         {foundIds.length} / {deficits.length} Defizite gefunden
+      </div>
+
+      {/* Info-Panel (unten links) – aus Google_Voarbeiten übernommen */}
+      <div className="absolute bottom-4 left-4 z-10 bg-black/70 backdrop-blur-md p-4 rounded-xl border border-white/20 text-white max-w-xs">
+        <h3 className="text-sm font-bold flex items-center gap-2 mb-1">
+          <Info size={15} style={{ color: 'var(--zh-cyan)' }} />
+          RSI Training
+        </h3>
+        <p className="text-xs opacity-70 leading-relaxed mb-3">
+          Bewege dich in der Szene und identifiziere die Sicherheitsdefizite.
+        </p>
+        <div className="h-1.5 w-full rounded-full overflow-hidden" style={{ background: 'rgba(255,255,255,0.1)' }}>
+          <div
+            className="h-full rounded-full transition-all duration-500"
+            style={{
+              width: deficits.length > 0 ? `${(foundIds.length / deficits.length) * 100}%` : '0%',
+              background: 'var(--zh-gruen)',
+            }}
+          />
+        </div>
+        <p className="text-[10px] mt-1 text-right opacity-50">
+          {foundIds.length} von {deficits.length} gefunden
+        </p>
       </div>
     </div>
   )
