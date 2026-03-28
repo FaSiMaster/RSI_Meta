@@ -2,11 +2,11 @@
 // TBA-Fachkurs FK RSI, V 16.09.2020 — normativ, keine Abweichungen
 // Schritte 1,3,7: User-Input | 2,4,6,8: Automatisch | 5,9: Ergebnis
 
-import { useState } from 'react'
+import React, { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { ArrowLeft, Info, CheckCircle2, XCircle, AlertTriangle } from 'lucide-react'
 import { motion, AnimatePresence } from 'motion/react'
-import { ml, type AppDeficit, type AppScene, saveRankingEntry } from '../data/appData'
+import { ml, type AppDeficit, type AppScene } from '../data/appData'
 import {
   WICHTIGKEIT_TABLE, NORMHIERARCHIE, ABWEICHUNG_KATEGORIEN, NACA_TABLE,
   calcRelevanzSD, calcUnfallrisiko, nacaToSchwere,
@@ -90,9 +90,8 @@ function Matrix({ type, highlightRow, highlightCol, showIntersection }: MatrixPr
         ))}
         {/* Daten-Zeilen */}
         {rows.map((row, ri) => (
-          <>
+          <React.Fragment key={`row-${row}`}>
             <div
-              key={`lbl-${row}`}
               style={{
                 display: 'flex',
                 alignItems: 'center',
@@ -138,7 +137,7 @@ function Matrix({ type, highlightRow, highlightCol, showIntersection }: MatrixPr
                 </div>
               )
             })}
-          </>
+          </React.Fragment>
         ))}
       </div>
     </div>
@@ -227,7 +226,7 @@ interface Props {
   onBack: () => void
 }
 
-export default function ScoringFlow({ deficit, scene, username, onComplete, onBack }: Props) {
+export default function ScoringFlow({ deficit, scene, onComplete, onBack }: Omit<Props, 'username'> & { username?: string }) {
   const { i18n } = useTranslation()
   const lang = i18n.language
 
@@ -273,12 +272,6 @@ export default function ScoringFlow({ deficit, scene, username, onComplete, onBa
 
   function handleSave() {
     const pts = calcScore()
-    saveRankingEntry({
-      username,
-      score: pts,
-      scenesCount: 1,
-      timestamp: new Date().toISOString(),
-    })
     onComplete(pts)
   }
 

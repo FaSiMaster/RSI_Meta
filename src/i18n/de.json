@@ -170,5 +170,30 @@
     "name": "Name",
     "score": "Score",
     "scenes": "Szenen"
+  },
+  "szene": {
+    "beenden": "Szene beenden",
+    "weiter_suchen": "Weiter suchen",
+    "abschluss_titel": "Szene abgeschlossen",
+    "naechste": "Nächste Szene",
+    "hint_warnung": "Hotspots einblenden? Pro Defizit werden 50% der Punkte abgezogen.",
+    "hint_bestaetigen": "Trotzdem einblenden",
+    "gefunden_von": "{{found}} von {{total}} gefunden",
+    "pflicht_fehlt": "Pflicht-Defizit nicht gefunden",
+    "booster_gefunden": "Booster gefunden",
+    "kein_treffer": "Kein Sicherheitsdefizit an dieser Stelle.",
+    "bereits_gefunden": "Dieses Defizit hast du bereits gefunden.",
+    "kategorie_falsch": "Gefunden – aber falsche Kategorie. −10% Abzug.",
+    "kategorie_richtig": "Richtige Kategorie!"
+  },
+  "kategorie": {
+    "frage": "Was hast du identifiziert?",
+    "verkehrsfuehrung": "Verkehrsführung",
+    "sicht": "Sicht",
+    "ausruestung": "Ausrüstung",
+    "zustand": "Zustand Verkehrsfläche",
+    "strassenrand": "Strassenrand",
+    "verkehrsablauf": "Verkehrsablauf",
+    "baustelle": "Baustelle"
   }
 }

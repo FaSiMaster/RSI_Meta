@@ -308,6 +308,58 @@ export default function AdminDashboard({ onBack: _onBack }: Props) {
                 style={{ width: '100%', padding: '8px 12px', borderRadius: '6px', border: '1px solid var(--zh-color-border)', background: 'var(--zh-color-bg-secondary)', color: 'var(--zh-color-text)', fontSize: '13px', fontFamily: 'var(--zh-font)' }} />
             </Section>
 
+            {/* Position + Toleranz */}
+            <Section label="360°-Position (theta 0–360° / phi 0–180°)">
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
+                {(['theta','phi'] as const).map(axis => (
+                  <div key={axis}>
+                    <div style={{ fontSize: '10px', fontWeight: 700, color: 'var(--zh-color-text-disabled)', marginBottom: '4px', textTransform: 'uppercase', letterSpacing: '0.1em' }}>{axis}</div>
+                    <input
+                      type="number" min={0} max={axis === 'theta' ? 360 : 180} step={1}
+                      value={editing.position?.[axis] ?? ''}
+                      onChange={e => {
+                        const val = parseFloat(e.target.value)
+                        setEditing(prev => prev ? {
+                          ...prev,
+                          position: { theta: prev.position?.theta ?? 0, phi: prev.position?.phi ?? 90, [axis]: isNaN(val) ? 0 : val },
+                        } : prev)
+                      }}
+                      style={{ width: '100%', padding: '8px 12px', borderRadius: '6px', border: '1px solid var(--zh-color-border)', background: 'var(--zh-color-bg-secondary)', color: 'var(--zh-color-text)', fontSize: '13px', fontFamily: 'var(--zh-font)' }}
+                    />
+                  </div>
+                ))}
+              </div>
+              <div style={{ marginTop: '10px' }}>
+                <div style={{ fontSize: '10px', fontWeight: 700, color: 'var(--zh-color-text-disabled)', marginBottom: '4px', textTransform: 'uppercase', letterSpacing: '0.1em' }}>
+                  Toleranz: {editing.tolerance ?? 15}°
+                </div>
+                <input
+                  type="range" min={5} max={30} step={1}
+                  value={editing.tolerance ?? 15}
+                  onChange={e => setEditing(prev => prev ? { ...prev, tolerance: parseInt(e.target.value) } : prev)}
+                  style={{ width: '100%' }}
+                />
+              </div>
+            </Section>
+
+            {/* Kategorie */}
+            <Section label="Kategorie">
+              <select
+                value={editing.kategorie ?? ''}
+                onChange={e => setEditing(prev => prev ? { ...prev, kategorie: e.target.value as AppDeficit['kategorie'] || undefined } : prev)}
+                style={{ width: '100%', padding: '8px 12px', borderRadius: '6px', border: '1px solid var(--zh-color-border)', background: 'var(--zh-color-bg-secondary)', color: 'var(--zh-color-text)', fontSize: '13px', fontFamily: 'var(--zh-font)' }}
+              >
+                <option value="">— keine —</option>
+                <option value="verkehrsfuehrung">Verkehrsführung</option>
+                <option value="sicht">Sicht</option>
+                <option value="ausruestung">Ausrüstung</option>
+                <option value="zustand">Zustand Verkehrsfläche</option>
+                <option value="strassenrand">Strassenrand</option>
+                <option value="verkehrsablauf">Verkehrsablauf</option>
+                <option value="baustelle">Baustelle</option>
+              </select>
+            </Section>
+
             {/* Footer */}
             <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px', marginTop: '24px' }}>
               <button onClick={() => setModalOpen(false)} style={{ padding: '9px 18px', borderRadius: 'var(--zh-radius-btn)', border: '1px solid var(--zh-color-border)', background: 'transparent', color: 'var(--zh-color-text-muted)', fontSize: '13px', fontWeight: 600, cursor: 'pointer' }}>Abbrechen</button>

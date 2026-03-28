@@ -170,5 +170,30 @@
     "name": "Nom",
     "score": "Score",
     "scenes": "Scènes"
+  },
+  "szene": {
+    "beenden": "Terminer la scène",
+    "weiter_suchen": "Continuer la recherche",
+    "abschluss_titel": "Scène terminée",
+    "naechste": "Scène suivante",
+    "hint_warnung": "Afficher les points chauds? 50% des points seront déduits par déficit.",
+    "hint_bestaetigen": "Afficher quand même",
+    "gefunden_von": "{{found}} sur {{total}} trouvés",
+    "pflicht_fehlt": "Déficit obligatoire non trouvé",
+    "booster_gefunden": "Booster trouvé",
+    "kein_treffer": "Aucun déficit de sécurité à cet endroit.",
+    "bereits_gefunden": "Vous avez déjà trouvé ce déficit.",
+    "kategorie_falsch": "Trouvé – mais mauvaise catégorie. −10% déduits.",
+    "kategorie_richtig": "Bonne catégorie!"
+  },
+  "kategorie": {
+    "frage": "Qu'avez-vous identifié?",
+    "verkehrsfuehrung": "Guidage du trafic",
+    "sicht": "Visibilité",
+    "ausruestung": "Équipement",
+    "zustand": "État de la surface",
+    "strassenrand": "Bord de route",
+    "verkehrsablauf": "Déroulement du trafic",
+    "baustelle": "Chantier"
   }
 }

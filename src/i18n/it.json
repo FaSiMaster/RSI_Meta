@@ -170,5 +170,30 @@
     "name": "Nome",
     "score": "Punteggio",
     "scenes": "Scene"
+  },
+  "szene": {
+    "beenden": "Termina scena",
+    "weiter_suchen": "Continua la ricerca",
+    "abschluss_titel": "Scena completata",
+    "naechste": "Scena successiva",
+    "hint_warnung": "Mostrare gli hotspot? Per ogni deficit trovato verrà dedotto il 50% dei punti.",
+    "hint_bestaetigen": "Mostra comunque",
+    "gefunden_von": "{{found}} di {{total}} trovati",
+    "pflicht_fehlt": "Deficit obbligatorio non trovato",
+    "booster_gefunden": "Booster trovato",
+    "kein_treffer": "Nessun deficit di sicurezza in questo punto.",
+    "bereits_gefunden": "Hai già trovato questo deficit.",
+    "kategorie_falsch": "Trovato – ma categoria errata. −10% dedotti.",
+    "kategorie_richtig": "Categoria corretta!"
+  },
+  "kategorie": {
+    "frage": "Cosa hai identificato?",
+    "verkehrsfuehrung": "Guida del traffico",
+    "sicht": "Visibilità",
+    "ausruestung": "Attrezzatura",
+    "zustand": "Stato della superficie",
+    "strassenrand": "Bordo stradale",
+    "verkehrsablauf": "Flusso del traffico",
+    "baustelle": "Cantiere"
   }
 }

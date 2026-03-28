@@ -170,5 +170,30 @@
     "name": "Name",
     "score": "Score",
     "scenes": "Scenes"
+  },
+  "szene": {
+    "beenden": "End scene",
+    "weiter_suchen": "Keep searching",
+    "abschluss_titel": "Scene completed",
+    "naechste": "Next scene",
+    "hint_warnung": "Show hotspots? 50% of points will be deducted per deficit found.",
+    "hint_bestaetigen": "Show anyway",
+    "gefunden_von": "{{found}} of {{total}} found",
+    "pflicht_fehlt": "Mandatory deficit not found",
+    "booster_gefunden": "Booster found",
+    "kein_treffer": "No safety deficit at this location.",
+    "bereits_gefunden": "You have already found this deficit.",
+    "kategorie_falsch": "Found – but wrong category. −10% deducted.",
+    "kategorie_richtig": "Correct category!"
+  },
+  "kategorie": {
+    "frage": "What did you identify?",
+    "verkehrsfuehrung": "Traffic guidance",
+    "sicht": "Visibility",
+    "ausruestung": "Equipment",
+    "zustand": "Surface condition",
+    "strassenrand": "Roadside",
+    "verkehrsablauf": "Traffic flow",
+    "baustelle": "Construction site"
   }
 }

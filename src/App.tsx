@@ -1,32 +1,46 @@
-// RSI VR Tool – App-Orchestrator Phase 2
-// Views: landing | topics | scenes | scoring | admin | ranking
+// RSI VR Tool – App-Orchestrator Phase 2+
+// Views: landing | topics | scenes | viewer | scoring | szenenabschluss | admin | ranking
 // FaSi Kanton Zürich · ZH Corporate Design
 
 import { useState, useEffect } from 'react'
 import { AnimatePresence, motion } from 'motion/react'
-import { getSession, saveSession, getDeficits, saveRankingEntry } from './data/appData'
-import type { AppTopic, AppScene, AppDeficit } from './data/appData'
+import {
+  getSession, saveSession, getDeficits, getAllScenes, saveRankingEntry,
+} from './data/appData'
+import type { AppTopic, AppScene, AppDeficit, FoundDeficit } from './data/appData'
 
-import LandingPage from './components/LandingPage'
-import Navbar from './components/Navbar'
-import TopicDashboard from './components/TopicDashboard'
-import SceneList from './components/SceneList'
-import ScoringFlow from './components/ScoringFlow'
-import AdminDashboard from './components/AdminDashboard'
-import RankingView from './components/RankingView'
+import LandingPage     from './components/LandingPage'
+import Navbar          from './components/Navbar'
+import TopicDashboard  from './components/TopicDashboard'
+import SceneList       from './components/SceneList'
+import SceneViewer     from './components/SceneViewer'
+import type { DeficitConfirmedPayload } from './components/SceneViewer'
+import ScoringFlow     from './components/ScoringFlow'
+import SzenenAbschluss from './components/SzenenAbschluss'
+import AdminDashboard  from './components/AdminDashboard'
+import RankingView     from './components/RankingView'
 
-type View = 'landing' | 'topics' | 'scenes' | 'scoring' | 'admin' | 'ranking'
+type View = 'landing' | 'topics' | 'scenes' | 'viewer' | 'scoring' | 'szenenabschluss' | 'admin' | 'ranking'
 
 export default function App() {
-  const [view, setView] = useState<View>('landing')
+  const [view, setView]     = useState<View>('landing')
   const [username, setUsername] = useState('')
-  const [score, setScore] = useState(0)
-  const [theme, setTheme] = useState<'light' | 'dark'>('light')
+  const [score, setScore]   = useState(0)
+  const [theme, setTheme]   = useState<'light' | 'dark'>('light')
 
   const [currentTopic, setCurrentTopic] = useState<AppTopic | null>(null)
   const [currentScene, setCurrentScene] = useState<AppScene | null>(null)
   const [sceneDeficits, setSceneDeficits] = useState<AppDeficit[]>([])
-  const [deficitIndex, setDeficitIndex] = useState(0)
+
+  // ── Viewer-Zustand ──────────────────────────────────────────────────────────
+  const [foundDeficits,  setFoundDeficits]  = useState<FoundDeficit[]>([])
+  const [hintActive,     setHintActive]     = useState(false)
+  const [sceneScore,     setSceneScore]     = useState(0)
+
+  // Pending-Daten waehrend ScoringFlow
+  const [scoringDeficit,        setScoringDeficit]        = useState<AppDeficit | null>(null)
+  const [pendingKatRichtig,     setPendingKatRichtig]     = useState(true)
+  const [pendingHintPenalty,    setPendingHintPenalty]    = useState(false)
 
   // Session + Theme beim Start laden
   useEffect(() => {
@@ -61,47 +75,92 @@ export default function App() {
     setView('scenes')
   }
 
+  // Szene starten → Viewer oeffnen
   function handleSelectScene(scene: AppScene) {
     const defs = getDeficits(scene.id)
     if (defs.length === 0) return
     setCurrentScene(scene)
     setSceneDeficits(defs)
-    setDeficitIndex(0)
+    setFoundDeficits([])
+    setHintActive(false)
+    setSceneScore(0)
+    setScoringDeficit(null)
+    setView('viewer')
+  }
+
+  // ── Defizit im Viewer bestaetigt → ScoringFlow starten ────────────────────
+  function handleDeficitConfirmed(payload: DeficitConfirmedPayload) {
+    setScoringDeficit(payload.deficit)
+    setPendingKatRichtig(payload.kategorieRichtig)
+    setPendingHintPenalty(payload.hintPenalty)
     setView('scoring')
   }
 
-  // Nach jedem Defizit: naechstes laden oder abschliessen
-  function handleDeficitComplete(earned: number) {
-    const newScore = score + earned
-    setScore(newScore)
+  // ── ScoringFlow abgeschlossen ──────────────────────────────────────────────
+  function handleScoringComplete(rawPts: number) {
+    if (!scoringDeficit) return
+
+    // Strafen anwenden
+    const multiplier = (pendingKatRichtig ? 1 : 0.9) * (pendingHintPenalty ? 0.5 : 1)
+    const finalPts   = Math.round(rawPts * multiplier)
+
+    const entry: FoundDeficit = {
+      deficitId:        scoringDeficit.id,
+      kategorieRichtig: pendingKatRichtig,
+      pointsEarned:     finalPts,
+      hintPenalty:      pendingHintPenalty,
+    }
+
+    const updatedFound = [...foundDeficits, entry]
+    const updatedSceneScore = sceneScore + finalPts
+    const newTotalScore = score + finalPts
+
+    setFoundDeficits(updatedFound)
+    setSceneScore(updatedSceneScore)
+    setScore(newTotalScore)
 
     const session = getSession()
-    session.score = newScore
+    session.score = newTotalScore
     saveSession(session)
 
-    const nextIdx = deficitIndex + 1
-    if (nextIdx < sceneDeficits.length) {
-      // Naechstes Defizit derselben Szene
-      setDeficitIndex(nextIdx)
+    setScoringDeficit(null)
+    setView('viewer')
+  }
+
+  // ── Szene beenden (manuell oder alle gefunden) ─────────────────────────────
+  function handleBeenden() {
+    if (!currentScene) return
+
+    const session = getSession()
+    if (!session.completedScenes.includes(currentScene.id)) {
+      session.completedScenes.push(currentScene.id)
+      saveSession(session)
+    }
+    saveRankingEntry({
+      username,
+      score,
+      scenesCount: session.completedScenes.length,
+      timestamp: new Date().toISOString(),
+    })
+
+    setView('szenenabschluss')
+  }
+
+  // ── Hint aktivieren ────────────────────────────────────────────────────────
+  function handleHintActivate() {
+    setHintActive(true)
+  }
+
+  // ── Naechste Szene (gleiche Topic) ─────────────────────────────────────────
+  function handleNextScene() {
+    if (!currentScene || !currentTopic) { setView('scenes'); return }
+    const allScenes = getAllScenes().filter(s => s.topicId === currentTopic.id && s.isActive)
+    const idx = allScenes.findIndex(s => s.id === currentScene.id)
+    const next = allScenes[idx + 1]
+    if (next) {
+      handleSelectScene(next)
     } else {
-      // Szene abgeschlossen
-      if (currentScene) {
-        const updatedSession = getSession()
-        if (!updatedSession.completedScenes.includes(currentScene.id)) {
-          updatedSession.completedScenes.push(currentScene.id)
-          saveSession(updatedSession)
-        }
-        saveRankingEntry({
-          username,
-          score: newScore,
-          scenesCount: updatedSession.completedScenes.length,
-          timestamp: new Date().toISOString(),
-        })
-      }
-      setCurrentScene(null)
-      setSceneDeficits([])
-      setDeficitIndex(0)
-      setView('topics')
+      setView('scenes')
     }
   }
 
@@ -113,7 +172,13 @@ export default function App() {
     setView(v)
   }
 
-  const currentDeficit: AppDeficit | null = sceneDeficits[deficitIndex] ?? null
+  // Naechste Szene vorhanden?
+  const nextSceneExists = (() => {
+    if (!currentScene || !currentTopic) return false
+    const all = getAllScenes().filter(s => s.topicId === currentTopic.id && s.isActive)
+    const idx = all.findIndex(s => s.id === currentScene.id)
+    return idx >= 0 && idx < all.length - 1
+  })()
 
   return (
     <div
@@ -125,7 +190,7 @@ export default function App() {
         fontFamily: 'var(--zh-font)',
       }}
     >
-      {view !== 'landing' && (
+      {view !== 'landing' && view !== 'viewer' && (
         <Navbar
           view={view}
           username={username}
@@ -138,6 +203,7 @@ export default function App() {
 
       <div className="flex-1 flex flex-col overflow-auto">
         <AnimatePresence mode="wait">
+
           {view === 'landing' && (
             <motion.div key="landing" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.2 }} className="flex-1">
               <LandingPage onStart={handleLogin} onAdmin={() => setView('admin')} />
@@ -156,14 +222,43 @@ export default function App() {
             </motion.div>
           )}
 
-          {view === 'scoring' && currentScene && currentDeficit && (
-            <motion.div key={`scoring-${currentDeficit.id}`} initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.2 }} className="flex-1 flex flex-col" style={{ overflow: 'hidden' }}>
+          {view === 'viewer' && currentScene && (
+            <motion.div key="viewer" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.15 }} className="flex-1 flex flex-col" style={{ overflow: 'hidden' }}>
+              <SceneViewer
+                scene={currentScene}
+                deficits={sceneDeficits}
+                foundDeficits={foundDeficits}
+                hintActive={hintActive}
+                onDeficitConfirmed={handleDeficitConfirmed}
+                onHintActivate={handleHintActivate}
+                onBeenden={handleBeenden}
+              />
+            </motion.div>
+          )}
+
+          {view === 'scoring' && currentScene && scoringDeficit && (
+            <motion.div key={`scoring-${scoringDeficit.id}`} initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.2 }} className="flex-1 flex flex-col" style={{ overflow: 'hidden' }}>
               <ScoringFlow
-                deficit={currentDeficit}
+                deficit={scoringDeficit}
                 scene={currentScene}
                 username={username}
-                onComplete={handleDeficitComplete}
-                onBack={() => setView('scenes')}
+                onComplete={handleScoringComplete}
+                onBack={() => setView('viewer')}
+              />
+            </motion.div>
+          )}
+
+          {view === 'szenenabschluss' && currentScene && (
+            <motion.div key="szenenabschluss" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} transition={{ duration: 0.2 }} className="flex-1 flex flex-col">
+              <SzenenAbschluss
+                scene={currentScene}
+                deficits={sceneDeficits}
+                foundDeficits={foundDeficits}
+                sceneScore={sceneScore}
+                totalScore={score}
+                onToTopics={() => { setCurrentScene(null); setView('topics') }}
+                onToRanking={() => setView('ranking')}
+                onNextScene={nextSceneExists ? handleNextScene : null}
               />
             </motion.div>
           )}
@@ -179,6 +274,7 @@ export default function App() {
               <RankingView username={username} onBack={() => setView('topics')} />
             </motion.div>
           )}
+
         </AnimatePresence>
       </div>
     </div>
