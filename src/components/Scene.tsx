@@ -1,31 +1,34 @@
 import { XROrigin } from '@react-three/xr'
-import { Room } from './Room'
+import { StreetScene } from './StreetScene'
 
 export function Scene() {
   return (
     <>
-      {/* Spieler-Startposition: Mitte des Raums, Augenhöhe 1.6 m */}
-      <XROrigin position={[0, 0, 0]} />
+      {/* Spieler-Startposition: Strassenniveau, Fahrbahn Mitte */}
+      <XROrigin position={[0, 0, 3]} />
 
-      {/* Beleuchtung */}
-      <ambientLight intensity={0.55} color="#F0F4FF" />
+      {/* Nebel fuer Tiefenwirkung (Farbe = Himmelfarbe) */}
+      <fog attach="fog" args={['#6BA3C8', 40, 130]} />
+
+      {/* ── Beleuchtung (Tageslicht) ── */}
+      <ambientLight intensity={1.0} color="#FFF8F0" />
       <directionalLight
-        position={[4, 6, 4]}
-        intensity={1.4}
+        position={[15, 30, 10]}
+        intensity={2.2}
         castShadow
         shadow-mapSize-width={2048}
         shadow-mapSize-height={2048}
         shadow-camera-near={0.1}
-        shadow-camera-far={50}
-        shadow-camera-left={-8}
-        shadow-camera-right={8}
-        shadow-camera-top={8}
-        shadow-camera-bottom={-8}
+        shadow-camera-far={100}
+        shadow-camera-left={-20}
+        shadow-camera-right={20}
+        shadow-camera-top={20}
+        shadow-camera-bottom={-20}
       />
-      {/* Füll-Licht von links (weichere Schatten) */}
-      <pointLight position={[-4, 2.5, -3]} intensity={0.35} color="#FFF5E0" />
+      {/* Fuell-Licht (Himmelsreflex von unten) */}
+      <hemisphereLight args={['#87CEEB', '#4A7A3A', 0.4]} />
 
-      <Room />
+      <StreetScene />
     </>
   )
 }
