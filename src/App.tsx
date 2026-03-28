@@ -4,7 +4,7 @@
 
 import { useState, useEffect } from 'react'
 import { AnimatePresence, motion } from 'motion/react'
-import { getSession, saveSession, getDeficits } from './data/appData'
+import { getSession, saveSession, getDeficits, saveRankingEntry } from './data/appData'
 import type { AppTopic, AppScene, AppDeficit } from './data/appData'
 
 import LandingPage from './components/LandingPage'
@@ -25,18 +25,19 @@ export default function App() {
 
   const [currentTopic, setCurrentTopic] = useState<AppTopic | null>(null)
   const [currentScene, setCurrentScene] = useState<AppScene | null>(null)
-  const [currentDeficit, setCurrentDeficit] = useState<AppDeficit | null>(null)
+  const [sceneDeficits, setSceneDeficits] = useState<AppDeficit[]>([])
+  const [deficitIndex, setDeficitIndex] = useState(0)
 
-  // Theme + Session beim Start laden
+  // Session + Theme beim Start laden
   useEffect(() => {
     const session = getSession()
     if (session.username) {
       setUsername(session.username)
-      setScore(session.totalScore)
+      setScore(session.score)
     }
-    const savedTheme = (localStorage.getItem('rsi-theme') as 'light' | 'dark') ?? 'light'
-    setTheme(savedTheme)
-    document.documentElement.setAttribute('data-theme', savedTheme)
+    const saved = (localStorage.getItem('rsi-theme') as 'light' | 'dark') ?? 'light'
+    setTheme(saved)
+    document.documentElement.setAttribute('data-theme', saved)
   }, [])
 
   function handleToggleTheme() {
@@ -47,16 +48,12 @@ export default function App() {
   }
 
   function handleLogin(name: string) {
-    setUsername(name)
     const session = getSession()
     session.username = name
     saveSession(session)
-    setScore(session.totalScore)
+    setUsername(name)
+    setScore(session.score)
     setView('topics')
-  }
-
-  function handleAdminLogin() {
-    setView('admin')
   }
 
   function handleSelectTopic(topic: AppTopic) {
@@ -65,25 +62,47 @@ export default function App() {
   }
 
   function handleSelectScene(scene: AppScene) {
-    const deficits = getDeficits(scene.id)
-    if (deficits.length === 0) return
+    const defs = getDeficits(scene.id)
+    if (defs.length === 0) return
     setCurrentScene(scene)
-    setCurrentDeficit(deficits[0])
+    setSceneDeficits(defs)
+    setDeficitIndex(0)
     setView('scoring')
   }
 
-  function handleScoringComplete(earnedScore: number) {
-    const newScore = score + earnedScore
+  // Nach jedem Defizit: naechstes laden oder abschliessen
+  function handleDeficitComplete(earned: number) {
+    const newScore = score + earned
     setScore(newScore)
+
     const session = getSession()
-    session.totalScore = newScore
-    if (currentScene && !session.scenesCompleted.includes(currentScene.id)) {
-      session.scenesCompleted.push(currentScene.id)
-    }
+    session.score = newScore
     saveSession(session)
-    setCurrentScene(null)
-    setCurrentDeficit(null)
-    setView('topics')
+
+    const nextIdx = deficitIndex + 1
+    if (nextIdx < sceneDeficits.length) {
+      // Naechstes Defizit derselben Szene
+      setDeficitIndex(nextIdx)
+    } else {
+      // Szene abgeschlossen
+      if (currentScene) {
+        const updatedSession = getSession()
+        if (!updatedSession.completedScenes.includes(currentScene.id)) {
+          updatedSession.completedScenes.push(currentScene.id)
+          saveSession(updatedSession)
+        }
+        saveRankingEntry({
+          username,
+          score: newScore,
+          scenesCount: updatedSession.completedScenes.length,
+          timestamp: new Date().toISOString(),
+        })
+      }
+      setCurrentScene(null)
+      setSceneDeficits([])
+      setDeficitIndex(0)
+      setView('topics')
+    }
   }
 
   function handleNavigate(v: View) {
@@ -94,7 +113,7 @@ export default function App() {
     setView(v)
   }
 
-  const showNavbar = view !== 'landing'
+  const currentDeficit: AppDeficit | null = sceneDeficits[deficitIndex] ?? null
 
   return (
     <div
@@ -106,8 +125,7 @@ export default function App() {
         fontFamily: 'var(--zh-font)',
       }}
     >
-      {/* Navbar – immer ausser auf Landing */}
-      {showNavbar && (
+      {view !== 'landing' && (
         <Navbar
           view={view}
           username={username}
@@ -118,102 +136,47 @@ export default function App() {
         />
       )}
 
-      {/* Content */}
       <div className="flex-1 flex flex-col overflow-auto">
         <AnimatePresence mode="wait">
           {view === 'landing' && (
-            <motion.div
-              key="landing"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.2 }}
-              className="flex-1"
-            >
-              <LandingPage onStart={handleLogin} onAdmin={handleAdminLogin} />
+            <motion.div key="landing" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.2 }} className="flex-1">
+              <LandingPage onStart={handleLogin} onAdmin={() => setView('admin')} />
             </motion.div>
           )}
 
           {view === 'topics' && (
-            <motion.div
-              key="topics"
-              initial={{ opacity: 0, y: 12 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -12 }}
-              transition={{ duration: 0.2 }}
-              className="flex-1 flex flex-col"
-            >
-              <TopicDashboard
-                username={username}
-                score={score}
-                onSelectTopic={handleSelectTopic}
-              />
+            <motion.div key="topics" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} transition={{ duration: 0.2 }} className="flex-1 flex flex-col">
+              <TopicDashboard username={username} score={score} onSelectTopic={handleSelectTopic} />
             </motion.div>
           )}
 
           {view === 'scenes' && currentTopic && (
-            <motion.div
-              key="scenes"
-              initial={{ opacity: 0, y: 12 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -12 }}
-              transition={{ duration: 0.2 }}
-              className="flex-1 flex flex-col"
-            >
-              <SceneList
-                topic={currentTopic}
-                onBack={() => setView('topics')}
-                onSelectScene={handleSelectScene}
-              />
+            <motion.div key="scenes" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} transition={{ duration: 0.2 }} className="flex-1 flex flex-col">
+              <SceneList topic={currentTopic} onBack={() => setView('topics')} onSelectScene={handleSelectScene} />
             </motion.div>
           )}
 
           {view === 'scoring' && currentScene && currentDeficit && (
-            <motion.div
-              key="scoring"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.2 }}
-              className="flex-1 flex flex-col"
-            >
+            <motion.div key={`scoring-${currentDeficit.id}`} initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.2 }} className="flex-1 flex flex-col" style={{ overflow: 'hidden' }}>
               <ScoringFlow
                 deficit={currentDeficit}
                 scene={currentScene}
                 username={username}
-                onComplete={handleScoringComplete}
+                onComplete={handleDeficitComplete}
                 onBack={() => setView('scenes')}
               />
             </motion.div>
           )}
 
           {view === 'admin' && (
-            <motion.div
-              key="admin"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.2 }}
-              className="flex-1 flex"
-              style={{ overflow: 'hidden' }}
-            >
+            <motion.div key="admin" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.2 }} className="flex-1 flex" style={{ overflow: 'hidden' }}>
               <AdminDashboard onBack={() => setView('topics')} />
             </motion.div>
           )}
 
           {view === 'ranking' && (
-            <motion.div
-              key="ranking"
-              initial={{ opacity: 0, y: 12 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -12 }}
-              transition={{ duration: 0.2 }}
-              className="flex-1 flex flex-col"
-            >
-              <RankingView
-                username={username}
-                onBack={() => setView('topics')}
-              />
+            <motion.div key="ranking" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} transition={{ duration: 0.2 }} className="flex-1 flex flex-col">
+              <RankingView username={username} onBack={() => setView('topics')} />
             </motion.div>
           )}
         </AnimatePresence>

@@ -1,5 +1,5 @@
-// Szenen-Liste eines Topics
-// Zurück-Button, Szenen-Cards mit Starten-Button, Admin: + Neue Szene
+// SceneList – Szenen eines Topics als Cards
+// Zurück-Button, io/ao-Badge, Defizit-Count, "Starten"-Button
 
 import { useTranslation } from 'react-i18next'
 import { ArrowLeft, MapPin, Play, Plus } from 'lucide-react'
@@ -15,7 +15,7 @@ interface Props {
 }
 
 export default function SceneList({ topic, isAdmin, onBack, onSelectScene }: Props) {
-  const { t, i18n } = useTranslation()
+  const { i18n } = useTranslation()
   const lang = i18n.language
   const [scenes, setScenes] = useState<AppScene[]>([])
   const [deficitCounts, setDeficitCounts] = useState<Record<string, number>>({})
@@ -29,44 +29,28 @@ export default function SceneList({ topic, isAdmin, onBack, onSelectScene }: Pro
   }, [topic.id])
 
   return (
-    <div
-      className="max-w-5xl mx-auto w-full"
-      style={{ padding: 'var(--zh-padding-page)' }}
-    >
+    <div className="max-w-5xl mx-auto w-full" style={{ padding: 'var(--zh-padding-page)' }}>
       {/* Header */}
       <div className="mb-8">
         <button
           onClick={onBack}
-          className="flex items-center gap-2 mb-5 transition-colors"
-          style={{ fontSize: '14px', color: 'var(--zh-color-text-muted)', fontWeight: 500 }}
+          style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '14px', color: 'var(--zh-color-text-muted)', fontWeight: 500, marginBottom: '20px', background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}
         >
-          <ArrowLeft size={15} /> {t('scenes.back')}
+          <ArrowLeft size={15} /> Zurück
         </button>
 
         <div className="flex items-end justify-between">
           <div>
-            <h1
-              className="font-bold tracking-tight mb-1"
-              style={{ fontSize: '28px', fontWeight: 600, color: 'var(--zh-color-text)' }}
-            >
-              {ml(topic.name, lang)}
+            <h1 style={{ fontSize: '28px', fontWeight: 700, color: 'var(--zh-color-text)', marginBottom: '4px' }}>
+              {ml(topic.nameI18n, lang)}
             </h1>
             <p style={{ fontSize: '14px', color: 'var(--zh-color-text-muted)' }}>
-              {ml(topic.description, lang)}
+              {ml(topic.beschreibungI18n, lang)}
             </p>
           </div>
-
           {isAdmin && (
-            <button
-              className="flex items-center gap-2 font-bold text-white transition-colors"
-              style={{
-                padding: '8px 16px',
-                borderRadius: 'var(--zh-radius-btn)',
-                background: 'var(--zh-dunkelblau)',
-                fontSize: '13px',
-              }}
-            >
-              <Plus size={14} /> {t('scenes.addNew')}
+            <button style={{ display: 'flex', alignItems: 'center', gap: '6px', padding: '8px 16px', borderRadius: 'var(--zh-radius-btn)', background: 'var(--zh-dunkelblau)', color: 'white', fontWeight: 700, fontSize: '13px', border: 'none', cursor: 'pointer' }}>
+              <Plus size={14} /> Neue Szene
             </button>
           )}
         </div>
@@ -74,9 +58,7 @@ export default function SceneList({ topic, isAdmin, onBack, onSelectScene }: Pro
 
       {/* Szenen-Grid */}
       {scenes.length === 0 ? (
-        <p style={{ fontSize: '14px', color: 'var(--zh-color-text-disabled)', fontStyle: 'italic' }}>
-          {t('dashboard.noScenes')}
-        </p>
+        <p style={{ fontSize: '14px', color: 'var(--zh-color-text-disabled)', fontStyle: 'italic' }}>Noch keine Szenen fuer dieses Thema vorhanden.</p>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
           {scenes.map((scene, i) => {
@@ -88,66 +70,34 @@ export default function SceneList({ topic, isAdmin, onBack, onSelectScene }: Pro
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: i * 0.08 }}
                 className="overflow-hidden"
-                style={{
-                  borderRadius: 'var(--zh-radius-card)',
-                  border: '1px solid var(--zh-color-border)',
-                  background: 'var(--zh-color-surface)',
-                  boxShadow: 'var(--zh-shadow-sm)',
-                }}
+                style={{ borderRadius: 'var(--zh-radius-card)', border: '1px solid var(--zh-color-border)', background: 'var(--zh-color-surface)', boxShadow: 'var(--zh-shadow-sm)' }}
               >
                 {/* Bild-Platzhalter */}
-                <div
-                  className="relative h-40 flex items-end"
-                  style={{ background: 'var(--zh-color-bg-tertiary)' }}
-                >
+                <div className="relative h-36 flex items-end" style={{ background: 'var(--zh-color-bg-tertiary)' }}>
                   <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
                   <div className="relative flex items-center gap-2 p-4">
                     <MapPin size={13} style={{ color: 'var(--zh-color-accent)' }} />
-                    <span className="text-white font-bold text-xs uppercase tracking-wider">
-                      {t('dashboard.scenario')} {i + 1}
-                    </span>
-                    {/* io/ao Badge */}
-                    <span
-                      className="rounded font-bold uppercase"
-                      style={{
-                        padding: '2px 7px',
-                        fontSize: '9px',
-                        background: scene.locationType === 'io' ? 'rgba(0,158,224,0.8)' : 'rgba(26,127,31,0.8)',
-                        color: 'white',
-                        letterSpacing: '0.1em',
-                      }}
-                    >
-                      {scene.locationType}
+                    <span className="text-white font-bold text-xs uppercase tracking-wider">Szenario {i + 1}</span>
+                    <span style={{ padding: '2px 7px', borderRadius: '4px', fontSize: '9px', fontWeight: 700, background: scene.kontext === 'io' ? 'rgba(0,158,224,0.8)' : 'rgba(26,127,31,0.8)', color: 'white', textTransform: 'uppercase', letterSpacing: '0.1em' }}>
+                      {scene.kontext}
                     </span>
                   </div>
                 </div>
 
                 <div style={{ padding: '16px 20px' }}>
-                  <p
-                    className="mb-1 leading-snug"
-                    style={{ fontSize: '14px', color: 'var(--zh-color-text)', fontWeight: 500 }}
-                  >
-                    {ml(scene.description, lang)}
+                  <p style={{ fontSize: '14px', color: 'var(--zh-color-text)', fontWeight: 500, marginBottom: '4px', lineHeight: 1.4 }}>
+                    {ml(scene.nameI18n, lang)}
                   </p>
-                  <p
-                    className="mb-5"
-                    style={{ fontSize: '12px', color: 'var(--zh-color-text-muted)' }}
-                  >
-                    {count} {t('admin.deficits')}
+                  <p style={{ fontSize: '12px', color: 'var(--zh-color-text-muted)', marginBottom: '16px' }}>
+                    {count} Defizite
                   </p>
-
                   <button
                     onClick={() => onSelectScene(scene)}
                     disabled={count === 0}
                     className="w-full flex items-center justify-center gap-2 font-bold text-white transition-all hover:scale-[1.02] disabled:opacity-40 disabled:cursor-not-allowed"
-                    style={{
-                      padding: '10px',
-                      borderRadius: 'var(--zh-radius-btn)',
-                      background: 'var(--zh-dunkelblau)',
-                      fontSize: '14px',
-                    }}
+                    style={{ padding: '10px', borderRadius: 'var(--zh-radius-btn)', background: 'var(--zh-dunkelblau)', fontSize: '14px', border: 'none', cursor: count === 0 ? 'not-allowed' : 'pointer' }}
                   >
-                    <Play size={15} fill="white" /> {t('scenes.startBtn')}
+                    <Play size={15} fill="white" /> Training starten
                   </button>
                 </div>
               </motion.div>

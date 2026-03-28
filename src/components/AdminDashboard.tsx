@@ -1,44 +1,73 @@
-// Admin-Dashboard – Sidebar + Szenen-Chips + Defizit-Katalog
-// CRUD: Topics, Scenes, Deficits; Modal-Formular; W/A/N-Badges
+// AdminDashboard – Sidebar + Szenen-Chips + Defizit-Katalog mit CRUD
+// Formular: kriteriumId, kontext, correctAssessment (6 Felder), isPflicht, isBooster, normRefs
 
-import { useTranslation } from 'react-i18next'
 import { Plus, Pencil, Trash2, X, Save } from 'lucide-react'
 import { useEffect, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import {
   getTopics, getScenes, getDeficits, saveDeficit, deleteDeficit, ml,
   type AppTopic, type AppScene, type AppDeficit,
 } from '../data/appData'
-import type { RSIDimension, NACADimension } from '../types'
+import { WICHTIGKEIT_TABLE, KRITERIUM_LABELS, calcRelevanzSD, calcUnfallrisiko, nacaToSchwere } from '../data/scoringEngine'
+import type { RSIDimension, NACADimension, ResultDimension } from '../types'
+import type { NacaRaw } from '../data/scoringEngine'
 
-// Badge-Farben nach RSI-Klasse (W/A/N)
-function riskBadge(wichtigkeit: RSIDimension): { label: string; bg: string; color: string } {
-  if (wichtigkeit === 'gross') return { label: 'N', bg: '#D4005322', color: '#D40053' }
-  if (wichtigkeit === 'mittel') return { label: 'A', bg: '#B8730022', color: '#B87300' }
-  return { label: 'W', bg: '#1A7F1F22', color: '#1A7F1F' }
+// ── Badge-Farben ──
+function riskBg(w: RSIDimension): { bg: string; color: string; label: string } {
+  if (w === 'gross')  return { bg: '#D4005322', color: '#D40053', label: 'N' }
+  if (w === 'mittel') return { bg: '#B8730022', color: '#B87300', label: 'A' }
+  return { bg: '#1A7F1F22', color: '#1A7F1F', label: 'W' }
 }
 
-const emptyDeficit = (): Partial<AppDeficit> => ({
-  id: '',
-  sceneId: '',
-  position: [0, 0, 0],
-  tolerance: 3,
-  title: { de: '', fr: '', it: '', en: '' },
-  description: { de: '', fr: '', it: '', en: '' },
-  correctAssessment: { wichtigkeit: 'gross', abweichung: 'gross', unfallschwere: 'schwer' },
-  feedback: { de: '', fr: '', it: '', en: '' },
-  solution: { de: '', fr: '', it: '', en: '' },
-})
-
-interface Props {
-  onBack: () => void
+function emptyDeficit(sceneId: string, topicId: string): AppDeficit {
+  return {
+    id: `d-${Date.now()}`,
+    sceneId, topicId,
+    nameI18n:        { de: '', fr: '', it: '', en: '' },
+    beschreibungI18n:{ de: '', fr: '', it: '', en: '' },
+    kriteriumId: 'fussgaengerstreifen',
+    kontext: 'io',
+    correctAssessment: {
+      wichtigkeit: 'mittel', abweichung: 'mittel',
+      relevanzSD: 'mittel', naca: 2,
+      unfallschwere: 'mittel', unfallrisiko: 'mittel',
+    },
+    isPflicht: true, isBooster: false,
+    normRefs: ['SN 641 723'],
+  }
 }
 
-function mlField(obj: Record<string, string> | undefined, l: string): string {
-  return obj?.[l] ?? ''
+// Automatisch Relevanz und Unfallrisiko neu berechnen
+function recompute(d: AppDeficit): AppDeficit {
+  const rs = calcRelevanzSD(d.correctAssessment.wichtigkeit, d.correctAssessment.abweichung)
+  const us = nacaToSchwere(d.correctAssessment.naca)
+  const ur = calcUnfallrisiko(rs, us)
+  return {
+    ...d,
+    correctAssessment: {
+      ...d.correctAssessment,
+      relevanzSD: rs,
+      unfallschwere: us,
+      unfallrisiko: ur,
+    },
+  }
+}
+
+interface Props { onBack: () => void }
+
+// Einfaches Textfeld fuer mehrsprachige Felder
+function MLInput({ label, value, onChange }: { label: string; value: string; onChange: (v: string) => void }) {
+  return (
+    <div style={{ flex: 1 }}>
+      <div style={{ fontSize: '10px', fontWeight: 700, color: 'var(--zh-color-text-disabled)', marginBottom: '3px', textTransform: 'uppercase', letterSpacing: '0.1em' }}>{label}</div>
+      <input value={value} onChange={e => onChange(e.target.value)}
+        style={{ width: '100%', padding: '7px 10px', borderRadius: '6px', border: '1px solid var(--zh-color-border)', background: 'var(--zh-color-bg-secondary)', color: 'var(--zh-color-text)', fontSize: '13px', fontFamily: 'var(--zh-font)' }} />
+    </div>
+  )
 }
 
 export default function AdminDashboard({ onBack: _onBack }: Props) {
-  const { t, i18n } = useTranslation()
+  const { i18n } = useTranslation()
   const lang = i18n.language
 
   const [topics, setTopics] = useState<AppTopic[]>([])
@@ -47,8 +76,7 @@ export default function AdminDashboard({ onBack: _onBack }: Props) {
   const [selectedScene, setSelectedScene] = useState<AppScene | null>(null)
   const [deficits, setDeficits] = useState<AppDeficit[]>([])
   const [modalOpen, setModalOpen] = useState(false)
-  const [editing, setEditing] = useState<Partial<AppDeficit>>(emptyDeficit())
-  const [isNew, setIsNew] = useState(true)
+  const [editing, setEditing] = useState<AppDeficit | null>(null)
 
   useEffect(() => {
     const ts = getTopics()
@@ -69,279 +97,99 @@ export default function AdminDashboard({ onBack: _onBack }: Props) {
   }, [selectedScene])
 
   function openNew() {
-    const base = emptyDeficit()
-    base.sceneId = selectedScene?.id ?? ''
-    base.id = `d-${Date.now()}`
-    setEditing(base)
-    setIsNew(true)
+    if (!selectedScene || !selectedTopic) return
+    setEditing(emptyDeficit(selectedScene.id, selectedTopic.id))
     setModalOpen(true)
   }
-
-  function openEdit(d: AppDeficit) {
-    setEditing({ ...d })
-    setIsNew(false)
-    setModalOpen(true)
-  }
-
+  function openEdit(d: AppDeficit) { setEditing({ ...d }); setModalOpen(true) }
   function handleDelete(id: string) {
     deleteDeficit(id)
     setDeficits(prev => prev.filter(d => d.id !== id))
   }
-
   function handleSave() {
-    if (!editing.id || !editing.sceneId) return
-    const full = editing as AppDeficit
-    saveDeficit(full)
-    setDeficits(getDeficits(full.sceneId))
+    if (!editing) return
+    const computed = recompute(editing)
+    saveDeficit(computed)
+    setDeficits(getDeficits(computed.sceneId))
     setModalOpen(false)
   }
 
-  function setField<K extends keyof AppDeficit>(key: K, val: AppDeficit[K]) {
-    setEditing(prev => ({ ...prev, [key]: val }))
+  function setCA<K extends keyof AppDeficit['correctAssessment']>(k: K, v: AppDeficit['correctAssessment'][K]) {
+    if (!editing) return
+    setEditing(prev => prev ? { ...prev, correctAssessment: { ...prev.correctAssessment, [k]: v } } : prev)
   }
-
-  function setMultiLangField(key: 'title' | 'description' | 'feedback' | 'solution', l: string, val: string) {
-    setEditing(prev => {
-      const existing = (prev[key] ?? {}) as unknown as Record<string, string>
-      return { ...prev, [key]: { ...existing, [l]: val } }
-    })
+  function setML(field: 'nameI18n' | 'beschreibungI18n', l: string, v: string) {
+    if (!editing) return
+    setEditing(prev => prev ? { ...prev, [field]: { ...prev[field], [l]: v } } : prev)
   }
 
   return (
-    <div className="flex w-full h-full overflow-hidden" style={{ fontFamily: 'var(--zh-font)' }}>
-
-      {/* ── Sidebar – Themen ── */}
-      <aside
-        style={{
-          width: '200px',
-          minWidth: '200px',
-          borderRight: '1px solid var(--zh-color-border)',
-          background: 'var(--zh-color-bg-secondary)',
-          display: 'flex',
-          flexDirection: 'column',
-          padding: '16px 0',
-          overflowY: 'auto',
-        }}
-      >
-        <p
-          style={{
-            fontSize: '10px',
-            fontWeight: 700,
-            textTransform: 'uppercase',
-            letterSpacing: '0.14em',
-            color: 'var(--zh-color-text-disabled)',
-            padding: '0 16px 8px',
-          }}
-        >
-          {t('admin.topics')}
-        </p>
+    <div style={{ display: 'flex', width: '100%', height: '100%', overflow: 'hidden', fontFamily: 'var(--zh-font)' }}>
+      {/* Sidebar */}
+      <aside style={{ width: '200px', minWidth: '200px', borderRight: '1px solid var(--zh-color-border)', background: 'var(--zh-color-bg-secondary)', display: 'flex', flexDirection: 'column', padding: '16px 0', overflowY: 'auto' }}>
+        <p style={{ fontSize: '10px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.14em', color: 'var(--zh-color-text-disabled)', padding: '0 16px 8px' }}>Themenbereiche</p>
         {topics.map(tp => (
-          <button
-            key={tp.id}
-            onClick={() => setSelectedTopic(tp)}
-            style={{
-              textAlign: 'left',
-              padding: '10px 16px',
-              fontSize: '13px',
-              fontWeight: selectedTopic?.id === tp.id ? 700 : 500,
-              color: selectedTopic?.id === tp.id ? 'var(--zh-color-accent)' : 'var(--zh-color-text)',
-              borderLeft: selectedTopic?.id === tp.id ? '3px solid var(--zh-blau)' : '3px solid transparent',
-              background: selectedTopic?.id === tp.id ? 'rgba(0,118,189,0.07)' : 'transparent',
-            }}
-          >
-            {ml(tp.name, lang)}
+          <button key={tp.id} onClick={() => setSelectedTopic(tp)}
+            style={{ textAlign: 'left', padding: '10px 16px', fontSize: '13px', fontWeight: selectedTopic?.id === tp.id ? 700 : 500, color: selectedTopic?.id === tp.id ? 'var(--zh-color-accent)' : 'var(--zh-color-text)', borderLeft: selectedTopic?.id === tp.id ? '3px solid var(--zh-blau)' : '3px solid transparent', background: selectedTopic?.id === tp.id ? 'rgba(0,118,189,0.07)' : 'transparent', border: 'none', cursor: 'pointer' }}>
+            {ml(tp.nameI18n, lang)}
           </button>
         ))}
       </aside>
 
-      {/* ── Hauptbereich ── */}
-      <main className="flex-1 overflow-y-auto" style={{ padding: '24px 32px' }}>
-
+      {/* Hauptbereich */}
+      <main style={{ flex: 1, overflowY: 'auto', padding: '24px 32px' }}>
         {/* Szenen-Chips */}
-        <div className="mb-6">
-          <p
-            style={{
-              fontSize: '10px',
-              fontWeight: 700,
-              textTransform: 'uppercase',
-              letterSpacing: '0.14em',
-              color: 'var(--zh-color-text-disabled)',
-              marginBottom: '10px',
-            }}
-          >
-            {t('admin.scenes')}
-          </p>
-          <div className="flex flex-wrap gap-2">
+        <div style={{ marginBottom: '24px' }}>
+          <p style={{ fontSize: '10px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.14em', color: 'var(--zh-color-text-disabled)', marginBottom: '10px' }}>Szenen</p>
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
             {scenes.map(sc => (
-              <button
-                key={sc.id}
-                onClick={() => setSelectedScene(sc)}
-                style={{
-                  padding: '6px 14px',
-                  borderRadius: '20px',
-                  fontSize: '12px',
-                  fontWeight: 600,
-                  border: '1px solid var(--zh-color-border)',
-                  background: selectedScene?.id === sc.id ? 'var(--zh-dunkelblau)' : 'var(--zh-color-surface)',
-                  color: selectedScene?.id === sc.id ? 'white' : 'var(--zh-color-text)',
-                  transition: 'all 0.15s',
-                }}
-              >
-                {ml(sc.description, lang).slice(0, 32)}{ml(sc.description, lang).length > 32 ? '…' : ''}
-                <span
-                  style={{
-                    marginLeft: '6px',
-                    fontSize: '9px',
-                    fontWeight: 700,
-                    textTransform: 'uppercase',
-                    opacity: 0.7,
-                    letterSpacing: '0.08em',
-                  }}
-                >
-                  {sc.locationType}
-                </span>
+              <button key={sc.id} onClick={() => setSelectedScene(sc)}
+                style={{ padding: '6px 14px', borderRadius: '20px', fontSize: '12px', fontWeight: 600, border: '1px solid var(--zh-color-border)', background: selectedScene?.id === sc.id ? 'var(--zh-dunkelblau)' : 'var(--zh-color-surface)', color: selectedScene?.id === sc.id ? 'white' : 'var(--zh-color-text)', cursor: 'pointer' }}>
+                {ml(sc.nameI18n, lang).slice(0, 30)}{ml(sc.nameI18n, lang).length > 30 ? '…' : ''}
+                <span style={{ marginLeft: '5px', fontSize: '9px', fontWeight: 700, textTransform: 'uppercase', opacity: 0.7 }}>{sc.kontext}</span>
               </button>
             ))}
-            {scenes.length === 0 && (
-              <p style={{ fontSize: '13px', color: 'var(--zh-color-text-disabled)', fontStyle: 'italic' }}>
-                {t('admin.selectTopic')}
-              </p>
-            )}
           </div>
         </div>
 
-        {/* Defizit-Katalog Header */}
-        <div className="flex items-center justify-between mb-4">
+        {/* Defizit-Header */}
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '16px' }}>
           <div>
-            <h2 style={{ fontSize: '16px', fontWeight: 700, color: 'var(--zh-color-text)' }}>
-              {t('admin.deficits')}
-            </h2>
-            {selectedScene && (
-              <p style={{ fontSize: '12px', color: 'var(--zh-color-text-muted)', marginTop: '2px' }}>
-                {t('admin.deficitsCount', { count: deficits.length })}
-              </p>
-            )}
+            <h2 style={{ fontSize: '16px', fontWeight: 700, color: 'var(--zh-color-text)' }}>Defizite</h2>
+            {selectedScene && <p style={{ fontSize: '12px', color: 'var(--zh-color-text-muted)', marginTop: '2px' }}>{deficits.length} in dieser Szene</p>}
           </div>
-          <button
-            onClick={openNew}
-            disabled={!selectedScene}
-            className="flex items-center gap-2 font-bold text-white"
-            style={{
-              padding: '8px 16px',
-              borderRadius: 'var(--zh-radius-btn)',
-              background: selectedScene ? 'var(--zh-dunkelblau)' : 'var(--zh-color-bg-tertiary)',
-              color: selectedScene ? 'white' : 'var(--zh-color-text-disabled)',
-              fontSize: '13px',
-              cursor: selectedScene ? 'pointer' : 'not-allowed',
-            }}
-          >
-            <Plus size={14} /> {t('admin.newDeficit')}
+          <button onClick={openNew} disabled={!selectedScene}
+            style={{ display: 'flex', alignItems: 'center', gap: '6px', padding: '8px 16px', borderRadius: 'var(--zh-radius-btn)', background: selectedScene ? 'var(--zh-dunkelblau)' : 'var(--zh-color-bg-tertiary)', color: selectedScene ? 'white' : 'var(--zh-color-text-disabled)', fontWeight: 700, fontSize: '13px', border: 'none', cursor: selectedScene ? 'pointer' : 'not-allowed' }}>
+            <Plus size={14} /> Neues Defizit
           </button>
         </div>
 
         {/* Defizit-Rows */}
         {!selectedScene ? (
-          <p style={{ fontSize: '13px', color: 'var(--zh-color-text-disabled)', fontStyle: 'italic' }}>
-            {t('admin.selectScene')}
-          </p>
+          <p style={{ fontSize: '13px', color: 'var(--zh-color-text-disabled)', fontStyle: 'italic' }}>Szene auswählen</p>
         ) : deficits.length === 0 ? (
-          <p style={{ fontSize: '13px', color: 'var(--zh-color-text-disabled)', fontStyle: 'italic' }}>
-            {t('admin.noDeficits')}
-          </p>
+          <p style={{ fontSize: '13px', color: 'var(--zh-color-text-disabled)', fontStyle: 'italic' }}>Keine Defizite definiert.</p>
         ) : (
-          <div
-            style={{
-              borderRadius: 'var(--zh-radius-card)',
-              border: '1px solid var(--zh-color-border)',
-              overflow: 'hidden',
-              background: 'var(--zh-color-surface)',
-            }}
-          >
+          <div style={{ borderRadius: 'var(--zh-radius-card)', border: '1px solid var(--zh-color-border)', overflow: 'hidden', background: 'var(--zh-color-surface)' }}>
             {deficits.map((d, i) => {
-              const badge = riskBadge(d.correctAssessment.wichtigkeit)
+              const badge = riskBg(d.correctAssessment.wichtigkeit)
               return (
-                <div
-                  key={d.id}
-                  className="flex items-start justify-between gap-4"
-                  style={{
-                    padding: '14px 20px',
-                    borderBottom: i < deficits.length - 1 ? '1px solid var(--zh-color-border)' : 'none',
-                  }}
-                >
-                  <div className="flex items-start gap-3 min-w-0">
-                    {/* W/A/N Badge */}
-                    <span
-                      style={{
-                        marginTop: '2px',
-                        padding: '2px 8px',
-                        borderRadius: '4px',
-                        fontSize: '10px',
-                        fontWeight: 800,
-                        background: badge.bg,
-                        color: badge.color,
-                        letterSpacing: '0.08em',
-                        flexShrink: 0,
-                      }}
-                    >
-                      {badge.label}
-                    </span>
-                    <div className="min-w-0">
-                      <p
-                        style={{
-                          fontSize: '14px',
-                          fontWeight: 600,
-                          color: 'var(--zh-color-text)',
-                          marginBottom: '2px',
-                          whiteSpace: 'nowrap',
-                          overflow: 'hidden',
-                          textOverflow: 'ellipsis',
-                        }}
-                      >
-                        {ml(d.title, lang)}
-                      </p>
-                      <p
-                        style={{
-                          fontSize: '12px',
-                          color: 'var(--zh-color-text-muted)',
-                          overflow: 'hidden',
-                          textOverflow: 'ellipsis',
-                          whiteSpace: 'nowrap',
-                        }}
-                      >
-                        {ml(d.description, lang)}
-                      </p>
+                <div key={d.id} style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '14px 20px', borderBottom: i < deficits.length - 1 ? '1px solid var(--zh-color-border)' : 'none', justifyContent: 'space-between' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '10px', minWidth: 0, flex: 1 }}>
+                    <span style={{ padding: '2px 8px', borderRadius: '4px', fontSize: '10px', fontWeight: 800, background: badge.bg, color: badge.color, letterSpacing: '0.08em', flexShrink: 0 }}>{badge.label}</span>
+                    {d.isPflicht && <span style={{ padding: '2px 7px', borderRadius: '4px', fontSize: '9px', fontWeight: 800, background: 'rgba(212,0,83,0.12)', color: '#D40053', textTransform: 'uppercase', letterSpacing: '0.08em', flexShrink: 0 }}>Pflicht</span>}
+                    {d.isBooster && <span style={{ padding: '2px 7px', borderRadius: '4px', fontSize: '9px', fontWeight: 800, background: 'rgba(184,115,0,0.12)', color: '#B87300', textTransform: 'uppercase', letterSpacing: '0.08em', flexShrink: 0 }}>Booster</span>}
+                    <div style={{ minWidth: 0 }}>
+                      <p style={{ fontSize: '14px', fontWeight: 600, color: 'var(--zh-color-text)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{ml(d.nameI18n, lang)}</p>
+                      <p style={{ fontSize: '12px', color: 'var(--zh-color-text-muted)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{ml(d.beschreibungI18n, lang)}</p>
                     </div>
                   </div>
-
-                  {/* Aktionen */}
-                  <div className="flex items-center gap-2 shrink-0">
-                    <button
-                      onClick={() => openEdit(d)}
-                      className="flex items-center gap-1"
-                      style={{
-                        padding: '5px 10px',
-                        borderRadius: 'var(--zh-radius-btn)',
-                        border: '1px solid var(--zh-color-border)',
-                        background: 'var(--zh-color-bg-secondary)',
-                        fontSize: '12px',
-                        color: 'var(--zh-color-text-muted)',
-                      }}
-                    >
-                      <Pencil size={11} /> {t('admin.editBtn')}
+                  <div style={{ display: 'flex', gap: '6px', flexShrink: 0 }}>
+                    <button onClick={() => openEdit(d)} style={{ display: 'flex', alignItems: 'center', gap: '4px', padding: '5px 10px', borderRadius: '6px', border: '1px solid var(--zh-color-border)', background: 'var(--zh-color-bg-secondary)', fontSize: '12px', color: 'var(--zh-color-text-muted)', cursor: 'pointer' }}>
+                      <Pencil size={11} /> Bearbeiten
                     </button>
-                    <button
-                      onClick={() => handleDelete(d.id)}
-                      className="flex items-center gap-1"
-                      style={{
-                        padding: '5px 10px',
-                        borderRadius: 'var(--zh-radius-btn)',
-                        border: '1px solid rgba(212,0,83,0.2)',
-                        background: 'rgba(212,0,83,0.06)',
-                        fontSize: '12px',
-                        color: 'var(--zh-rot)',
-                      }}
-                    >
-                      <Trash2 size={11} /> {t('admin.deleteBtn')}
+                    <button onClick={() => handleDelete(d.id)} style={{ display: 'flex', alignItems: 'center', gap: '4px', padding: '5px 10px', borderRadius: '6px', border: '1px solid rgba(212,0,83,0.2)', background: 'rgba(212,0,83,0.06)', fontSize: '12px', color: '#D40053', cursor: 'pointer' }}>
+                      <Trash2 size={11} /> Löschen
                     </button>
                   </div>
                 </div>
@@ -351,244 +199,155 @@ export default function AdminDashboard({ onBack: _onBack }: Props) {
         )}
       </main>
 
-      {/* ── Modal ── */}
-      {modalOpen && (
-        <div
-          className="fixed inset-0 z-50 flex items-center justify-center"
-          style={{ background: 'rgba(0,0,0,0.5)', backdropFilter: 'blur(4px)' }}
-          onClick={e => { if (e.target === e.currentTarget) setModalOpen(false) }}
-        >
-          <div
-            style={{
-              width: '640px',
-              maxHeight: '85vh',
-              overflowY: 'auto',
-              borderRadius: 'var(--zh-radius-card)',
-              border: '1px solid var(--zh-color-border)',
-              background: 'var(--zh-color-surface)',
-              padding: '28px 32px',
-              boxShadow: 'var(--zh-shadow-lg)',
-            }}
-          >
-            {/* Modal-Header */}
-            <div className="flex items-center justify-between mb-6">
+      {/* Modal */}
+      {modalOpen && editing && (
+        <div style={{ position: 'fixed', inset: 0, zIndex: 50, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'rgba(0,0,0,0.5)', backdropFilter: 'blur(4px)' }}
+          onClick={e => { if (e.target === e.currentTarget) setModalOpen(false) }}>
+          <div style={{ width: '680px', maxHeight: '88vh', overflowY: 'auto', borderRadius: 'var(--zh-radius-card)', border: '1px solid var(--zh-color-border)', background: 'var(--zh-color-surface)', padding: '28px 32px', boxShadow: 'var(--zh-shadow-lg)' }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '24px' }}>
               <h3 style={{ fontSize: '18px', fontWeight: 700, color: 'var(--zh-color-text)' }}>
-                {isNew ? t('admin.modalTitleNew') : t('admin.modalTitleEdit')}
+                {editing.id.startsWith('d-') ? 'Neues Defizit' : 'Defizit bearbeiten'}
               </h3>
-              <button
-                onClick={() => setModalOpen(false)}
-                style={{ color: 'var(--zh-color-text-muted)' }}
-              >
-                <X size={18} />
-              </button>
+              <button onClick={() => setModalOpen(false)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--zh-color-text-muted)' }}><X size={18} /></button>
             </div>
 
-            {/* Felder DE/FR/IT/EN */}
-            {(['de', 'fr', 'it', 'en'] as const).map(l => (
-              <div key={l} className="mb-5">
-                <p
-                  style={{
-                    fontSize: '10px',
-                    fontWeight: 700,
-                    textTransform: 'uppercase',
-                    letterSpacing: '0.14em',
-                    color: 'var(--zh-color-text-disabled)',
-                    marginBottom: '8px',
-                  }}
-                >
-                  {l.toUpperCase()}
-                </p>
-                <div className="flex flex-col gap-2">
-                  <input
-                    placeholder={t('admin.fieldTitle')}
-                    value={mlField(editing.title as unknown as Record<string, string>, l)}
-                    onChange={e => setMultiLangField('title', l, e.target.value)}
-                    style={{
-                      padding: '8px 12px',
-                      borderRadius: '6px',
-                      border: '1px solid var(--zh-color-border)',
-                      background: 'var(--zh-color-bg-secondary)',
-                      color: 'var(--zh-color-text)',
-                      fontSize: '13px',
-                    }}
-                  />
-                  <textarea
-                    placeholder={t('admin.fieldDesc')}
-                    rows={2}
-                    value={mlField(editing.description as unknown as Record<string, string>, l)}
-                    onChange={e => setMultiLangField('description', l, e.target.value)}
-                    style={{
-                      padding: '8px 12px',
-                      borderRadius: '6px',
-                      border: '1px solid var(--zh-color-border)',
-                      background: 'var(--zh-color-bg-secondary)',
-                      color: 'var(--zh-color-text)',
-                      fontSize: '13px',
-                      resize: 'vertical',
-                    }}
-                  />
-                  <textarea
-                    placeholder={t('admin.fieldFeedback')}
-                    rows={2}
-                    value={mlField(editing.feedback as unknown as Record<string, string>, l)}
-                    onChange={e => setMultiLangField('feedback', l, e.target.value)}
-                    style={{
-                      padding: '8px 12px',
-                      borderRadius: '6px',
-                      border: '1px solid var(--zh-color-border)',
-                      background: 'var(--zh-color-bg-secondary)',
-                      color: 'var(--zh-color-text)',
-                      fontSize: '13px',
-                      resize: 'vertical',
-                    }}
-                  />
-                  <textarea
-                    placeholder={t('admin.fieldSolution')}
-                    rows={2}
-                    value={mlField(editing.solution as unknown as Record<string, string>, l)}
-                    onChange={e => setMultiLangField('solution', l, e.target.value)}
-                    style={{
-                      padding: '8px 12px',
-                      borderRadius: '6px',
-                      border: '1px solid var(--zh-color-border)',
-                      background: 'var(--zh-color-bg-secondary)',
-                      color: 'var(--zh-color-text)',
-                      fontSize: '13px',
-                      resize: 'vertical',
-                    }}
-                  />
+            {/* Name + Beschreibung DE/FR/IT/EN */}
+            <Section label="Bezeichnung">
+              <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+                {(['de','fr','it','en'] as const).map(l => (
+                  <MLInput key={l} label={l.toUpperCase()} value={editing.nameI18n[l]} onChange={v => setML('nameI18n', l, v)} />
+                ))}
+              </div>
+            </Section>
+            <Section label="Beschreibung">
+              <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+                {(['de','fr','it','en'] as const).map(l => (
+                  <MLInput key={l} label={l.toUpperCase()} value={editing.beschreibungI18n[l]} onChange={v => setML('beschreibungI18n', l, v)} />
+                ))}
+              </div>
+            </Section>
+
+            {/* Kriterium + Kontext */}
+            <Section label="Kriterium & Kontext">
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr auto', gap: '12px' }}>
+                <div>
+                  <div style={{ fontSize: '11px', fontWeight: 700, color: 'var(--zh-color-text-disabled)', marginBottom: '4px', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Sicherheitskriterium</div>
+                  <select value={editing.kriteriumId} onChange={e => setEditing(prev => prev ? { ...prev, kriteriumId: e.target.value } : prev)}
+                    style={{ width: '100%', padding: '8px 10px', borderRadius: '6px', border: '1px solid var(--zh-color-border)', background: 'var(--zh-color-bg-secondary)', color: 'var(--zh-color-text)', fontSize: '13px', fontFamily: 'var(--zh-font)' }}>
+                    {Object.entries(KRITERIUM_LABELS).map(([k, v]) => (
+                      <option key={k} value={k}>{v}</option>
+                    ))}
+                  </select>
+                </div>
+                <div>
+                  <div style={{ fontSize: '11px', fontWeight: 700, color: 'var(--zh-color-text-disabled)', marginBottom: '4px', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Kontext</div>
+                  <div style={{ display: 'flex', gap: '6px' }}>
+                    {(['io','ao'] as const).map(k => (
+                      <button key={k} onClick={() => setEditing(prev => prev ? { ...prev, kontext: k } : prev)}
+                        style={{ padding: '8px 16px', borderRadius: '6px', border: editing.kontext === k ? '2px solid var(--zh-blau)' : '1px solid var(--zh-color-border)', background: editing.kontext === k ? 'rgba(0,118,189,0.08)' : 'var(--zh-color-surface)', color: editing.kontext === k ? 'var(--zh-blau)' : 'var(--zh-color-text-muted)', fontWeight: 700, fontSize: '13px', cursor: 'pointer' }}>
+                        {k === 'io' ? 'Innerorts' : 'Ausserorts'}
+                      </button>
+                    ))}
+                  </div>
                 </div>
               </div>
-            ))}
+              {/* Vorschau Wichtigkeit */}
+              {WICHTIGKEIT_TABLE[editing.kriteriumId] && (
+                <div style={{ marginTop: '8px', fontSize: '12px', color: 'var(--zh-color-text-muted)' }}>
+                  Wichtigkeit gemaess Tabelle: <strong style={{ color: 'var(--zh-blau)' }}>{WICHTIGKEIT_TABLE[editing.kriteriumId][editing.kontext] || '—'}</strong>
+                </div>
+              )}
+            </Section>
 
             {/* correctAssessment */}
-            <div className="mb-5">
-              <p
-                style={{
-                  fontSize: '10px',
-                  fontWeight: 700,
-                  textTransform: 'uppercase',
-                  letterSpacing: '0.14em',
-                  color: 'var(--zh-color-text-disabled)',
-                  marginBottom: '10px',
-                }}
-              >
-                RSI-Bewertung (Lösung)
-              </p>
-              <div className="grid grid-cols-3 gap-3">
-                {/* Wichtigkeit */}
-                <div>
-                  <label style={{ fontSize: '11px', color: 'var(--zh-color-text-muted)', display: 'block', marginBottom: '4px' }}>
-                    {t('assessment.wichtigkeit')}
-                  </label>
-                  <select
-                    value={editing.correctAssessment?.wichtigkeit ?? 'gross'}
-                    onChange={e => setField('correctAssessment', {
-                      ...(editing.correctAssessment ?? { wichtigkeit: 'gross', abweichung: 'gross', unfallschwere: 'schwer' }),
-                      wichtigkeit: e.target.value as RSIDimension,
-                    })}
-                    style={{
-                      width: '100%',
-                      padding: '7px 10px',
-                      borderRadius: '6px',
-                      border: '1px solid var(--zh-color-border)',
-                      background: 'var(--zh-color-bg-secondary)',
-                      color: 'var(--zh-color-text)',
-                      fontSize: '13px',
-                    }}
-                  >
-                    <option value="gross">{t('assessment.gross')}</option>
-                    <option value="mittel">{t('assessment.mittel')}</option>
-                    <option value="klein">{t('assessment.klein')}</option>
-                  </select>
-                </div>
-                {/* Abweichung */}
-                <div>
-                  <label style={{ fontSize: '11px', color: 'var(--zh-color-text-muted)', display: 'block', marginBottom: '4px' }}>
-                    {t('assessment.abweichung')}
-                  </label>
-                  <select
-                    value={editing.correctAssessment?.abweichung ?? 'gross'}
-                    onChange={e => setField('correctAssessment', {
-                      ...(editing.correctAssessment ?? { wichtigkeit: 'gross', abweichung: 'gross', unfallschwere: 'schwer' }),
-                      abweichung: e.target.value as RSIDimension,
-                    })}
-                    style={{
-                      width: '100%',
-                      padding: '7px 10px',
-                      borderRadius: '6px',
-                      border: '1px solid var(--zh-color-border)',
-                      background: 'var(--zh-color-bg-secondary)',
-                      color: 'var(--zh-color-text)',
-                      fontSize: '13px',
-                    }}
-                  >
-                    <option value="gross">{t('assessment.gross')}</option>
-                    <option value="mittel">{t('assessment.mittel')}</option>
-                    <option value="klein">{t('assessment.klein')}</option>
-                  </select>
-                </div>
-                {/* NACA */}
-                <div>
-                  <label style={{ fontSize: '11px', color: 'var(--zh-color-text-muted)', display: 'block', marginBottom: '4px' }}>
-                    NACA
-                  </label>
-                  <select
-                    value={editing.correctAssessment?.unfallschwere ?? 'schwer'}
-                    onChange={e => setField('correctAssessment', {
-                      ...(editing.correctAssessment ?? { wichtigkeit: 'gross', abweichung: 'gross', unfallschwere: 'schwer' }),
-                      unfallschwere: e.target.value as NACADimension,
-                    })}
-                    style={{
-                      width: '100%',
-                      padding: '7px 10px',
-                      borderRadius: '6px',
-                      border: '1px solid var(--zh-color-border)',
-                      background: 'var(--zh-color-bg-secondary)',
-                      color: 'var(--zh-color-text)',
-                      fontSize: '13px',
-                    }}
-                  >
-                    <option value="schwer">{t('assessment.schwer')}</option>
-                    <option value="mittel">{t('assessment.mittel')}</option>
-                    <option value="leicht">{t('assessment.leicht')}</option>
-                  </select>
-                </div>
+            <Section label="RSI-Bewertung (Lösung)">
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '12px' }}>
+                <SelectField label="Wichtigkeit" value={editing.correctAssessment.wichtigkeit}
+                  options={[['gross','Gross'],['mittel','Mittel'],['klein','Klein']]}
+                  onChange={v => setCA('wichtigkeit', v as RSIDimension)} />
+                <SelectField label="Abweichung" value={editing.correctAssessment.abweichung}
+                  options={[['gross','Gross'],['mittel','Mittel'],['klein','Klein']]}
+                  onChange={v => setCA('abweichung', v as RSIDimension)} />
+                <SelectField label="NACA (0–7)" value={String(editing.correctAssessment.naca)}
+                  options={['0','1','2','3','4','5','6','7'].map(n => [n, `NACA ${n}`])}
+                  onChange={v => setCA('naca', Number(v) as NacaRaw)} />
               </div>
-            </div>
+              {/* Auto-berechnete Felder */}
+              <div style={{ marginTop: '12px', padding: '10px 14px', borderRadius: '8px', background: 'var(--zh-color-bg-secondary)', display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '12px' }}>
+                {(() => {
+                  const rs = calcRelevanzSD(editing.correctAssessment.wichtigkeit, editing.correctAssessment.abweichung) as ResultDimension
+                  const us = nacaToSchwere(editing.correctAssessment.naca) as NACADimension
+                  const ur = calcUnfallrisiko(rs, us) as ResultDimension
+                  return (
+                    <>
+                      <AutoField label="Relevanz SD" value={rs} />
+                      <AutoField label="Unfallschwere" value={us} />
+                      <AutoField label="Unfallrisiko" value={ur} />
+                    </>
+                  )
+                })()}
+              </div>
+              <p style={{ fontSize: '11px', color: 'var(--zh-color-text-disabled)', marginTop: '4px' }}>Relevanz SD, Unfallschwere und Unfallrisiko werden automatisch berechnet.</p>
+            </Section>
 
-            {/* Modal-Footer */}
-            <div className="flex items-center justify-end gap-3 mt-6">
-              <button
-                onClick={() => setModalOpen(false)}
-                style={{
-                  padding: '9px 18px',
-                  borderRadius: 'var(--zh-radius-btn)',
-                  border: '1px solid var(--zh-color-border)',
-                  background: 'transparent',
-                  color: 'var(--zh-color-text-muted)',
-                  fontSize: '13px',
-                  fontWeight: 600,
-                }}
-              >
-                {t('admin.cancelBtn')}
-              </button>
-              <button
-                onClick={handleSave}
-                className="flex items-center gap-2 font-bold text-white"
-                style={{
-                  padding: '9px 18px',
-                  borderRadius: 'var(--zh-radius-btn)',
-                  background: 'var(--zh-dunkelblau)',
-                  fontSize: '13px',
-                }}
-              >
-                <Save size={14} /> {t('admin.saveBtn')}
+            {/* isPflicht / isBooster */}
+            <Section label="Eigenschaften">
+              <div style={{ display: 'flex', gap: '16px' }}>
+                {([['isPflicht','Pflicht-Defizit'],['isBooster','Booster']] as const).map(([field, lbl]) => (
+                  <label key={field} style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '14px', color: 'var(--zh-color-text)', cursor: 'pointer' }}>
+                    <input type="checkbox" checked={editing[field]} onChange={e => setEditing(prev => prev ? { ...prev, [field]: e.target.checked } : prev)} />
+                    {lbl}
+                  </label>
+                ))}
+              </div>
+            </Section>
+
+            {/* normRefs */}
+            <Section label="Normreferenzen (kommagetrennt)">
+              <input value={editing.normRefs.join(', ')} onChange={e => setEditing(prev => prev ? { ...prev, normRefs: e.target.value.split(',').map(s => s.trim()).filter(Boolean) } : prev)}
+                style={{ width: '100%', padding: '8px 12px', borderRadius: '6px', border: '1px solid var(--zh-color-border)', background: 'var(--zh-color-bg-secondary)', color: 'var(--zh-color-text)', fontSize: '13px', fontFamily: 'var(--zh-font)' }} />
+            </Section>
+
+            {/* Footer */}
+            <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px', marginTop: '24px' }}>
+              <button onClick={() => setModalOpen(false)} style={{ padding: '9px 18px', borderRadius: 'var(--zh-radius-btn)', border: '1px solid var(--zh-color-border)', background: 'transparent', color: 'var(--zh-color-text-muted)', fontSize: '13px', fontWeight: 600, cursor: 'pointer' }}>Abbrechen</button>
+              <button onClick={handleSave} style={{ display: 'flex', alignItems: 'center', gap: '6px', padding: '9px 18px', borderRadius: 'var(--zh-radius-btn)', background: 'var(--zh-dunkelblau)', color: 'white', fontWeight: 700, fontSize: '13px', border: 'none', cursor: 'pointer' }}>
+                <Save size={14} /> Speichern
               </button>
             </div>
           </div>
         </div>
       )}
+    </div>
+  )
+}
+
+function Section({ label, children }: { label: string; children: React.ReactNode }) {
+  return (
+    <div style={{ marginBottom: '20px' }}>
+      <p style={{ fontSize: '11px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.14em', color: 'var(--zh-color-text-disabled)', marginBottom: '8px' }}>{label}</p>
+      {children}
+    </div>
+  )
+}
+
+function SelectField({ label, value, options, onChange }: { label: string; value: string; options: [string,string][]; onChange: (v: string) => void }) {
+  return (
+    <div>
+      <div style={{ fontSize: '11px', fontWeight: 700, color: 'var(--zh-color-text-disabled)', marginBottom: '4px', textTransform: 'uppercase', letterSpacing: '0.1em' }}>{label}</div>
+      <select value={value} onChange={e => onChange(e.target.value)}
+        style={{ width: '100%', padding: '7px 10px', borderRadius: '6px', border: '1px solid var(--zh-color-border)', background: 'var(--zh-color-bg-secondary)', color: 'var(--zh-color-text)', fontSize: '13px', fontFamily: 'var(--zh-font)' }}>
+        {options.map(([v, l]) => <option key={v} value={v}>{l}</option>)}
+      </select>
+    </div>
+  )
+}
+
+function AutoField({ label, value }: { label: string; value: string }) {
+  return (
+    <div>
+      <div style={{ fontSize: '10px', fontWeight: 700, color: 'var(--zh-color-text-disabled)', marginBottom: '3px', textTransform: 'uppercase', letterSpacing: '0.1em' }}>{label}</div>
+      <div style={{ fontSize: '13px', fontWeight: 700, color: 'var(--zh-blau)' }}>{value}</div>
     </div>
   )
 }
