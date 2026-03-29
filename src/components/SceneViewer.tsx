@@ -172,7 +172,7 @@ function SceneContent({ scene, deficits, foundDeficits, hintActive, onSphereClic
   )
 }
 
-// ── Hint-Dialog ───────────────────────────────────────────────────────────────
+// ── Hinweis-Dialog ───────────────────────────────────────────────────────────
 interface HintDialogProps {
   hintCount:     number
   onBestaetigen: () => void
@@ -199,16 +199,16 @@ function HintDialog({ hintCount, onBestaetigen, onAbbrechen }: HintDialogProps) 
         <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '14px' }}>
           <Eye size={20} style={{ color: '#F0A500', flexShrink: 0 }} />
           <h3 style={{ fontSize: '17px', fontWeight: 700, color: 'white', margin: 0 }}>
-            Hint verwenden?
+            Hinweis verwenden?
           </h3>
         </div>
         <p style={{ fontSize: '13px', color: 'rgba(255,255,255,0.65)', lineHeight: 1.6, marginBottom: '8px' }}>
           Es werden <strong style={{ color: 'white' }}>{hintCount} Hotspot{hintCount !== 1 ? 's' : ''}</strong> im Bild
-          eingeblendet. Pro gefundenem Defizit mit aktivem Hint werden
+          eingeblendet. Pro gefundenem Sicherheitsdefizit mit aktivem Hinweis werden
           <strong style={{ color: '#F0A500' }}> 50% der Punkte abgezogen</strong>.
         </p>
         <p style={{ fontSize: '12px', color: 'rgba(255,255,255,0.40)', marginBottom: '20px' }}>
-          Der Hint bleibt fuer die gesamte Szene aktiv.
+          Der Hinweis bleibt für die gesamte Szene aktiv.
         </p>
         <div style={{ display: 'flex', gap: '10px' }}>
           <button
@@ -244,7 +244,7 @@ function AllFoundBanner({ onBeenden }: { onBeenden: () => void }) {
       boxShadow: '0 8px 32px rgba(0,0,0,0.5)',
     }}>
       <span style={{ fontSize: '14px', fontWeight: 700, color: 'white' }}>
-        Alle Defizite gefunden!
+        Alle Sicherheitsdefizite gefunden!
       </span>
       <button
         onClick={onBeenden}
@@ -443,17 +443,17 @@ export default function SceneViewer({
         </div>
       </div>
 
-      {/* Oben rechts: Hint + VR + Beenden */}
+      {/* Oben rechts: Hinweis + VR + Beenden */}
       <div style={{
         position: 'absolute', top: '16px', right: '16px',
         display: 'flex', flexDirection: 'column', gap: '8px',
         zIndex: 50,
       }}>
-        {/* Hint-Button */}
+        {/* Hinweis-Button */}
         {!hintActive && (
           <button
             onClick={() => setPhase('hintDialog')}
-            title="Hotspots einblenden (–50% Punkte)"
+            title="Hotspots einblenden (−50 % Punkte)"
             style={{
               display: 'flex', alignItems: 'center', gap: '7px',
               padding: '9px 14px',
@@ -467,7 +467,7 @@ export default function SceneViewer({
               backdropFilter: 'blur(10px)',
             }}
           >
-            <Eye size={14} /> Hint
+            <Eye size={14} /> Hinweis
           </button>
         )}
 
@@ -481,7 +481,7 @@ export default function SceneViewer({
             fontSize: '12px', fontWeight: 700,
             fontFamily: 'var(--zh-font)',
           }}>
-            <MapPin size={13} /> Hint aktiv
+            <MapPin size={13} /> Hinweis aktiv
           </div>
         )}
 

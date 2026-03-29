@@ -133,16 +133,22 @@
     "panorama_editor": "Ouvrir l'éditeur de localisation",
     "startblick": "Vue de départ",
     "startblick_setzen": "Définir la vue de départ",
-    "startblick_hinweis": "Cliquez dans l'image pour définir la vue de départ",
+    "startblick_hinweis": "Cliquer dans l'image pour définir la vue de départ.",
+    "startblick_gesetzt": "Vue de départ: θ={{theta}}°, φ={{phi}}°",
     "verortung": "Localisation dans l'image",
-    "verortung_punkt": "Poser un point",
+    "verortung_punkt": "Placer un point",
     "verortung_polygon": "Dessiner un polygone",
+    "verortung_groupe": "Former un groupe",
     "verortung_gruppe": "Former un groupe",
     "verortung_polygon_schliessen": "Fermer le polygone",
     "toleranz": "Tolérance",
+    "toleranzradius": "Rayon de tolérance",
+    "toleranzradius_wert": "{{wert}}°",
     "einblenden": "Afficher les localisations",
     "ausblenden": "Masquer les localisations",
-    "gruppe_name": "Nom du groupe (optionnel)",
+    "gespeichert": "Les localisations ont été enregistrées.",
+    "kein_defizit": "Veuillez d'abord saisir un déficit de sécurité dans le catalogue.",
+    "gruppe_name": "Désignation du groupe (facultatif)",
     "vorschaubild_1": "Image d'aperçu 1 (URL)",
     "vorschaubild_2": "Image d'aperçu 2 (URL)"
   },
@@ -226,8 +232,8 @@
     "leer": "Aucune entrée"
   },
   "szene": {
-    "laden": "Chargement de la scène...",
-    "kein_panorama": "Aucune image 360° disponible",
+    "laden": "Chargement du panorama...",
+    "kein_panorama": "Aucune image panoramique disponible.",
     "beenden": "Terminer la scène",
     "weiter_suchen": "Continuer la recherche",
     "abschluss_titel": "Scène terminée",
@@ -265,5 +271,21 @@
     "kurs_code": "Code de cours (optionnel)",
     "kurs_placeholder": "Ex. FK-RSI-123456",
     "kurs_ungueltig": "Code de cours introuvable"
+  },
+  "upload": {
+    "titel": "Charger le panorama",
+    "drag": "Déposez l'image panoramique ici",
+    "drag_sub": "Formats acceptés: JPG, PNG, WEBP (max. 20 Mo)",
+    "waehlen": "Sélectionner un fichier",
+    "url": "Entrer l'URL de l'image (facultatif)",
+    "url_laden": "Charger",
+    "verwenden": "Utiliser cette image",
+    "anderes": "Choisir une autre image",
+    "fehler_gross": "L'image est trop grande. Taille maximale: 20 Mo.",
+    "fehler_format": "Ce format de fichier n'est pas pris en charge. JPG, PNG et WEBP sont acceptés.",
+    "fehler_laden": "L'image n'a pas pu être chargée.",
+    "warnung_seitenverhaeltnis": "Remarque: Les images panoramiques ont généralement un rapport 2:1. Cette image s'en écarte.",
+    "abmessungen": "{{breite}} × {{hoehe}} pixels",
+    "laden": "Chargement de l'image..."
   }
 }

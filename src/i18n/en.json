@@ -133,15 +133,20 @@
     "panorama_editor": "Open location editor",
     "startblick": "Start view",
     "startblick_setzen": "Set start view",
-    "startblick_hinweis": "Click in the image to set the start view",
+    "startblick_hinweis": "Click in the image to set the start view.",
+    "startblick_gesetzt": "Start view: θ={{theta}}°, φ={{phi}}°",
     "verortung": "Location in image",
     "verortung_punkt": "Place point",
     "verortung_polygon": "Draw polygon",
     "verortung_gruppe": "Form a group",
     "verortung_polygon_schliessen": "Close polygon",
     "toleranz": "Tolerance",
+    "toleranzradius": "Tolerance radius",
+    "toleranzradius_wert": "{{wert}}°",
     "einblenden": "Show locations",
     "ausblenden": "Hide locations",
+    "gespeichert": "Locations have been saved.",
+    "kein_defizit": "Please first add a safety deficit to the catalogue.",
     "gruppe_name": "Group name (optional)",
     "vorschaubild_1": "Preview image 1 (URL)",
     "vorschaubild_2": "Preview image 2 (URL)"
@@ -226,8 +231,8 @@
     "leer": "No entries yet"
   },
   "szene": {
-    "laden": "Loading scene...",
-    "kein_panorama": "No 360° image available",
+    "laden": "Loading panorama...",
+    "kein_panorama": "No panoramic image available.",
     "beenden": "End scene",
     "weiter_suchen": "Keep searching",
     "abschluss_titel": "Scene completed",
@@ -265,5 +270,21 @@
     "kurs_code": "Course code (optional)",
     "kurs_placeholder": "E.g. FK-RSI-123456",
     "kurs_ungueltig": "Course code not found"
+  },
+  "upload": {
+    "titel": "Load panorama",
+    "drag": "Drag panoramic image here",
+    "drag_sub": "Supported formats: JPG, PNG, WEBP (max. 20 MB)",
+    "waehlen": "Select file",
+    "url": "Enter image URL (optional)",
+    "url_laden": "Load",
+    "verwenden": "Use this image",
+    "anderes": "Choose another image",
+    "fehler_gross": "The image is too large. Maximum file size: 20 MB.",
+    "fehler_format": "This file format is not supported. JPG, PNG and WEBP are accepted.",
+    "fehler_laden": "The image could not be loaded.",
+    "warnung_seitenverhaeltnis": "Note: Panoramic images usually have a 2:1 aspect ratio. This image deviates from that.",
+    "abmessungen": "{{breite}} × {{hoehe}} pixels",
+    "laden": "Loading image..."
   }
 }

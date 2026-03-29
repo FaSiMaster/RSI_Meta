@@ -133,16 +133,21 @@
     "panorama_editor": "Apri editor di localizzazione",
     "startblick": "Vista iniziale",
     "startblick_setzen": "Imposta vista iniziale",
-    "startblick_hinweis": "Clicca nell'immagine per impostare la vista iniziale",
+    "startblick_hinweis": "Cliccare nell'immagine per impostare la vista iniziale.",
+    "startblick_gesetzt": "Vista iniziale: θ={{theta}}°, φ={{phi}}°",
     "verortung": "Localizzazione nell'immagine",
     "verortung_punkt": "Posiziona punto",
     "verortung_polygon": "Disegna poligono",
     "verortung_gruppe": "Forma un gruppo",
     "verortung_polygon_schliessen": "Chiudi poligono",
     "toleranz": "Tolleranza",
+    "toleranzradius": "Raggio di tolleranza",
+    "toleranzradius_wert": "{{wert}}°",
     "einblenden": "Mostra localizzazioni",
     "ausblenden": "Nascondi localizzazioni",
-    "gruppe_name": "Nome gruppo (opzionale)",
+    "gespeichert": "Le localizzazioni sono state salvate.",
+    "kein_defizit": "Si prega di inserire prima un deficit di sicurezza nel catalogo.",
+    "gruppe_name": "Nome del gruppo (opzionale)",
     "vorschaubild_1": "Immagine anteprima 1 (URL)",
     "vorschaubild_2": "Immagine anteprima 2 (URL)"
   },
@@ -226,8 +231,8 @@
     "leer": "Nessuna voce"
   },
   "szene": {
-    "laden": "Caricamento scena...",
-    "kein_panorama": "Nessuna immagine 360° disponibile",
+    "laden": "Caricamento panorama...",
+    "kein_panorama": "Nessuna immagine panoramica disponibile.",
     "beenden": "Termina scena",
     "weiter_suchen": "Continua la ricerca",
     "abschluss_titel": "Scena completata",
@@ -265,5 +270,21 @@
     "kurs_code": "Codice corso (opzionale)",
     "kurs_placeholder": "Es. FK-RSI-123456",
     "kurs_ungueltig": "Codice corso non trovato"
+  },
+  "upload": {
+    "titel": "Carica panorama",
+    "drag": "Trascina qui l'immagine panoramica",
+    "drag_sub": "Formati accettati: JPG, PNG, WEBP (max. 20 MB)",
+    "waehlen": "Seleziona file",
+    "url": "Inserisci URL immagine (opzionale)",
+    "url_laden": "Carica",
+    "verwenden": "Usa questa immagine",
+    "anderes": "Scegli un'altra immagine",
+    "fehler_gross": "L'immagine è troppo grande. Dimensione massima: 20 MB.",
+    "fehler_format": "Questo formato non è supportato. Sono accettati JPG, PNG e WEBP.",
+    "fehler_laden": "Impossibile caricare l'immagine.",
+    "warnung_seitenverhaeltnis": "Nota: Le immagini panoramiche hanno di solito un rapporto 2:1. Questa immagine si discosta da tale proporzione.",
+    "abmessungen": "{{breite}} × {{hoehe}} pixel",
+    "laden": "Caricamento immagine..."
   }
 }

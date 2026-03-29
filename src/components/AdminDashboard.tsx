@@ -18,6 +18,7 @@ import { WICHTIGKEIT_TABLE, KRITERIUM_LABELS, calcRelevanzSD, calcUnfallrisiko, 
 import type { RSIDimension, NACADimension, ResultDimension } from '../types'
 import type { NacaRaw } from '../data/scoringEngine'
 import BildEditor from './admin/BildEditor'
+import BildUpload from './admin/BildUpload'
 
 // ── Badge-Farben ──
 function riskBg(w: RSIDimension): { bg: string; color: string; label: string } {
@@ -148,6 +149,11 @@ export default function AdminDashboard() {
   const [szeneModalOpen, setSzeneModalOpen] = useState(false)
   const [editingScene, setEditingScene] = useState<AppScene | null>(null)
 
+  // Panorama-Vorschau State (nach BildUpload)
+  const [panoramaVorschau, setPanoramaVorschau] = useState<{
+    url: string; breite: number; hoehe: number
+  } | null>(null)
+
   // BildEditor State
   const [bildEditorOpen, setBildEditorOpen] = useState(false)
   const [bildEditorDeficitId, setBildEditorDeficitId] = useState<string | undefined>()
@@ -216,6 +222,7 @@ export default function AdminDashboard() {
   function openNewScene() {
     if (!selectedTopic) return
     setEditingScene(emptyScene(selectedTopic.id))
+    setPanoramaVorschau(null)
     setSzeneModalOpen(true)
   }
   function handleSaveScene() {
@@ -451,7 +458,7 @@ export default function AdminDashboard() {
 
             {/* Defizit-Rows */}
             {!selectedScene ? (
-              <p style={{ fontSize: '13px', color: 'var(--zh-color-text-disabled)', fontStyle: 'italic' }}>Szene auswaehlen</p>
+              <p style={{ fontSize: '13px', color: 'var(--zh-color-text-disabled)', fontStyle: 'italic' }}>Szene auswählen</p>
             ) : deficits.length === 0 ? (
               <p style={{ fontSize: '13px', color: 'var(--zh-color-text-disabled)', fontStyle: 'italic' }}>{t('admin.noDeficits')}</p>
             ) : (
@@ -671,12 +678,12 @@ export default function AdminDashboard() {
               </div>
               {WICHTIGKEIT_TABLE[editingDef.kriteriumId] && (
                 <div style={{ marginTop: '8px', fontSize: '12px', color: 'var(--zh-color-text-muted)' }}>
-                  Wichtigkeit gemaess Tabelle: <strong style={{ color: 'var(--zh-blau)' }}>{WICHTIGKEIT_TABLE[editingDef.kriteriumId][editingDef.kontext] || '—'}</strong>
+                  Wichtigkeit gemäss Tabelle: <strong style={{ color: 'var(--zh-blau)' }}>{WICHTIGKEIT_TABLE[editingDef.kriteriumId][editingDef.kontext] || '—'}</strong>
                 </div>
               )}
             </Section>
 
-            <Section label="RSI-Bewertung (Loesung)">
+            <Section label="RSI-Bewertung (Lösung)">
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '12px' }}>
                 <SelectField label="Wichtigkeit" value={editingDef.correctAssessment.wichtigkeit}
                   options={[['gross','Gross'],['mittel','Mittel'],['klein','Klein']]}
@@ -707,7 +714,7 @@ export default function AdminDashboard() {
 
             <Section label="Eigenschaften">
               <div style={{ display: 'flex', gap: '16px' }}>
-                {([['isPflicht','Pflicht-Defizit'],['isBooster','Booster']] as const).map(([field, lbl]) => (
+                {([['isPflicht','Pflichtdefizit'],['isBooster','Booster']] as const).map(([field, lbl]) => (
                   <label key={field} style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '14px', color: 'var(--zh-color-text)', cursor: 'pointer' }}>
                     <input type="checkbox" checked={editingDef[field]} onChange={e => setEditingDef(prev => prev ? { ...prev, [field]: e.target.checked } : prev)} />
                     {lbl}
@@ -721,7 +728,7 @@ export default function AdminDashboard() {
                 style={{ width: '100%', padding: '8px 12px', borderRadius: '6px', border: '1px solid var(--zh-color-border)', background: 'var(--zh-color-bg-secondary)', color: 'var(--zh-color-text)', fontSize: '13px', fontFamily: 'var(--zh-font)', boxSizing: 'border-box' }} />
             </Section>
 
-            <Section label="360°-Position (theta 0–360° / phi 0–180°)">
+            <Section label="360°-Position (θ 0–360° / φ 0–180°)">
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
                 {(['theta','phi'] as const).map(axis => (
                   <div key={axis}>
@@ -741,7 +748,7 @@ export default function AdminDashboard() {
               </div>
               <div style={{ marginTop: '10px' }}>
                 <div style={{ fontSize: '10px', fontWeight: 700, color: 'var(--zh-color-text-disabled)', marginBottom: '4px', textTransform: 'uppercase', letterSpacing: '0.1em' }}>
-                  Toleranz: {editingDef.tolerance ?? 15}°
+                  Toleranzradius: {editingDef.tolerance ?? 15}°
                 </div>
                 <input type="range" min={5} max={30} step={1}
                   value={editingDef.tolerance ?? 15}
@@ -755,10 +762,10 @@ export default function AdminDashboard() {
                 onChange={e => setEditingDef(prev => prev ? { ...prev, kategorie: e.target.value as AppDeficit['kategorie'] || undefined } : prev)}
                 style={{ width: '100%', padding: '8px 12px', borderRadius: '6px', border: '1px solid var(--zh-color-border)', background: 'var(--zh-color-bg-secondary)', color: 'var(--zh-color-text)', fontSize: '13px', fontFamily: 'var(--zh-font)' }}>
                 <option value="">— keine —</option>
-                <option value="verkehrsfuehrung">Verkehrsfuehrung</option>
+                <option value="verkehrsfuehrung">Verkehrsführung</option>
                 <option value="sicht">Sicht</option>
-                <option value="ausruestung">Ausruestung</option>
-                <option value="zustand">Zustand Verkehrsflaeche</option>
+                <option value="ausruestung">Ausrüstung</option>
+                <option value="zustand">Zustand Verkehrsfläche</option>
                 <option value="strassenrand">Strassenrand</option>
                 <option value="verkehrsablauf">Verkehrsablauf</option>
                 <option value="baustelle">Baustelle</option>
@@ -795,7 +802,7 @@ export default function AdminDashboard() {
                 </div>
               ) : (
                 <p style={{ fontSize: '12px', color: 'var(--zh-color-text-disabled)', fontStyle: 'italic' }}>
-                  Zuerst Panorama-Bild fuer diese Szene setzen.
+                  Zuerst Panoramabild für diese Szene setzen.
                 </p>
               )}
             </Section>
@@ -872,19 +879,40 @@ export default function AdminDashboard() {
               </div>
             </Section>
 
-            {/* Panorama-URL (aktiv, Phase 3) */}
-            <Section label={t('admin.panorama_url')}>
-              <div style={{ display: 'flex', gap: '8px' }}>
-                <input
-                  value={editingScene.panoramaBildUrl ?? ''}
-                  onChange={e => setEditingScene(prev => prev ? { ...prev, panoramaBildUrl: e.target.value || null } : prev)}
-                  placeholder="https://example.com/panorama.jpg"
-                  style={{ flex: 1, padding: '7px 10px', borderRadius: '6px', border: '1px solid var(--zh-color-border)', background: 'var(--zh-color-bg-secondary)', color: 'var(--zh-color-text)', fontSize: '13px', fontFamily: 'var(--zh-font)' }}
-                />
-              </div>
+            {/* 360°-Panoramabild via BildUpload */}
+            <Section label="360°-Panoramabild">
+              <BildUpload
+                szeneId={editingScene.id}
+                aktuelleUrl={editingScene.panoramaBildUrl}
+                onBildGeladen={(url, breite, hoehe) => {
+                  setEditingScene(prev => prev ? { ...prev, panoramaBildUrl: url } : prev)
+                  setPanoramaVorschau({ url, breite, hoehe })
+                }}
+              />
+              {panoramaVorschau && (
+                <p style={{ fontSize: '11px', color: 'var(--zh-color-text-muted)', marginTop: '6px' }}>
+                  Geladen: {panoramaVorschau.breite.toLocaleString('de-CH')} × {panoramaVorschau.hoehe.toLocaleString('de-CH')} Pixel
+                </p>
+              )}
+              {editingScene.panoramaBildUrl && (
+                <button
+                  onClick={() => { handleSaveScene(); setBildEditorOpen(true) }}
+                  style={{
+                    marginTop: '8px',
+                    display: 'flex', alignItems: 'center', gap: '6px',
+                    padding: '8px 14px', borderRadius: '6px',
+                    background: 'rgba(0,118,189,0.1)', color: 'var(--zh-blau)',
+                    border: '1px solid rgba(0,118,189,0.3)',
+                    fontSize: '13px', fontWeight: 600, cursor: 'pointer',
+                    fontFamily: 'var(--zh-font)',
+                  }}
+                >
+                  Verortungs-Editor öffnen
+                </button>
+              )}
             </Section>
 
-            {/* Vorschaubilder (aktiv, Phase 3) */}
+            {/* Vorschaubilder */}
             <Section label={t('admin.vorschau_phase3')}>
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
                 {[0, 1].map(i => (
@@ -895,7 +923,7 @@ export default function AdminDashboard() {
                     <input
                       value={editingScene.vorschauBilder?.[i] ?? ''}
                       onChange={e => setVorschaubild(i, e.target.value)}
-                      placeholder="https://example.com/bild.jpg"
+                      placeholder="https://... oder leer lassen"
                       style={{ width: '100%', padding: '7px 10px', borderRadius: '6px', border: '1px solid var(--zh-color-border)', background: 'var(--zh-color-bg-secondary)', color: 'var(--zh-color-text)', fontSize: '13px', fontFamily: 'var(--zh-font)', boxSizing: 'border-box' }}
                     />
                   </div>
@@ -956,7 +984,7 @@ export default function AdminDashboard() {
                   value={editingThema.parentTopicId ?? ''}
                   onChange={e => setEditingThema(prev => prev ? { ...prev, parentTopicId: e.target.value || null } : prev)}
                   style={{ width: '100%', padding: '8px 10px', borderRadius: '6px', border: '1px solid var(--zh-color-border)', background: 'var(--zh-color-bg-secondary)', color: 'var(--zh-color-text)', fontSize: '13px', fontFamily: 'var(--zh-font)' }}>
-                  <option value="">— Bitte auswaehlen —</option>
+                  <option value="">— Bitte auswählen —</option>
                   {getOberthemen().map(ot => (
                     <option key={ot.id} value={ot.id}>{ml(ot.nameI18n, lang)}</option>
                   ))}
@@ -1077,7 +1105,7 @@ function AutoField({ label, value }: { label: string; value: string }) {
   return (
     <div>
       <div style={{ fontSize: '10px', fontWeight: 700, color: 'var(--zh-color-text-disabled)', marginBottom: '3px', textTransform: 'uppercase', letterSpacing: '0.1em' }}>{label}</div>
-      <div style={{ fontSize: '13px', fontWeight: 700, color: 'var(--zh-blau)' }}>{value}</div>
+      <div style={{ padding: '7px 10px', borderRadius: '6px', background: 'var(--zh-color-bg-tertiary)', color: 'var(--zh-color-text)', fontSize: '13px', fontWeight: 700 }}>{value}</div>
     </div>
   )
 }

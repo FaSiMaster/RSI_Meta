@@ -9,7 +9,6 @@ import {
   type DefizitVerortung,
   pixelToSpherical,
   sphericalToPixel,
-  sphericalDistance,
 } from '../../utils/sphereCoords'
 
 // ── Typen ──
@@ -84,7 +83,7 @@ export default function BildEditor({ scene, deficits, onSave, onClose, initialDe
 
   const handleImgError = useCallback(() => {
     setBildGeladen(false)
-    setBildFehler('Bild konnte nicht geladen werden. Bitte URL pruefen.')
+    setBildFehler('Das Bild konnte nicht geladen werden. Bitte die URL prüfen.')
   }, [])
 
   function handleLaden() {
@@ -325,7 +324,7 @@ export default function BildEditor({ scene, deficits, onSave, onClose, initialDe
     if (d.verortung?.typ === 'punkt')   return 'Punkt'
     if (d.verortung?.typ === 'polygon') return 'Polygon'
     if (d.verortung?.typ === 'gruppe')  return 'Gruppe'
-    if (d.position) return 'Legacy'
+    if (d.position) return 'Manuell'
     return '—'
   }
 
@@ -345,7 +344,7 @@ export default function BildEditor({ scene, deficits, onSave, onClose, initialDe
     }
   }
 
-  // Abstand-Anzeige fuer Polygon in Progress
+  // Anzahl Polygon-Punkte in Bearbeitung
   const polygonPunkte = polygonInProgress.length
 
   return (
@@ -391,7 +390,7 @@ export default function BildEditor({ scene, deficits, onSave, onClose, initialDe
           <input
             value={urlInput}
             onChange={e => setUrlInput(e.target.value)}
-            placeholder="360°-Panorama URL (equirectangular)"
+            placeholder="Panorama-URL (equirectangulär) oder base64"
             style={{
               flex: 1, padding: '6px 10px', borderRadius: '6px',
               border: '1px solid var(--zh-color-border)',
@@ -414,7 +413,7 @@ export default function BildEditor({ scene, deficits, onSave, onClose, initialDe
           <button
             onClick={() => { if (selectedDeficitId) setModus(modus === 'punkt' ? 'idle' : 'punkt') }}
             style={{ ...modusBtnStyle(modus === 'punkt'), opacity: selectedDeficitId ? 1 : 0.4 }}
-            title={selectedDeficitId ? '' : 'Erst Defizit auswaehlen'}
+            title={selectedDeficitId ? '' : 'Zuerst ein Sicherheitsdefizit auswählen'}
           >
             Punkt
           </button>
@@ -430,24 +429,26 @@ export default function BildEditor({ scene, deficits, onSave, onClose, initialDe
               }
             }}
             style={{ ...modusBtnStyle(modus === 'polygon'), opacity: selectedDeficitId ? 1 : 0.4 }}
-            title={selectedDeficitId ? '' : 'Erst Defizit auswaehlen'}
+            title={selectedDeficitId ? '' : 'Zuerst ein Sicherheitsdefizit auswählen'}
           >
-            {modus === 'polygon' ? `Polygon (${polygonPunkte} Pkt.) — DblClick` : 'Polygon'}
+            {modus === 'polygon'
+              ? `Polygon (${polygonPunkte} Pkt.) – Doppelklick zum Schliessen`
+              : 'Polygon'}
           </button>
           <button
             onClick={() => { if (selectedDeficitId) setModus(modus === 'gruppe' ? 'idle' : 'gruppe') }}
             style={{ ...modusBtnStyle(modus === 'gruppe'), opacity: selectedDeficitId ? 1 : 0.4 }}
-            title={selectedDeficitId ? '' : 'Erst Defizit auswaehlen'}
+            title={selectedDeficitId ? '' : 'Zuerst ein Sicherheitsdefizit auswählen'}
           >
             Gruppe
           </button>
 
           <div style={{ width: '1px', background: 'var(--zh-color-border)', height: '28px', flexShrink: 0 }} />
 
-          {/* Toleranz */}
+          {/* Toleranzradius */}
           <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flexShrink: 0 }}>
             <span style={{ fontSize: '11px', color: 'var(--zh-color-text-muted)', whiteSpace: 'nowrap' }}>
-              Tol.: {toleranz}°
+              Toleranzradius: {toleranz}°
             </span>
             <input type="range" min={5} max={30} step={1} value={toleranz}
               onChange={e => setToleranz(parseInt(e.target.value))}
@@ -490,7 +491,7 @@ export default function BildEditor({ scene, deficits, onSave, onClose, initialDe
                 alignItems: 'center', justifyContent: 'center',
                 color: 'var(--zh-color-text-disabled)', fontSize: '13px',
               }}>
-                {urlInput ? 'Bild wird geladen...' : 'URL eingeben und auf Laden klicken.'}
+                {urlInput ? 'Panoramabild wird geladen...' : 'URL eingeben und auf «Laden» klicken.'}
               </div>
             )}
             {bildFehler && (
@@ -517,10 +518,10 @@ export default function BildEditor({ scene, deficits, onSave, onClose, initialDe
                 padding: '6px 16px', borderRadius: '6px', fontSize: '12px', fontWeight: 600,
                 pointerEvents: 'none',
               }}>
-                {modus === 'startblick' && 'Klick ins Bild → Startblick setzen'}
-                {modus === 'punkt'      && 'Klick ins Bild → Punkt setzen'}
-                {modus === 'polygon'    && 'Klick: Punkt hinzufuegen | DblClick: Polygon schliessen'}
-                {modus === 'gruppe'     && 'Defizite in Seitenleiste auswaehlen, dann "Gruppe erstellen"'}
+                {modus === 'startblick' && 'Ins Bild klicken → Startblick setzen'}
+                {modus === 'punkt'      && 'Ins Bild klicken → Punkt setzen'}
+                {modus === 'polygon'    && 'Klicken: Punkt hinzufügen | Doppelklick: Polygon schliessen'}
+                {modus === 'gruppe'     && 'Sicherheitsdefizite in der Seitenleiste auswählen, dann «Gruppe erstellen»'}
               </div>
             )}
           </div>
@@ -538,7 +539,7 @@ export default function BildEditor({ scene, deficits, onSave, onClose, initialDe
               fontSize: '10px', fontWeight: 800, textTransform: 'uppercase',
               letterSpacing: '0.12em', color: 'var(--zh-color-text-disabled)',
             }}>
-              Defizite ({localDeficits.length})
+              Sicherheitsdefizite ({localDeficits.length})
             </div>
 
             <div style={{ flex: 1, overflowY: 'auto' }}>
@@ -617,7 +618,7 @@ export default function BildEditor({ scene, deficits, onSave, onClose, initialDe
             {modus === 'gruppe' && (
               <div style={{ padding: '12px 14px', borderTop: '1px solid var(--zh-color-border)' }}>
                 <div style={{ fontSize: '11px', color: 'var(--zh-color-text-muted)', marginBottom: '8px' }}>
-                  {gruppeIdsSelected.length} Defizite ausgewaehlt
+                  {gruppeIdsSelected.length} Sicherheitsdefizite ausgewählt
                 </div>
                 <button
                   onClick={handleGruppeErstellen}
@@ -645,7 +646,7 @@ export default function BildEditor({ scene, deficits, onSave, onClose, initialDe
                 color: 'var(--zh-color-text-muted)',
               }}>
                 <span style={{ fontWeight: 700, color: '#0076BD' }}>Startblick:</span>{' '}
-                {Math.round(localScene.startblick.theta)}° / {Math.round(localScene.startblick.phi)}°
+                θ={Math.round(localScene.startblick.theta)}°, φ={Math.round(localScene.startblick.phi)}°
                 <button
                   onClick={() => setLocalScene(prev => ({ ...prev, startblick: null }))}
                   style={{
@@ -658,7 +659,7 @@ export default function BildEditor({ scene, deficits, onSave, onClose, initialDe
               </div>
             )}
 
-            {/* Abstandsmessung Hilfsinformation */}
+            {/* Verortungs-Detailbox */}
             {selectedDeficitId && (() => {
               const d = localDeficits.find(x => x.id === selectedDeficitId)
               if (!d?.verortung) return null
@@ -671,19 +672,27 @@ export default function BildEditor({ scene, deficits, onSave, onClose, initialDe
                   <div style={{ fontWeight: 700, marginBottom: '4px', color: 'var(--zh-color-text)' }}>
                     Verortung
                   </div>
-                  <div>Typ: <strong>{d.verortung.typ}</strong></div>
                   {d.verortung.typ === 'punkt' && (
-                    <div>
-                      {Math.round(d.verortung.position.theta)}° /{' '}
-                      {Math.round(d.verortung.position.phi)}°
-                      {' — '}{d.verortung.toleranz}° Toleranz
-                    </div>
+                    <>
+                      <div>Typ: <strong>Punkt</strong></div>
+                      <div>
+                        Position: θ={Math.round(d.verortung.position.theta)}°,
+                        φ={Math.round(d.verortung.position.phi)}°
+                      </div>
+                      <div>Toleranzradius: {d.verortung.toleranz}°</div>
+                    </>
                   )}
                   {d.verortung.typ === 'polygon' && (
-                    <div>{d.verortung.punkte.length} Punkte</div>
+                    <>
+                      <div>Typ: <strong>Polygon</strong></div>
+                      <div>Eckpunkte: {d.verortung.punkte.length}</div>
+                    </>
                   )}
                   {d.verortung.typ === 'gruppe' && (
-                    <div>{d.verortung.elemente.length} Elemente</div>
+                    <>
+                      <div>Typ: <strong>Gruppe</strong></div>
+                      <div>Elemente: {d.verortung.elemente.length}</div>
+                    </>
                   )}
                   <button
                     onClick={() => setLocalDeficits(prev => prev.map(x =>
@@ -695,7 +704,7 @@ export default function BildEditor({ scene, deficits, onSave, onClose, initialDe
                       fontSize: '11px', padding: '3px 8px', fontFamily: 'var(--zh-font)',
                     }}
                   >
-                    Verortung loeschen
+                    Verortung löschen
                   </button>
                 </div>
               )
@@ -713,7 +722,7 @@ export default function BildEditor({ scene, deficits, onSave, onClose, initialDe
         }}>
           <div style={{ fontSize: '12px', color: 'var(--zh-color-text-muted)' }}>
             {bildGeladen
-              ? `${bildBreite} × ${bildHoehe} px`
+              ? `${bildBreite.toLocaleString('de-CH')} × ${bildHoehe.toLocaleString('de-CH')} Pixel`
               : 'Kein Bild geladen'}
           </div>
           <div style={{ display: 'flex', gap: '10px' }}>
@@ -746,7 +755,3 @@ export default function BildEditor({ scene, deficits, onSave, onClose, initialDe
     </div>
   )
 }
-
-// Wird benoetigt damit sphericalDistance nicht als unused erscheint
-// (wird fuer Polygon-Toleranz-Check intern genutzt, aber export aus sphereCoords)
-void sphericalDistance

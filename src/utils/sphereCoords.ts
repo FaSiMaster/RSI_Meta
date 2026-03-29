@@ -110,3 +110,12 @@ export function trefferpruefung(klick: SphericalPos, verortung: DefizitVerortung
   }
   return false
 }
+
+// ── Deutsche Alias-Funktionen fuer sphereCoords ──
+// Erlauben deutschen Bezeichnungen in deutschen Komponenten
+
+export const pixelZuSphaerisch    = pixelToSpherical
+export const sphaerischZuPixel    = sphericalToPixel
+export const winkelAbstand        = sphericalDistance
+export const trefferPruefung      = trefferpruefung
+export const vector3ZuSphaerisch  = vector3ToSpherical
