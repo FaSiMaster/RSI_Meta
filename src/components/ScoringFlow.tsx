@@ -1,226 +1,255 @@
-// ScoringFlow – 9-Schritt FaSi/bfu-Bewertungsflow
+// ScoringFlow – Didaktisch optimierter 5-Phasen RSI-Bewertungsflow
 // TBA-Fachkurs FK RSI, V 16.09.2020 — normativ, keine Abweichungen
-// Schritte 1,3,7: User-Input | 2,4,6,8: Automatisch | 5,9: Ergebnis
+// Phasen: A Wichtigkeit | B Abweichung | C Relevanz SD | D Unfallschwere | E Auswertung
 
-import React, { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
-import { ArrowLeft, Info, CheckCircle2, XCircle, AlertTriangle } from 'lucide-react'
+import { ArrowLeft, CheckCircle2, XCircle, Info, AlertTriangle } from 'lucide-react'
 import { motion, AnimatePresence } from 'motion/react'
 import { ml, type AppDeficit, type AppScene } from '../data/appData'
 import {
-  WICHTIGKEIT_TABLE, NORMHIERARCHIE, ABWEICHUNG_KATEGORIEN, NACA_TABLE,
-  calcRelevanzSD, calcUnfallrisiko, nacaToSchwere,
+  WICHTIGKEIT_TABLE, NORMHIERARCHIE, ABWEICHUNG_KATEGORIEN,
+  calcRelevanzSD, calcUnfallrisiko,
   STEP_WEIGHTS, STEP_WEIGHT_UNIT, KRITERIUM_LABELS,
 } from '../data/scoringEngine'
 import type { RSIDimension, NACADimension, ResultDimension } from '../types'
 
-// ── Hilfsfunktionen ──
+// ── Farbhilfen ──
 function resultColor(v: ResultDimension): string {
   if (v === 'hoch')   return '#D40053'
   if (v === 'mittel') return '#B87300'
   return '#1A7F1F'
 }
 function resultBg(v: ResultDimension): string {
-  if (v === 'hoch')   return 'rgba(212,0,83,0.12)'
-  if (v === 'mittel') return 'rgba(184,115,0,0.12)'
-  return 'rgba(26,127,31,0.12)'
+  if (v === 'hoch')   return 'rgba(212,0,83,0.10)'
+  if (v === 'mittel') return 'rgba(184,115,0,0.10)'
+  return 'rgba(26,127,31,0.10)'
 }
-function dimensionLabel(v: RSIDimension | ResultDimension): string {
-  const map: Record<string, string> = {
-    gross: 'Gross', mittel: 'Mittel', klein: 'Klein',
-    hoch: 'Hoch', gering: 'Gering',
-  }
-  return map[v] ?? v
+function resultLabel(v: ResultDimension): string {
+  const map: Record<ResultDimension, string> = { hoch: 'Hoch', mittel: 'Mittel', gering: 'Gering' }
+  return map[v]
 }
-function nacaLabel(v: NACADimension, t: (key: string) => string): string {
-  return v === 'leicht' ? t('scoring.nacaLeicht')
-       : v === 'mittel' ? t('scoring.nacaMittel')
-       : t('scoring.nacaSchwer')
+function dimLabel(v: RSIDimension): string {
+  const map: Record<RSIDimension, string> = { gross: 'Gross', mittel: 'Mittel', klein: 'Klein' }
+  return map[v]
+}
+function nacaGruppeLabel(v: NACADimension): string {
+  const map: Record<NACADimension, string> = { leicht: 'Leicht', mittel: 'Mittel', schwer: 'Schwer' }
+  return map[v]
 }
 
-// ── Relevanz-Matrix (3×3) ──
-const R_ROWS: RSIDimension[] = ['gross', 'mittel', 'klein']
-const R_COLS: RSIDimension[] = ['klein', 'mittel', 'gross']
-const U_ROWS: ResultDimension[] = ['hoch', 'mittel', 'gering']
-const U_COLS: NACADimension[] = ['leicht', 'mittel', 'schwer']
+// ── Phasen-Typen ──
+type Phase = 'A' | 'A2' | 'B' | 'C' | 'D' | 'D2' | 'E'
 
-interface MatrixProps {
-  type: 'relevanz' | 'unfallrisiko'
-  highlightRow?: string
-  highlightCol?: string
-  showIntersection?: boolean
+function phaseToNr(p: Phase): number {
+  if (p === 'A' || p === 'A2') return 1
+  if (p === 'B')               return 2
+  if (p === 'C')               return 3
+  if (p === 'D' || p === 'D2') return 4
+  return 5
 }
-function Matrix({ type, highlightRow, highlightCol, showIntersection }: MatrixProps) {
-  const isR = type === 'relevanz'
-  const rows = isR ? R_ROWS : U_ROWS
-  const cols = isR ? R_COLS : U_COLS
-  const colLabel = isR ? ['Klein', 'Mittel', 'Gross'] : ['Leicht', 'Mittel', 'Schwer']
-  const rowLabel = isR ? ['Gross', 'Mittel', 'Klein'] : ['Hoch', 'Mittel', 'Gering']
-  const xAxisLabel = isR ? 'Abweichung' : 'Unfallschwere (NACA)'
-  const yAxisLabel = isR ? 'Wichtigkeit' : 'Relevanz SD'
 
-  function cellValue(row: string, col: string): ResultDimension {
-    if (isR) return calcRelevanzSD(row as RSIDimension, col as RSIDimension)
-    return calcUnfallrisiko(row as ResultDimension, col as NACADimension)
-  }
+const PHASE_KEYS = [
+  'scoring.phase_a',
+  'scoring.phase_b',
+  'scoring.phase_c',
+  'scoring.phase_d',
+  'scoring.phase_e',
+]
 
+// ── Fortschrittsbalken (5 Phasen) ──
+function PhaseProgress({ phase }: { phase: Phase }) {
+  const { t } = useTranslation()
+  const nr = phaseToNr(phase)
   return (
-    <div style={{ overflowX: 'auto' }}>
-      <div style={{ fontSize: '11px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.1em', color: 'var(--zh-color-text-disabled)', marginBottom: '6px', textAlign: 'center' }}>
-        {xAxisLabel} →
-      </div>
-      <div style={{ display: 'grid', gridTemplateColumns: `64px repeat(${cols.length}, 1fr)`, gap: '3px', minWidth: '320px' }}>
-        {/* Leere Ecke + Spaltenheader */}
-        <div style={{ fontSize: '10px', color: 'var(--zh-color-text-disabled)', textAlign: 'right', paddingRight: '8px', display: 'flex', alignItems: 'flex-end', justifyContent: 'flex-end', paddingBottom: '4px' }}>
-          {yAxisLabel} ↓
+    <div style={{ marginBottom: '4px' }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+        <span style={{ fontSize: '12px', color: 'var(--zh-color-text-muted)', fontWeight: 600 }}>
+          {t('scoring.schritt_von', { nr })}
+        </span>
+        <div style={{ display: 'flex', gap: '4px', flexWrap: 'wrap', justifyContent: 'flex-end' }}>
+          {PHASE_KEYS.map((key, i) => (
+            <span key={key} style={{
+              fontSize: '10px', fontWeight: 700,
+              padding: '2px 8px', borderRadius: '4px',
+              background: i + 1 === nr
+                ? 'var(--zh-dunkelblau)'
+                : i + 1 < nr
+                  ? 'rgba(26,127,31,0.15)'
+                  : 'var(--zh-color-bg-tertiary)',
+              color: i + 1 === nr
+                ? 'white'
+                : i + 1 < nr
+                  ? '#1A7F1F'
+                  : 'var(--zh-color-text-disabled)',
+            }}>
+              {t(key)}
+            </span>
+          ))}
         </div>
-        {cols.map((col, ci) => (
-          <div
-            key={col}
-            style={{
-              textAlign: 'center',
-              fontSize: '11px',
-              fontWeight: 700,
-              padding: '6px 4px',
-              borderRadius: '4px',
-              background: col === highlightCol ? 'var(--zh-dunkelblau)' : 'var(--zh-color-bg-tertiary)',
-              color: col === highlightCol ? 'white' : 'var(--zh-color-text-muted)',
-            }}
-          >
-            {colLabel[ci]}
-          </div>
-        ))}
-        {/* Daten-Zeilen */}
-        {rows.map((row, ri) => (
-          <React.Fragment key={`row-${row}`}>
-            <div
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'flex-end',
-                paddingRight: '10px',
-                fontSize: '11px',
-                fontWeight: 700,
-                borderRadius: '4px',
-                padding: '4px 10px 4px 4px',
-                background: row === highlightRow ? 'var(--zh-dunkelblau)' : 'var(--zh-color-bg-tertiary)',
-                color: row === highlightRow ? 'white' : 'var(--zh-color-text-muted)',
-              }}
-            >
-              {rowLabel[ri]}
-            </div>
-            {cols.map(col => {
-              const val = cellValue(row, col)
-              const isIntersect = showIntersection && row === highlightRow && col === highlightCol
-              const isRowH = row === highlightRow && !showIntersection
-              const isColH = col === highlightCol && !showIntersection
-              return (
-                <div
-                  key={`${row}-${col}`}
-                  style={{
-                    textAlign: 'center',
-                    padding: '8px 4px',
-                    borderRadius: '6px',
-                    fontSize: '12px',
-                    fontWeight: isIntersect ? 900 : 700,
-                    background: isIntersect
-                      ? resultColor(val)
-                      : (isRowH || isColH)
-                        ? resultBg(val)
-                        : 'var(--zh-color-bg-secondary)',
-                    color: isIntersect ? 'white' : resultColor(val),
-                    border: isIntersect ? `2px solid ${resultColor(val)}` : '1px solid var(--zh-color-border)',
-                    transform: isIntersect ? 'scale(1.08)' : 'none',
-                    transition: 'all 0.2s',
-                    boxShadow: isIntersect ? `0 4px 16px ${resultColor(val)}44` : 'none',
-                  }}
-                >
-                  {dimensionLabel(val)}
-                </div>
-              )
-            })}
-          </React.Fragment>
-        ))}
+      </div>
+      <div style={{ height: '3px', borderRadius: '2px', background: 'var(--zh-color-bg-tertiary)' }}>
+        <div style={{
+          height: '100%', borderRadius: '2px',
+          background: 'var(--zh-dunkelblau)',
+          width: `${(nr / 5) * 100}%`,
+          transition: 'width 0.3s ease',
+        }} />
       </div>
     </div>
   )
 }
 
-// ── Auswahl-Button (kompakt, max 120px fuer 3er-Reihe) ──
-function ChoiceBtn({ label, sub, active, onClick, compact }: { label: string; sub?: string; active: boolean; onClick: () => void; compact?: boolean }) {
-  if (compact) {
-    // Kompakter Modus: 3 Buttons nebeneinander, fixe Breite
-    return (
-      <button
-        onClick={onClick}
-        style={{
-          padding: '8px 16px',
-          borderRadius: 'var(--zh-radius-btn)',
-          border: active ? '2px solid var(--zh-blau)' : '1px solid var(--zh-color-border)',
-          background: active ? 'var(--zh-blau)' : 'transparent',
-          color: active ? 'white' : 'var(--zh-color-text)',
-          fontWeight: active ? 700 : 500,
-          fontSize: '14px',
-          textAlign: 'center',
-          maxWidth: '120px',
-          minWidth: '80px',
-          cursor: 'pointer',
-          transition: 'all 0.15s',
-          fontFamily: 'var(--zh-font)',
-        }}
-      >
-        {label}
-      </button>
-    )
+// ── Kompakte Matrix (max 400px) ──
+interface CompactMatrixProps {
+  type: 'relevanz' | 'unfallrisiko'
+  highlightRow?: string
+  highlightCol?: string
+  showIntersection?: boolean
+}
+
+function CompactMatrix({ type, highlightRow, highlightCol, showIntersection }: CompactMatrixProps) {
+  const isR = type === 'relevanz'
+
+  const rows = isR
+    ? (['gross', 'mittel', 'klein'] as const)
+    : (['hoch', 'mittel', 'gering'] as const)
+  const cols = isR
+    ? (['klein', 'mittel', 'gross'] as const)
+    : (['leicht', 'mittel', 'schwer'] as const)
+  const rowLabels = isR ? ['Gross', 'Mittel', 'Klein'] : ['Hoch', 'Mittel', 'Gering']
+  const colLabels = isR ? ['Klein', 'Mittel', 'Gross'] : ['Leicht', 'Mittel', 'Schwer']
+  const xLabel    = isR ? 'Abweichung →' : 'Unfallschwere (NACA) →'
+  const yLabel    = isR ? 'Wichtigkeit ↓' : 'Relevanz SD ↓'
+
+  function cellVal(row: string, col: string): ResultDimension {
+    if (isR) return calcRelevanzSD(row as RSIDimension, col as RSIDimension)
+    return calcUnfallrisiko(row as ResultDimension, col as NACADimension)
   }
+
+  const AXIS_BG     = 'rgba(0,118,189,0.10)'
+  const AXIS_BORDER = 'rgba(0,118,189,0.35)'
+  const AXIS_COLOR  = '#0076BD'
+
   return (
-    <button
-      onClick={onClick}
-      style={{
-        padding: '10px 16px',
-        borderRadius: 'var(--zh-radius-btn)',
-        border: active ? '2px solid var(--zh-blau)' : '1px solid var(--zh-color-border)',
-        background: active ? 'rgba(0,118,189,0.08)' : 'var(--zh-color-surface)',
-        color: active ? 'var(--zh-color-accent)' : 'var(--zh-color-text)',
-        fontWeight: active ? 700 : 500,
-        fontSize: '14px',
-        textAlign: 'left',
-        width: '100%',
-        cursor: 'pointer',
-        transition: 'all 0.15s',
-        fontFamily: 'var(--zh-font)',
-      }}
-    >
-      <div>{label}</div>
-      {sub && <div style={{ fontSize: '12px', color: 'var(--zh-color-text-muted)', marginTop: '4px', fontWeight: 400 }}>{sub}</div>}
-    </button>
+    <div style={{ maxWidth: '400px', margin: '0 auto' }}>
+      {/* X-Achsen-Label */}
+      <div style={{ paddingLeft: '56px', marginBottom: '3px' }}>
+        <div style={{ fontSize: '10px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', color: 'var(--zh-color-text-disabled)', textAlign: 'center' }}>
+          {xLabel}
+        </div>
+      </div>
+
+      <div style={{ display: 'flex', gap: '3px' }}>
+        {/* Y-Achsen-Label (vertikal) */}
+        <div style={{ width: '14px', flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          <div style={{
+            writingMode: 'vertical-rl',
+            transform: 'rotate(180deg)',
+            fontSize: '10px', fontWeight: 700,
+            textTransform: 'uppercase', letterSpacing: '0.08em',
+            color: 'var(--zh-color-text-disabled)',
+            whiteSpace: 'nowrap',
+          }}>
+            {yLabel}
+          </div>
+        </div>
+
+        {/* Grid */}
+        <div style={{ flex: 1 }}>
+          {/* Spaltenheader */}
+          <div style={{ display: 'grid', gridTemplateColumns: `42px repeat(${cols.length}, 1fr)`, gap: '3px', marginBottom: '3px' }}>
+            <div />
+            {cols.map((col, ci) => {
+              const isHL = col === highlightCol
+              return (
+                <div key={String(col)} style={{
+                  textAlign: 'center', fontSize: '11px', fontWeight: 700,
+                  padding: '5px 2px', borderRadius: '4px',
+                  background: isHL ? AXIS_BG : 'var(--zh-color-bg-secondary)',
+                  color: isHL ? AXIS_COLOR : 'var(--zh-color-text-muted)',
+                  border: isHL ? `1px solid ${AXIS_BORDER}` : '1px solid var(--zh-color-border)',
+                }}>
+                  {colLabels[ci]}
+                </div>
+              )
+            })}
+          </div>
+
+          {/* Datenzeilen */}
+          {rows.map((row, ri) => {
+            const isRowHL = row === highlightRow
+            return (
+              <div key={String(row)} style={{ display: 'grid', gridTemplateColumns: `42px repeat(${cols.length}, 1fr)`, gap: '3px', marginBottom: '3px' }}>
+                {/* Zeilenkopf */}
+                <div style={{
+                  display: 'flex', alignItems: 'center', justifyContent: 'flex-end',
+                  paddingRight: '6px', fontSize: '11px', fontWeight: 700,
+                  borderRadius: '4px',
+                  background: isRowHL ? AXIS_BG : 'var(--zh-color-bg-secondary)',
+                  color: isRowHL ? AXIS_COLOR : 'var(--zh-color-text-muted)',
+                  border: isRowHL ? `1px solid ${AXIS_BORDER}` : '1px solid var(--zh-color-border)',
+                }}>
+                  {rowLabels[ri]}
+                </div>
+
+                {/* Datenzellen */}
+                {cols.map((col) => {
+                  const val         = cellVal(String(row), String(col))
+                  const isIntersect = showIntersection === true && row === highlightRow && col === highlightCol
+                  const isAxisHL    = !isIntersect && (row === highlightRow || col === highlightCol) && (highlightRow !== undefined || highlightCol !== undefined)
+                  return (
+                    <div key={String(col)} style={{
+                      textAlign: 'center',
+                      padding: '10px 2px',
+                      borderRadius: '6px',
+                      minHeight: '44px',
+                      display: 'flex', alignItems: 'center', justifyContent: 'center',
+                      fontSize: isIntersect ? '13px' : '11px',
+                      fontWeight: isIntersect ? 800 : 600,
+                      background: isIntersect
+                        ? resultColor(val)
+                        : isAxisHL
+                          ? resultBg(val)
+                          : 'var(--zh-color-bg-secondary)',
+                      color: isIntersect ? 'white' : resultColor(val),
+                      border: isIntersect
+                        ? `2px solid ${resultColor(val)}`
+                        : isAxisHL
+                          ? `1px solid ${resultColor(val)}44`
+                          : '1px solid var(--zh-color-border)',
+                      transform: isIntersect ? 'scale(1.07)' : 'none',
+                      transition: 'all 0.25s',
+                      boxShadow: isIntersect ? `0 3px 14px ${resultColor(val)}44` : 'none',
+                    }}>
+                      {resultLabel(val)}
+                    </div>
+                  )
+                })}
+              </div>
+            )
+          })}
+        </div>
+      </div>
+    </div>
   )
 }
 
-// ── Fortschrittsbalken ──
-function ProgressBar({ step }: { step: number }) {
-  const { t } = useTranslation()
+// ── Ergebnis-Badge ──
+function ResultBadge({ label, value }: { label: string; value: ResultDimension }) {
   return (
-    <div style={{ padding: '0 32px', marginBottom: '4px' }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '6px' }}>
-        <span style={{ fontSize: '12px', color: 'var(--zh-color-text-muted)', fontWeight: 600 }}>
-          {t('scoring.stepOf', { step })}
-        </span>
-        <span style={{ fontSize: '12px', color: 'var(--zh-color-text-disabled)' }}>
-          {Math.round((step / 9) * 100)}%
-        </span>
-      </div>
-      <div style={{ height: '4px', borderRadius: '2px', background: 'var(--zh-color-bg-tertiary)' }}>
-        <div
-          style={{
-            height: '100%',
-            borderRadius: '2px',
-            background: 'var(--zh-dunkelblau)',
-            width: `${(step / 9) * 100}%`,
-            transition: 'width 0.3s ease',
-          }}
-        />
-      </div>
+    <div style={{
+      display: 'inline-flex', alignItems: 'center', gap: '12px',
+      padding: '10px 18px', borderRadius: '10px',
+      background: resultBg(value),
+      border: `1.5px solid ${resultColor(value)}55`,
+    }}>
+      <span style={{ fontSize: '11px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.1em', color: 'var(--zh-color-text-muted)' }}>
+        {label}
+      </span>
+      <span style={{ fontSize: '22px', fontWeight: 900, color: resultColor(value) }}>
+        {resultLabel(value)}
+      </span>
     </div>
   )
 }
@@ -228,523 +257,681 @@ function ProgressBar({ step }: { step: number }) {
 // ── Infobox ──
 function InfoBox({ text }: { text: string }) {
   return (
-    <div
-      style={{
-        display: 'flex',
-        gap: '10px',
-        padding: '12px 16px',
-        borderRadius: '8px',
-        background: 'rgba(0,118,189,0.07)',
-        border: '1px solid rgba(0,118,189,0.2)',
-        marginTop: '16px',
-        marginBottom: '8px',
-      }}
-    >
-      <Info size={16} style={{ color: 'var(--zh-blau)', flexShrink: 0, marginTop: '1px' }} />
-      <p style={{ fontSize: '13px', color: 'var(--zh-color-text-muted)', lineHeight: 1.5 }}>{text}</p>
+    <div style={{
+      display: 'flex', gap: '10px',
+      padding: '10px 14px', borderRadius: '8px',
+      background: 'rgba(0,118,189,0.06)',
+      border: '1px solid rgba(0,118,189,0.18)',
+      marginTop: '14px',
+    }}>
+      <Info size={15} style={{ color: 'var(--zh-blau)', flexShrink: 0, marginTop: '1px' }} />
+      <p style={{ fontSize: '12px', color: 'var(--zh-color-text-muted)', lineHeight: 1.5, margin: 0 }}>{text}</p>
     </div>
   )
 }
 
-// ── Props + State ──
-interface Props {
-  deficit: AppDeficit
-  scene: AppScene
-  username: string
-  onComplete: (score: number) => void
-  onBack: () => void
+// ── Weiter-Button ──
+function WeiterBtn({ label, onClick }: { label: string; onClick: () => void }) {
+  return (
+    <button onClick={onClick} style={{
+      marginTop: '20px',
+      padding: '11px 24px',
+      borderRadius: 'var(--zh-radius-btn)',
+      background: 'var(--zh-dunkelblau)',
+      color: 'white', fontWeight: 700, fontSize: '14px',
+      cursor: 'pointer', border: 'none', fontFamily: 'var(--zh-font)',
+    }}>
+      {label} →
+    </button>
+  )
 }
 
-export default function ScoringFlow({ deficit, scene, onComplete, onBack }: Omit<Props, 'username'> & { username?: string }) {
+// ── Normhierarchie (kompakt) ──
+function NormhierarchieKompakt() {
+  return (
+    <div style={{ marginBottom: '14px' }}>
+      {NORMHIERARCHIE.map(n => (
+        <div key={n.stufe} style={{ display: 'flex', gap: '8px', fontSize: '12px', color: 'var(--zh-color-text-muted)', marginBottom: '3px' }}>
+          <span style={{ fontWeight: 700, color: 'var(--zh-blau)', minWidth: '16px' }}>{n.stufe}.</span>
+          <span>{n.label}</span>
+        </div>
+      ))}
+    </div>
+  )
+}
+
+// ── Props ──
+interface Props {
+  deficit:    AppDeficit
+  scene:      AppScene
+  username?:  string
+  onComplete: (score: number) => void
+  onBack:     () => void
+}
+
+export default function ScoringFlow({ deficit, scene, onComplete, onBack }: Props) {
   const { i18n, t } = useTranslation()
   const lang = i18n.language
 
-  const [step, setStep] = useState(1)
-  const [showFeedback, setShowFeedback] = useState(false)
+  const [phase, setPhase]             = useState<Phase>('A')
   const [wichtigkeit, setWichtigkeit] = useState<RSIDimension | null>(null)
-  const [abweichung, setAbweichung] = useState<RSIDimension | null>(null)
-  const [nacaRaw, setNacaRaw] = useState<number | null>(null)
+  const [abweichung, setAbweichung]   = useState<RSIDimension | null>(null)
+  const [nacaSchwere, setNacaSchwere] = useState<NACADimension | null>(null)
 
-  // Vorbelegte Wichtigkeit aus WICHTIGKEIT_TABLE
+  // Abgeleitete Werte (unveraendert: gleiche Logik wie scoringEngine)
+  const relevanzSD: ResultDimension | null =
+    wichtigkeit && abweichung ? calcRelevanzSD(wichtigkeit, abweichung) : null
+  const unfallrisiko: ResultDimension | null =
+    relevanzSD && nacaSchwere ? calcUnfallrisiko(relevanzSD, nacaSchwere) : null
+
+  // Vorbelegung aus WICHTIGKEIT_TABLE
   const tableWert = WICHTIGKEIT_TABLE[deficit.kriteriumId]
   const prefillWichtigkeit: RSIDimension | null = tableWert
-    ? (tableWert[deficit.kontext] as RSIDimension | '') || null
+    ? ((tableWert[deficit.kontext] as RSIDimension | '') || null)
     : null
 
-  // Abgeleitete Werte
-  const nacaSchwere: NACADimension | null = nacaRaw !== null ? nacaToSchwere(nacaRaw) : null
-  const relevanzSD: ResultDimension | null = wichtigkeit && abweichung ? calcRelevanzSD(wichtigkeit, abweichung) : null
-  const unfallrisiko: ResultDimension | null = relevanzSD && nacaSchwere ? calcUnfallrisiko(relevanzSD, nacaSchwere) : null
-
-  // Korrekte Antworten
   const ca = deficit.correctAssessment
 
-  // Punkte berechnen
+  // Auto-Uebergang A → A2 (nach Wichtigkeit-Auswahl, 900ms)
+  useEffect(() => {
+    if (wichtigkeit && phase === 'A') {
+      const id = setTimeout(() => setPhase('A2'), 900)
+      return () => clearTimeout(id)
+    }
+  }, [wichtigkeit, phase])
+
+  // Auto-Uebergang B → C (nach Abweichung-Auswahl, 900ms)
+  useEffect(() => {
+    if (abweichung && phase === 'B') {
+      const id = setTimeout(() => setPhase('C'), 900)
+      return () => clearTimeout(id)
+    }
+  }, [abweichung, phase])
+
+  // Auto-Uebergang D → D2 (nach NACA-Auswahl, 900ms)
+  useEffect(() => {
+    if (nacaSchwere && phase === 'D') {
+      const id = setTimeout(() => setPhase('D2'), 900)
+      return () => clearTimeout(id)
+    }
+  }, [nacaSchwere, phase])
+
+  // Punkte berechnen (unveraendert: STEP_WEIGHTS aus scoringEngine)
   function calcScore(): number {
     const correct = [
-      wichtigkeit === ca.wichtigkeit,
-      true, // Schritt 2 automatisch
-      abweichung === ca.abweichung,
-      true, // Schritt 4 automatisch
-      relevanzSD === ca.relevanzSD,
-      true, // Schritt 6 automatisch
-      nacaSchwere === ca.unfallschwere,
-      true, // Schritt 8 automatisch
-      unfallrisiko === ca.unfallrisiko,
+      wichtigkeit === ca.wichtigkeit,   // Schritt 1 (User)
+      true,                              // Schritt 2 (auto)
+      abweichung === ca.abweichung,     // Schritt 3 (User)
+      true,                              // Schritt 4 (auto)
+      relevanzSD === ca.relevanzSD,     // Schritt 5 (auto-abgeleitet)
+      true,                              // Schritt 6 (auto)
+      nacaSchwere === ca.unfallschwere, // Schritt 7 (User)
+      true,                              // Schritt 8 (auto)
+      unfallrisiko === ca.unfallrisiko, // Schritt 9 (auto-abgeleitet)
     ]
     let total = 0
     STEP_WEIGHTS.forEach((w, i) => { if (correct[i]) total += w * STEP_WEIGHT_UNIT })
     return Math.round(total)
   }
 
-  function goNext() { setStep(s => Math.min(s + 1, 9)) }
+  // ── PHASE A: Wichtigkeit auswaehlen ──
+  function renderPhaseA() {
+    return (
+      <div>
+        <h3 style={{ fontSize: '17px', fontWeight: 700, color: 'var(--zh-color-text)', marginBottom: '3px' }}>
+          {t('scoring.wichtigkeit_titel')}
+        </h3>
+        <p style={{ fontSize: '11px', color: 'var(--zh-color-text-disabled)', marginBottom: '14px' }}>
+          Quelle: TBA-Fachkurs FK RSI, Folie 1–2
+        </p>
 
-  function handleSave() {
-    const pts = calcScore()
-    onComplete(pts)
+        {/* Kontext-Zeile */}
+        <p style={{ fontSize: '13px', color: 'var(--zh-color-text-muted)', marginBottom: '12px' }}>
+          Kriterium: <strong style={{ color: 'var(--zh-color-text)' }}>{KRITERIUM_LABELS[deficit.kriteriumId] ?? deficit.kriteriumId}</strong>
+          {' · '}
+          Kontext: <strong style={{ color: 'var(--zh-color-text)' }}>{deficit.kontext === 'io' ? 'Innerorts' : 'Ausserorts'}</strong>
+        </p>
+
+        {/* Tabellenhinweis */}
+        {prefillWichtigkeit && (
+          <div style={{ padding: '8px 12px', borderRadius: '6px', background: 'rgba(0,118,189,0.06)', border: '1px solid rgba(0,118,189,0.18)', marginBottom: '14px' }}>
+            <p style={{ fontSize: '12px', color: 'var(--zh-color-text-muted)', margin: 0 }}>
+              Gemäss Tabelle: <strong style={{ color: 'var(--zh-blau)' }}>{dimLabel(prefillWichtigkeit)}</strong> — bitte einschätzen oder bestätigen.
+            </p>
+          </div>
+        )}
+
+        {/* 3 Buttons nebeneinander */}
+        <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
+          {(['gross', 'mittel', 'klein'] as RSIDimension[]).map(w => {
+            const isActive = wichtigkeit === w
+            return (
+              <button
+                key={w}
+                onClick={() => { if (!wichtigkeit) setWichtigkeit(w) }}
+                style={{
+                  padding: '8px 20px',
+                  maxWidth: '120px', minWidth: '80px',
+                  borderRadius: 'var(--zh-radius-btn)',
+                  border: isActive ? '2px solid #1A7F1F' : '1.5px solid var(--zh-color-border)',
+                  background: isActive ? 'rgba(26,127,31,0.08)' : 'var(--zh-color-surface)',
+                  color: isActive ? '#1A7F1F' : 'var(--zh-color-text)',
+                  fontWeight: isActive ? 700 : 500, fontSize: '14px',
+                  cursor: wichtigkeit ? 'default' : 'pointer',
+                  transition: 'all 0.15s',
+                  fontFamily: 'var(--zh-font)',
+                  display: 'flex', alignItems: 'center', gap: '6px',
+                }}
+              >
+                {isActive && <CheckCircle2 size={14} />}
+                {dimLabel(w)}
+              </button>
+            )
+          })}
+        </div>
+
+        {wichtigkeit && (
+          <p style={{ fontSize: '12px', color: 'var(--zh-color-text-disabled)', marginTop: '10px' }}>
+            Wird übertragen…
+          </p>
+        )}
+      </div>
+    )
   }
 
-  // ── Step-Render ──
-  function renderStep() {
-    switch (step) {
-      // ── Schritt 1: Wichtigkeit (User-Input) ──
-      case 1: return (
-        <div>
-          <StepHeader nr={1} titel={t('scoring.step1Title')} normRef="TBA-Fachkurs FK RSI, Folie 1–2" />
-          <div style={{ marginBottom: '16px' }}>
-            <p style={{ fontSize: '14px', color: 'var(--zh-color-text-muted)', marginBottom: '6px' }}>
-              Kriterium: <strong style={{ color: 'var(--zh-color-text)' }}>{KRITERIUM_LABELS[deficit.kriteriumId] ?? deficit.kriteriumId}</strong>
-            </p>
-            <p style={{ fontSize: '14px', color: 'var(--zh-color-text-muted)' }}>
-              Kontext: <strong style={{ color: 'var(--zh-color-text)' }}>{deficit.kontext === 'io' ? 'Innerorts (io)' : 'Ausserorts (ao)'}</strong>
-            </p>
-            <p style={{ fontSize: '13px', color: 'var(--zh-color-text-muted)', marginTop: '8px' }}>
-              {deficit.kontext === 'io'
-                ? t('scoring.step1SubIo')
-                : t('scoring.step1SubAo')}
-            </p>
-          </div>
-          {prefillWichtigkeit && (
-            <InfoBox text={`Gemaess WICHTIGKEIT_TABLE (TBA-Fachkurs): ${prefillWichtigkeit.toUpperCase()} — bitte bestaetigen oder anpassen.`} />
-          )}
-          <div style={{ display: 'flex', flexDirection: 'row', flexWrap: 'wrap', gap: '8px', marginTop: '16px' }}>
-            {(['gross', 'mittel', 'klein'] as RSIDimension[]).map(w => (
-              <ChoiceBtn key={w} label={dimensionLabel(w)} active={wichtigkeit === w} compact
-                onClick={() => { setWichtigkeit(w); setTimeout(goNext, 280) }} />
-            ))}
-          </div>
-        </div>
-      )
+  // ── PHASE A2: Wichtigkeit besätigt + Matrix mit Zeilenmarkierung ──
+  function renderPhaseA2() {
+    return (
+      <div>
+        <h3 style={{ fontSize: '17px', fontWeight: 700, color: 'var(--zh-color-text)', marginBottom: '3px' }}>
+          {t('scoring.wichtigkeit_titel')}
+        </h3>
+        <p style={{ fontSize: '11px', color: 'var(--zh-color-text-disabled)', marginBottom: '14px' }}>
+          Quelle: TBA-Fachkurs FK RSI, Folie 1–2
+        </p>
 
-      // ── Schritt 2: Übertrag Wichtigkeit (automatisch) ──
-      case 2: return (
-        <div>
-          <StepHeader nr={2} titel={t('scoring.step2Title')} normRef="TBA-Fachkurs FK RSI, Folie 4" auto />
-          <p style={{ fontSize: '13px', color: 'var(--zh-color-text-muted)', marginBottom: '20px' }}>
-            Die Wichtigkeit <strong>{dimensionLabel(wichtigkeit!)}</strong> wird auf die Y-Achse der Relevanz-Matrix übertragen.
-          </p>
-          <Matrix type="relevanz" highlightRow={wichtigkeit ?? undefined} />
-          <WeiterBtn onClick={goNext} />
-        </div>
-      )
-
-      // ── Schritt 3: Abweichung (User-Input) ──
-      case 3: return (
-        <div>
-          <StepHeader nr={3} titel={t('scoring.step3Title')} normRef="TBA-Fachkurs FK RSI, Folie 3" />
-          <div style={{ marginBottom: '16px' }}>
-            <p style={{ fontSize: '13px', fontWeight: 700, color: 'var(--zh-color-text)', marginBottom: '10px' }}>Normhierarchie — massgebende Grundlage:</p>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', marginBottom: '16px' }}>
-              {NORMHIERARCHIE.map(n => (
-                <div key={n.stufe} style={{ display: 'flex', gap: '10px', fontSize: '12px', color: 'var(--zh-color-text-muted)' }}>
-                  <span style={{ fontWeight: 700, color: 'var(--zh-blau)', minWidth: '18px' }}>{n.stufe}.</span>
-                  <span>{n.label}</span>
-                </div>
-              ))}
-            </div>
-          </div>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-            {ABWEICHUNG_KATEGORIEN.map(k => (
-              <ChoiceBtn key={k.wert} label={`${k.label} — ${k.beschreibung}`}
-                sub={k.beispiel ? `Bsp.: ${k.beispiel}` : undefined}
-                active={abweichung === k.wert}
-                onClick={() => { setAbweichung(k.wert); setTimeout(goNext, 280) }} />
-            ))}
-          </div>
-        </div>
-      )
-
-      // ── Schritt 4: Übertrag Abweichung (automatisch) ──
-      case 4: return (
-        <div>
-          <StepHeader nr={4} titel={t('scoring.step4Title')} normRef="TBA-Fachkurs FK RSI, Folie 4" auto />
-          <p style={{ fontSize: '13px', color: 'var(--zh-color-text-muted)', marginBottom: '20px' }}>
-            Wichtigkeit <strong>{dimensionLabel(wichtigkeit!)}</strong> (Zeile) × Abweichung <strong>{dimensionLabel(abweichung!)}</strong> (Spalte) — Schnittpunkt ergibt die Relevanz SD.
-          </p>
-          <Matrix type="relevanz" highlightRow={wichtigkeit ?? undefined} highlightCol={abweichung ?? undefined} />
-          <WeiterBtn onClick={goNext} />
-        </div>
-      )
-
-      // ── Schritt 5: Relevanz SD (Ergebnis, automatisch) ──
-      case 5: return (
-        <div>
-          <StepHeader nr={5} titel={t('scoring.step5Title')} normRef="TBA-Fachkurs FK RSI, Folie 4 / SN 641 723 Abb. 2" auto />
-          <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '20px' }}>
-            <span style={{ fontSize: '11px', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.12em', padding: '3px 10px', borderRadius: '4px', background: '#D40053', color: 'white' }}>
-              RSI: Relevanz SD
-            </span>
-            <span style={{ fontSize: '22px', fontWeight: 900, color: resultColor(relevanzSD!) }}>
-              {dimensionLabel(relevanzSD!)}
-            </span>
-          </div>
-          <Matrix type="relevanz" highlightRow={wichtigkeit ?? undefined} highlightCol={abweichung ?? undefined} showIntersection />
-          <InfoBox text="Die Relevanz des Sicherheitsdefizits entspricht der Eintrittswahrscheinlichkeit eines Unfalls gemaess SN 641 723 Abb. 2. Der FaSi/bfu-Lehrweg macht diesen Zusammenhang explizit sichtbar." />
-          <WeiterBtn onClick={goNext} />
-        </div>
-      )
-
-      // ── Schritt 6: Übertrag Relevanz SD → Unfallrisiko-Matrix (automatisch) ──
-      case 6: return (
-        <div>
-          <StepHeader nr={6} titel={t('scoring.step6Title')} normRef="TBA-Fachkurs FK RSI, Folie 6" auto />
-          <p style={{ fontSize: '13px', color: 'var(--zh-color-text-muted)', marginBottom: '20px' }}>
-            Relevanz SD <strong>{dimensionLabel(relevanzSD!)}</strong> wird auf die Y-Achse der Unfallrisiko-Matrix übertragen.
-          </p>
-          <Matrix type="unfallrisiko" highlightRow={relevanzSD ?? undefined} />
-          <WeiterBtn onClick={goNext} />
-        </div>
-      )
-
-      // ── Schritt 7: NACA-Score (User-Input) ──
-      case 7: return (
-        <div>
-          <StepHeader nr={7} titel={t('scoring.step7Title')} normRef="TBA-Fachkurs FK RSI, Folie 5" />
-          {/* Pflicht-Leitfrage */}
-          <div style={{ padding: '16px 20px', borderRadius: '10px', background: 'rgba(0,64,124,0.07)', border: '1px solid rgba(0,64,124,0.15)', marginBottom: '16px' }}>
-            <p style={{ fontSize: '16px', fontWeight: 700, color: 'var(--zh-dunkelblau)', lineHeight: 1.4 }}>
-              „Stell dir vor, ein Unfall passiert genau hier — wie schwer waeren die wahrscheinlichen Verletzungen?"
-            </p>
-          </div>
-          {/* Pflicht-Badge */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '16px' }}>
-            <AlertTriangle size={13} style={{ color: 'var(--zh-orange)' }} />
-            <span style={{ fontSize: '11px', fontWeight: 700, color: 'var(--zh-orange)', textTransform: 'uppercase', letterSpacing: '0.1em' }}>
-              Einstiegshilfe bfu · nicht direkt in SN 641 723
-            </span>
-          </div>
-          {/* NACA-Tabelle gruppiert */}
-          {(['leicht', 'mittel', 'schwer'] as NACADimension[]).map(gruppe => {
-            const entries = NACA_TABLE.filter(n => n.rsi === gruppe)
-            const gruppeColor = gruppe === 'schwer' ? '#D40053' : gruppe === 'mittel' ? '#B87300' : '#1A7F1F'
+        {/* Bestätigte Auswahl anzeigen */}
+        <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap', marginBottom: '18px' }}>
+          {(['gross', 'mittel', 'klein'] as RSIDimension[]).map(w => {
+            const isActive = wichtigkeit === w
             return (
-              <div key={gruppe} style={{ marginBottom: '12px' }}>
-                <div style={{ fontSize: '11px', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.12em', color: gruppeColor, marginBottom: '6px' }}>
-                  {nacaLabel(gruppe, t).toUpperCase()}
-                </div>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
-                  {entries.map(n => (
-                    <button
-                      key={n.naca}
-                      onClick={() => { setNacaRaw(n.naca); setTimeout(goNext, 280) }}
-                      style={{
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: '14px',
-                        padding: '10px 14px',
-                        borderRadius: '8px',
-                        border: nacaRaw === n.naca ? `2px solid ${gruppeColor}` : '1px solid var(--zh-color-border)',
-                        background: nacaRaw === n.naca ? `${gruppeColor}12` : 'var(--zh-color-surface)',
-                        textAlign: 'left',
-                        cursor: 'pointer',
-                        transition: 'all 0.15s',
-                      }}
-                    >
-                      <span style={{ fontSize: '18px', fontWeight: 900, color: gruppeColor, minWidth: '24px', fontFamily: 'monospace' }}>{n.naca}</span>
-                      <span style={{ flex: 1 }}>
-                        <span style={{ fontSize: '13px', fontWeight: 600, color: 'var(--zh-color-text)', display: 'block' }}>{n.verletzung}</span>
-                        <span style={{ fontSize: '11px', color: 'var(--zh-color-text-muted)' }}>{n.konsequenz}</span>
-                      </span>
-                    </button>
-                  ))}
-                </div>
+              <div key={w} style={{
+                padding: '8px 20px', maxWidth: '120px', minWidth: '80px',
+                borderRadius: 'var(--zh-radius-btn)',
+                border: isActive ? '2px solid #1A7F1F' : '1px solid var(--zh-color-border)',
+                background: isActive ? 'rgba(26,127,31,0.08)' : 'var(--zh-color-surface)',
+                color: isActive ? '#1A7F1F' : 'var(--zh-color-text-disabled)',
+                fontWeight: isActive ? 700 : 400, fontSize: '14px',
+                opacity: isActive ? 1 : 0.45,
+                display: 'flex', alignItems: 'center', gap: '6px',
+              }}>
+                {isActive && <CheckCircle2 size={14} />}
+                {dimLabel(w)}
               </div>
             )
           })}
         </div>
-      )
 
-      // ── Schritt 8: Übertrag Unfallschwere (automatisch) ──
-      case 8: return (
-        <div>
-          <StepHeader nr={8} titel={t('scoring.step8Title')} normRef="TBA-Fachkurs FK RSI, Folie 6" auto />
-          <p style={{ fontSize: '13px', color: 'var(--zh-color-text-muted)', marginBottom: '20px' }}>
-            Relevanz SD <strong>{dimensionLabel(relevanzSD!)}</strong> (Zeile) × Unfallschwere <strong>{nacaLabel(nacaSchwere!, t)}</strong> (Spalte) — Schnittpunkt ergibt das Unfallrisiko.
-          </p>
-          <Matrix type="unfallrisiko" highlightRow={relevanzSD ?? undefined} highlightCol={nacaSchwere ?? undefined} />
-          <WeiterBtn onClick={() => setShowFeedback(true)} />
-        </div>
-      )
+        <p style={{ fontSize: '13px', color: 'var(--zh-color-text-muted)', marginBottom: '12px' }}>
+          Deine Wichtigkeit <strong style={{ color: 'var(--zh-blau)' }}>{dimLabel(wichtigkeit!)}</strong> wird in die Relevanz-Matrix eingetragen:
+        </p>
 
-      // ── Schritt 9: Unfallrisiko (Ergebnis, automatisch) ──
-      default: return null
-    }
+        <CompactMatrix type="relevanz" highlightRow={wichtigkeit ?? undefined} />
+
+        <WeiterBtn
+          label={`${t('scoring.nextBtn')} zur Abweichung`}
+          onClick={() => setPhase('B')}
+        />
+      </div>
+    )
   }
 
-  // ── Feedback-Screen ──
-  function renderFeedback() {
-    const ca = deficit.correctAssessment
-    const correct = [
-      wichtigkeit === ca.wichtigkeit,
-      true,
-      abweichung === ca.abweichung,
-      true,
-      relevanzSD === ca.relevanzSD,
-      true,
-      nacaSchwere === ca.unfallschwere,
-      true,
-      unfallrisiko === ca.unfallrisiko,
-    ]
-    const stepLabels = [
-      t('scoring.step1Title'), t('scoring.step2Title'), t('scoring.step3Title'),
-      t('scoring.step4Title'), t('scoring.step5Title'), t('scoring.step6Title'),
-      t('scoring.step7Title'), t('scoring.step8Title'), t('scoring.step9Title'),
-    ]
-    const userAnswers = [
-      wichtigkeit ? dimensionLabel(wichtigkeit) : '—',
-      '✓',
-      abweichung ? dimensionLabel(abweichung) : '—',
-      '✓',
-      relevanzSD ? dimensionLabel(relevanzSD) : '—',
-      '✓',
-      nacaSchwere ? nacaLabel(nacaSchwere, t) : '—',
-      '✓',
-      unfallrisiko ? dimensionLabel(unfallrisiko) : '—',
-    ]
-    const correctAnswers = [
-      dimensionLabel(ca.wichtigkeit),
-      '✓',
-      dimensionLabel(ca.abweichung),
-      '✓',
-      dimensionLabel(ca.relevanzSD),
-      '✓',
-      nacaLabel(ca.unfallschwere, t),
-      '✓',
-      dimensionLabel(ca.unfallrisiko),
-    ]
-    const pts = calcScore()
+  // ── PHASE B: Abweichung auswaehlen ──
+  function renderPhaseB() {
+    return (
+      <div>
+        <h3 style={{ fontSize: '17px', fontWeight: 700, color: 'var(--zh-color-text)', marginBottom: '3px' }}>
+          {t('scoring.abweichung_titel')}
+        </h3>
+        <p style={{ fontSize: '11px', color: 'var(--zh-color-text-disabled)', marginBottom: '12px' }}>
+          Quelle: TBA-Fachkurs FK RSI, Folie 3
+        </p>
+
+        <NormhierarchieKompakt />
+
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+          {ABWEICHUNG_KATEGORIEN.map(k => {
+            const isActive = abweichung === k.wert
+            return (
+              <button
+                key={k.wert}
+                onClick={() => { if (!abweichung) setAbweichung(k.wert) }}
+                style={{
+                  padding: '10px 14px', borderRadius: 'var(--zh-radius-btn)',
+                  border: isActive ? '2px solid #1A7F1F' : '1.5px solid var(--zh-color-border)',
+                  background: isActive ? 'rgba(26,127,31,0.08)' : 'var(--zh-color-surface)',
+                  textAlign: 'left',
+                  cursor: abweichung ? 'default' : 'pointer',
+                  transition: 'all 0.15s', fontFamily: 'var(--zh-font)',
+                  display: 'flex', alignItems: 'flex-start', gap: '10px',
+                }}
+              >
+                <span style={{ marginTop: '2px', flexShrink: 0 }}>
+                  {isActive
+                    ? <CheckCircle2 size={15} style={{ color: '#1A7F1F' }} />
+                    : <div style={{ width: '15px', height: '15px', borderRadius: '50%', border: '1.5px solid var(--zh-color-border)' }} />}
+                </span>
+                <span>
+                  <span style={{ fontSize: '14px', fontWeight: isActive ? 700 : 500, color: isActive ? '#1A7F1F' : 'var(--zh-color-text)', display: 'block' }}>
+                    {k.label}
+                  </span>
+                  <span style={{ fontSize: '12px', color: 'var(--zh-color-text-muted)', marginTop: '2px', display: 'block' }}>
+                    {k.beschreibung}
+                  </span>
+                </span>
+              </button>
+            )
+          })}
+        </div>
+
+        {abweichung && (
+          <p style={{ fontSize: '12px', color: 'var(--zh-color-text-disabled)', marginTop: '10px' }}>
+            Wird übertragen…
+          </p>
+        )}
+      </div>
+    )
+  }
+
+  // ── PHASE C: Relevanz SD Ergebnis ──
+  function renderPhaseC() {
+    return (
+      <div>
+        <h3 style={{ fontSize: '17px', fontWeight: 700, color: 'var(--zh-color-text)', marginBottom: '3px' }}>
+          {t('scoring.relevanz_titel')}
+        </h3>
+        <p style={{ fontSize: '11px', color: 'var(--zh-color-text-disabled)', marginBottom: '16px' }}>
+          Quelle: TBA-Fachkurs FK RSI, Folie 4 / SN 641 723 Abb. 2
+        </p>
+
+        <CompactMatrix
+          type="relevanz"
+          highlightRow={wichtigkeit ?? undefined}
+          highlightCol={abweichung ?? undefined}
+          showIntersection
+        />
+
+        <div style={{ marginTop: '16px' }}>
+          <ResultBadge label="RSI: Relevanz SD" value={relevanzSD!} />
+        </div>
+
+        <InfoBox text={t('scoring.relevanz_proxy')} />
+
+        <WeiterBtn
+          label={`${t('scoring.nextBtn')} zur Unfallschwere`}
+          onClick={() => setPhase('D')}
+        />
+      </div>
+    )
+  }
+
+  // ── PHASE D: NACA-Gruppe auswaehlen ──
+  const NACA_GRUPPEN: { wert: NACADimension; color: string; titleKey: string; subKey: string }[] = [
+    { wert: 'leicht', color: '#1A7F1F', titleKey: 'scoring.naca_leicht', subKey: 'scoring.naca_leicht_sub' },
+    { wert: 'mittel', color: '#B87300', titleKey: 'scoring.naca_mittel', subKey: 'scoring.naca_mittel_sub' },
+    { wert: 'schwer', color: '#D40053', titleKey: 'scoring.naca_schwer', subKey: 'scoring.naca_schwer_sub' },
+  ]
+
+  function renderPhaseD() {
+    return (
+      <div>
+        <h3 style={{ fontSize: '17px', fontWeight: 700, color: 'var(--zh-color-text)', marginBottom: '3px' }}>
+          {t('scoring.naca_titel')}
+        </h3>
+        <p style={{ fontSize: '11px', color: 'var(--zh-color-text-disabled)', marginBottom: '10px' }}>
+          Quelle: TBA-Fachkurs FK RSI, Folie 5
+        </p>
+
+        {/* bfu-Badge */}
+        <div style={{ display: 'inline-flex', alignItems: 'center', gap: '5px', padding: '3px 10px', borderRadius: '4px', background: 'rgba(184,115,0,0.08)', border: '1px solid rgba(184,115,0,0.3)', marginBottom: '16px' }}>
+          <AlertTriangle size={12} style={{ color: '#B87300' }} />
+          <span style={{ fontSize: '11px', fontWeight: 700, color: '#B87300' }}>Einstiegshilfe bfu · nicht direkt in SN 641 723</span>
+        </div>
+
+        {/* Leitfrage */}
+        <div style={{ padding: '14px 18px', borderRadius: '10px', background: 'rgba(0,64,124,0.06)', border: '1px solid rgba(0,64,124,0.14)', marginBottom: '18px' }}>
+          <p style={{ fontSize: '16px', fontWeight: 700, color: 'var(--zh-dunkelblau)', lineHeight: 1.5, margin: 0 }}>
+            {t('scoring.naca_leitfrage')}
+          </p>
+        </div>
+
+        {/* 3 Gruppenbuttons */}
+        <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
+          {NACA_GRUPPEN.map(g => {
+            const isActive = nacaSchwere === g.wert
+            return (
+              <button
+                key={g.wert}
+                onClick={() => { if (!nacaSchwere) setNacaSchwere(g.wert) }}
+                style={{
+                  padding: '12px 16px',
+                  borderRadius: 'var(--zh-radius-btn)',
+                  border: isActive ? `2px solid ${g.color}` : '1.5px solid var(--zh-color-border)',
+                  background: isActive ? `${g.color}12` : 'var(--zh-color-surface)',
+                  textAlign: 'left',
+                  cursor: nacaSchwere ? 'default' : 'pointer',
+                  transition: 'all 0.15s', fontFamily: 'var(--zh-font)',
+                  width: '100%', maxWidth: '210px',
+                  display: 'flex', flexDirection: 'column', gap: '4px',
+                }}
+              >
+                <span style={{ fontSize: '15px', fontWeight: 700, color: isActive ? g.color : 'var(--zh-color-text)', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                  {isActive && <CheckCircle2 size={14} />}
+                  {t(g.titleKey)}
+                </span>
+                <span style={{ fontSize: '11px', color: 'var(--zh-color-text-muted)', lineHeight: 1.4 }}>
+                  {t(g.subKey)}
+                </span>
+              </button>
+            )
+          })}
+        </div>
+
+        {nacaSchwere && (
+          <p style={{ fontSize: '12px', color: 'var(--zh-color-text-disabled)', marginTop: '10px' }}>
+            Wird übertragen…
+          </p>
+        )}
+      </div>
+    )
+  }
+
+  // ── PHASE D2: Unfallrisiko-Matrix ──
+  function renderPhaseD2() {
+    const selGruppe = NACA_GRUPPEN.find(g => g.wert === nacaSchwere)
+    return (
+      <div>
+        <h3 style={{ fontSize: '17px', fontWeight: 700, color: 'var(--zh-color-text)', marginBottom: '3px' }}>
+          {t('scoring.unfallrisiko_titel')}
+        </h3>
+        <p style={{ fontSize: '11px', color: 'var(--zh-color-text-disabled)', marginBottom: '14px' }}>
+          Quelle: TBA-Fachkurs FK RSI, Folie 6 / SN 641 723 Abb. 2
+        </p>
+
+        {/* Bestätigte NACA-Gruppe */}
+        <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap', marginBottom: '16px' }}>
+          {NACA_GRUPPEN.map(g => {
+            const isActive = g.wert === nacaSchwere
+            return (
+              <div key={g.wert} style={{
+                padding: '8px 14px', borderRadius: 'var(--zh-radius-btn)',
+                border: isActive ? `2px solid ${g.color}` : '1px solid var(--zh-color-border)',
+                background: isActive ? `${g.color}12` : 'var(--zh-color-surface)',
+                opacity: isActive ? 1 : 0.4,
+              }}>
+                <span style={{ fontSize: '14px', fontWeight: 700, color: isActive ? g.color : 'var(--zh-color-text-muted)', display: 'flex', alignItems: 'center', gap: '5px' }}>
+                  {isActive && <CheckCircle2 size={13} />}
+                  {t(g.titleKey)}
+                </span>
+              </div>
+            )
+          })}
+        </div>
+
+        <p style={{ fontSize: '13px', color: 'var(--zh-color-text-muted)', marginBottom: '12px' }}>
+          Relevanz SD <strong style={{ color: 'var(--zh-blau)' }}>{resultLabel(relevanzSD!)}</strong> × Unfallschwere <strong style={{ color: selGruppe?.color }}>{selGruppe ? t(selGruppe.titleKey) : ''}</strong> — Schnittpunkt ergibt das Unfallrisiko:
+        </p>
+
+        <CompactMatrix
+          type="unfallrisiko"
+          highlightRow={relevanzSD ?? undefined}
+          highlightCol={nacaSchwere ?? undefined}
+          showIntersection
+        />
+
+        <div style={{ marginTop: '16px' }}>
+          <ResultBadge label="RSI: Unfallrisiko" value={unfallrisiko!} />
+        </div>
+
+        <WeiterBtn label={t('scoring.resultTitle')} onClick={() => setPhase('E')} />
+      </div>
+    )
+  }
+
+  // ── PHASE E: Auswertung ──
+  function renderPhaseE() {
+    const pts    = calcScore()
     const maxPts = Math.round(STEP_WEIGHTS.reduce((s, w) => s + w, 0) * STEP_WEIGHT_UNIT)
-    const allCorrect = correct.every(Boolean)
+    const finalCorrect = unfallrisiko === ca.unfallrisiko
+
+    const decisions: { label: string; user: string; correct: string; ok: boolean }[] = [
+      {
+        label: t('scoring.phase_a'),
+        user:    wichtigkeit  ? dimLabel(wichtigkeit)          : '—',
+        correct: dimLabel(ca.wichtigkeit),
+        ok:      wichtigkeit === ca.wichtigkeit,
+      },
+      {
+        label: t('scoring.phase_b'),
+        user:    abweichung   ? dimLabel(abweichung)           : '—',
+        correct: dimLabel(ca.abweichung),
+        ok:      abweichung === ca.abweichung,
+      },
+      {
+        label: t('scoring.phase_c'),
+        user:    relevanzSD   ? resultLabel(relevanzSD)        : '—',
+        correct: resultLabel(ca.relevanzSD),
+        ok:      relevanzSD === ca.relevanzSD,
+      },
+      {
+        label: t('scoring.phase_d'),
+        user:    nacaSchwere  ? nacaGruppeLabel(nacaSchwere)   : '—',
+        correct: nacaGruppeLabel(ca.unfallschwere),
+        ok:      nacaSchwere === ca.unfallschwere,
+      },
+      {
+        label: t('scoring.unfallrisiko_titel'),
+        user:    unfallrisiko ? resultLabel(unfallrisiko)      : '—',
+        correct: resultLabel(ca.unfallrisiko),
+        ok:      finalCorrect,
+      },
+    ]
+
+    // Punkte pro Benutzerentscheid (Schritt 1,3,5,7,9 aus STEP_WEIGHTS)
+    const entscheidungsPts = [
+      Math.round(STEP_WEIGHTS[0] * STEP_WEIGHT_UNIT), // Wichtigkeit
+      Math.round(STEP_WEIGHTS[2] * STEP_WEIGHT_UNIT), // Abweichung
+      Math.round(STEP_WEIGHTS[4] * STEP_WEIGHT_UNIT), // Relevanz SD
+      Math.round(STEP_WEIGHTS[6] * STEP_WEIGHT_UNIT), // NACA
+      Math.round(STEP_WEIGHTS[8] * STEP_WEIGHT_UNIT), // Unfallrisiko
+    ]
+    const autoBonus = Math.round(
+      (STEP_WEIGHTS[1] + STEP_WEIGHTS[3] + STEP_WEIGHTS[5] + STEP_WEIGHTS[7]) * STEP_WEIGHT_UNIT
+    )
+    const allCorrect = decisions.every(d => d.ok)
 
     return (
       <div>
-        {/* Ergebnis-Header */}
-        <div style={{ marginBottom: '24px' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '8px' }}>
-            <span style={{ fontSize: '11px', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.12em', padding: '3px 10px', borderRadius: '4px', background: '#D40053', color: 'white' }}>
-              RSI: Unfallrisiko
-            </span>
-            <span style={{ fontSize: '26px', fontWeight: 900, color: resultColor(unfallrisiko!) }}>
-              {dimensionLabel(unfallrisiko!)}
-            </span>
-          </div>
-          <p style={{ fontSize: '12px', color: 'var(--zh-color-text-muted)' }}>
-            Normref: TBA-Fachkurs FK RSI, Folie 6 / SN 641 723 Abb. 2
-          </p>
+        {/* Ergebnis-Vergleich oben */}
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px', marginBottom: '20px' }}>
+          {[
+            { labelKey: 'scoring.deine_wahl',    value: unfallrisiko, isUser: true  },
+            { labelKey: 'scoring.korrekte_wahl', value: ca.unfallrisiko, isUser: false },
+          ].map(({ labelKey, value, isUser }) => (
+            <div key={labelKey} style={{
+              padding: '14px', borderRadius: '10px',
+              background: isUser
+                ? (finalCorrect ? 'rgba(26,127,31,0.08)' : 'rgba(212,0,83,0.06)')
+                : 'rgba(26,127,31,0.08)',
+              border: isUser
+                ? (finalCorrect ? '1.5px solid #1A7F1F44' : '1.5px solid #D4005344')
+                : '1.5px solid #1A7F1F44',
+            }}>
+              <p style={{ fontSize: '11px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', color: 'var(--zh-color-text-muted)', marginBottom: '6px' }}>
+                {t(labelKey)}
+              </p>
+              <p style={{ fontSize: '10px', color: 'var(--zh-color-text-disabled)', marginBottom: '4px' }}>
+                Unfallrisiko:
+              </p>
+              <p style={{ fontSize: '20px', fontWeight: 900, color: resultColor(value as ResultDimension) }}>
+                {resultLabel(value as ResultDimension).toUpperCase()}
+              </p>
+              {isUser && finalCorrect && (
+                <p style={{ fontSize: '12px', fontWeight: 700, color: '#1A7F1F', marginTop: '4px' }}>
+                  {t('scoring.korrekt')} ✓
+                </p>
+              )}
+            </div>
+          ))}
         </div>
 
-        {/* Unfallrisiko-Matrix Ergebnis */}
-        <div style={{ marginBottom: '24px' }}>
-          <Matrix type="unfallrisiko" highlightRow={relevanzSD ?? undefined} highlightCol={nacaSchwere ?? undefined} showIntersection />
+        {/* Entscheidungstabelle (5 Zeilen) */}
+        <div style={{ borderRadius: '8px', border: '1px solid var(--zh-color-border)', overflow: 'hidden', marginBottom: '16px' }}>
+          {decisions.map((d, i) => (
+            <div key={i} style={{
+              display: 'grid', gridTemplateColumns: '1fr 1fr 1fr 20px',
+              alignItems: 'center', gap: '8px',
+              padding: '9px 14px',
+              borderBottom: i < decisions.length - 1 ? '1px solid var(--zh-color-border)' : 'none',
+              background: d.ok ? 'rgba(26,127,31,0.03)' : 'rgba(212,0,83,0.03)',
+            }}>
+              <span style={{ fontSize: '12px', fontWeight: 600, color: 'var(--zh-color-text)' }}>{d.label}</span>
+              <span style={{ fontSize: '12px', fontWeight: 700, color: d.ok ? '#1A7F1F' : '#D40053' }}>{d.user}</span>
+              <span style={{ fontSize: '11px', color: 'var(--zh-color-text-muted)' }}>{!d.ok && `→ ${d.correct}`}</span>
+              {d.ok
+                ? <CheckCircle2 size={14} style={{ color: '#1A7F1F', flexShrink: 0 }} />
+                : <XCircle     size={14} style={{ color: '#D40053', flexShrink: 0 }} />}
+            </div>
+          ))}
         </div>
 
-        {/* Alle 9 Schritte */}
-        <div style={{ marginBottom: '20px' }}>
-          <p style={{ fontSize: '13px', fontWeight: 700, color: 'var(--zh-color-text)', marginBottom: '10px' }}>{t('scoring.allSteps')}:</p>
-          <div
-            style={{
-              borderRadius: 'var(--zh-radius-card)',
-              border: '1px solid var(--zh-color-border)',
-              overflow: 'hidden',
-            }}
-          >
-            {stepLabels.map((label, i) => (
-              <div
-                key={i}
-                style={{
-                  display: 'grid',
-                  gridTemplateColumns: '24px 24px 1fr 1fr 1fr',
-                  alignItems: 'center',
-                  gap: '10px',
-                  padding: '10px 16px',
-                  borderBottom: i < 8 ? '1px solid var(--zh-color-border)' : 'none',
-                  background: correct[i] ? 'rgba(26,127,31,0.04)' : 'rgba(212,0,83,0.04)',
-                }}
-              >
-                <span style={{ fontSize: '11px', color: 'var(--zh-color-text-disabled)', fontWeight: 700, fontFamily: 'monospace' }}>{i + 1}</span>
-                {correct[i]
-                  ? <CheckCircle2 size={15} style={{ color: '#1A7F1F' }} />
-                  : <XCircle size={15} style={{ color: '#D40053' }} />}
-                <span style={{ fontSize: '12px', fontWeight: 600, color: 'var(--zh-color-text)' }}>{label}</span>
-                <span style={{ fontSize: '12px', color: correct[i] ? '#1A7F1F' : '#D40053', fontWeight: correct[i] ? 400 : 700 }}>
-                  {userAnswers[i]}
-                </span>
-                <span style={{ fontSize: '12px', color: 'var(--zh-color-text-muted)' }}>
-                  {!correct[i] && `→ ${correctAnswers[i]}`}
-                </span>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        {/* Punkte */}
-        <div
-          style={{
-            padding: '20px',
-            borderRadius: 'var(--zh-radius-card)',
-            background: allCorrect ? 'rgba(26,127,31,0.08)' : 'rgba(0,118,189,0.06)',
-            border: `1px solid ${allCorrect ? '#1A7F1F33' : 'var(--zh-color-border)'}`,
-            marginBottom: '20px',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-          }}
-        >
-          <div>
-            <p style={{ fontSize: '13px', color: 'var(--zh-color-text-muted)', marginBottom: '4px' }}>{t('scoring.pointsEarned')}</p>
-            <p style={{ fontSize: '28px', fontWeight: 900, color: allCorrect ? '#1A7F1F' : 'var(--zh-color-accent)' }}>
-              {pts} <span style={{ fontSize: '16px', fontWeight: 500 }}>/ {maxPts} {t('score.points')}</span>
+        {/* Punktevergabe */}
+        <div style={{
+          padding: '16px', borderRadius: '8px',
+          background: allCorrect ? 'rgba(26,127,31,0.08)' : 'rgba(0,64,124,0.05)',
+          border: `1px solid ${allCorrect ? '#1A7F1F33' : 'var(--zh-color-border)'}`,
+          marginBottom: '16px',
+        }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
+            <p style={{ fontSize: '13px', fontWeight: 700, color: 'var(--zh-color-text)', margin: 0 }}>
+              {t('scoring.punkte_erhalten')}
+            </p>
+            <p style={{ margin: 0, fontSize: '22px', fontWeight: 900, color: allCorrect ? '#1A7F1F' : 'var(--zh-dunkelblau)' }}>
+              {pts} <span style={{ fontSize: '13px', fontWeight: 500, color: 'var(--zh-color-text-muted)' }}>/ {maxPts} Pkt.</span>
             </p>
           </div>
           {allCorrect && (
-            <div style={{ fontSize: '13px', fontWeight: 700, color: '#1A7F1F' }}>{t('scoring.allCorrect')}</div>
+            <p style={{ fontSize: '12px', fontWeight: 700, color: '#1A7F1F', marginBottom: '10px' }}>
+              {t('scoring.allCorrect')}
+            </p>
           )}
-        </div>
-
-        {/* Defizit-Info */}
-        <div style={{ marginBottom: '20px' }}>
-          <p style={{ fontSize: '11px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.12em', color: 'var(--zh-color-text-disabled)', marginBottom: '6px' }}>{t('scoring.normRefs')}</p>
-          <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
-            {deficit.normRefs.map(r => (
-              <span key={r} style={{ padding: '3px 9px', borderRadius: '4px', fontSize: '11px', fontWeight: 700, background: 'rgba(0,118,189,0.08)', color: 'var(--zh-blau)' }}>{r}</span>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '3px' }}>
+            {decisions.map((d, i) => (
+              <div key={i} style={{ display: 'flex', justifyContent: 'space-between', fontSize: '12px' }}>
+                <span style={{ color: 'var(--zh-color-text-muted)' }}>{d.label}</span>
+                <span style={{ fontWeight: 700, color: d.ok ? '#1A7F1F' : '#D40053' }}>
+                  {d.ok ? `+${entscheidungsPts[i]}` : '0'} Pkt.
+                  {!d.ok && <span style={{ fontWeight: 400, color: 'var(--zh-color-text-disabled)' }}> (falsch)</span>}
+                </span>
+              </div>
             ))}
+            <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '12px', marginTop: '6px', paddingTop: '6px', borderTop: '1px solid var(--zh-color-border)' }}>
+              <span style={{ color: 'var(--zh-color-text-disabled)' }}>Übertrag-Schritte (automatisch)</span>
+              <span style={{ fontWeight: 700, color: '#1A7F1F' }}>+{autoBonus} Pkt.</span>
+            </div>
           </div>
         </div>
 
+        {/* Normreferenzen */}
+        {deficit.normRefs.length > 0 && (
+          <div style={{ marginBottom: '16px' }}>
+            <p style={{ fontSize: '11px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.1em', color: 'var(--zh-color-text-disabled)', marginBottom: '6px' }}>
+              {t('scoring.normRefs')}
+            </p>
+            <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
+              {deficit.normRefs.map(r => (
+                <span key={r} style={{ padding: '3px 9px', borderRadius: '4px', fontSize: '11px', fontWeight: 700, background: 'rgba(0,118,189,0.08)', color: 'var(--zh-blau)' }}>
+                  {r}
+                </span>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Buttons */}
         <button
-          onClick={handleSave}
+          onClick={() => onComplete(pts)}
           style={{
-            width: '100%',
-            padding: '14px',
+            width: '100%', padding: '12px 20px',
             borderRadius: 'var(--zh-radius-btn)',
             background: 'var(--zh-dunkelblau)',
-            color: 'white',
-            fontWeight: 700,
-            fontSize: '15px',
-            cursor: 'pointer',
-            border: 'none',
+            color: 'white', fontWeight: 700, fontSize: '14px',
+            cursor: 'pointer', border: 'none', fontFamily: 'var(--zh-font)',
           }}
         >
-          {t('scoring.saveContinue')} →
+          {t('scoring.weiter_suchen')} →
         </button>
       </div>
     )
   }
 
+  // ── Render ──
+  function renderContent() {
+    switch (phase) {
+      case 'A':  return renderPhaseA()
+      case 'A2': return renderPhaseA2()
+      case 'B':  return renderPhaseB()
+      case 'C':  return renderPhaseC()
+      case 'D':  return renderPhaseD()
+      case 'D2': return renderPhaseD2()
+      case 'E':  return renderPhaseE()
+    }
+  }
+
   return (
-    <div
-      style={{
-        flex: 1,
-        overflow: 'auto',
-        background: 'var(--zh-color-bg)',
-        display: 'flex',
-        flexDirection: 'column',
-      }}
-    >
+    <div style={{ flex: 1, overflow: 'auto', background: 'var(--zh-color-bg)', display: 'flex', flexDirection: 'column' }}>
+
       {/* Header */}
-      <div style={{ padding: '20px 32px 16px', borderBottom: '1px solid var(--zh-color-border)' }}>
+      <div style={{ padding: '16px 24px 14px', borderBottom: '1px solid var(--zh-color-border)', flexShrink: 0 }}>
         <button
           onClick={onBack}
-          style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '13px', color: 'var(--zh-color-text-muted)', fontWeight: 500, marginBottom: '12px', cursor: 'pointer', background: 'none', border: 'none', padding: 0 }}
+          style={{
+            display: 'flex', alignItems: 'center', gap: '6px',
+            fontSize: '13px', color: 'var(--zh-color-text-muted)', fontWeight: 500,
+            marginBottom: '10px', cursor: 'pointer',
+            background: 'none', border: 'none', padding: 0, fontFamily: 'var(--zh-font)',
+          }}
         >
           <ArrowLeft size={14} /> {t('scenes.back')}
         </button>
-        <div style={{ marginBottom: '8px' }}>
-          <p style={{ fontSize: '12px', color: 'var(--zh-color-text-muted)', marginBottom: '3px' }}>
-            {ml(scene.nameI18n, lang)} · {scene.kontext === 'io' ? t('admin.innerorts') : t('admin.ausserorts')}
-          </p>
-          <h2 style={{ fontSize: '18px', fontWeight: 700, color: 'var(--zh-color-text)' }}>
-            {ml(deficit.nameI18n, lang)}
-          </h2>
-          <p style={{ fontSize: '13px', color: 'var(--zh-color-text-muted)', marginTop: '3px' }}>
-            {ml(deficit.beschreibungI18n, lang)}
-          </p>
-        </div>
-        {!showFeedback && <ProgressBar step={step} />}
+
+        <p style={{ fontSize: '12px', color: 'var(--zh-color-text-muted)', marginBottom: '2px' }}>
+          {ml(scene.nameI18n, lang)} · {scene.kontext === 'io' ? t('admin.innerorts') : t('admin.ausserorts')}
+        </p>
+        <h2 style={{ fontSize: '17px', fontWeight: 700, color: 'var(--zh-color-text)', marginBottom: '2px' }}>
+          {ml(deficit.nameI18n, lang)}
+        </h2>
+        <p style={{ fontSize: '12px', color: 'var(--zh-color-text-muted)', marginBottom: '10px' }}>
+          {ml(deficit.beschreibungI18n, lang)}
+        </p>
+
+        {phase !== 'E' && <PhaseProgress phase={phase} />}
       </div>
 
-      {/* Inhalt */}
-      <div style={{ flex: 1, overflow: 'auto', padding: '24px 32px' }}>
+      {/* Inhalt scrollbar */}
+      <div style={{ flex: 1, overflowY: 'auto', padding: '20px 24px 40px' }}>
         <AnimatePresence mode="wait">
           <motion.div
-            key={showFeedback ? 'feedback' : step}
-            initial={{ opacity: 0, x: 16 }}
+            key={phase}
+            initial={{ opacity: 0, x: 14 }}
             animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: -16 }}
-            transition={{ duration: 0.18 }}
+            exit={{ opacity: 0, x: -14 }}
+            transition={{ duration: 0.16 }}
           >
-            {showFeedback ? renderFeedback() : renderStep()}
+            {renderContent()}
           </motion.div>
         </AnimatePresence>
       </div>
     </div>
-  )
-}
-
-// ── Hilfs-Subkomponenten ──
-function StepHeader({ nr, titel, normRef, auto }: { nr: number; titel: string; normRef: string; auto?: boolean }) {
-  const { t } = useTranslation()
-  return (
-    <div style={{ marginBottom: '20px' }}>
-      <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '6px' }}>
-        <span style={{
-          width: '28px', height: '28px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center',
-          background: auto ? 'var(--zh-color-bg-tertiary)' : 'var(--zh-dunkelblau)',
-          color: auto ? 'var(--zh-color-text-muted)' : 'white',
-          fontSize: '13px', fontWeight: 800, flexShrink: 0,
-        }}>{nr}</span>
-        <h3 style={{ fontSize: '17px', fontWeight: 700, color: 'var(--zh-color-text)' }}>{titel}</h3>
-        {auto && (
-          <span style={{ fontSize: '10px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.1em', padding: '2px 7px', borderRadius: '4px', background: 'var(--zh-color-bg-tertiary)', color: 'var(--zh-color-text-disabled)' }}>
-            {t('scoring.auto')}
-          </span>
-        )}
-      </div>
-      <p style={{ fontSize: '11px', color: 'var(--zh-color-text-disabled)', paddingLeft: '38px' }}>
-        Quelle: {normRef}
-      </p>
-    </div>
-  )
-}
-
-function WeiterBtn({ onClick }: { onClick: () => void }) {
-  const { t } = useTranslation()
-  return (
-    <button
-      onClick={onClick}
-      style={{
-        marginTop: '24px',
-        padding: '12px 28px',
-        borderRadius: 'var(--zh-radius-btn)',
-        background: 'var(--zh-dunkelblau)',
-        color: 'white',
-        fontWeight: 700,
-        fontSize: '14px',
-        cursor: 'pointer',
-        border: 'none',
-      }}
-    >
-      {t('scoring.nextBtn')} →
-    </button>
   )
 }
