@@ -1,5 +1,5 @@
 // RSI VR Tool – App-Orchestrator Phase 2+
-// Views: landing | topics | scenes | viewer | scoring | szenenabschluss | admin | ranking
+// Views: landing | topics | scenes | einstieg | viewer | scoring | szenenabschluss | admin | ranking
 // FaSi Kanton Zürich · ZH Corporate Design
 
 import { useState, useEffect } from 'react'
@@ -19,14 +19,16 @@ import ScoringFlow     from './components/ScoringFlow'
 import SzenenAbschluss from './components/SzenenAbschluss'
 import AdminDashboard  from './components/AdminDashboard'
 import RankingView     from './components/RankingView'
+import TrainingEinstieg from './components/TrainingEinstieg'
 
-type View = 'landing' | 'topics' | 'scenes' | 'viewer' | 'scoring' | 'szenenabschluss' | 'admin' | 'ranking'
+type View = 'landing' | 'topics' | 'scenes' | 'einstieg' | 'viewer' | 'scoring' | 'szenenabschluss' | 'admin' | 'ranking'
 
 export default function App() {
   const [view, setView]     = useState<View>('landing')
   const [username, setUsername] = useState('')
   const [score, setScore]   = useState(0)
   const [theme, setTheme]   = useState<'light' | 'dark'>('light')
+  const [kursId, setKursId] = useState<string | null>(null)
 
   const [currentTopic, setCurrentTopic] = useState<AppTopic | null>(null)
   const [currentScene, setCurrentScene] = useState<AppScene | null>(null)
@@ -49,6 +51,7 @@ export default function App() {
       setUsername(session.username)
       setScore(session.score)
     }
+    if (session.kursId) setKursId(session.kursId)
     const saved = (localStorage.getItem('rsi-theme') as 'light' | 'dark') ?? 'light'
     setTheme(saved)
     document.documentElement.setAttribute('data-theme', saved)
@@ -61,12 +64,14 @@ export default function App() {
     document.documentElement.setAttribute('data-theme', next)
   }
 
-  function handleLogin(name: string) {
+  function handleLogin(name: string, kursCode: string | null) {
     const session = getSession()
     session.username = name
+    session.kursId = kursCode
     saveSession(session)
     setUsername(name)
     setScore(session.score)
+    setKursId(kursCode)
     setView('topics')
   }
 
@@ -75,7 +80,7 @@ export default function App() {
     setView('scenes')
   }
 
-  // Szene starten → Viewer oeffnen
+  // Szene starten → Einstieg-Screen anzeigen
   function handleSelectScene(scene: AppScene) {
     const defs = getDeficits(scene.id)
     if (defs.length === 0) return
@@ -85,6 +90,11 @@ export default function App() {
     setHintActive(false)
     setSceneScore(0)
     setScoringDeficit(null)
+    setView('einstieg')
+  }
+
+  // Einstieg bestaetigt → Viewer oeffnen
+  function handleEinstiegStart() {
     setView('viewer')
   }
 
@@ -141,6 +151,8 @@ export default function App() {
       score,
       scenesCount: session.completedScenes.length,
       timestamp: new Date().toISOString(),
+      kursId: kursId ?? null,
+      stunde: new Date().toISOString().slice(0, 10),
     })
 
     setView('szenenabschluss')
@@ -222,6 +234,17 @@ export default function App() {
             </motion.div>
           )}
 
+          {view === 'einstieg' && currentScene && currentTopic && (
+            <motion.div key="einstieg" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} transition={{ duration: 0.2 }} className="flex-1 flex flex-col">
+              <TrainingEinstieg
+                scene={currentScene}
+                topic={currentTopic}
+                onStart={handleEinstiegStart}
+                onBack={() => setView('scenes')}
+              />
+            </motion.div>
+          )}
+
           {view === 'viewer' && currentScene && (
             <motion.div key="viewer" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.15 }} className="flex-1 flex flex-col" style={{ overflow: 'hidden' }}>
               <SceneViewer
@@ -265,7 +288,7 @@ export default function App() {
 
           {view === 'admin' && (
             <motion.div key="admin" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.2 }} className="flex-1 flex" style={{ overflow: 'hidden' }}>
-              <AdminDashboard onBack={() => setView('topics')} />
+              <AdminDashboard />
             </motion.div>
           )}
 

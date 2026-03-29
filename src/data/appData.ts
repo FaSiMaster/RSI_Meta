@@ -17,21 +17,34 @@ export type DefizitKategorie =
   | 'verkehrsablauf'
   | 'baustelle'
 
+// Strassenmerkmal (neu)
+export interface StrassenMerkmal {
+  labelI18n: MultiLang
+  wertI18n: MultiLang
+}
+
 export interface AppTopic {
   id: string
   nameI18n: MultiLang
   beschreibungI18n: MultiLang
-  iconKey: 'walk' | 'bike' | 'junction' | 'construction'
+  iconKey?: 'walk' | 'bike' | 'junction' | 'construction'
   sortOrder: number
   isActive: boolean
+  parentTopicId?: string | null
+  gruppenId?: string | null
+  createdAt?: number
 }
 
 export interface AppScene {
   id: string
   topicId: string
   nameI18n: MultiLang
+  beschreibungI18n?: MultiLang
   kontext: 'io' | 'ao'
   bildUrl?: string
+  strassenmerkmale?: StrassenMerkmal[]
+  vorschauBilder?: string[]
+  panoramaBildUrl?: string | null
   isActive: boolean
 }
 
@@ -64,13 +77,17 @@ export interface UserSession {
   username: string
   score: number
   completedScenes: string[]
+  kursId?: string | null
 }
 
 export interface RankingEntry {
+  id?: string
   username: string
   score: number
   scenesCount: number
   timestamp: string
+  kursId?: string | null
+  stunde?: string | null
 }
 
 // Gefundenes Defizit innerhalb einer Szenen-Session
@@ -91,6 +108,23 @@ export interface SceneSession {
   completed:     boolean
 }
 
+// Kurs (neu)
+export interface Kurs {
+  id: string
+  name: string
+  datum: string
+  zugangscode: string
+  topicIds: string[]
+  isActive: boolean
+  createdAt: number
+}
+
+// Topic-Hierarchie-Knoten (neu)
+export interface TopicNode {
+  topic: AppTopic
+  children: AppTopic[]
+}
+
 // ── Storage-Keys ──
 const K_TOPICS        = 'rsi-v3-topics'
 const K_SCENES        = 'rsi-v3-scenes'
@@ -99,32 +133,69 @@ const K_SESSION       = 'rsi-v3-session'
 const K_RANKING       = 'rsi-v3-ranking'
 const K_INIT          = 'rsi-v3-init'
 const K_SCENE_SESSION = 'rsi-v3-scene-session'
+const K_KURSE         = 'rsi-v3-kurse'
 
 // ── Platzhalter-Daten ──
 const DEFAULT_TOPICS: AppTopic[] = [
-  { id: 'fuss',   iconKey: 'walk',         sortOrder: 1, isActive: true,
+  { id: 'fuss',   iconKey: 'walk',         sortOrder: 1, isActive: true, parentTopicId: null, createdAt: 1704067200000,
     nameI18n:        { de: 'Fussverkehr',  fr: 'Piétons',    it: 'Pedoni',   en: 'Pedestrians'  },
     beschreibungI18n:{ de: 'Gehwege, Querungen und Fussgaengerbereiche.', fr: 'Trottoirs et traversées.', it: 'Marciapiedi e attraversamenti.', en: 'Footpaths and crossings.' } },
-  { id: 'velo',   iconKey: 'bike',         sortOrder: 2, isActive: true,
+  { id: 'velo',   iconKey: 'bike',         sortOrder: 2, isActive: true, parentTopicId: null, createdAt: 1704067200000,
     nameI18n:        { de: 'Veloverkehr',  fr: 'Cyclistes',  it: 'Ciclisti', en: 'Cyclists'     },
     beschreibungI18n:{ de: 'Radwege, Radstreifen und Knotenpunkte.', fr: 'Pistes et bandes cyclables.', it: 'Piste e corsie ciclabili.', en: 'Cycle paths and lanes.' } },
-  { id: 'knoten', iconKey: 'junction',     sortOrder: 3, isActive: true,
+  { id: 'knoten', iconKey: 'junction',     sortOrder: 3, isActive: true, parentTopicId: null, createdAt: 1704067200000,
     nameI18n:        { de: 'Knotenpunkte', fr: 'Carrefours', it: 'Incroci',  en: 'Junctions'    },
     beschreibungI18n:{ de: 'Sichtweiten und Vorfahrtsregelungen.', fr: 'Visibilité et priorités.', it: 'Visibilità e precedenze.', en: 'Sight lines and priority.' } },
-  { id: 'bau',    iconKey: 'construction', sortOrder: 4, isActive: true,
+  { id: 'bau',    iconKey: 'construction', sortOrder: 4, isActive: true, parentTopicId: null, createdAt: 1704067200000,
     nameI18n:        { de: 'Baustellen',   fr: 'Chantiers',  it: 'Cantieri', en: 'Construction'  },
     beschreibungI18n:{ de: 'Absicherung und temporaere Fuehrung.', fr: 'Sécurisation et guidage temporaire.', it: 'Sicurezza e guida temporanea.', en: 'Safety and temporary guidance.' } },
 ]
 
 const DEFAULT_SCENES: AppScene[] = [
-  { id: 'sc1', topicId: 'fuss',   kontext: 'io', isActive: true,
-    nameI18n: { de: 'Innerorts – Gehweg mit Querung', fr: 'Localité – Trottoir avec traversée', it: 'Zona abitata – Marciapiede con attraversamento', en: 'Built-up – Footpath with crossing' } },
-  { id: 'sc2', topicId: 'velo',   kontext: 'ao', isActive: true,
-    nameI18n: { de: 'Ausserorts – Hauptstrasse mit Radstreifen', fr: 'Hors localité – Route principale avec piste cyclable', it: 'Fuori zona – Strada principale con corsia ciclabile', en: 'Rural – Main road with cycle lane' } },
-  { id: 'sc3', topicId: 'knoten', kontext: 'io', isActive: true,
-    nameI18n: { de: 'Kreuzung – eingeschraenkte Sichtweite', fr: 'Carrefour – visibilité réduite', it: 'Incrocio – visibilità ridotta', en: 'Junction – restricted sight line' } },
-  { id: 'sc4', topicId: 'bau',    kontext: 'ao', isActive: true,
-    nameI18n: { de: 'Baustelle – temporaere Verkehrsfuehrung', fr: 'Chantier – guidage temporaire', it: 'Cantiere – guida temporanea', en: 'Construction – temp traffic guidance' } },
+  {
+    id: 'sc1', topicId: 'fuss', kontext: 'io', isActive: true,
+    nameI18n: { de: 'Innerorts – Gehweg mit Querung', fr: 'Localité – Trottoir avec traversée', it: 'Zona abitata – Marciapiede con attraversamento', en: 'Built-up – Footpath with crossing' },
+    beschreibungI18n: { de: 'Innerörtliche Quartierstrasse mit Fussgaengerquerung. Beurteile Sichtverhaeltnisse, Querungsinfrastruktur und Wegfuehrung.', fr: 'Rue de quartier en localité avec traversée piétonne.', it: 'Via di quartiere con attraversamento pedonale.', en: 'Residential street with pedestrian crossing.' },
+    strassenmerkmale: [
+      { labelI18n: { de: 'Signalisierte Geschwindigkeit', fr: 'Vitesse signalisée', it: 'Velocità segnalata', en: 'Posted speed' }, wertI18n: { de: '50 km/h', fr: '50 km/h', it: '50 km/h', en: '50 km/h' } },
+      { labelI18n: { de: 'Kontext', fr: 'Contexte', it: 'Contesto', en: 'Context' }, wertI18n: { de: 'Innerorts', fr: 'En localité', it: 'In zona abitata', en: 'Built-up area' } },
+      { labelI18n: { de: 'Strassentyp', fr: 'Type de route', it: 'Tipo di strada', en: 'Road type' }, wertI18n: { de: 'Quartierstrasse', fr: 'Rue de quartier', it: 'Via di quartiere', en: 'Residential street' } },
+      { labelI18n: { de: 'Verkehrsmittel', fr: 'Moyens de transport', it: 'Mezzi di trasporto', en: 'Transport modes' }, wertI18n: { de: 'MIV, Fussverkehr', fr: 'TIM, piétons', it: 'TIM, pedoni', en: 'MIV, pedestrians' } },
+    ],
+  },
+  {
+    id: 'sc2', topicId: 'velo', kontext: 'ao', isActive: true,
+    nameI18n: { de: 'Ausserorts – Hauptstrasse mit Radstreifen', fr: 'Hors localité – Route principale avec piste cyclable', it: 'Fuori zona – Strada principale con corsia ciclabile', en: 'Rural – Main road with cycle lane' },
+    beschreibungI18n: { de: 'Ausserörtliche Hauptstrasse mit Radstreifen. Beurteile Knotenpunkte, Veloinfrastruktur und Sichtweiten.', fr: 'Route principale hors localité avec piste cyclable.', it: 'Strada principale fuori zona con corsia ciclabile.', en: 'Rural main road with cycle lane.' },
+    strassenmerkmale: [
+      { labelI18n: { de: 'Signalisierte Geschwindigkeit', fr: 'Vitesse signalisée', it: 'Velocità segnalata', en: 'Posted speed' }, wertI18n: { de: '80 km/h', fr: '80 km/h', it: '80 km/h', en: '80 km/h' } },
+      { labelI18n: { de: 'Kontext', fr: 'Contexte', it: 'Contesto', en: 'Context' }, wertI18n: { de: 'Ausserorts', fr: 'Hors localité', it: 'Fuori zona', en: 'Rural area' } },
+      { labelI18n: { de: 'Strassentyp', fr: 'Type de route', it: 'Tipo di strada', en: 'Road type' }, wertI18n: { de: 'Hauptstrasse', fr: 'Route principale', it: 'Strada principale', en: 'Main road' } },
+      { labelI18n: { de: 'Verkehrsmittel', fr: 'Moyens de transport', it: 'Mezzi di trasporto', en: 'Transport modes' }, wertI18n: { de: 'MIV, Velo', fr: 'TIM, vélo', it: 'TIM, bici', en: 'MIV, cycling' } },
+    ],
+  },
+  {
+    id: 'sc3', topicId: 'knoten', kontext: 'io', isActive: true,
+    nameI18n: { de: 'Kreuzung – eingeschraenkte Sichtweite', fr: 'Carrefour – visibilité réduite', it: 'Incrocio – visibilità ridotta', en: 'Junction – restricted sight line' },
+    beschreibungI18n: { de: 'Innerörtliche Kreuzung mit eingeschraenkten Sichtweiten. Beurteile Sichtraum, Markierungen und Signalisation.', fr: 'Carrefour en localité avec visibilité réduite.', it: 'Incrocio in zona con visibilità ridotta.', en: 'Junction with restricted sight lines.' },
+    strassenmerkmale: [
+      { labelI18n: { de: 'Signalisierte Geschwindigkeit', fr: 'Vitesse signalisée', it: 'Velocità segnalata', en: 'Posted speed' }, wertI18n: { de: '50 km/h', fr: '50 km/h', it: '50 km/h', en: '50 km/h' } },
+      { labelI18n: { de: 'Kontext', fr: 'Contexte', it: 'Contesto', en: 'Context' }, wertI18n: { de: 'Innerorts', fr: 'En localité', it: 'In zona abitata', en: 'Built-up area' } },
+      { labelI18n: { de: 'Strassentyp', fr: 'Type de route', it: 'Tipo di strada', en: 'Road type' }, wertI18n: { de: 'Kreuzung', fr: 'Carrefour', it: 'Incrocio', en: 'Junction' } },
+      { labelI18n: { de: 'Verkehrsmittel', fr: 'Moyens de transport', it: 'Mezzi di trasporto', en: 'Transport modes' }, wertI18n: { de: 'MIV, Velo, Fussverkehr', fr: 'TIM, vélo, piétons', it: 'TIM, bici, pedoni', en: 'MIV, cycling, pedestrians' } },
+    ],
+  },
+  {
+    id: 'sc4', topicId: 'bau', kontext: 'ao', isActive: true,
+    nameI18n: { de: 'Baustelle – temporaere Verkehrsfuehrung', fr: 'Chantier – guidage temporaire', it: 'Cantiere – guida temporanea', en: 'Construction – temp traffic guidance' },
+    beschreibungI18n: { de: 'Ausserörtliche Baustelle mit temporaerer Verkehrsfuehrung. Beurteile Absicherung und Fuehrungs-Signalisation.', fr: 'Chantier hors localité avec guidage temporaire.', it: 'Cantiere fuori zona con guida temporanea.', en: 'Rural construction with temporary traffic guidance.' },
+    strassenmerkmale: [
+      { labelI18n: { de: 'Signalisierte Geschwindigkeit', fr: 'Vitesse signalisée', it: 'Velocità segnalata', en: 'Posted speed' }, wertI18n: { de: '60 km/h', fr: '60 km/h', it: '60 km/h', en: '60 km/h' } },
+      { labelI18n: { de: 'Kontext', fr: 'Contexte', it: 'Contesto', en: 'Context' }, wertI18n: { de: 'Ausserorts', fr: 'Hors localité', it: 'Fuori zona', en: 'Rural area' } },
+      { labelI18n: { de: 'Strassentyp', fr: 'Type de route', it: 'Tipo di strada', en: 'Road type' }, wertI18n: { de: 'Baustelle', fr: 'Chantier', it: 'Cantiere', en: 'Construction site' } },
+      { labelI18n: { de: 'Verkehrsmittel', fr: 'Moyens de transport', it: 'Mezzi di trasporto', en: 'Transport modes' }, wertI18n: { de: 'MIV', fr: 'TIM', it: 'TIM', en: 'MIV' } },
+    ],
+  },
 ]
 
 const DEFAULT_DEFICITS: AppDeficit[] = [
@@ -171,9 +242,9 @@ const DEFAULT_DEFICITS: AppDeficit[] = [
 ]
 
 const DEFAULT_RANKING: RankingEntry[] = [
-  { username: 'RSI_Expert',     score: 1500, scenesCount: 4, timestamp: '2026-01-10T10:00:00Z' },
-  { username: 'Max Muster',     score: 1250, scenesCount: 3, timestamp: '2026-01-11T09:30:00Z' },
-  { username: 'SicherheitsPro', score: 980,  scenesCount: 2, timestamp: '2026-01-12T14:20:00Z' },
+  { id: 'seed-1', username: 'RSI_Expert',     score: 1500, scenesCount: 4, timestamp: '2026-01-10T10:00:00Z', kursId: null, stunde: '2026-01-10' },
+  { id: 'seed-2', username: 'Max Muster',     score: 1250, scenesCount: 3, timestamp: '2026-01-11T09:30:00Z', kursId: null, stunde: '2026-01-11' },
+  { id: 'seed-3', username: 'SicherheitsPro', score: 980,  scenesCount: 2, timestamp: '2026-01-12T14:20:00Z', kursId: null, stunde: '2026-01-12' },
 ]
 
 // ── Hilfsfunktionen ──
@@ -214,6 +285,26 @@ export function saveTopic(t: AppTopic): void {
 }
 export function deleteTopic(id: string): void {
   writeJSON(K_TOPICS, getTopics().filter(t => t.id !== id))
+}
+
+// Oberthemen: Topics ohne parentTopicId
+export function getOberthemen(): AppTopic[] {
+  return getTopics().filter(t => !t.parentTopicId)
+}
+
+// Unterthemen: Topics mit parentTopicId === parentId
+export function getUnterthemen(parentId: string): AppTopic[] {
+  return getTopics().filter(t => t.parentTopicId === parentId)
+}
+
+// Topic-Hierarchie als Baumstruktur
+export function getTopicsTree(): TopicNode[] {
+  const all = getTopics()
+  const oberthemen = all.filter(t => !t.parentTopicId)
+  return oberthemen.map(ot => ({
+    topic: ot,
+    children: all.filter(t => t.parentTopicId === ot.id).sort((a, b) => a.sortOrder - b.sortOrder),
+  }))
 }
 
 // ── Scenes ──
@@ -280,17 +371,70 @@ export function clearSceneSession(): void {
   try { localStorage.removeItem(K_SCENE_SESSION) } catch { /* noop */ }
 }
 
+// ── Kurse ──
+export function getKurse(): Kurs[] {
+  return readJSON<Kurs>(K_KURSE, [])
+}
+export function saveKurs(kurs: Kurs): void {
+  const list = getKurse()
+  const i = list.findIndex(x => x.id === kurs.id)
+  if (i >= 0) list[i] = kurs; else list.push(kurs)
+  writeJSON(K_KURSE, list)
+}
+export function deleteKurs(id: string): void {
+  writeJSON(K_KURSE, getKurse().filter(k => k.id !== id))
+}
+
 // ── Ranking ──
 export function getRanking(): RankingEntry[] {
   initIfNeeded()
   return readJSON<RankingEntry>(K_RANKING, DEFAULT_RANKING).sort((a, b) => b.score - a.score)
 }
+
+// Ewige Rangliste: nur Eintraege ohne kursId
+export function getRankingGesamt(): RankingEntry[] {
+  return getRanking().filter(r => !r.kursId)
+}
+
+// Kurs-Rangliste
+export function getRankingByKurs(kursId: string): RankingEntry[] {
+  return readJSON<RankingEntry>(K_RANKING, DEFAULT_RANKING)
+    .filter(r => r.kursId === kursId)
+    .sort((a, b) => b.score - a.score)
+}
+
+// Tagesrangliste nach Datum (YYYY-MM-DD)
+export function getRankingByStunde(datum: string): RankingEntry[] {
+  return readJSON<RankingEntry>(K_RANKING, DEFAULT_RANKING)
+    .filter(r => (r.stunde ?? r.timestamp?.slice(0, 10)) === datum)
+    .sort((a, b) => b.score - a.score)
+}
+
 export function saveRankingEntry(entry: RankingEntry): void {
   const SEED = ['RSI_Expert', 'Max Muster', 'SicherheitsPro']
   const list = readJSON<RankingEntry>(K_RANKING, DEFAULT_RANKING)
     .filter(r => !SEED.includes(r.username) || r.username === entry.username)
-  const idx = list.findIndex(r => r.username === entry.username)
-  if (idx >= 0) { list[idx].score = Math.max(list[idx].score, entry.score); list[idx].scenesCount++ }
-  else list.push(entry)
+
+  // ID und Stunde automatisch setzen
+  const entryWithId: RankingEntry = {
+    ...entry,
+    id: entry.id ?? crypto.randomUUID(),
+    stunde: entry.stunde ?? entry.timestamp.slice(0, 10),
+  }
+
+  // Kurs-Eintraege immer als neuen Eintrag speichern (session-basiert)
+  if (entryWithId.kursId) {
+    list.push(entryWithId)
+  } else {
+    // Ewige Rangliste: nur hoechsten Score je Benutzer behalten
+    const idx = list.findIndex(r => r.username === entryWithId.username && !r.kursId)
+    if (idx >= 0) {
+      list[idx].score = Math.max(list[idx].score, entryWithId.score)
+      list[idx].scenesCount++
+    } else {
+      list.push(entryWithId)
+    }
+  }
+
   writeJSON(K_RANKING, list.sort((a, b) => b.score - a.score))
 }

@@ -32,8 +32,10 @@ function dimensionLabel(v: RSIDimension | ResultDimension): string {
   }
   return map[v] ?? v
 }
-function nacaLabel(v: NACADimension): string {
-  return v === 'leicht' ? 'Leicht (0–1)' : v === 'mittel' ? 'Mittel (2–3)' : 'Schwer (4–7)'
+function nacaLabel(v: NACADimension, t: (key: string) => string): string {
+  return v === 'leicht' ? t('scoring.nacaLeicht')
+       : v === 'mittel' ? t('scoring.nacaMittel')
+       : t('scoring.nacaSchwer')
 }
 
 // ── Relevanz-Matrix (3×3) ──
@@ -171,11 +173,12 @@ function ChoiceBtn({ label, sub, active, onClick }: { label: string; sub?: strin
 
 // ── Fortschrittsbalken ──
 function ProgressBar({ step }: { step: number }) {
+  const { t } = useTranslation()
   return (
     <div style={{ padding: '0 32px', marginBottom: '4px' }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '6px' }}>
         <span style={{ fontSize: '12px', color: 'var(--zh-color-text-muted)', fontWeight: 600 }}>
-          Schritt {step} von 9
+          {t('scoring.stepOf', { step })}
         </span>
         <span style={{ fontSize: '12px', color: 'var(--zh-color-text-disabled)' }}>
           {Math.round((step / 9) * 100)}%
@@ -227,7 +230,7 @@ interface Props {
 }
 
 export default function ScoringFlow({ deficit, scene, onComplete, onBack }: Omit<Props, 'username'> & { username?: string }) {
-  const { i18n } = useTranslation()
+  const { i18n, t } = useTranslation()
   const lang = i18n.language
 
   const [step, setStep] = useState(1)
@@ -281,7 +284,7 @@ export default function ScoringFlow({ deficit, scene, onComplete, onBack }: Omit
       // ── Schritt 1: Wichtigkeit (User-Input) ──
       case 1: return (
         <div>
-          <StepHeader nr={1} titel="Wichtigkeit des Sicherheitskriteriums" normRef="TBA-Fachkurs FK RSI, Folie 1–2" />
+          <StepHeader nr={1} titel={t('scoring.step1Title')} normRef="TBA-Fachkurs FK RSI, Folie 1–2" />
           <div style={{ marginBottom: '16px' }}>
             <p style={{ fontSize: '14px', color: 'var(--zh-color-text-muted)', marginBottom: '6px' }}>
               Kriterium: <strong style={{ color: 'var(--zh-color-text)' }}>{KRITERIUM_LABELS[deficit.kriteriumId] ?? deficit.kriteriumId}</strong>
@@ -291,8 +294,8 @@ export default function ScoringFlow({ deficit, scene, onComplete, onBack }: Omit
             </p>
             <p style={{ fontSize: '13px', color: 'var(--zh-color-text-muted)', marginTop: '8px' }}>
               {deficit.kontext === 'io'
-                ? 'Wie wichtig ist dieses Merkmal innerorts?'
-                : 'Wie wichtig ist dieses Merkmal ausserorts?'}
+                ? t('scoring.step1SubIo')
+                : t('scoring.step1SubAo')}
             </p>
           </div>
           {prefillWichtigkeit && (
@@ -310,7 +313,7 @@ export default function ScoringFlow({ deficit, scene, onComplete, onBack }: Omit
       // ── Schritt 2: Übertrag Wichtigkeit (automatisch) ──
       case 2: return (
         <div>
-          <StepHeader nr={2} titel="Übertrag Wichtigkeit → Relevanz-Matrix" normRef="TBA-Fachkurs FK RSI, Folie 4" auto />
+          <StepHeader nr={2} titel={t('scoring.step2Title')} normRef="TBA-Fachkurs FK RSI, Folie 4" auto />
           <p style={{ fontSize: '13px', color: 'var(--zh-color-text-muted)', marginBottom: '20px' }}>
             Die Wichtigkeit <strong>{dimensionLabel(wichtigkeit!)}</strong> wird auf die Y-Achse der Relevanz-Matrix übertragen.
           </p>
@@ -322,7 +325,7 @@ export default function ScoringFlow({ deficit, scene, onComplete, onBack }: Omit
       // ── Schritt 3: Abweichung (User-Input) ──
       case 3: return (
         <div>
-          <StepHeader nr={3} titel="Abweichung des Sicherheitskriteriums zur Norm" normRef="TBA-Fachkurs FK RSI, Folie 3" />
+          <StepHeader nr={3} titel={t('scoring.step3Title')} normRef="TBA-Fachkurs FK RSI, Folie 3" />
           <div style={{ marginBottom: '16px' }}>
             <p style={{ fontSize: '13px', fontWeight: 700, color: 'var(--zh-color-text)', marginBottom: '10px' }}>Normhierarchie — massgebende Grundlage:</p>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', marginBottom: '16px' }}>
@@ -348,7 +351,7 @@ export default function ScoringFlow({ deficit, scene, onComplete, onBack }: Omit
       // ── Schritt 4: Übertrag Abweichung (automatisch) ──
       case 4: return (
         <div>
-          <StepHeader nr={4} titel="Übertrag Abweichung → Relevanz-Matrix" normRef="TBA-Fachkurs FK RSI, Folie 4" auto />
+          <StepHeader nr={4} titel={t('scoring.step4Title')} normRef="TBA-Fachkurs FK RSI, Folie 4" auto />
           <p style={{ fontSize: '13px', color: 'var(--zh-color-text-muted)', marginBottom: '20px' }}>
             Wichtigkeit <strong>{dimensionLabel(wichtigkeit!)}</strong> (Zeile) × Abweichung <strong>{dimensionLabel(abweichung!)}</strong> (Spalte) — Schnittpunkt ergibt die Relevanz SD.
           </p>
@@ -360,7 +363,7 @@ export default function ScoringFlow({ deficit, scene, onComplete, onBack }: Omit
       // ── Schritt 5: Relevanz SD (Ergebnis, automatisch) ──
       case 5: return (
         <div>
-          <StepHeader nr={5} titel="Ergebnis Sicherheitsdefizit — RSI: Relevanz SD" normRef="TBA-Fachkurs FK RSI, Folie 4 / SN 641 723 Abb. 2" auto />
+          <StepHeader nr={5} titel={t('scoring.step5Title')} normRef="TBA-Fachkurs FK RSI, Folie 4 / SN 641 723 Abb. 2" auto />
           <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '20px' }}>
             <span style={{ fontSize: '11px', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.12em', padding: '3px 10px', borderRadius: '4px', background: '#D40053', color: 'white' }}>
               RSI: Relevanz SD
@@ -378,7 +381,7 @@ export default function ScoringFlow({ deficit, scene, onComplete, onBack }: Omit
       // ── Schritt 6: Übertrag Relevanz SD → Unfallrisiko-Matrix (automatisch) ──
       case 6: return (
         <div>
-          <StepHeader nr={6} titel="Übertrag Relevanz SD → Unfallrisiko-Matrix" normRef="TBA-Fachkurs FK RSI, Folie 6" auto />
+          <StepHeader nr={6} titel={t('scoring.step6Title')} normRef="TBA-Fachkurs FK RSI, Folie 6" auto />
           <p style={{ fontSize: '13px', color: 'var(--zh-color-text-muted)', marginBottom: '20px' }}>
             Relevanz SD <strong>{dimensionLabel(relevanzSD!)}</strong> wird auf die Y-Achse der Unfallrisiko-Matrix übertragen.
           </p>
@@ -390,7 +393,7 @@ export default function ScoringFlow({ deficit, scene, onComplete, onBack }: Omit
       // ── Schritt 7: NACA-Score (User-Input) ──
       case 7: return (
         <div>
-          <StepHeader nr={7} titel="Potenzielle Unfallschwere (NACA-Score)" normRef="TBA-Fachkurs FK RSI, Folie 5" />
+          <StepHeader nr={7} titel={t('scoring.step7Title')} normRef="TBA-Fachkurs FK RSI, Folie 5" />
           {/* Pflicht-Leitfrage */}
           <div style={{ padding: '16px 20px', borderRadius: '10px', background: 'rgba(0,64,124,0.07)', border: '1px solid rgba(0,64,124,0.15)', marginBottom: '16px' }}>
             <p style={{ fontSize: '16px', fontWeight: 700, color: 'var(--zh-dunkelblau)', lineHeight: 1.4 }}>
@@ -411,7 +414,7 @@ export default function ScoringFlow({ deficit, scene, onComplete, onBack }: Omit
             return (
               <div key={gruppe} style={{ marginBottom: '12px' }}>
                 <div style={{ fontSize: '11px', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.12em', color: gruppeColor, marginBottom: '6px' }}>
-                  {gruppe.charAt(0).toUpperCase() + gruppe.slice(1)} (NACA {gruppe === 'leicht' ? '0–1' : gruppe === 'mittel' ? '2–3' : '4–7'})
+                  {nacaLabel(gruppe, t).toUpperCase()}
                 </div>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
                   {entries.map(n => (
@@ -448,9 +451,9 @@ export default function ScoringFlow({ deficit, scene, onComplete, onBack }: Omit
       // ── Schritt 8: Übertrag Unfallschwere (automatisch) ──
       case 8: return (
         <div>
-          <StepHeader nr={8} titel="Übertrag Unfallschwere → Unfallrisiko-Matrix" normRef="TBA-Fachkurs FK RSI, Folie 6" auto />
+          <StepHeader nr={8} titel={t('scoring.step8Title')} normRef="TBA-Fachkurs FK RSI, Folie 6" auto />
           <p style={{ fontSize: '13px', color: 'var(--zh-color-text-muted)', marginBottom: '20px' }}>
-            Relevanz SD <strong>{dimensionLabel(relevanzSD!)}</strong> (Zeile) × Unfallschwere <strong>{nacaLabel(nacaSchwere!)}</strong> (Spalte) — Schnittpunkt ergibt das Unfallrisiko.
+            Relevanz SD <strong>{dimensionLabel(relevanzSD!)}</strong> (Zeile) × Unfallschwere <strong>{nacaLabel(nacaSchwere!, t)}</strong> (Spalte) — Schnittpunkt ergibt das Unfallrisiko.
           </p>
           <Matrix type="unfallrisiko" highlightRow={relevanzSD ?? undefined} highlightCol={nacaSchwere ?? undefined} />
           <WeiterBtn onClick={() => setShowFeedback(true)} />
@@ -477,30 +480,30 @@ export default function ScoringFlow({ deficit, scene, onComplete, onBack }: Omit
       unfallrisiko === ca.unfallrisiko,
     ]
     const stepLabels = [
-      'Wichtigkeit', 'Übertrag Wichtigkeit', 'Abweichung', 'Übertrag Abweichung',
-      'Relevanz SD', 'Übertrag Relevanz SD', 'NACA-Einstufung', 'Übertrag Unfallschwere',
-      'Unfallrisiko',
+      t('scoring.step1Title'), t('scoring.step2Title'), t('scoring.step3Title'),
+      t('scoring.step4Title'), t('scoring.step5Title'), t('scoring.step6Title'),
+      t('scoring.step7Title'), t('scoring.step8Title'), t('scoring.step9Title'),
     ]
     const userAnswers = [
       wichtigkeit ? dimensionLabel(wichtigkeit) : '—',
-      '✓ Automatisch',
+      '✓',
       abweichung ? dimensionLabel(abweichung) : '—',
-      '✓ Automatisch',
+      '✓',
       relevanzSD ? dimensionLabel(relevanzSD) : '—',
-      '✓ Automatisch',
-      nacaSchwere ? nacaLabel(nacaSchwere) : '—',
-      '✓ Automatisch',
+      '✓',
+      nacaSchwere ? nacaLabel(nacaSchwere, t) : '—',
+      '✓',
       unfallrisiko ? dimensionLabel(unfallrisiko) : '—',
     ]
     const correctAnswers = [
       dimensionLabel(ca.wichtigkeit),
-      '✓ Automatisch',
+      '✓',
       dimensionLabel(ca.abweichung),
-      '✓ Automatisch',
+      '✓',
       dimensionLabel(ca.relevanzSD),
-      '✓ Automatisch',
-      nacaLabel(ca.unfallschwere),
-      '✓ Automatisch',
+      '✓',
+      nacaLabel(ca.unfallschwere, t),
+      '✓',
       dimensionLabel(ca.unfallrisiko),
     ]
     const pts = calcScore()
@@ -531,7 +534,7 @@ export default function ScoringFlow({ deficit, scene, onComplete, onBack }: Omit
 
         {/* Alle 9 Schritte */}
         <div style={{ marginBottom: '20px' }}>
-          <p style={{ fontSize: '13px', fontWeight: 700, color: 'var(--zh-color-text)', marginBottom: '10px' }}>Auswertung aller 9 Schritte:</p>
+          <p style={{ fontSize: '13px', fontWeight: 700, color: 'var(--zh-color-text)', marginBottom: '10px' }}>{t('scoring.allSteps')}:</p>
           <div
             style={{
               borderRadius: 'var(--zh-radius-card)',
@@ -582,19 +585,19 @@ export default function ScoringFlow({ deficit, scene, onComplete, onBack }: Omit
           }}
         >
           <div>
-            <p style={{ fontSize: '13px', color: 'var(--zh-color-text-muted)', marginBottom: '4px' }}>Erzielte Punkte</p>
+            <p style={{ fontSize: '13px', color: 'var(--zh-color-text-muted)', marginBottom: '4px' }}>{t('scoring.pointsEarned')}</p>
             <p style={{ fontSize: '28px', fontWeight: 900, color: allCorrect ? '#1A7F1F' : 'var(--zh-color-accent)' }}>
-              {pts} <span style={{ fontSize: '16px', fontWeight: 500 }}>/ {maxPts} Pkt.</span>
+              {pts} <span style={{ fontSize: '16px', fontWeight: 500 }}>/ {maxPts} {t('score.points')}</span>
             </p>
           </div>
           {allCorrect && (
-            <div style={{ fontSize: '13px', fontWeight: 700, color: '#1A7F1F' }}>Alles korrekt! 🏆</div>
+            <div style={{ fontSize: '13px', fontWeight: 700, color: '#1A7F1F' }}>{t('scoring.allCorrect')}</div>
           )}
         </div>
 
         {/* Defizit-Info */}
         <div style={{ marginBottom: '20px' }}>
-          <p style={{ fontSize: '11px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.12em', color: 'var(--zh-color-text-disabled)', marginBottom: '6px' }}>Normreferenzen</p>
+          <p style={{ fontSize: '11px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.12em', color: 'var(--zh-color-text-disabled)', marginBottom: '6px' }}>{t('scoring.normRefs')}</p>
           <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
             {deficit.normRefs.map(r => (
               <span key={r} style={{ padding: '3px 9px', borderRadius: '4px', fontSize: '11px', fontWeight: 700, background: 'rgba(0,118,189,0.08)', color: 'var(--zh-blau)' }}>{r}</span>
@@ -616,7 +619,7 @@ export default function ScoringFlow({ deficit, scene, onComplete, onBack }: Omit
             border: 'none',
           }}
         >
-          Speichern & weiter →
+          {t('scoring.saveContinue')} →
         </button>
       </div>
     )
@@ -638,11 +641,11 @@ export default function ScoringFlow({ deficit, scene, onComplete, onBack }: Omit
           onClick={onBack}
           style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '13px', color: 'var(--zh-color-text-muted)', fontWeight: 500, marginBottom: '12px', cursor: 'pointer', background: 'none', border: 'none', padding: 0 }}
         >
-          <ArrowLeft size={14} /> Zurück
+          <ArrowLeft size={14} /> {t('scenes.back')}
         </button>
         <div style={{ marginBottom: '8px' }}>
           <p style={{ fontSize: '12px', color: 'var(--zh-color-text-muted)', marginBottom: '3px' }}>
-            {ml(scene.nameI18n, lang)} · {scene.kontext === 'io' ? 'Innerorts' : 'Ausserorts'}
+            {ml(scene.nameI18n, lang)} · {scene.kontext === 'io' ? t('admin.innerorts') : t('admin.ausserorts')}
           </p>
           <h2 style={{ fontSize: '18px', fontWeight: 700, color: 'var(--zh-color-text)' }}>
             {ml(deficit.nameI18n, lang)}
@@ -674,6 +677,7 @@ export default function ScoringFlow({ deficit, scene, onComplete, onBack }: Omit
 
 // ── Hilfs-Subkomponenten ──
 function StepHeader({ nr, titel, normRef, auto }: { nr: number; titel: string; normRef: string; auto?: boolean }) {
+  const { t } = useTranslation()
   return (
     <div style={{ marginBottom: '20px' }}>
       <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '6px' }}>
@@ -686,7 +690,7 @@ function StepHeader({ nr, titel, normRef, auto }: { nr: number; titel: string; n
         <h3 style={{ fontSize: '17px', fontWeight: 700, color: 'var(--zh-color-text)' }}>{titel}</h3>
         {auto && (
           <span style={{ fontSize: '10px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.1em', padding: '2px 7px', borderRadius: '4px', background: 'var(--zh-color-bg-tertiary)', color: 'var(--zh-color-text-disabled)' }}>
-            Automatisch
+            {t('scoring.auto')}
           </span>
         )}
       </div>
@@ -698,6 +702,7 @@ function StepHeader({ nr, titel, normRef, auto }: { nr: number; titel: string; n
 }
 
 function WeiterBtn({ onClick }: { onClick: () => void }) {
+  const { t } = useTranslation()
   return (
     <button
       onClick={onClick}
@@ -713,7 +718,7 @@ function WeiterBtn({ onClick }: { onClick: () => void }) {
         border: 'none',
       }}
     >
-      Weiter →
+      {t('scoring.nextBtn')} →
     </button>
   )
 }

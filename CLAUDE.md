@@ -184,10 +184,6 @@ interface AppDeficit {
 
 | ID | Priorität | Beschreibung |
 |---|---|---|
-| P2-1 | Wichtig | Doppelter saveRankingEntry-Aufruf (ScoringFlow + App.tsx) |
-| P2-2 | Wichtig | React-Fragment ohne key-Prop in Matrix-Subkomponente |
-| P2-3 | Wichtig | onBack-Prop in AdminDashboard ungenutzt |
-| P3-1 | Backlog | i18n-Schluessel in ScoringFlow vorhanden aber nicht genutzt |
 | P3-4 | Backlog | calcScore() sollte in scoringEngine.ts als Pure Function stehen |
 
 Details: `AUDIT_REPORT.md`

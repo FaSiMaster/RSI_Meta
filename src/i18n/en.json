@@ -101,7 +101,33 @@
     "fieldFeedback": "Technical justification",
     "fieldSolution": "Measure logic",
     "saveBtn": "Save",
-    "cancelBtn": "Cancel"
+    "cancelBtn": "Cancel",
+    "kurse": "Courses",
+    "kurs_name": "Course name",
+    "kurs_datum": "Date",
+    "kurs_code": "Access code",
+    "kurs_topics": "Topic areas",
+    "kurs_neu": "New course",
+    "kurs_generieren": "Generate code",
+    "kurs_teiln": "Participants",
+    "kurs_aktiv": "Active",
+    "kurs_deaktivieren": "Deactivate",
+    "kurs_loeschen": "Delete course",
+    "oberthema": "Main topic",
+    "unterthema": "Sub-topic / Group",
+    "thema_neu": "New topic",
+    "gruppe_neu": "New group",
+    "thema_typ": "Type",
+    "thema_oberthema_waehlen": "Select main topic",
+    "thema_archivieren": "Archive",
+    "merkmale_label": "Characteristic",
+    "merkmale_wert": "Value",
+    "merkmale_hinzufuegen": "+ Add characteristic",
+    "panorama_phase3": "360° image (Phase 3)",
+    "vorschau_phase3": "Preview images (Phase 3)",
+    "szene_neu": "New scene",
+    "szene_beschreibung": "Explanatory text",
+    "szene_kontext": "Context"
   },
   "score": {
     "points": "pts"
@@ -162,14 +188,25 @@
     "nacaSource": "NACA 0–1 = minor, 2–3 = moderate, 4–7 = severe",
     "nacaLeicht": "minor (0–1)",
     "nacaMittel": "moderate (2–3)",
-    "nacaSchwer": "severe (4–7)"
+    "nacaSchwer": "severe (4–7)",
+    "auto": "Automatic",
+    "allSteps": "Assessment of all 9 steps",
+    "normRefs": "Norm references",
+    "allCorrect": "All correct!"
   },
   "ranking": {
     "title": "Ranking",
     "rank": "Rank",
     "name": "Name",
     "score": "Score",
-    "scenes": "Scenes"
+    "scenes": "Scenes",
+    "ewig": "All-time ranking",
+    "kurs": "Course ranking",
+    "tag": "Daily ranking",
+    "kurs_waehlen": "Select course",
+    "kurs_code": "Enter course code",
+    "tag_waehlen": "Select day",
+    "leer": "No entries yet"
   },
   "szene": {
     "beenden": "End scene",
@@ -195,5 +232,19 @@
     "strassenrand": "Roadside",
     "verkehrsablauf": "Traffic flow",
     "baustelle": "Construction site"
+  },
+  "einstieg": {
+    "kontext_io": "Built-up area",
+    "kontext_ao": "Rural area",
+    "merkmale": "Road characteristics",
+    "hinweis": "Independently search for safety deficits in the 360° panorama. Hotspots are not marked. You can reveal hints — with a point deduction.",
+    "starten": "Start training",
+    "zurueck": "Back",
+    "bild_phase3": "360° image coming in Phase 3"
+  },
+  "login": {
+    "kurs_code": "Course code (optional)",
+    "kurs_placeholder": "E.g. FK-RSI-123456",
+    "kurs_ungueltig": "Course code not found"
   }
 }

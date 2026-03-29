@@ -4,7 +4,7 @@
 import { LayoutDashboard, BarChart3, Settings, Sun, Moon, Trophy } from 'lucide-react'
 import LanguageSwitcher from './LanguageSwitcher'
 
-type View = 'topics' | 'scenes' | 'viewer' | 'scoring' | 'szenenabschluss' | 'admin' | 'ranking'
+type View = 'topics' | 'scenes' | 'einstieg' | 'viewer' | 'scoring' | 'szenenabschluss' | 'admin' | 'ranking'
 
 interface Props {
   view: string
@@ -25,7 +25,7 @@ export default function Navbar({ view, username, score, theme, onNavigate, onTog
   ]
 
   function isActive(key: View) {
-    return view === key || (key === 'topics' && (view === 'scenes' || view === 'scoring'))
+    return view === key || (key === 'topics' && (view === 'scenes' || view === 'scoring' || view === 'einstieg'))
   }
 
   return (

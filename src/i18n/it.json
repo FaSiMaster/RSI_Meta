@@ -101,7 +101,33 @@
     "fieldFeedback": "Motivazione tecnica",
     "fieldSolution": "Logica delle misure",
     "saveBtn": "Salva",
-    "cancelBtn": "Annulla"
+    "cancelBtn": "Annulla",
+    "kurse": "Corsi",
+    "kurs_name": "Nome del corso",
+    "kurs_datum": "Data",
+    "kurs_code": "Codice di accesso",
+    "kurs_topics": "Aree tematiche",
+    "kurs_neu": "Nuovo corso",
+    "kurs_generieren": "Genera codice",
+    "kurs_teiln": "Partecipanti",
+    "kurs_aktiv": "Attivo",
+    "kurs_deaktivieren": "Disattivare",
+    "kurs_loeschen": "Elimina corso",
+    "oberthema": "Tema principale",
+    "unterthema": "Sottotema / Gruppo",
+    "thema_neu": "Nuovo tema",
+    "gruppe_neu": "Nuovo gruppo",
+    "thema_typ": "Tipo",
+    "thema_oberthema_waehlen": "Seleziona tema principale",
+    "thema_archivieren": "Archiviare",
+    "merkmale_label": "Caratteristica",
+    "merkmale_wert": "Valore",
+    "merkmale_hinzufuegen": "+ Aggiungi caratteristica",
+    "panorama_phase3": "Immagine 360° (Fase 3)",
+    "vorschau_phase3": "Immagini di anteprima (Fase 3)",
+    "szene_neu": "Nuova scena",
+    "szene_beschreibung": "Testo esplicativo",
+    "szene_kontext": "Contesto"
   },
   "score": {
     "points": "pt"
@@ -162,14 +188,25 @@
     "nacaSource": "NACA 0–1 = lieve, 2–3 = medio, 4–7 = grave",
     "nacaLeicht": "lieve (0–1)",
     "nacaMittel": "medio (2–3)",
-    "nacaSchwer": "grave (4–7)"
+    "nacaSchwer": "grave (4–7)",
+    "auto": "Automatico",
+    "allSteps": "Valutazione di tutti i 9 passi",
+    "normRefs": "Riferimenti normativi",
+    "allCorrect": "Tutto corretto!"
   },
   "ranking": {
     "title": "Classifica",
     "rank": "Pos.",
     "name": "Nome",
     "score": "Punteggio",
-    "scenes": "Scene"
+    "scenes": "Scene",
+    "ewig": "Classifica permanente",
+    "kurs": "Classifica del corso",
+    "tag": "Classifica giornaliera",
+    "kurs_waehlen": "Seleziona corso",
+    "kurs_code": "Inserisci il codice del corso",
+    "tag_waehlen": "Seleziona giorno",
+    "leer": "Nessuna voce"
   },
   "szene": {
     "beenden": "Termina scena",
@@ -195,5 +232,19 @@
     "strassenrand": "Bordo stradale",
     "verkehrsablauf": "Flusso del traffico",
     "baustelle": "Cantiere"
+  },
+  "einstieg": {
+    "kontext_io": "In zona abitata",
+    "kontext_ao": "Fuori zona abitata",
+    "merkmale": "Caratteristiche stradali",
+    "hinweis": "Cerca autonomamente i deficit di sicurezza nel panorama 360°. I punti caldi non sono contrassegnati. Puoi mostrare suggerimenti — con deduzione di punti.",
+    "starten": "Avvia la formazione",
+    "zurueck": "Indietro",
+    "bild_phase3": "Immagine 360° disponibile nella fase 3"
+  },
+  "login": {
+    "kurs_code": "Codice corso (opzionale)",
+    "kurs_placeholder": "Es. FK-RSI-123456",
+    "kurs_ungueltig": "Codice corso non trovato"
   }
 }
