@@ -9,6 +9,7 @@ import {
 } from './data/appData'
 import type { AppTopic, AppScene, AppDeficit, FoundDeficit } from './data/appData'
 
+import { xrStore } from './xrStore'
 import LandingPage     from './components/LandingPage'
 import Navbar          from './components/Navbar'
 import TopicDashboard  from './components/TopicDashboard'
@@ -103,6 +104,8 @@ export default function App() {
     setScoringDeficit(payload.deficit)
     setPendingKatRichtig(payload.kategorieRichtig)
     setPendingHintPenalty(payload.hintPenalty)
+    // VR beenden damit der HTML-ScoringFlow sichtbar ist
+    xrStore.getState().session?.end()
     setView('scoring')
   }
 
@@ -245,8 +248,10 @@ export default function App() {
             </motion.div>
           )}
 
-          {view === 'viewer' && currentScene && (
-            <motion.div key="viewer" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.15 }} className="flex-1 flex flex-col" style={{ overflow: 'hidden' }}>
+          {/* SceneViewer bleibt waehrend Scoring gemountet (XR-Session laeuft weiter,
+              VR wird via xrStore.exitVR() beendet). ScoringFlow als Overlay darueber. */}
+          {(view === 'viewer' || view === 'scoring') && currentScene && (
+            <motion.div key="viewer" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.15 }} className="flex-1 flex flex-col" style={{ overflow: 'hidden', position: 'relative' }}>
               <SceneViewer
                 scene={currentScene}
                 deficits={sceneDeficits}
@@ -256,18 +261,24 @@ export default function App() {
                 onHintActivate={handleHintActivate}
                 onBeenden={handleBeenden}
               />
-            </motion.div>
-          )}
-
-          {view === 'scoring' && currentScene && scoringDeficit && (
-            <motion.div key={`scoring-${scoringDeficit.id}`} initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.2 }} className="flex-1 flex flex-col" style={{ overflow: 'hidden' }}>
-              <ScoringFlow
-                deficit={scoringDeficit}
-                scene={currentScene}
-                username={username}
-                onComplete={handleScoringComplete}
-                onBack={() => setView('viewer')}
-              />
+              {view === 'scoring' && scoringDeficit && (
+                <div style={{
+                  position: 'absolute', inset: 0,
+                  background: 'rgba(0,0,0,0.92)',
+                  backdropFilter: 'blur(4px)',
+                  zIndex: 200,
+                  overflowY: 'auto',
+                  display: 'flex', flexDirection: 'column',
+                }}>
+                  <ScoringFlow
+                    deficit={scoringDeficit}
+                    scene={currentScene}
+                    username={username}
+                    onComplete={handleScoringComplete}
+                    onBack={() => setView('viewer')}
+                  />
+                </div>
+              )}
             </motion.div>
           )}
 

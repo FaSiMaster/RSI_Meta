@@ -5,7 +5,8 @@
 import * as THREE from 'three'
 import { Canvas, useLoader, useFrame } from '@react-three/fiber'
 import { OrbitControls, Billboard, Text } from '@react-three/drei'
-import { createXRStore, XR, useXR } from '@react-three/xr'
+import { XR, useXR } from '@react-three/xr'
+import { xrStore } from '../xrStore'
 import { Suspense, useCallback, useState, useRef, useEffect, Component } from 'react'
 import type { ThreeEvent } from '@react-three/fiber'
 import { Eye, X, Glasses, MapPin } from 'lucide-react'
@@ -22,13 +23,6 @@ import KlickFeedback, { type KlickFeedbackType } from './KlickFeedback'
 import { useTranslation } from 'react-i18next'
 
 // Modul-Level Singleton – nie innerhalb von Komponenten erzeugen
-// model: false  → kein GLTF-Download von CDN (war Ursache des weissen Bildschirms)
-// rayPointer: true → Controller-Ray bleibt aktiv fuer onClick auf Meshes
-// grabPointer/teleportPointer: false → nicht benoetigt
-const xrStore = createXRStore({
-  controller: { model: false, rayPointer: true, grabPointer: false, teleportPointer: false },
-  hand: false,
-})
 
 // Kategorien fuer VR-Panel
 const VR_KATEGORIEN: { value: DefizitKategorie; label: string }[] = [
