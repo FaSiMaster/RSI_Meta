@@ -673,18 +673,23 @@ export default function SceneViewer({
 
   const hitDeficit    = useRef<AppDeficit | null>(null)
   const hitKatRichtig = useRef<boolean>(false)
+  // Ref fuer Phase – vermeidet stale-closure in handleVRModeChange
+  const phaseRef      = useRef<Phase>('exploring')
+  phaseRef.current = phase
 
   const foundIds = new Set(foundDeficits.map(f => f.deficitId))
   const allFound = foundDeficits.length === deficits.length
 
   // VR-Modus-Wechsel (von SceneContent via useXR gemeldet)
+  // Kein phase-Dependency – phaseRef verhindert dass jeder Phase-Wechsel
+  // das useEffect in SceneContent neu ausloest und den Klick-Flow resetzt
   const handleVRModeChange = useCallback((v: boolean) => {
     setIsVR(v)
-    if (!v && phase === 'kategoriePanel') {
+    if (!v && phaseRef.current === 'kategoriePanel') {
       hitDeficit.current = null
       setPhase('exploring')
     }
-  }, [phase])
+  }, [])
 
   // ── Klick auf die Sphere ────────────────────────────────────────────────────
   const handleSphereClick = useCallback((e: ThreeEvent<MouseEvent>) => {

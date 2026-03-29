@@ -85,7 +85,6 @@ export default function App() {
   // Szene starten → Einstieg-Screen anzeigen
   function handleSelectScene(scene: AppScene) {
     const defs = getDeficits(scene.id)
-    if (defs.length === 0) return
     setCurrentScene(scene)
     setSceneDeficits(defs)
     setFoundDeficits([])
