@@ -22,10 +22,13 @@ import KlickFeedback, { type KlickFeedbackType } from './KlickFeedback'
 import { useTranslation } from 'react-i18next'
 
 // Modul-Level Singleton – nie innerhalb von Komponenten erzeugen
-// controller/hand auf false: verhindert GLTF-Modell-Download von CDN,
-// der ohne Suspense-Boundary die R3F-Scene crashen kann.
-// Pointer-Events fuer Controller bleiben trotzdem aktiv.
-const xrStore = createXRStore({ controller: false, hand: false })
+// model: false  → kein GLTF-Download von CDN (war Ursache des weissen Bildschirms)
+// rayPointer: true → Controller-Ray bleibt aktiv fuer onClick auf Meshes
+// grabPointer/teleportPointer: false → nicht benoetigt
+const xrStore = createXRStore({
+  controller: { model: false, rayPointer: true, grabPointer: false, teleportPointer: false },
+  hand: false,
+})
 
 // Kategorien fuer VR-Panel
 const VR_KATEGORIEN: { value: DefizitKategorie; label: string }[] = [
@@ -128,25 +131,38 @@ function getHotspotPosition(d: AppDeficit): THREE.Vector3 | null {
   return null
 }
 
-// ── VR: HUD-Gruppe folgt der Kamera jeden Frame ──────────────────────────────
+// ── VR: Panel im Weltraum – Position einmalig bei Mount erfassen ─────────────
+// Beim ersten Frame wird die aktuelle Blickrichtung erfasst und das Panel
+// dort fixiert. Danach dreht nur noch Billboard es zur Kamera – die Position
+// bleibt unveraendert (keine Kopf-Bindung mehr).
 interface VRHudProps {
   offset?: [number, number, number]
   children: React.ReactNode
 }
 
 function VRHud({ offset = [0, 0, -1.5], children }: VRHudProps) {
-  const groupRef = useRef<THREE.Group>(null)
+  const groupRef    = useRef<THREE.Group>(null)
+  const initialized = useRef(false)
 
   useFrame(({ camera }) => {
-    if (!groupRef.current) return
+    if (!groupRef.current || initialized.current) return
+    // Position einmalig in Kamera-Richtung + Offset setzen
     const pos = new THREE.Vector3(offset[0], offset[1], offset[2])
       .applyQuaternion(camera.quaternion)
       .add(camera.position)
     groupRef.current.position.copy(pos)
-    groupRef.current.quaternion.copy(camera.quaternion)
+    groupRef.current.visible = true
+    initialized.current = true
   })
 
-  return <group ref={groupRef}>{children}</group>
+  // Unsichtbar starten, damit kein Flash bei (0,0,0) vor erstem Frame
+  return (
+    <group ref={groupRef} visible={false}>
+      <Billboard follow lockX={false} lockY={false} lockZ={false}>
+        {children}
+      </Billboard>
+    </group>
+  )
 }
 
 // ── VR: Schaltflaeche (Plane + Text) ────────────────────────────────────────
