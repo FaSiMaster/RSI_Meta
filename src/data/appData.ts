@@ -18,8 +18,8 @@ export type DefizitKategorie =
   | 'verkehrsablauf'
   | 'baustelle'
 
-// Strassenmerkmal (neu)
 export interface StrassenMerkmal {
+  id?: string
   labelI18n: MultiLang
   wertI18n: MultiLang
 }
@@ -44,7 +44,11 @@ export interface AppScene {
   kontext: 'io' | 'ao'
   bildUrl?: string
   strassenmerkmale?: StrassenMerkmal[]
+  // Legacy-Feld (array); neue Felder vorschauBild1/2 haben Vorrang
   vorschauBilder?: string[]
+  // Vorschaubilder: null = kein Bild, 'panorama' = Panoramabild uebernehmen, sonst URL/base64
+  vorschauBild1?: string | null
+  vorschauBild2?: string | null
   panoramaBildUrl?: string | null
   startblick?: { theta: number; phi: number } | null
   isActive: boolean
@@ -112,7 +116,7 @@ export interface SceneSession {
   completed:     boolean
 }
 
-// Kurs (neu)
+// Kurs
 export interface Kurs {
   id: string
   name: string
@@ -121,13 +125,12 @@ export interface Kurs {
   topicIds: string[]
   isActive: boolean
   createdAt: number
-  // Zeitliche Steuerung (optional, rueckwaertskompatibel)
   gueltigVon: number | null
   gueltigBis: number | null
   passwort:   string | null
 }
 
-// Topic-Hierarchie-Knoten (neu)
+// Topic-Hierarchie-Knoten
 export interface TopicNode {
   topic: AppTopic
   children: AppTopic[]
@@ -219,17 +222,10 @@ const DEFAULT_TOPICS: AppTopic[] = [
   },
   {
     "id": "tp-1774780651056",
-    "nameI18n": {
-      "de": "MIV",
-      "fr": "",
-      "it": "",
-      "en": ""
-    },
+    "nameI18n": { "de": "MIV", "fr": "", "it": "", "en": "" },
     "beschreibungI18n": {
       "de": "Motorisierter Individualverkehr im Innerorts oder Aussertorts",
-      "fr": "",
-      "it": "",
-      "en": ""
+      "fr": "", "it": "", "en": ""
     },
     "sortOrder": 4,
     "isActive": true,
@@ -250,7 +246,10 @@ const DEFAULT_SCENES: AppScene[] = [
       "it": "Zona abitata – Marciapiede con attraversamento",
       "en": "Built-up – Footpath with crossing"
     },
+    "strassenmerkmale": [],
     "vorschauBilder": [],
+    "vorschauBild1": null,
+    "vorschauBild2": null,
     "panoramaBildUrl": "/textures/street-360.jpg"
   },
   {
@@ -263,7 +262,12 @@ const DEFAULT_SCENES: AppScene[] = [
       "fr": "Hors localité – Route principale avec piste cyclable",
       "it": "Fuori zona – Strada principale con corsia ciclabile",
       "en": "Rural – Main road with cycle lane"
-    }
+    },
+    "strassenmerkmale": [],
+    "vorschauBilder": [],
+    "vorschauBild1": null,
+    "vorschauBild2": null,
+    "panoramaBildUrl": null
   },
   {
     "id": "sc3",
@@ -275,7 +279,12 @@ const DEFAULT_SCENES: AppScene[] = [
       "fr": "Carrefour – visibilité réduite",
       "it": "Incrocio – visibilità ridotta",
       "en": "Junction – restricted sight line"
-    }
+    },
+    "strassenmerkmale": [],
+    "vorschauBilder": [],
+    "vorschauBild1": null,
+    "vorschauBild2": null,
+    "panoramaBildUrl": null
   },
   {
     "id": "sc4",
@@ -287,26 +296,23 @@ const DEFAULT_SCENES: AppScene[] = [
       "fr": "Chantier – guidage temporaire",
       "it": "Cantiere – guida temporanea",
       "en": "Construction – temp traffic guidance"
-    }
+    },
+    "strassenmerkmale": [],
+    "vorschauBilder": [],
+    "vorschauBild1": null,
+    "vorschauBild2": null,
+    "panoramaBildUrl": null
   },
   {
     "id": "sc-1774784383797",
     "topicId": "fuss",
-    "nameI18n": {
-      "de": "Test_Voreinbau",
-      "fr": "",
-      "it": "",
-      "en": ""
-    },
-    "beschreibungI18n": {
-      "de": "",
-      "fr": "",
-      "it": "",
-      "en": ""
-    },
+    "nameI18n": { "de": "Test_Voreinbau", "fr": "", "it": "", "en": "" },
+    "beschreibungI18n": { "de": "", "fr": "", "it": "", "en": "" },
     "kontext": "io",
     "strassenmerkmale": [],
     "vorschauBilder": [],
+    "vorschauBild1": null,
+    "vorschauBild2": null,
     "panoramaBildUrl": "/textures/test-voreinbau.webp",
     "startblick": null,
     "isActive": true
@@ -322,10 +328,7 @@ const DEFAULT_DEFICITS: AppDeficit[] = [
     "kontext": "io",
     "isPflicht": true,
     "isBooster": false,
-    "normRefs": [
-      "VSS SN 640 075",
-      "SN 641 723"
-    ],
+    "normRefs": ["VSS SN 640 075", "SN 641 723"],
     "nameI18n": {
       "de": "Fehlende Absenkung",
       "fr": "Abaissement absent",
@@ -339,19 +342,12 @@ const DEFAULT_DEFICITS: AppDeficit[] = [
       "en": "Kerb not dropped at crossing."
     },
     "correctAssessment": {
-      "wichtigkeit": "mittel",
-      "abweichung": "gross",
-      "relevanzSD": "hoch",
-      "naca": 2,
-      "unfallschwere": "mittel",
-      "unfallrisiko": "hoch"
+      "wichtigkeit": "mittel", "abweichung": "gross", "relevanzSD": "hoch",
+      "naca": 2, "unfallschwere": "mittel", "unfallrisiko": "hoch"
     },
     "verortung": {
       "typ": "punkt",
-      "position": {
-        "theta": 134.11226153702032,
-        "phi": 115.1599900810341
-      },
+      "position": { "theta": 134.11226153702032, "phi": 115.1599900810341 },
       "toleranz": 15
     }
   },
@@ -363,10 +359,7 @@ const DEFAULT_DEFICITS: AppDeficit[] = [
     "kontext": "io",
     "isPflicht": true,
     "isBooster": false,
-    "normRefs": [
-      "SN 640 273",
-      "SN 641 723"
-    ],
+    "normRefs": ["SN 640 273", "SN 641 723"],
     "nameI18n": {
       "de": "Sichtbehinderung Hecke",
       "fr": "Obstruction par haie",
@@ -380,40 +373,18 @@ const DEFAULT_DEFICITS: AppDeficit[] = [
       "en": "Hedge intrudes into sight zone."
     },
     "correctAssessment": {
-      "wichtigkeit": "mittel",
-      "abweichung": "mittel",
-      "relevanzSD": "mittel",
-      "naca": 3,
-      "unfallschwere": "mittel",
-      "unfallrisiko": "mittel"
+      "wichtigkeit": "mittel", "abweichung": "mittel", "relevanzSD": "mittel",
+      "naca": 3, "unfallschwere": "mittel", "unfallrisiko": "mittel"
     },
     "verortung": {
       "typ": "polygon",
       "punkte": [
-        {
-          "theta": 243.91863827686265,
-          "phi": 105.63321265598167
-        },
-        {
-          "theta": 261.96900157656273,
-          "phi": 122.17972081528326
-        },
-        {
-          "theta": 271.99698118750723,
-          "phi": 112.15153405207016
-        },
-        {
-          "theta": 255.95221380999604,
-          "phi": 98.61348192173249
-        },
-        {
-          "theta": 243.41723929631544,
-          "phi": 102.62475662701773
-        },
-        {
-          "theta": 243.41723929631544,
-          "phi": 102.62475662701773
-        }
+        { "theta": 243.91863827686265, "phi": 105.63321265598167 },
+        { "theta": 261.96900157656273, "phi": 122.17972081528326 },
+        { "theta": 271.99698118750723, "phi": 112.15153405207016 },
+        { "theta": 255.95221380999604, "phi": 98.61348192173249 },
+        { "theta": 243.41723929631544, "phi": 102.62475662701773 },
+        { "theta": 243.41723929631544, "phi": 102.62475662701773 }
       ],
       "toleranz": 15
     }
@@ -426,10 +397,7 @@ const DEFAULT_DEFICITS: AppDeficit[] = [
     "kontext": "ao",
     "isPflicht": true,
     "isBooster": false,
-    "normRefs": [
-      "SN 640 238",
-      "SN 641 723"
-    ],
+    "normRefs": ["SN 640 238", "SN 641 723"],
     "nameI18n": {
       "de": "Unterbrochener Radstreifen",
       "fr": "Piste cyclable interrompue",
@@ -437,18 +405,14 @@ const DEFAULT_DEFICITS: AppDeficit[] = [
       "en": "Interrupted cycle lane"
     },
     "beschreibungI18n": {
-      "de": "Radstreifen endet vor Kreuzung ohne Weiterführung.",
+      "de": "Radstreifen endet vor Kreuzung ohne Weiterfuehrung.",
       "fr": "Piste cyclable interrompue avant le carrefour.",
       "it": "Corsia ciclabile interrotta prima dell'incrocio.",
       "en": "Cycle lane ends before junction."
     },
     "correctAssessment": {
-      "wichtigkeit": "gross",
-      "abweichung": "gross",
-      "relevanzSD": "hoch",
-      "naca": 3,
-      "unfallschwere": "mittel",
-      "unfallrisiko": "hoch"
+      "wichtigkeit": "gross", "abweichung": "gross", "relevanzSD": "hoch",
+      "naca": 3, "unfallschwere": "mittel", "unfallrisiko": "hoch"
     }
   },
   {
@@ -459,10 +423,7 @@ const DEFAULT_DEFICITS: AppDeficit[] = [
     "kontext": "io",
     "isPflicht": false,
     "isBooster": true,
-    "normRefs": [
-      "SN 640 852",
-      "SN 641 723"
-    ],
+    "normRefs": ["SN 640 852", "SN 641 723"],
     "nameI18n": {
       "de": "Fehlende Wartelinie",
       "fr": "Ligne d'attente manquante",
@@ -476,51 +437,28 @@ const DEFAULT_DEFICITS: AppDeficit[] = [
       "en": "No stop line visible before junction."
     },
     "correctAssessment": {
-      "wichtigkeit": "mittel",
-      "abweichung": "mittel",
-      "relevanzSD": "mittel",
-      "naca": 2,
-      "unfallschwere": "mittel",
-      "unfallrisiko": "mittel"
+      "wichtigkeit": "mittel", "abweichung": "mittel", "relevanzSD": "mittel",
+      "naca": 2, "unfallschwere": "mittel", "unfallrisiko": "mittel"
     }
   },
   {
     "id": "d-1774784423874",
     "sceneId": "sc-1774784383797",
     "topicId": "fuss",
-    "nameI18n": {
-      "de": "Test1",
-      "fr": "",
-      "it": "",
-      "en": ""
-    },
-    "beschreibungI18n": {
-      "de": "",
-      "fr": "",
-      "it": "",
-      "en": ""
-    },
+    "nameI18n": { "de": "Test1", "fr": "", "it": "", "en": "" },
+    "beschreibungI18n": { "de": "", "fr": "", "it": "", "en": "" },
     "kriteriumId": "visuelle_linienfuehrung",
     "kontext": "io",
     "correctAssessment": {
-      "wichtigkeit": "gross",
-      "abweichung": "gross",
-      "relevanzSD": "hoch",
-      "naca": 7,
-      "unfallschwere": "schwer",
-      "unfallrisiko": "hoch"
+      "wichtigkeit": "gross", "abweichung": "gross", "relevanzSD": "hoch",
+      "naca": 7, "unfallschwere": "schwer", "unfallrisiko": "hoch"
     },
     "isPflicht": true,
     "isBooster": true,
-    "normRefs": [
-      "SN 641 723"
-    ],
+    "normRefs": ["SN 641 723"],
     "verortung": {
       "typ": "punkt",
-      "position": {
-        "theta": 271.99698118750723,
-        "phi": 132.0718240138629
-      },
+      "position": { "theta": 271.99698118750723, "phi": 132.0718240138629 },
       "toleranz": 15
     }
   },
@@ -528,80 +466,31 @@ const DEFAULT_DEFICITS: AppDeficit[] = [
     "id": "d-1774784555731",
     "sceneId": "sc-1774784383797",
     "topicId": "fuss",
-    "nameI18n": {
-      "de": "Test 2",
-      "fr": "",
-      "it": "",
-      "en": ""
-    },
-    "beschreibungI18n": {
-      "de": "Test 2",
-      "fr": "",
-      "it": "",
-      "en": ""
-    },
+    "nameI18n": { "de": "Test 2", "fr": "", "it": "", "en": "" },
+    "beschreibungI18n": { "de": "Test 2", "fr": "", "it": "", "en": "" },
     "kriteriumId": "angebot_vertraeglichkeit",
     "kontext": "io",
     "correctAssessment": {
-      "wichtigkeit": "gross",
-      "abweichung": "gross",
-      "relevanzSD": "hoch",
-      "naca": 7,
-      "unfallschwere": "schwer",
-      "unfallrisiko": "hoch"
+      "wichtigkeit": "gross", "abweichung": "gross", "relevanzSD": "hoch",
+      "naca": 7, "unfallschwere": "schwer", "unfallrisiko": "hoch"
     },
     "isPflicht": true,
     "isBooster": false,
-    "normRefs": [
-      "SN 641 723"
-    ],
+    "normRefs": ["SN 641 723"],
     "verortung": {
       "typ": "polygon",
       "punkte": [
-        {
-          "theta": 27.815677661008575,
-          "phi": 79.13005278615879
-        },
-        {
-          "theta": 57.39821751329486,
-          "phi": 133.09650345697978
-        },
-        {
-          "theta": 125.58847886771748,
-          "phi": 130.70558475637375
-        },
-        {
-          "theta": 151.15982687562598,
-          "phi": 102.69767997784642
-        },
-        {
-          "theta": 252.9438199267127,
-          "phi": 101.33144072035728
-        },
-        {
-          "theta": 266.4815924014878,
-          "phi": 80.49629204364793
-        },
-        {
-          "theta": 223.86267905497363,
-          "phi": 64.44298076815055
-        },
-        {
-          "theta": 122.58008498443414,
-          "phi": 66.49233965438425
-        },
-        {
-          "theta": 69.43179304642827,
-          "phi": 57.270224666332574
-        },
-        {
-          "theta": 30.322672563744703,
-          "phi": 77.42225371429737
-        },
-        {
-          "theta": 30.322672563744703,
-          "phi": 77.42225371429737
-        }
+        { "theta": 27.815677661008575, "phi": 79.13005278615879 },
+        { "theta": 57.39821751329486, "phi": 133.09650345697978 },
+        { "theta": 125.58847886771748, "phi": 130.70558475637375 },
+        { "theta": 151.15982687562598, "phi": 102.69767997784642 },
+        { "theta": 252.9438199267127, "phi": 101.33144072035728 },
+        { "theta": 266.4815924014878, "phi": 80.49629204364793 },
+        { "theta": 223.86267905497363, "phi": 64.44298076815055 },
+        { "theta": 122.58008498443414, "phi": 66.49233965438425 },
+        { "theta": 69.43179304642827, "phi": 57.270224666332574 },
+        { "theta": 30.322672563744703, "phi": 77.42225371429737 },
+        { "theta": 30.322672563744703, "phi": 77.42225371429737 }
       ],
       "toleranz": 15
     }
@@ -614,13 +503,7 @@ const DEFAULT_KURSE_SEED: Kurs[] = [
     "name": "FK RSI 03/2027",
     "datum": "2026-03-29",
     "zugangscode": "FaSi4safety",
-    "topicIds": [
-      "fuss",
-      "velo",
-      "knoten",
-      "bau",
-      "tp-1774780651056"
-    ],
+    "topicIds": ["fuss", "velo", "knoten", "bau", "tp-1774780651056"],
     "isActive": true,
     "createdAt": 1774780717922,
     "gueltigVon": null,
@@ -676,17 +559,14 @@ export function deleteTopic(id: string): void {
   writeJSON(K_TOPICS, getTopics().filter(t => t.id !== id))
 }
 
-// Oberthemen: Topics ohne parentTopicId
 export function getOberthemen(): AppTopic[] {
   return getTopics().filter(t => !t.parentTopicId)
 }
 
-// Unterthemen: Topics mit parentTopicId === parentId
 export function getUnterthemen(parentId: string): AppTopic[] {
   return getTopics().filter(t => t.parentTopicId === parentId)
 }
 
-// Topic-Hierarchie als Baumstruktur
 export function getTopicsTree(): TopicNode[] {
   const all = getTopics()
   const oberthemen = all.filter(t => !t.parentTopicId)
@@ -765,7 +645,6 @@ export function getKurse(): Kurs[] {
   return readJSON<Kurs>(K_KURSE, [])
 }
 
-// Liefert Kurse die aktuell zeitlich gueltig sind (gueltigVon <= now <= gueltigBis oder kein Zeitlimit)
 export function getKurseZeitlichAktiv(): Kurs[] {
   const now = Date.now()
   return getKurse().filter(k => {
@@ -776,7 +655,6 @@ export function getKurseZeitlichAktiv(): Kurs[] {
   })
 }
 
-// Hilfsfunktion: Kurs-Status ermitteln
 export function getKursStatus(k: Kurs): 'aktiv' | 'bald' | 'abgelaufen' | 'inaktiv' {
   if (!k.isActive) return 'inaktiv'
   const now = Date.now()
@@ -800,19 +678,16 @@ export function getRanking(): RankingEntry[] {
   return readJSON<RankingEntry>(K_RANKING, DEFAULT_RANKING).sort((a, b) => b.score - a.score)
 }
 
-// Ewige Rangliste: nur Eintraege ohne kursId
 export function getRankingGesamt(): RankingEntry[] {
   return getRanking().filter(r => !r.kursId)
 }
 
-// Kurs-Rangliste
 export function getRankingByKurs(kursId: string): RankingEntry[] {
   return readJSON<RankingEntry>(K_RANKING, DEFAULT_RANKING)
     .filter(r => r.kursId === kursId)
     .sort((a, b) => b.score - a.score)
 }
 
-// Tagesrangliste nach Datum (YYYY-MM-DD)
 export function getRankingByStunde(datum: string): RankingEntry[] {
   return readJSON<RankingEntry>(K_RANKING, DEFAULT_RANKING)
     .filter(r => (r.stunde ?? r.timestamp?.slice(0, 10)) === datum)
@@ -824,18 +699,15 @@ export function saveRankingEntry(entry: RankingEntry): void {
   const list = readJSON<RankingEntry>(K_RANKING, DEFAULT_RANKING)
     .filter(r => !SEED.includes(r.username) || r.username === entry.username)
 
-  // ID und Stunde automatisch setzen
   const entryWithId: RankingEntry = {
     ...entry,
     id: entry.id ?? crypto.randomUUID(),
     stunde: entry.stunde ?? entry.timestamp.slice(0, 10),
   }
 
-  // Kurs-Eintraege immer als neuen Eintrag speichern (session-basiert)
   if (entryWithId.kursId) {
     list.push(entryWithId)
   } else {
-    // Ewige Rangliste: nur hoechsten Score je Benutzer behalten
     const idx = list.findIndex(r => r.username === entryWithId.username && !r.kursId)
     if (idx >= 0) {
       list[idx].score = Math.max(list[idx].score, entryWithId.score)

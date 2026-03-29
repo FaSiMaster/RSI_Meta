@@ -159,7 +159,16 @@
     "beschrieb_de": "Beschreibungstext (Deutsch)",
     "beschrieb_fr": "Description (Français)",
     "beschrieb_it": "Descrizione (Italiano)",
-    "beschrieb_en": "Description (English)"
+    "beschrieb_en": "Description (English)",
+    "einstieg_titel": "Einstiegsseite konfigurieren",
+    "vorschau1": "Vorschaubild 1",
+    "vorschau2": "Vorschaubild 2",
+    "aus_panorama": "Aus Panorama übernehmen",
+    "bild_hochladen": "Eigenes Bild hochladen",
+    "kein_bild": "Kein Bild",
+    "kein_panorama_hinweis": "Zuerst ein Panoramabild für diese Szene hochladen.",
+    "gespeichert_einstieg": "Einstiegsseite gespeichert.",
+    "mehrsprachen_hinweis": "Weitere Sprachen werden mit dem deutschen Text vorbefüllt."
   },
   "score": {
     "points": "Pkt."
@@ -275,7 +284,7 @@
     "starten": "Training starten",
     "zurueck": "Zurück",
     "bild_phase3": "360°-Bild folgt in Phase 3",
-    "kein_bild": "360°-Bild folgt",
+    "kein_bild": "Kein Vorschaubild erfasst",
     "aus_panorama": "Aus Panorama übernehmen",
     "bild_hochladen": "Eigenes Bild hochladen",
     "kein_beschrieb": "Noch kein Beschreibungstext erfasst."

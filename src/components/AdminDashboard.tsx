@@ -54,7 +54,9 @@ function emptyScene(topicId: string): AppScene {
     beschreibungI18n: { de: '', fr: '', it: '', en: '' },
     kontext: 'io',
     strassenmerkmale: [],
-    vorschauBilder: ['', ''],
+    vorschauBilder: [],
+    vorschauBild1: null,
+    vorschauBild2: null,
     panoramaBildUrl: null,
     startblick: null,
     isActive: true,
@@ -132,6 +134,13 @@ function MLTextarea({ label, value, onChange }: { label: string; value: string; 
 }
 
 type AdminTab = 'defizite' | 'themen' | 'kurse'
+type VorschauModus = 'kein' | 'panorama' | 'upload'
+
+function getVorschauModus(val: string | null | undefined): VorschauModus {
+  if (!val) return 'kein'
+  if (val === 'panorama') return 'panorama'
+  return 'upload'
+}
 
 export default function AdminDashboard() {
   const { t, i18n } = useTranslation()
@@ -170,6 +179,11 @@ export default function AdminDashboard() {
   const [themaModalOpen, setThemaModalOpen] = useState(false)
   const [editingThema, setEditingThema] = useState<AppTopic | null>(null)
   const [themaTyp, setThemaTyp] = useState<'ober' | 'unter'>('ober')
+
+  // Vorschaubild-Modus fuer das Szene-Modal
+  const [vorschau1Modus, setVorschau1Modus] = useState<VorschauModus>('kein')
+  const [vorschau2Modus, setVorschau2Modus] = useState<VorschauModus>('kein')
+  const [szeneGespeichertFeedback, setSzeneGespeichertFeedback] = useState(false)
 
   // ── Kurse-Tab State ──
   const [kurse, setKurse] = useState<Kurs[]>([])
@@ -231,12 +245,16 @@ export default function AdminDashboard() {
     setEditingScene(emptyScene(selectedTopic.id))
     setPanoramaVorschau(null)
     setSzeneIsNew(true)
+    setVorschau1Modus('kein')
+    setVorschau2Modus('kein')
     setSzeneModalOpen(true)
   }
   function openEditScene(scene: AppScene) {
     setEditingScene({ ...scene })
     setPanoramaVorschau(null)
     setSzeneIsNew(false)
+    setVorschau1Modus(getVorschauModus(scene.vorschauBild1))
+    setVorschau2Modus(getVorschauModus(scene.vorschauBild2))
     setSzeneModalOpen(true)
   }
   function handleDeleteScene(id: string) {
@@ -249,9 +267,25 @@ export default function AdminDashboard() {
   }
   function handleSaveScene() {
     if (!editingScene) return
-    // vorschauBilder normalisieren: leere Strings entfernen
+    // vorschauBilder (Legacy) normalisieren
     const vorschauBilder = (editingScene.vorschauBilder ?? []).filter(s => s.trim().length > 0)
-    saveScene({ ...editingScene, vorschauBilder })
+    // Strassenmerkmale: FR/IT/EN mit DE-Wert vorbefuellen wenn leer
+    const strassenmerkmale = (editingScene.strassenmerkmale ?? []).map(m => ({
+      ...m,
+      labelI18n: {
+        de: m.labelI18n.de,
+        fr: m.labelI18n.fr || m.labelI18n.de,
+        it: m.labelI18n.it || m.labelI18n.de,
+        en: m.labelI18n.en || m.labelI18n.de,
+      },
+      wertI18n: {
+        de: m.wertI18n.de,
+        fr: m.wertI18n.fr || m.wertI18n.de,
+        it: m.wertI18n.it || m.wertI18n.de,
+        en: m.wertI18n.en || m.wertI18n.de,
+      },
+    }))
+    saveScene({ ...editingScene, vorschauBilder, strassenmerkmale })
     if (selectedTopic) {
       const sc = getScenes(selectedTopic.id)
       setScenes(sc)
@@ -260,18 +294,12 @@ export default function AdminDashboard() {
       else setSelectedScene(sc.find(s => s.id === selectedScene.id) ?? selectedScene)
     }
     setSzeneModalOpen(false)
+    setSzeneGespeichertFeedback(true)
+    setTimeout(() => setSzeneGespeichertFeedback(false), 3000)
   }
   function setSceneML(field: 'nameI18n' | 'beschreibungI18n', l: string, v: string) {
     if (!editingScene) return
     setEditingScene(prev => prev ? { ...prev, [field]: { ...(prev[field] ?? { de:'', fr:'', it:'', en:'' }), [l]: v } } : prev)
-  }
-  function setVorschaubild(i: number, val: string) {
-    setEditingScene(prev => {
-      if (!prev) return prev
-      const arr = [...(prev.vorschauBilder ?? ['', ''])]
-      arr[i] = val
-      return { ...prev, vorschauBilder: arr }
-    })
   }
   function addMerkmal() {
     if (!editingScene) return
@@ -484,10 +512,15 @@ export default function AdminDashboard() {
             {tabPill('kurse', t('admin.kurse'))}
           </div>
           <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
-            {/* Import-Feedback */}
+            {/* Feedback */}
             {importFeedback && (
               <span style={{ fontSize: '12px', color: importFeedback.startsWith('Fehler') ? '#D40053' : '#1A7F1F', fontWeight: 600 }}>
                 {importFeedback}
+              </span>
+            )}
+            {szeneGespeichertFeedback && (
+              <span style={{ fontSize: '12px', color: '#1A7F1F', fontWeight: 600 }}>
+                {t('admin.gespeichert_einstieg')}
               </span>
             )}
             {/* Verstecktes File-Input */}
@@ -1046,22 +1079,49 @@ export default function AdminDashboard() {
             </Section>
 
             {/* Vorschaubilder */}
-            <Section label={t('admin.vorschau_phase3')}>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
-                {[0, 1].map(i => (
-                  <div key={i}>
-                    <div style={{ fontSize: '10px', fontWeight: 700, color: 'var(--zh-color-text-disabled)', marginBottom: '3px', textTransform: 'uppercase', letterSpacing: '0.1em' }}>
-                      {i === 0 ? t('admin.vorschaubild_1') : t('admin.vorschaubild_2')}
-                    </div>
-                    <input
-                      value={editingScene.vorschauBilder?.[i] ?? ''}
-                      onChange={e => setVorschaubild(i, e.target.value)}
-                      placeholder="https://... oder leer lassen"
-                      style={{ width: '100%', padding: '7px 10px', borderRadius: '6px', border: '1px solid var(--zh-color-border)', background: 'var(--zh-color-bg-secondary)', color: 'var(--zh-color-text)', fontSize: '13px', fontFamily: 'var(--zh-font)', boxSizing: 'border-box' }}
-                    />
-                  </div>
-                ))}
-              </div>
+            <Section label={t('admin.einstieg_titel')}>
+              {/* Vorschaubild 1 */}
+              <VorschaubildEditor
+                key={`${editingScene.id}-1`}
+                label={t('admin.vorschau1')}
+                value={editingScene.vorschauBild1}
+                panoramaBildUrl={editingScene.panoramaBildUrl}
+                modus={vorschau1Modus}
+                onModusChange={m => {
+                  setVorschau1Modus(m)
+                  if (m === 'kein') setEditingScene(prev => prev ? { ...prev, vorschauBild1: null } : prev)
+                  if (m === 'panorama') setEditingScene(prev => prev ? { ...prev, vorschauBild1: 'panorama' } : prev)
+                }}
+                onBildGeladen={url => {
+                  setEditingScene(prev => prev ? { ...prev, vorschauBild1: url } : prev)
+                  setVorschau1Modus('upload')
+                }}
+                szeneId={editingScene.id}
+              />
+
+              {/* Vorschaubild 2 */}
+              <VorschaubildEditor
+                key={`${editingScene.id}-2`}
+                label={t('admin.vorschau2')}
+                value={editingScene.vorschauBild2}
+                panoramaBildUrl={editingScene.panoramaBildUrl}
+                modus={vorschau2Modus}
+                onModusChange={m => {
+                  setVorschau2Modus(m)
+                  if (m === 'kein') setEditingScene(prev => prev ? { ...prev, vorschauBild2: null } : prev)
+                  if (m === 'panorama') setEditingScene(prev => prev ? { ...prev, vorschauBild2: 'panorama' } : prev)
+                }}
+                onBildGeladen={url => {
+                  setEditingScene(prev => prev ? { ...prev, vorschauBild2: url } : prev)
+                  setVorschau2Modus('upload')
+                }}
+                szeneId={editingScene.id}
+              />
+
+              {/* Mehrsprachiger Hinweis fuer Merkmale */}
+              <p style={{ fontSize: '11px', color: 'var(--zh-color-text-disabled)', marginTop: '4px' }}>
+                {t('admin.mehrsprachen_hinweis')}
+              </p>
             </Section>
 
             <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px', marginTop: '24px' }}>
@@ -1278,6 +1338,115 @@ function AutoField({ label, value }: { label: string; value: string }) {
     <div>
       <div style={{ fontSize: '10px', fontWeight: 700, color: 'var(--zh-color-text-disabled)', marginBottom: '3px', textTransform: 'uppercase', letterSpacing: '0.1em' }}>{label}</div>
       <div style={{ padding: '7px 10px', borderRadius: '6px', background: 'var(--zh-color-bg-tertiary)', color: 'var(--zh-color-text)', fontSize: '13px', fontWeight: 700 }}>{value}</div>
+    </div>
+  )
+}
+
+// ── VorschaubildEditor – 3 Optionen: Kein Bild / Aus Panorama / Eigenes Bild ──
+interface VorschaubildEditorProps {
+  label: string
+  value: string | null | undefined
+  panoramaBildUrl: string | null | undefined
+  modus: VorschauModus
+  onModusChange: (m: VorschauModus) => void
+  onBildGeladen: (url: string) => void
+  szeneId: string
+}
+
+function VorschaubildEditor({
+  label, value, panoramaBildUrl, modus, onModusChange, onBildGeladen, szeneId,
+}: VorschaubildEditorProps) {
+  const hasPanorama = !!panoramaBildUrl
+  // Bild-Quelle fuer Vorschau aufloesen
+  const previewUrl = value === 'panorama'
+    ? (panoramaBildUrl ?? null)
+    : (value ?? null)
+
+  const btnStyle = (aktiv: boolean, disabled = false): React.CSSProperties => ({
+    padding: '6px 12px',
+    borderRadius: '6px',
+    fontSize: '12px',
+    fontWeight: 600,
+    border: aktiv ? '2px solid var(--zh-blau)' : '1px solid var(--zh-color-border)',
+    background: aktiv ? 'rgba(0,118,189,0.08)' : 'var(--zh-color-surface)',
+    color: aktiv ? 'var(--zh-blau)' : disabled ? 'var(--zh-color-text-disabled)' : 'var(--zh-color-text-muted)',
+    cursor: disabled ? 'not-allowed' : 'pointer',
+    fontFamily: 'var(--zh-font)',
+    opacity: disabled ? 0.55 : 1,
+  })
+
+  return (
+    <div style={{ marginBottom: '20px' }}>
+      <div style={{
+        fontSize: '11px', fontWeight: 700, color: 'var(--zh-color-text-disabled)',
+        marginBottom: '8px', textTransform: 'uppercase', letterSpacing: '0.1em',
+      }}>
+        {label}
+      </div>
+
+      {/* Optionen-Buttons */}
+      <div style={{ display: 'flex', gap: '6px', marginBottom: '10px', flexWrap: 'wrap' }}>
+        <button
+          onClick={() => onModusChange('panorama')}
+          disabled={!hasPanorama}
+          style={btnStyle(modus === 'panorama', !hasPanorama)}
+        >
+          Aus Panorama übernehmen
+        </button>
+        <button
+          onClick={() => onModusChange('upload')}
+          style={btnStyle(modus === 'upload')}
+        >
+          Eigenes Bild hochladen
+        </button>
+        <button
+          onClick={() => onModusChange('kein')}
+          style={btnStyle(modus === 'kein')}
+        >
+          Kein Bild
+        </button>
+      </div>
+
+      {/* Kein Panorama vorhanden */}
+      {modus === 'panorama' && !hasPanorama && (
+        <p style={{ fontSize: '12px', color: 'var(--zh-color-text-disabled)', fontStyle: 'italic', marginBottom: '8px' }}>
+          Zuerst ein Panoramabild für diese Szene hochladen.
+        </p>
+      )}
+
+      {/* BildUpload-Komponente */}
+      {modus === 'upload' && (
+        <div style={{ marginBottom: '10px' }}>
+          <BildUpload
+            szeneId={`${szeneId}-vorschau`}
+            aktuelleUrl={value && value !== 'panorama' ? value : null}
+            onBildGeladen={(url) => onBildGeladen(url)}
+          />
+        </div>
+      )}
+
+      {/* Vorschau (80px) */}
+      {previewUrl && (
+        <div style={{
+          height: '80px',
+          borderRadius: '6px',
+          overflow: 'hidden',
+          border: '1px solid var(--zh-color-border)',
+          background: '#000',
+          marginTop: '6px',
+        }}>
+          <img
+            src={previewUrl}
+            alt=""
+            style={{
+              width: '100%',
+              height: '100%',
+              objectFit: 'cover',
+              opacity: value === 'panorama' ? 0.75 : 1,
+            }}
+          />
+        </div>
+      )}
     </div>
   )
 }

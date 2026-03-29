@@ -159,7 +159,16 @@
     "beschrieb_de": "Testo descrittivo (Tedesco)",
     "beschrieb_fr": "Description (Francese)",
     "beschrieb_it": "Descrizione (Italiano)",
-    "beschrieb_en": "Description (Inglese)"
+    "beschrieb_en": "Description (Inglese)",
+    "einstieg_titel": "Configurare la pagina introduttiva",
+    "vorschau1": "Immagine di anteprima 1",
+    "vorschau2": "Immagine di anteprima 2",
+    "aus_panorama": "Riprendere dal panorama",
+    "bild_hochladen": "Caricare un'immagine",
+    "kein_bild": "Nessuna immagine",
+    "kein_panorama_hinweis": "Prima caricare un'immagine panoramica per questa scena.",
+    "gespeichert_einstieg": "Pagina introduttiva salvata.",
+    "mehrsprachen_hinweis": "Le altre lingue saranno precompilate con il testo tedesco."
   },
   "score": {
     "points": "pt"
@@ -275,7 +284,7 @@
     "starten": "Avvia la formazione",
     "zurueck": "Indietro",
     "bild_phase3": "Immagine 360° disponibile nella fase 3",
-    "kein_bild": "Immagine 360° in arrivo",
+    "kein_bild": "Nessuna immagine di anteprima registrata",
     "aus_panorama": "Riprendere dal panorama",
     "bild_hochladen": "Caricare un'immagine",
     "kein_beschrieb": "Nessun testo descrittivo inserito."

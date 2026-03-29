@@ -159,7 +159,16 @@
     "beschrieb_de": "Description text (German)",
     "beschrieb_fr": "Description (French)",
     "beschrieb_it": "Description (Italian)",
-    "beschrieb_en": "Description (English)"
+    "beschrieb_en": "Description (English)",
+    "einstieg_titel": "Configure introduction page",
+    "vorschau1": "Preview image 1",
+    "vorschau2": "Preview image 2",
+    "aus_panorama": "Use from panorama",
+    "bild_hochladen": "Upload own image",
+    "kein_bild": "No image",
+    "kein_panorama_hinweis": "Please upload a panorama image for this scene first.",
+    "gespeichert_einstieg": "Introduction page saved.",
+    "mehrsprachen_hinweis": "Other languages will be pre-filled with the German text."
   },
   "score": {
     "points": "pts"
@@ -275,7 +284,7 @@
     "starten": "Start training",
     "zurueck": "Back",
     "bild_phase3": "360° image coming in Phase 3",
-    "kein_bild": "360° image coming soon",
+    "kein_bild": "No preview image recorded",
     "aus_panorama": "Take from panorama",
     "bild_hochladen": "Upload image",
     "kein_beschrieb": "No description text entered yet."

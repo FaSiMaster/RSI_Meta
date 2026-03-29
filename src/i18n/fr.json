@@ -160,7 +160,16 @@
     "beschrieb_de": "Texte descriptif (Allemand)",
     "beschrieb_fr": "Description (Français)",
     "beschrieb_it": "Descrizione (Italiano)",
-    "beschrieb_en": "Description (English)"
+    "beschrieb_en": "Description (English)",
+    "einstieg_titel": "Configurer la page d'introduction",
+    "vorschau1": "Image d'aperçu 1",
+    "vorschau2": "Image d'aperçu 2",
+    "aus_panorama": "Reprendre du panorama",
+    "bild_hochladen": "Télécharger une image",
+    "kein_bild": "Aucune image",
+    "kein_panorama_hinweis": "Veuillez d'abord télécharger une image panoramique pour cette scène.",
+    "gespeichert_einstieg": "Page d'introduction enregistrée.",
+    "mehrsprachen_hinweis": "Les autres langues seront préremplies avec le texte allemand."
   },
   "score": {
     "points": "pts"
@@ -276,7 +285,7 @@
     "starten": "Démarrer la formation",
     "zurueck": "Retour",
     "bild_phase3": "Image 360° disponible en phase 3",
-    "kein_bild": "Image 360° à venir",
+    "kein_bild": "Aucune image d'aperçu saisie",
     "aus_panorama": "Reprendre du panorama",
     "bild_hochladen": "Télécharger une image",
     "kein_beschrieb": "Aucun texte descriptif saisi."
