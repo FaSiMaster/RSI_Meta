@@ -52,16 +52,6 @@ function PanoramaTextureMaterial({ url }: { url: string }) {
   return <meshBasicMaterial map={texture} side={THREE.BackSide} />
 }
 
-// ── Boden-Platzhalter ────────────────────────────────────────────────────────
-function BodenPlatzhalter() {
-  return (
-    <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -1.6, 0]} renderOrder={1}>
-      <circleGeometry args={[8, 48]} />
-      <meshBasicMaterial color="#3a3d42" />
-    </mesh>
-  )
-}
-
 // ── Hotspot (Billboard – immer zur Kamera gedreht) ───────────────────────────
 interface HotspotProps {
   position: THREE.Vector3
@@ -155,7 +145,6 @@ function SceneContent({ scene, deficits, foundDeficits, hintActive, onSphereClic
         reverseOrbit={false}
       />
       <PanoramaSphere bildUrl={bildUrl} onClick={onSphereClick} />
-      <BodenPlatzhalter />
 
       {hintActive && deficits.map(d => {
         const renderPos = getHotspotPosition(d)

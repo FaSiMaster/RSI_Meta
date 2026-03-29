@@ -8,7 +8,7 @@ import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import {
   getTopics, saveTopic, deleteTopic,
-  getScenes, saveScene,
+  getScenes, saveScene, deleteScene,
   getDeficits, saveDeficit, deleteDeficit,
   getKurse, saveKurs, deleteKurs,
   getTopicsTree, getOberthemen, ml,
@@ -148,6 +148,7 @@ export default function AdminDashboard() {
   // Szene-Modal State
   const [szeneModalOpen, setSzeneModalOpen] = useState(false)
   const [editingScene, setEditingScene] = useState<AppScene | null>(null)
+  const [szeneIsNew, setSzeneIsNew] = useState(false)
 
   // Panorama-Vorschau State (nach BildUpload)
   const [panoramaVorschau, setPanoramaVorschau] = useState<{
@@ -223,7 +224,22 @@ export default function AdminDashboard() {
     if (!selectedTopic) return
     setEditingScene(emptyScene(selectedTopic.id))
     setPanoramaVorschau(null)
+    setSzeneIsNew(true)
     setSzeneModalOpen(true)
+  }
+  function openEditScene(scene: AppScene) {
+    setEditingScene({ ...scene })
+    setPanoramaVorschau(null)
+    setSzeneIsNew(false)
+    setSzeneModalOpen(true)
+  }
+  function handleDeleteScene(id: string) {
+    deleteScene(id)
+    if (selectedTopic) {
+      const sc = getScenes(selectedTopic.id)
+      setScenes(sc)
+      if (selectedScene?.id === id) setSelectedScene(sc[0] ?? null)
+    }
   }
   function handleSaveScene() {
     if (!editingScene) return
@@ -423,14 +439,27 @@ export default function AdminDashboard() {
                   <Plus size={11} /> {t('admin.szene_neu')}
                 </button>
               </div>
-              <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
-                {scenes.map(sc => (
-                  <button key={sc.id} onClick={() => setSelectedScene(sc)}
-                    style={{ padding: '6px 14px', borderRadius: '20px', fontSize: '12px', fontWeight: 600, border: '1px solid var(--zh-color-border)', background: selectedScene?.id === sc.id ? 'var(--zh-dunkelblau)' : 'var(--zh-color-surface)', color: selectedScene?.id === sc.id ? 'white' : 'var(--zh-color-text)', cursor: 'pointer' }}>
-                    {ml(sc.nameI18n, lang).slice(0, 30)}{ml(sc.nameI18n, lang).length > 30 ? '…' : ''}
-                    <span style={{ marginLeft: '5px', fontSize: '9px', fontWeight: 700, textTransform: 'uppercase', opacity: 0.7 }}>{sc.kontext}</span>
-                  </button>
-                ))}
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                {scenes.map(sc => {
+                  const isSelected = selectedScene?.id === sc.id
+                  const name = ml(sc.nameI18n, lang)
+                  return (
+                    <div key={sc.id} style={{ display: 'flex', alignItems: 'center', gap: '6px', padding: '6px 10px', borderRadius: '8px', border: `1px solid ${isSelected ? 'var(--zh-blau)' : 'var(--zh-color-border)'}`, background: isSelected ? 'rgba(0,118,189,0.07)' : 'var(--zh-color-surface)' }}>
+                      <button onClick={() => setSelectedScene(sc)} style={{ flex: 1, textAlign: 'left', background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}>
+                        <span style={{ fontSize: '13px', fontWeight: isSelected ? 700 : 500, color: isSelected ? 'var(--zh-blau)' : 'var(--zh-color-text)' }}>
+                          {name.slice(0, 40)}{name.length > 40 ? '…' : ''}
+                        </span>
+                        <span style={{ marginLeft: '6px', fontSize: '9px', fontWeight: 700, textTransform: 'uppercase', color: isSelected ? 'var(--zh-blau)' : 'var(--zh-color-text-disabled)', opacity: 0.8 }}>{sc.kontext}</span>
+                      </button>
+                      <button onClick={() => openEditScene(sc)} style={{ display: 'flex', alignItems: 'center', gap: '3px', padding: '4px 8px', borderRadius: '5px', border: '1px solid var(--zh-color-border)', background: 'var(--zh-color-bg-secondary)', fontSize: '11px', color: 'var(--zh-color-text-muted)', cursor: 'pointer', flexShrink: 0 }}>
+                        <Pencil size={10} /> {t('admin.editBtn')}
+                      </button>
+                      <button onClick={() => handleDeleteScene(sc.id)} style={{ display: 'flex', alignItems: 'center', gap: '3px', padding: '4px 8px', borderRadius: '5px', border: '1px solid rgba(212,0,83,0.2)', background: 'rgba(212,0,83,0.06)', fontSize: '11px', color: '#D40053', cursor: 'pointer', flexShrink: 0 }}>
+                        <Trash2 size={10} /> {t('admin.deleteBtn')}
+                      </button>
+                    </div>
+                  )
+                })}
               </div>
             </div>
 
@@ -784,7 +813,12 @@ export default function AdminDashboard() {
                   <button
                     onClick={() => {
                       if (editingDef) {
-                        setBildEditorDeficitId(editingDef.id)
+                        // Defizit zuerst speichern, damit BildEditor den aktuellen Stand hat
+                        const computed = recompute(editingDef)
+                        saveDeficit(computed)
+                        setDeficits(getDeficits(computed.sceneId))
+                        setEditingDef(computed)
+                        setBildEditorDeficitId(computed.id)
                         setBildEditorOpen(true)
                         setDefModalOpen(false)
                       }
@@ -823,7 +857,7 @@ export default function AdminDashboard() {
           onClick={e => { if (e.target === e.currentTarget) setSzeneModalOpen(false) }}>
           <div style={{ width: '680px', maxHeight: '88vh', overflowY: 'auto', borderRadius: 'var(--zh-radius-card)', border: '1px solid var(--zh-color-border)', background: 'var(--zh-color-surface)', padding: '28px 32px', boxShadow: 'var(--zh-shadow-lg)' }}>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '24px' }}>
-              <h3 style={{ fontSize: '18px', fontWeight: 700, color: 'var(--zh-color-text)' }}>{t('admin.szene_neu')}</h3>
+              <h3 style={{ fontSize: '18px', fontWeight: 700, color: 'var(--zh-color-text)' }}>{szeneIsNew ? t('admin.szene_neu') : t('admin.szene_bearbeiten')}</h3>
               <button onClick={() => setSzeneModalOpen(false)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--zh-color-text-muted)' }}><X size={18} /></button>
             </div>
 
