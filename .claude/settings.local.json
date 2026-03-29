@@ -17,7 +17,20 @@
       "Bash(git tag:*)",
       "Bash(git push:*)",
       "Bash(node generate-icons.mjs)",
-      "Bash(cd:*)"
+      "Bash(cd:*)",
+      "Bash(npm list:*)",
+      "Bash(npm audit:*)",
+      "Bash(\"C:\\\\ClaudeAI\\\\RSI_Meta\\\\src\\\\components\\\\SceneViewer.tsx\")",
+      "Bash(echo \"Exit: $?\")",
+      "Bash(npx vercel:*)",
+      "Bash(dir \"C:\\\\ClaudeAI\\\\RSI_Meta\\\\Export\")",
+      "Bash(node -e \":*)",
+      "Bash(ls node_modules/@react-three/xr/dist/*.js)",
+      "Bash(node -e \"const xr = require\\(''@react-three/xr''\\); console.log\\(Object.keys\\(xr\\).filter\\(k => !k.startsWith\\(''_''\\)\\).join\\(''\\\\n''\\)\\)\")",
+      "Bash(gh run:*)",
+      "Bash(find node_modules/@pmndrs/xr -name *.d.ts)",
+      "Bash(split -l 300 \"/c/ClaudeAI/RSI_Meta/src/components/AdminDashboard.tsx\" \"/tmp/admin_\")",
+      "Read(//c/tmp/**)"
     ]
   }
 }
