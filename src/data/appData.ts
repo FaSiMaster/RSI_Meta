@@ -134,122 +134,491 @@ const K_SCENES        = 'rsi-v3-scenes'
 const K_DEFICITS      = 'rsi-v3-deficits'
 const K_SESSION       = 'rsi-v3-session'
 const K_RANKING       = 'rsi-v3-ranking'
-const K_INIT          = 'rsi-v3-init'
+const K_INIT          = 'rsi-v3-init-v3'
 const K_SCENE_SESSION = 'rsi-v3-scene-session'
 const K_KURSE         = 'rsi-v3-kurse'
 
 // ── Platzhalter-Daten ──
 const DEFAULT_TOPICS: AppTopic[] = [
-  { id: 'fuss',   iconKey: 'walk',         sortOrder: 1, isActive: true, parentTopicId: null, createdAt: 1704067200000,
-    nameI18n:        { de: 'Fussverkehr',  fr: 'Piétons',    it: 'Pedoni',   en: 'Pedestrians'  },
-    beschreibungI18n:{ de: 'Gehwege, Querungen und Fussgaengerbereiche.', fr: 'Trottoirs et traversées.', it: 'Marciapiedi e attraversamenti.', en: 'Footpaths and crossings.' } },
-  { id: 'velo',   iconKey: 'bike',         sortOrder: 2, isActive: true, parentTopicId: null, createdAt: 1704067200000,
-    nameI18n:        { de: 'Veloverkehr',  fr: 'Cyclistes',  it: 'Ciclisti', en: 'Cyclists'     },
-    beschreibungI18n:{ de: 'Radwege, Radstreifen und Knotenpunkte.', fr: 'Pistes et bandes cyclables.', it: 'Piste e corsie ciclabili.', en: 'Cycle paths and lanes.' } },
-  { id: 'knoten', iconKey: 'junction',     sortOrder: 3, isActive: true, parentTopicId: null, createdAt: 1704067200000,
-    nameI18n:        { de: 'Knotenpunkte', fr: 'Carrefours', it: 'Incroci',  en: 'Junctions'    },
-    beschreibungI18n:{ de: 'Sichtweiten und Vorfahrtsregelungen.', fr: 'Visibilité et priorités.', it: 'Visibilità e precedenze.', en: 'Sight lines and priority.' } },
-  { id: 'bau',    iconKey: 'construction', sortOrder: 4, isActive: true, parentTopicId: null, createdAt: 1704067200000,
-    nameI18n:        { de: 'Baustellen',   fr: 'Chantiers',  it: 'Cantieri', en: 'Construction'  },
-    beschreibungI18n:{ de: 'Absicherung und temporaere Fuehrung.', fr: 'Sécurisation et guidage temporaire.', it: 'Sicurezza e guida temporanea.', en: 'Safety and temporary guidance.' } },
+  {
+    "id": "fuss",
+    "iconKey": "walk",
+    "sortOrder": 1,
+    "isActive": true,
+    "nameI18n": {
+      "de": "Fussverkehr",
+      "fr": "Piétons",
+      "it": "Pedoni",
+      "en": "Pedestrians"
+    },
+    "beschreibungI18n": {
+      "de": "Gehwege, Querungen und Fussgaengerbereiche.",
+      "fr": "Trottoirs et traversées.",
+      "it": "Marciapiedi e attraversamenti.",
+      "en": "Footpaths and crossings."
+    }
+  },
+  {
+    "id": "velo",
+    "iconKey": "bike",
+    "sortOrder": 2,
+    "isActive": true,
+    "nameI18n": {
+      "de": "Veloverkehr",
+      "fr": "Cyclistes",
+      "it": "Ciclisti",
+      "en": "Cyclists"
+    },
+    "beschreibungI18n": {
+      "de": "Radwege, Radstreifen und Knotenpunkte.",
+      "fr": "Pistes et bandes cyclables.",
+      "it": "Piste e corsie ciclabili.",
+      "en": "Cycle paths and lanes."
+    }
+  },
+  {
+    "id": "knoten",
+    "iconKey": "junction",
+    "sortOrder": 3,
+    "isActive": true,
+    "nameI18n": {
+      "de": "Knotenpunkte",
+      "fr": "Carrefours",
+      "it": "Incroci",
+      "en": "Junctions"
+    },
+    "beschreibungI18n": {
+      "de": "Sichtweiten und Vorfahrtsregelungen.",
+      "fr": "Visibilité et priorités.",
+      "it": "Visibilità e precedenze.",
+      "en": "Sight lines and priority."
+    }
+  },
+  {
+    "id": "bau",
+    "iconKey": "construction",
+    "sortOrder": 99,
+    "isActive": true,
+    "nameI18n": {
+      "de": "Baustellen",
+      "fr": "Chantiers",
+      "it": "Cantieri",
+      "en": "Construction"
+    },
+    "beschreibungI18n": {
+      "de": "Absicherung und temporaere Fuehrung.",
+      "fr": "Sécurisation et guidage temporaire.",
+      "it": "Sicurezza e guida temporanea.",
+      "en": "Safety and temporary guidance."
+    }
+  },
+  {
+    "id": "tp-1774780651056",
+    "nameI18n": {
+      "de": "MIV",
+      "fr": "",
+      "it": "",
+      "en": ""
+    },
+    "beschreibungI18n": {
+      "de": "Motorisierter Individualverkehr im Innerorts oder Aussertorts",
+      "fr": "",
+      "it": "",
+      "en": ""
+    },
+    "sortOrder": 4,
+    "isActive": true,
+    "parentTopicId": null,
+    "createdAt": 1774780651056
+  }
 ]
 
 const DEFAULT_SCENES: AppScene[] = [
   {
-    id: 'sc1', topicId: 'fuss', kontext: 'io', isActive: true,
-    startblick: null,
-    nameI18n: { de: 'Innerorts – Gehweg mit Querung', fr: 'Localité – Trottoir avec traversée', it: 'Zona abitata – Marciapiede con attraversamento', en: 'Built-up – Footpath with crossing' },
-    beschreibungI18n: { de: 'Innerörtliche Quartierstrasse mit Fussgaengerquerung. Beurteile Sichtverhaeltnisse, Querungsinfrastruktur und Wegfuehrung.', fr: 'Rue de quartier en localité avec traversée piétonne.', it: 'Via di quartiere con attraversamento pedonale.', en: 'Residential street with pedestrian crossing.' },
-    strassenmerkmale: [
-      { labelI18n: { de: 'Signalisierte Geschwindigkeit', fr: 'Vitesse signalisée', it: 'Velocità segnalata', en: 'Posted speed' }, wertI18n: { de: '50 km/h', fr: '50 km/h', it: '50 km/h', en: '50 km/h' } },
-      { labelI18n: { de: 'Kontext', fr: 'Contexte', it: 'Contesto', en: 'Context' }, wertI18n: { de: 'Innerorts', fr: 'En localité', it: 'In zona abitata', en: 'Built-up area' } },
-      { labelI18n: { de: 'Strassentyp', fr: 'Type de route', it: 'Tipo di strada', en: 'Road type' }, wertI18n: { de: 'Quartierstrasse', fr: 'Rue de quartier', it: 'Via di quartiere', en: 'Residential street' } },
-      { labelI18n: { de: 'Verkehrsmittel', fr: 'Moyens de transport', it: 'Mezzi di trasporto', en: 'Transport modes' }, wertI18n: { de: 'MIV, Fussverkehr', fr: 'TIM, piétons', it: 'TIM, pedoni', en: 'MIV, pedestrians' } },
-    ],
+    "id": "sc1",
+    "topicId": "fuss",
+    "kontext": "io",
+    "isActive": true,
+    "nameI18n": {
+      "de": "Innerorts – Gehweg mit Querung",
+      "fr": "Localité – Trottoir avec traversée",
+      "it": "Zona abitata – Marciapiede con attraversamento",
+      "en": "Built-up – Footpath with crossing"
+    },
+    "vorschauBilder": [],
+    "panoramaBildUrl": "/textures/street-360.jpg"
   },
   {
-    id: 'sc2', topicId: 'velo', kontext: 'ao', isActive: true,
-    startblick: null,
-    nameI18n: { de: 'Ausserorts – Hauptstrasse mit Radstreifen', fr: 'Hors localité – Route principale avec piste cyclable', it: 'Fuori zona – Strada principale con corsia ciclabile', en: 'Rural – Main road with cycle lane' },
-    beschreibungI18n: { de: 'Ausserörtliche Hauptstrasse mit Radstreifen. Beurteile Knotenpunkte, Veloinfrastruktur und Sichtweiten.', fr: 'Route principale hors localité avec piste cyclable.', it: 'Strada principale fuori zona con corsia ciclabile.', en: 'Rural main road with cycle lane.' },
-    strassenmerkmale: [
-      { labelI18n: { de: 'Signalisierte Geschwindigkeit', fr: 'Vitesse signalisée', it: 'Velocità segnalata', en: 'Posted speed' }, wertI18n: { de: '80 km/h', fr: '80 km/h', it: '80 km/h', en: '80 km/h' } },
-      { labelI18n: { de: 'Kontext', fr: 'Contexte', it: 'Contesto', en: 'Context' }, wertI18n: { de: 'Ausserorts', fr: 'Hors localité', it: 'Fuori zona', en: 'Rural area' } },
-      { labelI18n: { de: 'Strassentyp', fr: 'Type de route', it: 'Tipo di strada', en: 'Road type' }, wertI18n: { de: 'Hauptstrasse', fr: 'Route principale', it: 'Strada principale', en: 'Main road' } },
-      { labelI18n: { de: 'Verkehrsmittel', fr: 'Moyens de transport', it: 'Mezzi di trasporto', en: 'Transport modes' }, wertI18n: { de: 'MIV, Velo', fr: 'TIM, vélo', it: 'TIM, bici', en: 'MIV, cycling' } },
-    ],
+    "id": "sc2",
+    "topicId": "velo",
+    "kontext": "ao",
+    "isActive": true,
+    "nameI18n": {
+      "de": "Ausserorts – Hauptstrasse mit Radstreifen",
+      "fr": "Hors localité – Route principale avec piste cyclable",
+      "it": "Fuori zona – Strada principale con corsia ciclabile",
+      "en": "Rural – Main road with cycle lane"
+    }
   },
   {
-    id: 'sc3', topicId: 'knoten', kontext: 'io', isActive: true,
-    startblick: null,
-    nameI18n: { de: 'Kreuzung – eingeschraenkte Sichtweite', fr: 'Carrefour – visibilité réduite', it: 'Incrocio – visibilità ridotta', en: 'Junction – restricted sight line' },
-    beschreibungI18n: { de: 'Innerörtliche Kreuzung mit eingeschraenkten Sichtweiten. Beurteile Sichtraum, Markierungen und Signalisation.', fr: 'Carrefour en localité avec visibilité réduite.', it: 'Incrocio in zona con visibilità ridotta.', en: 'Junction with restricted sight lines.' },
-    strassenmerkmale: [
-      { labelI18n: { de: 'Signalisierte Geschwindigkeit', fr: 'Vitesse signalisée', it: 'Velocità segnalata', en: 'Posted speed' }, wertI18n: { de: '50 km/h', fr: '50 km/h', it: '50 km/h', en: '50 km/h' } },
-      { labelI18n: { de: 'Kontext', fr: 'Contexte', it: 'Contesto', en: 'Context' }, wertI18n: { de: 'Innerorts', fr: 'En localité', it: 'In zona abitata', en: 'Built-up area' } },
-      { labelI18n: { de: 'Strassentyp', fr: 'Type de route', it: 'Tipo di strada', en: 'Road type' }, wertI18n: { de: 'Kreuzung', fr: 'Carrefour', it: 'Incrocio', en: 'Junction' } },
-      { labelI18n: { de: 'Verkehrsmittel', fr: 'Moyens de transport', it: 'Mezzi di trasporto', en: 'Transport modes' }, wertI18n: { de: 'MIV, Velo, Fussverkehr', fr: 'TIM, vélo, piétons', it: 'TIM, bici, pedoni', en: 'MIV, cycling, pedestrians' } },
-    ],
+    "id": "sc3",
+    "topicId": "knoten",
+    "kontext": "io",
+    "isActive": true,
+    "nameI18n": {
+      "de": "Kreuzung – eingeschraenkte Sichtweite",
+      "fr": "Carrefour – visibilité réduite",
+      "it": "Incrocio – visibilità ridotta",
+      "en": "Junction – restricted sight line"
+    }
   },
   {
-    id: 'sc4', topicId: 'bau', kontext: 'ao', isActive: true,
-    startblick: null,
-    nameI18n: { de: 'Baustelle – temporaere Verkehrsfuehrung', fr: 'Chantier – guidage temporaire', it: 'Cantiere – guida temporanea', en: 'Construction – temp traffic guidance' },
-    beschreibungI18n: { de: 'Ausserörtliche Baustelle mit temporaerer Verkehrsfuehrung. Beurteile Absicherung und Fuehrungs-Signalisation.', fr: 'Chantier hors localité avec guidage temporaire.', it: 'Cantiere fuori zona con guida temporanea.', en: 'Rural construction with temporary traffic guidance.' },
-    strassenmerkmale: [
-      { labelI18n: { de: 'Signalisierte Geschwindigkeit', fr: 'Vitesse signalisée', it: 'Velocità segnalata', en: 'Posted speed' }, wertI18n: { de: '60 km/h', fr: '60 km/h', it: '60 km/h', en: '60 km/h' } },
-      { labelI18n: { de: 'Kontext', fr: 'Contexte', it: 'Contesto', en: 'Context' }, wertI18n: { de: 'Ausserorts', fr: 'Hors localité', it: 'Fuori zona', en: 'Rural area' } },
-      { labelI18n: { de: 'Strassentyp', fr: 'Type de route', it: 'Tipo di strada', en: 'Road type' }, wertI18n: { de: 'Baustelle', fr: 'Chantier', it: 'Cantiere', en: 'Construction site' } },
-      { labelI18n: { de: 'Verkehrsmittel', fr: 'Moyens de transport', it: 'Mezzi di trasporto', en: 'Transport modes' }, wertI18n: { de: 'MIV', fr: 'TIM', it: 'TIM', en: 'MIV' } },
-    ],
+    "id": "sc4",
+    "topicId": "bau",
+    "kontext": "ao",
+    "isActive": true,
+    "nameI18n": {
+      "de": "Baustelle – temporaere Verkehrsfuehrung",
+      "fr": "Chantier – guidage temporaire",
+      "it": "Cantiere – guida temporanea",
+      "en": "Construction – temp traffic guidance"
+    }
   },
+  {
+    "id": "sc-1774784383797",
+    "topicId": "fuss",
+    "nameI18n": {
+      "de": "Test_Voreinbau",
+      "fr": "",
+      "it": "",
+      "en": ""
+    },
+    "beschreibungI18n": {
+      "de": "",
+      "fr": "",
+      "it": "",
+      "en": ""
+    },
+    "kontext": "io",
+    "strassenmerkmale": [],
+    "vorschauBilder": [],
+    "panoramaBildUrl": "/textures/test-voreinbau.webp",
+    "startblick": null,
+    "isActive": true
+  }
 ]
 
 const DEFAULT_DEFICITS: AppDeficit[] = [
   {
-    id: 'def1', sceneId: 'sc1', topicId: 'fuss',
-    kriteriumId: 'fussgaengerfuehrung_geometrie', kontext: 'io',
-    isPflicht: true, isBooster: false,
-    normRefs: ['VSS SN 640 075', 'SN 641 723'],
-    position: { theta: 45,  phi: 100 }, tolerance: 20, kategorie: 'verkehrsfuehrung',
-    verortung: null,
-    nameI18n:        { de: 'Fehlende Absenkung',      fr: 'Abaissement absent',           it: 'Abbassamento mancante',         en: 'Missing kerb drop'              },
-    beschreibungI18n:{ de: 'Bordstein an Querungsstelle nicht abgesenkt — Barrierefreiheit verletzt.', fr: 'Bordure non abaissée à la traversée.', it: 'Cordolo non ribassato all\'attraversamento.', en: 'Kerb not dropped at crossing.' },
-    correctAssessment: { wichtigkeit: 'mittel', abweichung: 'gross', relevanzSD: 'hoch', naca: 2, unfallschwere: 'mittel', unfallrisiko: 'hoch' },
+    "id": "def1",
+    "sceneId": "sc1",
+    "topicId": "fuss",
+    "kriteriumId": "fussgaengerfuehrung_geometrie",
+    "kontext": "io",
+    "isPflicht": true,
+    "isBooster": false,
+    "normRefs": [
+      "VSS SN 640 075",
+      "SN 641 723"
+    ],
+    "nameI18n": {
+      "de": "Fehlende Absenkung",
+      "fr": "Abaissement absent",
+      "it": "Abbassamento mancante",
+      "en": "Missing kerb drop"
+    },
+    "beschreibungI18n": {
+      "de": "Bordstein an Querungsstelle nicht abgesenkt — Barrierefreiheit verletzt.",
+      "fr": "Bordure non abaissée à la traversée.",
+      "it": "Cordolo non ribassato all'attraversamento.",
+      "en": "Kerb not dropped at crossing."
+    },
+    "correctAssessment": {
+      "wichtigkeit": "mittel",
+      "abweichung": "gross",
+      "relevanzSD": "hoch",
+      "naca": 2,
+      "unfallschwere": "mittel",
+      "unfallrisiko": "hoch"
+    },
+    "verortung": {
+      "typ": "punkt",
+      "position": {
+        "theta": 134.11226153702032,
+        "phi": 115.1599900810341
+      },
+      "toleranz": 15
+    }
   },
   {
-    id: 'def2', sceneId: 'sc1', topicId: 'fuss',
-    kriteriumId: 'erkennungsdistanz', kontext: 'io',
-    isPflicht: true, isBooster: false,
-    normRefs: ['SN 640 273', 'SN 641 723'],
-    position: { theta: 320, phi: 88  }, tolerance: 20, kategorie: 'sicht',
-    verortung: null,
-    nameI18n:        { de: 'Sichtbehinderung Hecke',  fr: 'Obstruction par haie',         it: 'Ostacolo alla visibilità',      en: 'Visibility obstruction – hedge' },
-    beschreibungI18n:{ de: 'Hecke ragt in Sichtraum, Fahrzeuge werden zu spaat erkannt.', fr: 'Haie dans la zone de visibilité.', it: 'Siepe nella zona di visibilità.', en: 'Hedge intrudes into sight zone.' },
-    correctAssessment: { wichtigkeit: 'mittel', abweichung: 'mittel', relevanzSD: 'mittel', naca: 3, unfallschwere: 'mittel', unfallrisiko: 'mittel' },
+    "id": "def2",
+    "sceneId": "sc1",
+    "topicId": "fuss",
+    "kriteriumId": "erkennungsdistanz",
+    "kontext": "io",
+    "isPflicht": true,
+    "isBooster": false,
+    "normRefs": [
+      "SN 640 273",
+      "SN 641 723"
+    ],
+    "nameI18n": {
+      "de": "Sichtbehinderung Hecke",
+      "fr": "Obstruction par haie",
+      "it": "Ostacolo alla visibilità",
+      "en": "Visibility obstruction – hedge"
+    },
+    "beschreibungI18n": {
+      "de": "Hecke ragt in Sichtraum, Fahrzeuge werden zu spaat erkannt.",
+      "fr": "Haie dans la zone de visibilité.",
+      "it": "Siepe nella zona di visibilità.",
+      "en": "Hedge intrudes into sight zone."
+    },
+    "correctAssessment": {
+      "wichtigkeit": "mittel",
+      "abweichung": "mittel",
+      "relevanzSD": "mittel",
+      "naca": 3,
+      "unfallschwere": "mittel",
+      "unfallrisiko": "mittel"
+    },
+    "verortung": {
+      "typ": "polygon",
+      "punkte": [
+        {
+          "theta": 243.91863827686265,
+          "phi": 105.63321265598167
+        },
+        {
+          "theta": 261.96900157656273,
+          "phi": 122.17972081528326
+        },
+        {
+          "theta": 271.99698118750723,
+          "phi": 112.15153405207016
+        },
+        {
+          "theta": 255.95221380999604,
+          "phi": 98.61348192173249
+        },
+        {
+          "theta": 243.41723929631544,
+          "phi": 102.62475662701773
+        },
+        {
+          "theta": 243.41723929631544,
+          "phi": 102.62475662701773
+        }
+      ],
+      "toleranz": 15
+    }
   },
   {
-    id: 'def3', sceneId: 'sc2', topicId: 'velo',
-    kriteriumId: 'velolaengsfuehrung_art', kontext: 'ao',
-    isPflicht: true, isBooster: false,
-    normRefs: ['SN 640 238', 'SN 641 723'],
-    position: { theta: 180, phi: 92  }, tolerance: 22, kategorie: 'ausruestung',
-    verortung: null,
-    nameI18n:        { de: 'Unterbrochener Radstreifen', fr: 'Piste cyclable interrompue',  it: 'Corsia ciclabile interrotta',   en: 'Interrupted cycle lane'         },
-    beschreibungI18n:{ de: 'Radstreifen endet vor Kreuzung ohne Weiterfuehrung.', fr: 'Piste cyclable interrompue avant le carrefour.', it: 'Corsia ciclabile interrotta prima dell\'incrocio.', en: 'Cycle lane ends before junction.' },
-    correctAssessment: { wichtigkeit: 'gross', abweichung: 'gross', relevanzSD: 'hoch', naca: 3, unfallschwere: 'mittel', unfallrisiko: 'hoch' },
+    "id": "def3",
+    "sceneId": "sc2",
+    "topicId": "velo",
+    "kriteriumId": "velolaengsfuehrung_art",
+    "kontext": "ao",
+    "isPflicht": true,
+    "isBooster": false,
+    "normRefs": [
+      "SN 640 238",
+      "SN 641 723"
+    ],
+    "nameI18n": {
+      "de": "Unterbrochener Radstreifen",
+      "fr": "Piste cyclable interrompue",
+      "it": "Corsia ciclabile interrotta",
+      "en": "Interrupted cycle lane"
+    },
+    "beschreibungI18n": {
+      "de": "Radstreifen endet vor Kreuzung ohne Weiterführung.",
+      "fr": "Piste cyclable interrompue avant le carrefour.",
+      "it": "Corsia ciclabile interrotta prima dell'incrocio.",
+      "en": "Cycle lane ends before junction."
+    },
+    "correctAssessment": {
+      "wichtigkeit": "gross",
+      "abweichung": "gross",
+      "relevanzSD": "hoch",
+      "naca": 3,
+      "unfallschwere": "mittel",
+      "unfallrisiko": "hoch"
+    }
   },
   {
-    id: 'def4', sceneId: 'sc3', topicId: 'knoten',
-    kriteriumId: 'markierung', kontext: 'io',
-    isPflicht: false, isBooster: true,
-    normRefs: ['SN 640 852', 'SN 641 723'],
-    position: { theta: 10,  phi: 98  }, tolerance: 20, kategorie: 'ausruestung',
-    verortung: null,
-    nameI18n:        { de: 'Fehlende Wartelinie',    fr: 'Ligne d\'attente manquante',   it: 'Linea d\'attesa mancante',      en: 'Missing stop line'              },
-    beschreibungI18n:{ de: 'Keine Wartelinie vor Knotenpunkt erkennbar.', fr: 'Aucune ligne d\'attente visible avant le carrefour.', it: 'Nessuna linea d\'attesa prima dell\'incrocio.', en: 'No stop line visible before junction.' },
-    correctAssessment: { wichtigkeit: 'mittel', abweichung: 'mittel', relevanzSD: 'mittel', naca: 2, unfallschwere: 'mittel', unfallrisiko: 'mittel' },
+    "id": "def4",
+    "sceneId": "sc3",
+    "topicId": "knoten",
+    "kriteriumId": "markierung",
+    "kontext": "io",
+    "isPflicht": false,
+    "isBooster": true,
+    "normRefs": [
+      "SN 640 852",
+      "SN 641 723"
+    ],
+    "nameI18n": {
+      "de": "Fehlende Wartelinie",
+      "fr": "Ligne d'attente manquante",
+      "it": "Linea d'attesa mancante",
+      "en": "Missing stop line"
+    },
+    "beschreibungI18n": {
+      "de": "Keine Wartelinie vor Knotenpunkt erkennbar.",
+      "fr": "Aucune ligne d'attente visible avant le carrefour.",
+      "it": "Nessuna linea d'attesa prima dell'incrocio.",
+      "en": "No stop line visible before junction."
+    },
+    "correctAssessment": {
+      "wichtigkeit": "mittel",
+      "abweichung": "mittel",
+      "relevanzSD": "mittel",
+      "naca": 2,
+      "unfallschwere": "mittel",
+      "unfallrisiko": "mittel"
+    }
   },
+  {
+    "id": "d-1774784423874",
+    "sceneId": "sc-1774784383797",
+    "topicId": "fuss",
+    "nameI18n": {
+      "de": "Test1",
+      "fr": "",
+      "it": "",
+      "en": ""
+    },
+    "beschreibungI18n": {
+      "de": "",
+      "fr": "",
+      "it": "",
+      "en": ""
+    },
+    "kriteriumId": "visuelle_linienfuehrung",
+    "kontext": "io",
+    "correctAssessment": {
+      "wichtigkeit": "gross",
+      "abweichung": "gross",
+      "relevanzSD": "hoch",
+      "naca": 7,
+      "unfallschwere": "schwer",
+      "unfallrisiko": "hoch"
+    },
+    "isPflicht": true,
+    "isBooster": true,
+    "normRefs": [
+      "SN 641 723"
+    ],
+    "verortung": {
+      "typ": "punkt",
+      "position": {
+        "theta": 271.99698118750723,
+        "phi": 132.0718240138629
+      },
+      "toleranz": 15
+    }
+  },
+  {
+    "id": "d-1774784555731",
+    "sceneId": "sc-1774784383797",
+    "topicId": "fuss",
+    "nameI18n": {
+      "de": "Test 2",
+      "fr": "",
+      "it": "",
+      "en": ""
+    },
+    "beschreibungI18n": {
+      "de": "Test 2",
+      "fr": "",
+      "it": "",
+      "en": ""
+    },
+    "kriteriumId": "angebot_vertraeglichkeit",
+    "kontext": "io",
+    "correctAssessment": {
+      "wichtigkeit": "gross",
+      "abweichung": "gross",
+      "relevanzSD": "hoch",
+      "naca": 7,
+      "unfallschwere": "schwer",
+      "unfallrisiko": "hoch"
+    },
+    "isPflicht": true,
+    "isBooster": false,
+    "normRefs": [
+      "SN 641 723"
+    ],
+    "verortung": {
+      "typ": "polygon",
+      "punkte": [
+        {
+          "theta": 27.815677661008575,
+          "phi": 79.13005278615879
+        },
+        {
+          "theta": 57.39821751329486,
+          "phi": 133.09650345697978
+        },
+        {
+          "theta": 125.58847886771748,
+          "phi": 130.70558475637375
+        },
+        {
+          "theta": 151.15982687562598,
+          "phi": 102.69767997784642
+        },
+        {
+          "theta": 252.9438199267127,
+          "phi": 101.33144072035728
+        },
+        {
+          "theta": 266.4815924014878,
+          "phi": 80.49629204364793
+        },
+        {
+          "theta": 223.86267905497363,
+          "phi": 64.44298076815055
+        },
+        {
+          "theta": 122.58008498443414,
+          "phi": 66.49233965438425
+        },
+        {
+          "theta": 69.43179304642827,
+          "phi": 57.270224666332574
+        },
+        {
+          "theta": 30.322672563744703,
+          "phi": 77.42225371429737
+        },
+        {
+          "theta": 30.322672563744703,
+          "phi": 77.42225371429737
+        }
+      ],
+      "toleranz": 15
+    }
+  }
+]
+
+const DEFAULT_KURSE_SEED: Kurs[] = [
+  {
+    "id": "k-1774780717922",
+    "name": "FK RSI 03/2027",
+    "datum": "2026-03-29",
+    "zugangscode": "FaSi4safety",
+    "topicIds": [
+      "fuss",
+      "velo",
+      "knoten",
+      "bau",
+      "tp-1774780651056"
+    ],
+    "isActive": true,
+    "createdAt": 1774780717922
+  }
 ]
 
 const DEFAULT_RANKING: RankingEntry[] = [
@@ -265,6 +634,7 @@ function initIfNeeded(): void {
   localStorage.setItem(K_SCENES,   JSON.stringify(DEFAULT_SCENES))
   localStorage.setItem(K_DEFICITS, JSON.stringify(DEFAULT_DEFICITS))
   localStorage.setItem(K_RANKING,  JSON.stringify(DEFAULT_RANKING))
+  localStorage.setItem(K_KURSE,    JSON.stringify(DEFAULT_KURSE_SEED))
   localStorage.setItem(K_INIT, '1')
 }
 
