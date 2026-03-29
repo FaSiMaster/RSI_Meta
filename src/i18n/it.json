@@ -124,10 +124,27 @@
     "merkmale_wert": "Valore",
     "merkmale_hinzufuegen": "+ Aggiungi caratteristica",
     "panorama_phase3": "Immagine 360° (Fase 3)",
-    "vorschau_phase3": "Immagini di anteprima (Fase 3)",
+    "vorschau_phase3": "Immagini di anteprima",
     "szene_neu": "Nuova scena",
     "szene_beschreibung": "Testo esplicativo",
-    "szene_kontext": "Contesto"
+    "szene_kontext": "Contesto",
+    "panorama_url": "URL panorama 360°",
+    "panorama_laden": "Carica immagine",
+    "panorama_editor": "Apri editor di localizzazione",
+    "startblick": "Vista iniziale",
+    "startblick_setzen": "Imposta vista iniziale",
+    "startblick_hinweis": "Clicca nell'immagine per impostare la vista iniziale",
+    "verortung": "Localizzazione nell'immagine",
+    "verortung_punkt": "Posiziona punto",
+    "verortung_polygon": "Disegna poligono",
+    "verortung_gruppe": "Forma un gruppo",
+    "verortung_polygon_schliessen": "Chiudi poligono",
+    "toleranz": "Tolleranza",
+    "einblenden": "Mostra localizzazioni",
+    "ausblenden": "Nascondi localizzazioni",
+    "gruppe_name": "Nome gruppo (opzionale)",
+    "vorschaubild_1": "Immagine anteprima 1 (URL)",
+    "vorschaubild_2": "Immagine anteprima 2 (URL)"
   },
   "score": {
     "points": "pt"
@@ -209,6 +226,8 @@
     "leer": "Nessuna voce"
   },
   "szene": {
+    "laden": "Caricamento scena...",
+    "kein_panorama": "Nessuna immagine 360° disponibile",
     "beenden": "Termina scena",
     "weiter_suchen": "Continua la ricerca",
     "abschluss_titel": "Scena completata",

@@ -124,10 +124,27 @@
     "merkmale_wert": "Wert",
     "merkmale_hinzufuegen": "+ Merkmal hinzufuegen",
     "panorama_phase3": "360°-Bild (Phase 3)",
-    "vorschau_phase3": "Vorschaubilder (Phase 3)",
+    "vorschau_phase3": "Vorschaubilder",
     "szene_neu": "Neue Szene",
     "szene_beschreibung": "Erlaeuterungstext",
-    "szene_kontext": "Kontext"
+    "szene_kontext": "Kontext",
+    "panorama_url": "360°-Panorama URL",
+    "panorama_laden": "Bild laden",
+    "panorama_editor": "Verortungs-Editor oeffnen",
+    "startblick": "Startblick",
+    "startblick_setzen": "Startblick setzen",
+    "startblick_hinweis": "Klicke ins Bild um den Startblick zu setzen",
+    "verortung": "Verortung im Bild",
+    "verortung_punkt": "Punkt setzen",
+    "verortung_polygon": "Polygon zeichnen",
+    "verortung_gruppe": "Gruppe bilden",
+    "verortung_polygon_schliessen": "Polygon schliessen",
+    "toleranz": "Toleranz",
+    "einblenden": "Verortungen einblenden",
+    "ausblenden": "Verortungen ausblenden",
+    "gruppe_name": "Gruppenname (optional)",
+    "vorschaubild_1": "Vorschaubild 1 (URL)",
+    "vorschaubild_2": "Vorschaubild 2 (URL)"
   },
   "score": {
     "points": "Pkt."
@@ -209,6 +226,8 @@
     "leer": "Noch keine Eintraege"
   },
   "szene": {
+    "laden": "Szene wird geladen...",
+    "kein_panorama": "Kein 360°-Bild vorhanden",
     "beenden": "Szene beenden",
     "weiter_suchen": "Weiter suchen",
     "abschluss_titel": "Szene abgeschlossen",

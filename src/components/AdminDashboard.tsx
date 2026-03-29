@@ -17,6 +17,7 @@ import {
 import { WICHTIGKEIT_TABLE, KRITERIUM_LABELS, calcRelevanzSD, calcUnfallrisiko, nacaToSchwere } from '../data/scoringEngine'
 import type { RSIDimension, NACADimension, ResultDimension } from '../types'
 import type { NacaRaw } from '../data/scoringEngine'
+import BildEditor from './admin/BildEditor'
 
 // ── Badge-Farben ──
 function riskBg(w: RSIDimension): { bg: string; color: string; label: string } {
@@ -40,6 +41,7 @@ function emptyDeficit(sceneId: string, topicId: string): AppDeficit {
     },
     isPflicht: true, isBooster: false,
     normRefs: ['SN 641 723'],
+    verortung: null,
   }
 }
 
@@ -51,8 +53,9 @@ function emptyScene(topicId: string): AppScene {
     beschreibungI18n: { de: '', fr: '', it: '', en: '' },
     kontext: 'io',
     strassenmerkmale: [],
-    vorschauBilder: [],
+    vorschauBilder: ['', ''],
     panoramaBildUrl: null,
+    startblick: null,
     isActive: true,
   }
 }
@@ -145,6 +148,10 @@ export default function AdminDashboard() {
   const [szeneModalOpen, setSzeneModalOpen] = useState(false)
   const [editingScene, setEditingScene] = useState<AppScene | null>(null)
 
+  // BildEditor State
+  const [bildEditorOpen, setBildEditorOpen] = useState(false)
+  const [bildEditorDeficitId, setBildEditorDeficitId] = useState<string | undefined>()
+
   // ── Themen-Tab State ──
   const [topicsTree, setTopicsTree] = useState<TopicNode[]>([])
   const [expandedTopics, setExpandedTopics] = useState<Set<string>>(new Set())
@@ -213,17 +220,29 @@ export default function AdminDashboard() {
   }
   function handleSaveScene() {
     if (!editingScene) return
-    saveScene(editingScene)
+    // vorschauBilder normalisieren: leere Strings entfernen
+    const vorschauBilder = (editingScene.vorschauBilder ?? []).filter(s => s.trim().length > 0)
+    saveScene({ ...editingScene, vorschauBilder })
     if (selectedTopic) {
       const sc = getScenes(selectedTopic.id)
       setScenes(sc)
-      if (!selectedScene) setSelectedScene(sc[0] ?? null)
+      const updated = sc.find(s => s.id === editingScene.id) ?? sc[0] ?? null
+      if (!selectedScene) setSelectedScene(updated)
+      else setSelectedScene(sc.find(s => s.id === selectedScene.id) ?? selectedScene)
     }
     setSzeneModalOpen(false)
   }
   function setSceneML(field: 'nameI18n' | 'beschreibungI18n', l: string, v: string) {
     if (!editingScene) return
     setEditingScene(prev => prev ? { ...prev, [field]: { ...(prev[field] ?? { de:'', fr:'', it:'', en:'' }), [l]: v } } : prev)
+  }
+  function setVorschaubild(i: number, val: string) {
+    setEditingScene(prev => {
+      if (!prev) return prev
+      const arr = [...(prev.vorschauBilder ?? ['', ''])]
+      arr[i] = val
+      return { ...prev, vorschauBilder: arr }
+    })
   }
   function addMerkmal() {
     if (!editingScene) return
@@ -278,9 +297,9 @@ export default function AdminDashboard() {
   }
   function handleArchiveThema(id: string) {
     const all = getTopics()
-    const t = all.find(x => x.id === id)
-    if (!t) return
-    saveTopic({ ...t, isActive: false })
+    const tp = all.find(x => x.id === id)
+    if (!tp) return
+    saveTopic({ ...tp, isActive: false })
     setTopics(getTopics())
     setTopicsTree(getTopicsTree())
   }
@@ -414,10 +433,20 @@ export default function AdminDashboard() {
                 <h2 style={{ fontSize: '16px', fontWeight: 700, color: 'var(--zh-color-text)' }}>{t('admin.deficits')}</h2>
                 {selectedScene && <p style={{ fontSize: '12px', color: 'var(--zh-color-text-muted)', marginTop: '2px' }}>{deficits.length} in dieser Szene</p>}
               </div>
-              <button onClick={openNewDef} disabled={!selectedScene}
-                style={{ display: 'flex', alignItems: 'center', gap: '6px', padding: '8px 16px', borderRadius: 'var(--zh-radius-btn)', background: selectedScene ? 'var(--zh-dunkelblau)' : 'var(--zh-color-bg-tertiary)', color: selectedScene ? 'white' : 'var(--zh-color-text-disabled)', fontWeight: 700, fontSize: '13px', border: 'none', cursor: selectedScene ? 'pointer' : 'not-allowed' }}>
-                <Plus size={14} /> {t('admin.newDeficit')}
-              </button>
+              <div style={{ display: 'flex', gap: '8px' }}>
+                {/* BildEditor oeffnen (nur wenn Szene mit Panorama vorhanden) */}
+                {selectedScene?.panoramaBildUrl && (
+                  <button
+                    onClick={() => { setBildEditorDeficitId(undefined); setBildEditorOpen(true) }}
+                    style={{ display: 'flex', alignItems: 'center', gap: '6px', padding: '8px 16px', borderRadius: 'var(--zh-radius-btn)', background: 'rgba(0,118,189,0.12)', color: 'var(--zh-blau)', fontWeight: 700, fontSize: '13px', border: '1px solid rgba(0,118,189,0.3)', cursor: 'pointer' }}>
+                    {t('admin.panorama_editor')}
+                  </button>
+                )}
+                <button onClick={openNewDef} disabled={!selectedScene}
+                  style={{ display: 'flex', alignItems: 'center', gap: '6px', padding: '8px 16px', borderRadius: 'var(--zh-radius-btn)', background: selectedScene ? 'var(--zh-dunkelblau)' : 'var(--zh-color-bg-tertiary)', color: selectedScene ? 'white' : 'var(--zh-color-text-disabled)', fontWeight: 700, fontSize: '13px', border: 'none', cursor: selectedScene ? 'pointer' : 'not-allowed' }}>
+                  <Plus size={14} /> {t('admin.newDeficit')}
+                </button>
+              </div>
             </div>
 
             {/* Defizit-Rows */}
@@ -435,6 +464,7 @@ export default function AdminDashboard() {
                         <span style={{ padding: '2px 8px', borderRadius: '4px', fontSize: '10px', fontWeight: 800, background: badge.bg, color: badge.color, letterSpacing: '0.08em', flexShrink: 0 }}>{badge.label}</span>
                         {d.isPflicht && <span style={{ padding: '2px 7px', borderRadius: '4px', fontSize: '9px', fontWeight: 800, background: 'rgba(212,0,83,0.12)', color: '#D40053', textTransform: 'uppercase', letterSpacing: '0.08em', flexShrink: 0 }}>Pflicht</span>}
                         {d.isBooster && <span style={{ padding: '2px 7px', borderRadius: '4px', fontSize: '9px', fontWeight: 800, background: 'rgba(184,115,0,0.12)', color: '#B87300', textTransform: 'uppercase', letterSpacing: '0.08em', flexShrink: 0 }}>Booster</span>}
+                        {d.verortung && <span style={{ padding: '2px 7px', borderRadius: '4px', fontSize: '9px', fontWeight: 800, background: 'rgba(0,118,189,0.1)', color: 'var(--zh-blau)', textTransform: 'uppercase', letterSpacing: '0.08em', flexShrink: 0 }}>{d.verortung.typ}</span>}
                         <div style={{ minWidth: 0 }}>
                           <p style={{ fontSize: '14px', fontWeight: 600, color: 'var(--zh-color-text)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{ml(d.nameI18n, lang)}</p>
                           <p style={{ fontSize: '12px', color: 'var(--zh-color-text-muted)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{ml(d.beschreibungI18n, lang)}</p>
@@ -517,7 +547,7 @@ export default function AdminDashboard() {
                           style={{ padding: '3px 8px', borderRadius: '6px', border: '1px solid var(--zh-color-border)', background: 'transparent', fontSize: '11px', color: 'var(--zh-color-text-muted)', cursor: 'pointer' }}>
                           {t('admin.thema_archivieren')}
                         </button>
-                        <button onClick={() => { deleteThema: deleteTopic(child.id); setTopics(getTopics()); setTopicsTree(getTopicsTree()) }}
+                        <button onClick={() => { deleteTopic(child.id); setTopics(getTopics()); setTopicsTree(getTopicsTree()) }}
                           style={{ padding: '3px 8px', borderRadius: '6px', border: '1px solid rgba(212,0,83,0.2)', background: 'rgba(212,0,83,0.06)', fontSize: '11px', color: '#D40053', cursor: 'pointer' }}>
                           <Trash2 size={11} />
                         </button>
@@ -735,6 +765,41 @@ export default function AdminDashboard() {
               </select>
             </Section>
 
+            {/* Verortung im Bild */}
+            <Section label={t('admin.verortung')}>
+              {selectedScene?.panoramaBildUrl ? (
+                <div>
+                  {editingDef.verortung && (
+                    <div style={{ marginBottom: '8px', fontSize: '12px', color: 'var(--zh-color-text-muted)' }}>
+                      Aktuell: <strong style={{ color: 'var(--zh-blau)' }}>{editingDef.verortung.typ}</strong>
+                    </div>
+                  )}
+                  <button
+                    onClick={() => {
+                      if (editingDef) {
+                        setBildEditorDeficitId(editingDef.id)
+                        setBildEditorOpen(true)
+                        setDefModalOpen(false)
+                      }
+                    }}
+                    style={{
+                      padding: '8px 16px', borderRadius: '6px',
+                      background: 'rgba(0,118,189,0.1)', color: 'var(--zh-blau)',
+                      border: '1px solid rgba(0,118,189,0.3)',
+                      fontSize: '13px', fontWeight: 600, cursor: 'pointer',
+                      fontFamily: 'var(--zh-font)',
+                    }}
+                  >
+                    {t('admin.panorama_editor')}
+                  </button>
+                </div>
+              ) : (
+                <p style={{ fontSize: '12px', color: 'var(--zh-color-text-disabled)', fontStyle: 'italic' }}>
+                  Zuerst Panorama-Bild fuer diese Szene setzen.
+                </p>
+              )}
+            </Section>
+
             <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px', marginTop: '24px' }}>
               <button onClick={() => setDefModalOpen(false)} style={{ padding: '9px 18px', borderRadius: 'var(--zh-radius-btn)', border: '1px solid var(--zh-color-border)', background: 'transparent', color: 'var(--zh-color-text-muted)', fontSize: '13px', fontWeight: 600, cursor: 'pointer' }}>{t('admin.cancelBtn')}</button>
               <button onClick={handleSaveDef} style={{ display: 'flex', alignItems: 'center', gap: '6px', padding: '9px 18px', borderRadius: 'var(--zh-radius-btn)', background: 'var(--zh-dunkelblau)', color: 'white', fontWeight: 700, fontSize: '13px', border: 'none', cursor: 'pointer' }}>
@@ -807,21 +872,35 @@ export default function AdminDashboard() {
               </div>
             </Section>
 
+            {/* Panorama-URL (aktiv, Phase 3) */}
+            <Section label={t('admin.panorama_url')}>
+              <div style={{ display: 'flex', gap: '8px' }}>
+                <input
+                  value={editingScene.panoramaBildUrl ?? ''}
+                  onChange={e => setEditingScene(prev => prev ? { ...prev, panoramaBildUrl: e.target.value || null } : prev)}
+                  placeholder="https://example.com/panorama.jpg"
+                  style={{ flex: 1, padding: '7px 10px', borderRadius: '6px', border: '1px solid var(--zh-color-border)', background: 'var(--zh-color-bg-secondary)', color: 'var(--zh-color-text)', fontSize: '13px', fontFamily: 'var(--zh-font)' }}
+                />
+              </div>
+            </Section>
+
+            {/* Vorschaubilder (aktiv, Phase 3) */}
             <Section label={t('admin.vorschau_phase3')}>
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
                 {[0, 1].map(i => (
                   <div key={i}>
-                    <div style={{ fontSize: '10px', fontWeight: 700, color: 'var(--zh-color-text-disabled)', marginBottom: '3px', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Bild {i + 1}</div>
-                    <input disabled value="" placeholder="Phase 3 – URL folgt"
-                      style={{ width: '100%', padding: '7px 10px', borderRadius: '6px', border: '1px solid var(--zh-color-border)', background: 'var(--zh-color-bg-tertiary)', color: 'var(--zh-color-text-disabled)', fontSize: '13px', fontFamily: 'var(--zh-font)', boxSizing: 'border-box' }} />
+                    <div style={{ fontSize: '10px', fontWeight: 700, color: 'var(--zh-color-text-disabled)', marginBottom: '3px', textTransform: 'uppercase', letterSpacing: '0.1em' }}>
+                      {i === 0 ? t('admin.vorschaubild_1') : t('admin.vorschaubild_2')}
+                    </div>
+                    <input
+                      value={editingScene.vorschauBilder?.[i] ?? ''}
+                      onChange={e => setVorschaubild(i, e.target.value)}
+                      placeholder="https://example.com/bild.jpg"
+                      style={{ width: '100%', padding: '7px 10px', borderRadius: '6px', border: '1px solid var(--zh-color-border)', background: 'var(--zh-color-bg-secondary)', color: 'var(--zh-color-text)', fontSize: '13px', fontFamily: 'var(--zh-font)', boxSizing: 'border-box' }}
+                    />
                   </div>
                 ))}
               </div>
-            </Section>
-
-            <Section label={t('admin.panorama_phase3')}>
-              <input disabled value="" placeholder="Phase 3 – URL folgt"
-                style={{ width: '100%', padding: '7px 10px', borderRadius: '6px', border: '1px solid var(--zh-color-border)', background: 'var(--zh-color-bg-tertiary)', color: 'var(--zh-color-text-disabled)', fontSize: '13px', fontFamily: 'var(--zh-font)', boxSizing: 'border-box' }} />
             </Section>
 
             <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px', marginTop: '24px' }}>
@@ -948,6 +1027,26 @@ export default function AdminDashboard() {
             </div>
           </div>
         </div>
+      )}
+
+      {/* ═══ BILD-EDITOR ═══ */}
+      {bildEditorOpen && selectedScene && (
+        <BildEditor
+          scene={selectedScene}
+          deficits={deficits}
+          initialDeficitId={bildEditorDeficitId}
+          onSave={(updatedScene, updatedDeficits) => {
+            saveScene(updatedScene)
+            updatedDeficits.forEach(saveDeficit)
+            setSelectedScene(updatedScene)
+            if (selectedTopic) {
+              setScenes(getScenes(selectedTopic.id))
+            }
+            setDeficits(getDeficits(updatedScene.id))
+            setBildEditorOpen(false)
+          }}
+          onClose={() => setBildEditorOpen(false)}
+        />
       )}
     </div>
   )

@@ -8,6 +8,15 @@ export interface SphericalPos {
   phi:   number // Vertikalwinkel in Grad (0–180), 90 = Horizont (Aequator)
 }
 
+// Alias-Typ fuer SphericalPos
+export type SphereCoord = SphericalPos
+
+// Defizit-Verortung Union-Typ
+export type DefizitVerortung =
+  | { typ: 'punkt';   position: SphereCoord; toleranz: number }
+  | { typ: 'polygon'; punkte: SphereCoord[];  toleranz: number }
+  | { typ: 'gruppe';  elemente: DefizitVerortung[]; label?: string }
+
 // Klick-Punkt auf Sphere-Oberflaeche → sphärische Koordinaten
 // Eingabe: Vector3 Schnittpunkt auf Sphere (Radius beliebig)
 export function clickToSpherical(point: Vector3): SphericalPos {
@@ -18,6 +27,11 @@ export function clickToSpherical(point: Vector3): SphericalPos {
   let theta = Math.atan2(n.x, -n.z) * (180 / Math.PI)
   if (theta < 0) theta += 360
   return { theta, phi }
+}
+
+// Alias fuer clickToSpherical
+export function vector3ToSpherical(point: Vector3): SphericalPos {
+  return clickToSpherical(point)
 }
 
 // Sphärische Koordinaten → Vector3 auf Sphere mit gegebenem Radius
@@ -46,4 +60,53 @@ export function sphericalDistance(a: SphericalPos, b: SphericalPos): number {
 // Prueft ob ein Klick innerhalb des Toleranz-Radius eines Defizits liegt
 export function isInTolerance(click: SphericalPos, deficitPos: SphericalPos, tolerance: number): boolean {
   return sphericalDistance(click, deficitPos) <= tolerance
+}
+
+// Equirectangulaere Pixel-Koordinate zu sphärischer Position
+export function pixelToSpherical(x: number, y: number, bildBreite: number, bildHoehe: number): SphericalPos {
+  const theta = (x / bildBreite) * 360
+  const phi   = (y / bildHoehe)  * 180
+  return { theta, phi }
+}
+
+// Sphärische Position zu equirectangulären Pixel-Koordinaten
+export function sphericalToPixel(coord: SphericalPos, bildBreite: number, bildHoehe: number): { x: number; y: number } {
+  const x = (coord.theta / 360) * bildBreite
+  const y = (coord.phi   / 180) * bildHoehe
+  return { x, y }
+}
+
+// Ray-Casting Algorithmus im equirectangulären (theta/phi) Raum
+export function punktInPolygon(punkt: SphericalPos, polygon: SphericalPos[]): boolean {
+  const n = polygon.length
+  if (n < 3) return false
+  let inside = false
+  const px = punkt.theta
+  const py = punkt.phi
+  for (let i = 0, j = n - 1; i < n; j = i++) {
+    const xi = polygon[i].theta
+    const yi = polygon[i].phi
+    const xj = polygon[j].theta
+    const yj = polygon[j].phi
+    const intersect = ((yi > py) !== (yj > py)) &&
+      (px < (xj - xi) * (py - yi) / (yj - yi) + xi)
+    if (intersect) inside = !inside
+  }
+  return inside
+}
+
+// Trefferpruefung fuer alle Verortungstypen
+export function trefferpruefung(klick: SphericalPos, verortung: DefizitVerortung): boolean {
+  if (verortung.typ === 'punkt') {
+    return sphericalDistance(klick, verortung.position) <= verortung.toleranz
+  }
+  if (verortung.typ === 'polygon') {
+    if (punktInPolygon(klick, verortung.punkte)) return true
+    // Auch Treffer wenn in Naehe eines Eckpunkts
+    return verortung.punkte.some(p => sphericalDistance(klick, p) <= verortung.toleranz)
+  }
+  if (verortung.typ === 'gruppe') {
+    return verortung.elemente.some(el => trefferpruefung(klick, el))
+  }
+  return false
 }

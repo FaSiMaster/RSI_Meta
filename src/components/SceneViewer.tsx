@@ -6,10 +6,16 @@ import * as THREE from 'three'
 import { Canvas, useLoader } from '@react-three/fiber'
 import { OrbitControls, Billboard } from '@react-three/drei'
 import { createXRStore, XR } from '@react-three/xr'
-import { Suspense, useCallback, useState, useRef } from 'react'
+import { Suspense, useCallback, useState, useRef, useEffect } from 'react'
 import type { ThreeEvent } from '@react-three/fiber'
 import { Eye, X, Glasses, MapPin } from 'lucide-react'
-import { clickToSpherical, sphericalToVector3, isInTolerance } from '../utils/sphereCoords'
+import type { OrbitControls as OrbitControlsImpl } from 'three-stdlib'
+import {
+  clickToSpherical,
+  sphericalToVector3,
+  isInTolerance,
+  trefferpruefung,
+} from '../utils/sphereCoords'
 import { ml, type AppScene, type AppDeficit, type DefizitKategorie, type FoundDeficit } from '../data/appData'
 import KategoriePanel from './KategoriePanel'
 import KlickFeedback, { type KlickFeedbackType } from './KlickFeedback'
@@ -20,7 +26,7 @@ const xrStore = createXRStore()
 
 // ── 360°-Sphere (invertiert, BackSide) ──────────────────────────────────────
 interface PanoramaSphereProps {
-  bildUrl: string | undefined
+  bildUrl: string | null | undefined
   onClick: (e: ThreeEvent<MouseEvent>) => void
 }
 
@@ -83,6 +89,35 @@ function Hotspot({ position, found }: HotspotProps) {
   )
 }
 
+// ── Hotspot-Position fuer ein Defizit bestimmen ──────────────────────────────
+function getHotspotPosition(d: AppDeficit): THREE.Vector3 | null {
+  if (d.verortung) {
+    if (d.verortung.typ === 'punkt') {
+      return sphericalToVector3(d.verortung.position, 60)
+    }
+    if (d.verortung.typ === 'polygon' && d.verortung.punkte.length > 0) {
+      // Schwerpunkt der Polygon-Punkte
+      const n = d.verortung.punkte.length
+      const sumTheta = d.verortung.punkte.reduce((s, p) => s + p.theta, 0)
+      const sumPhi   = d.verortung.punkte.reduce((s, p) => s + p.phi,   0)
+      return sphericalToVector3({ theta: sumTheta / n, phi: sumPhi / n }, 60)
+    }
+    if (d.verortung.typ === 'gruppe' && d.verortung.elemente.length > 0) {
+      // Erstes Element der Gruppe verwenden
+      const erstesElement = d.verortung.elemente[0]
+      if (erstesElement.typ === 'punkt') {
+        return sphericalToVector3(erstesElement.position, 60)
+      }
+      if (erstesElement.typ === 'polygon' && erstesElement.punkte.length > 0) {
+        return sphericalToVector3(erstesElement.punkte[0], 60)
+      }
+    }
+  }
+  // Fallback: alte position
+  if (d.position) return sphericalToVector3(d.position, 60)
+  return null
+}
+
 // ── Szenen-Inhalt (3D) ───────────────────────────────────────────────────────
 interface SceneContentProps {
   scene:         AppScene
@@ -90,29 +125,45 @@ interface SceneContentProps {
   foundDeficits: FoundDeficit[]
   hintActive:    boolean
   onSphereClick: (e: ThreeEvent<MouseEvent>) => void
+  startblick?:   { theta: number; phi: number } | null
 }
 
-function SceneContent({ scene, deficits, foundDeficits, hintActive, onSphereClick }: SceneContentProps) {
+function SceneContent({ scene, deficits, foundDeficits, hintActive, onSphereClick, startblick }: SceneContentProps) {
   const foundIds = new Set(foundDeficits.map(f => f.deficitId))
+  const controlsRef = useRef<OrbitControlsImpl>(null)
+
+  // Beim Mount: Startblick setzen
+  useEffect(() => {
+    if (!controlsRef.current || !startblick) return
+    const azimuth = -(startblick.theta * Math.PI / 180)
+    const polar   = startblick.phi * Math.PI / 180
+    controlsRef.current.setAzimuthalAngle(azimuth)
+    controlsRef.current.setPolarAngle(polar)
+    controlsRef.current.update()
+  }, []) // eslint-disable-line react-hooks/exhaustive-deps
+
+  // Panorama-URL bevorzugt, Fallback auf bildUrl
+  const bildUrl = scene.panoramaBildUrl ?? scene.bildUrl
 
   return (
     <>
       <OrbitControls
+        ref={controlsRef}
         enablePan={false}
         enableZoom={false}
         rotateSpeed={-0.45}
         reverseOrbit={false}
       />
-      <PanoramaSphere bildUrl={scene.bildUrl} onClick={onSphereClick} />
+      <PanoramaSphere bildUrl={bildUrl} onClick={onSphereClick} />
       <BodenPlatzhalter />
 
       {hintActive && deficits.map(d => {
-        if (!d.position) return null
-        const pos = sphericalToVector3(d.position, 60)
+        const renderPos = getHotspotPosition(d)
+        if (!renderPos) return null
         return (
           <Hotspot
             key={d.id}
-            position={pos}
+            position={renderPos}
             found={foundIds.has(d.id)}
           />
         )
@@ -123,7 +174,7 @@ function SceneContent({ scene, deficits, foundDeficits, hintActive, onSphereClic
 
 // ── Hint-Dialog ───────────────────────────────────────────────────────────────
 interface HintDialogProps {
-  hintCount:   number
+  hintCount:     number
   onBestaetigen: () => void
   onAbbrechen:   () => void
 }
@@ -253,8 +304,9 @@ export default function SceneViewer({
 
     const clickPos = clickToSpherical(e.point)
 
-    // Treffer suchen
+    // Treffer suchen: verortung bevorzugen, fallback auf position
     const hit = deficits.find(d => {
+      if (d.verortung) return trefferpruefung(clickPos, d.verortung)
       if (!d.position) return false
       return isInTolerance(clickPos, d.position, d.tolerance ?? 15)
     })
@@ -345,6 +397,7 @@ export default function SceneViewer({
               foundDeficits={foundDeficits}
               hintActive={hintActive}
               onSphereClick={handleSphereClick}
+              startblick={scene.startblick}
             />
           </Suspense>
         </XR>

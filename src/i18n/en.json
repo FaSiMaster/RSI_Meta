@@ -124,10 +124,27 @@
     "merkmale_wert": "Value",
     "merkmale_hinzufuegen": "+ Add characteristic",
     "panorama_phase3": "360° image (Phase 3)",
-    "vorschau_phase3": "Preview images (Phase 3)",
+    "vorschau_phase3": "Preview images",
     "szene_neu": "New scene",
     "szene_beschreibung": "Explanatory text",
-    "szene_kontext": "Context"
+    "szene_kontext": "Context",
+    "panorama_url": "360° panorama URL",
+    "panorama_laden": "Load image",
+    "panorama_editor": "Open location editor",
+    "startblick": "Start view",
+    "startblick_setzen": "Set start view",
+    "startblick_hinweis": "Click in the image to set the start view",
+    "verortung": "Location in image",
+    "verortung_punkt": "Place point",
+    "verortung_polygon": "Draw polygon",
+    "verortung_gruppe": "Form a group",
+    "verortung_polygon_schliessen": "Close polygon",
+    "toleranz": "Tolerance",
+    "einblenden": "Show locations",
+    "ausblenden": "Hide locations",
+    "gruppe_name": "Group name (optional)",
+    "vorschaubild_1": "Preview image 1 (URL)",
+    "vorschaubild_2": "Preview image 2 (URL)"
   },
   "score": {
     "points": "pts"
@@ -209,6 +226,8 @@
     "leer": "No entries yet"
   },
   "szene": {
+    "laden": "Loading scene...",
+    "kein_panorama": "No 360° image available",
     "beenden": "End scene",
     "weiter_suchen": "Keep searching",
     "abschluss_titel": "Scene completed",

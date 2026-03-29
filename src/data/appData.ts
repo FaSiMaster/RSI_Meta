@@ -3,6 +3,7 @@
 
 import type { RSIDimension, NACADimension, ResultDimension } from '../types'
 import type { NacaRaw } from './scoringEngine'
+import type { DefizitVerortung } from '../utils/sphereCoords'
 
 // ── Typen ──
 
@@ -45,6 +46,7 @@ export interface AppScene {
   strassenmerkmale?: StrassenMerkmal[]
   vorschauBilder?: string[]
   panoramaBildUrl?: string | null
+  startblick?: { theta: number; phi: number } | null
   isActive: boolean
 }
 
@@ -71,6 +73,7 @@ export interface AppDeficit {
   position?:  { theta: number; phi: number }
   tolerance?: number          // Trefferradius in Grad (default: 15)
   kategorie?: DefizitKategorie
+  verortung?: DefizitVerortung | null
 }
 
 export interface UserSession {
@@ -154,6 +157,7 @@ const DEFAULT_TOPICS: AppTopic[] = [
 const DEFAULT_SCENES: AppScene[] = [
   {
     id: 'sc1', topicId: 'fuss', kontext: 'io', isActive: true,
+    startblick: null,
     nameI18n: { de: 'Innerorts – Gehweg mit Querung', fr: 'Localité – Trottoir avec traversée', it: 'Zona abitata – Marciapiede con attraversamento', en: 'Built-up – Footpath with crossing' },
     beschreibungI18n: { de: 'Innerörtliche Quartierstrasse mit Fussgaengerquerung. Beurteile Sichtverhaeltnisse, Querungsinfrastruktur und Wegfuehrung.', fr: 'Rue de quartier en localité avec traversée piétonne.', it: 'Via di quartiere con attraversamento pedonale.', en: 'Residential street with pedestrian crossing.' },
     strassenmerkmale: [
@@ -165,6 +169,7 @@ const DEFAULT_SCENES: AppScene[] = [
   },
   {
     id: 'sc2', topicId: 'velo', kontext: 'ao', isActive: true,
+    startblick: null,
     nameI18n: { de: 'Ausserorts – Hauptstrasse mit Radstreifen', fr: 'Hors localité – Route principale avec piste cyclable', it: 'Fuori zona – Strada principale con corsia ciclabile', en: 'Rural – Main road with cycle lane' },
     beschreibungI18n: { de: 'Ausserörtliche Hauptstrasse mit Radstreifen. Beurteile Knotenpunkte, Veloinfrastruktur und Sichtweiten.', fr: 'Route principale hors localité avec piste cyclable.', it: 'Strada principale fuori zona con corsia ciclabile.', en: 'Rural main road with cycle lane.' },
     strassenmerkmale: [
@@ -176,6 +181,7 @@ const DEFAULT_SCENES: AppScene[] = [
   },
   {
     id: 'sc3', topicId: 'knoten', kontext: 'io', isActive: true,
+    startblick: null,
     nameI18n: { de: 'Kreuzung – eingeschraenkte Sichtweite', fr: 'Carrefour – visibilité réduite', it: 'Incrocio – visibilità ridotta', en: 'Junction – restricted sight line' },
     beschreibungI18n: { de: 'Innerörtliche Kreuzung mit eingeschraenkten Sichtweiten. Beurteile Sichtraum, Markierungen und Signalisation.', fr: 'Carrefour en localité avec visibilité réduite.', it: 'Incrocio in zona con visibilità ridotta.', en: 'Junction with restricted sight lines.' },
     strassenmerkmale: [
@@ -187,6 +193,7 @@ const DEFAULT_SCENES: AppScene[] = [
   },
   {
     id: 'sc4', topicId: 'bau', kontext: 'ao', isActive: true,
+    startblick: null,
     nameI18n: { de: 'Baustelle – temporaere Verkehrsfuehrung', fr: 'Chantier – guidage temporaire', it: 'Cantiere – guida temporanea', en: 'Construction – temp traffic guidance' },
     beschreibungI18n: { de: 'Ausserörtliche Baustelle mit temporaerer Verkehrsfuehrung. Beurteile Absicherung und Fuehrungs-Signalisation.', fr: 'Chantier hors localité avec guidage temporaire.', it: 'Cantiere fuori zona con guida temporanea.', en: 'Rural construction with temporary traffic guidance.' },
     strassenmerkmale: [
@@ -205,6 +212,7 @@ const DEFAULT_DEFICITS: AppDeficit[] = [
     isPflicht: true, isBooster: false,
     normRefs: ['VSS SN 640 075', 'SN 641 723'],
     position: { theta: 45,  phi: 100 }, tolerance: 20, kategorie: 'verkehrsfuehrung',
+    verortung: null,
     nameI18n:        { de: 'Fehlende Absenkung',      fr: 'Abaissement absent',           it: 'Abbassamento mancante',         en: 'Missing kerb drop'              },
     beschreibungI18n:{ de: 'Bordstein an Querungsstelle nicht abgesenkt — Barrierefreiheit verletzt.', fr: 'Bordure non abaissée à la traversée.', it: 'Cordolo non ribassato all\'attraversamento.', en: 'Kerb not dropped at crossing.' },
     correctAssessment: { wichtigkeit: 'mittel', abweichung: 'gross', relevanzSD: 'hoch', naca: 2, unfallschwere: 'mittel', unfallrisiko: 'hoch' },
@@ -215,6 +223,7 @@ const DEFAULT_DEFICITS: AppDeficit[] = [
     isPflicht: true, isBooster: false,
     normRefs: ['SN 640 273', 'SN 641 723'],
     position: { theta: 320, phi: 88  }, tolerance: 20, kategorie: 'sicht',
+    verortung: null,
     nameI18n:        { de: 'Sichtbehinderung Hecke',  fr: 'Obstruction par haie',         it: 'Ostacolo alla visibilità',      en: 'Visibility obstruction – hedge' },
     beschreibungI18n:{ de: 'Hecke ragt in Sichtraum, Fahrzeuge werden zu spaat erkannt.', fr: 'Haie dans la zone de visibilité.', it: 'Siepe nella zona di visibilità.', en: 'Hedge intrudes into sight zone.' },
     correctAssessment: { wichtigkeit: 'mittel', abweichung: 'mittel', relevanzSD: 'mittel', naca: 3, unfallschwere: 'mittel', unfallrisiko: 'mittel' },
@@ -225,6 +234,7 @@ const DEFAULT_DEFICITS: AppDeficit[] = [
     isPflicht: true, isBooster: false,
     normRefs: ['SN 640 238', 'SN 641 723'],
     position: { theta: 180, phi: 92  }, tolerance: 22, kategorie: 'ausruestung',
+    verortung: null,
     nameI18n:        { de: 'Unterbrochener Radstreifen', fr: 'Piste cyclable interrompue',  it: 'Corsia ciclabile interrotta',   en: 'Interrupted cycle lane'         },
     beschreibungI18n:{ de: 'Radstreifen endet vor Kreuzung ohne Weiterfuehrung.', fr: 'Piste cyclable interrompue avant le carrefour.', it: 'Corsia ciclabile interrotta prima dell\'incrocio.', en: 'Cycle lane ends before junction.' },
     correctAssessment: { wichtigkeit: 'gross', abweichung: 'gross', relevanzSD: 'hoch', naca: 3, unfallschwere: 'mittel', unfallrisiko: 'hoch' },
@@ -235,6 +245,7 @@ const DEFAULT_DEFICITS: AppDeficit[] = [
     isPflicht: false, isBooster: true,
     normRefs: ['SN 640 852', 'SN 641 723'],
     position: { theta: 10,  phi: 98  }, tolerance: 20, kategorie: 'ausruestung',
+    verortung: null,
     nameI18n:        { de: 'Fehlende Wartelinie',    fr: 'Ligne d\'attente manquante',   it: 'Linea d\'attesa mancante',      en: 'Missing stop line'              },
     beschreibungI18n:{ de: 'Keine Wartelinie vor Knotenpunkt erkennbar.', fr: 'Aucune ligne d\'attente visible avant le carrefour.', it: 'Nessuna linea d\'attesa prima dell\'incrocio.', en: 'No stop line visible before junction.' },
     correctAssessment: { wichtigkeit: 'mittel', abweichung: 'mittel', relevanzSD: 'mittel', naca: 2, unfallschwere: 'mittel', unfallrisiko: 'mittel' },
