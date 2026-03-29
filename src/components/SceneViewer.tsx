@@ -5,8 +5,8 @@
 import * as THREE from 'three'
 import { Canvas, useLoader, useFrame } from '@react-three/fiber'
 import { OrbitControls, Billboard, Text } from '@react-three/drei'
-import { createXRStore, XR, useXRSessionVisibilityState } from '@react-three/xr'
-import { Suspense, useCallback, useState, useRef, useEffect } from 'react'
+import { createXRStore, XR, useXR } from '@react-three/xr'
+import { Suspense, useCallback, useState, useRef, useEffect, Component } from 'react'
 import type { ThreeEvent } from '@react-three/fiber'
 import { Eye, X, Glasses, MapPin } from 'lucide-react'
 import type { OrbitControls as OrbitControlsImpl } from 'three-stdlib'
@@ -22,7 +22,10 @@ import KlickFeedback, { type KlickFeedbackType } from './KlickFeedback'
 import { useTranslation } from 'react-i18next'
 
 // Modul-Level Singleton – nie innerhalb von Komponenten erzeugen
-const xrStore = createXRStore()
+// controller/hand auf false: verhindert GLTF-Modell-Download von CDN,
+// der ohne Suspense-Boundary die R3F-Scene crashen kann.
+// Pointer-Events fuer Controller bleiben trotzdem aktiv.
+const xrStore = createXRStore({ controller: false, hand: false })
 
 // Kategorien fuer VR-Panel
 const VR_KATEGORIEN: { value: DefizitKategorie; label: string }[] = [
@@ -34,6 +37,17 @@ const VR_KATEGORIEN: { value: DefizitKategorie; label: string }[] = [
   { value: 'verkehrsablauf',   label: 'Verkehrsablauf'         },
   { value: 'baustelle',        label: 'Baustelle'              },
 ]
+
+// ── Fehlergrenze fuer VR-Panels (verhindert Scene-Crash) ────────────────────
+interface VRErrorBoundaryState { hasError: boolean }
+class VRErrorBoundary extends Component<{ children: React.ReactNode }, VRErrorBoundaryState> {
+  constructor(props: { children: React.ReactNode }) {
+    super(props)
+    this.state = { hasError: false }
+  }
+  static getDerivedStateFromError() { return { hasError: true } }
+  render() { return this.state.hasError ? null : this.props.children }
+}
 
 // ── 360°-Sphere (invertiert, BackSide) ──────────────────────────────────────
 interface PanoramaSphereProps {
@@ -115,7 +129,6 @@ function getHotspotPosition(d: AppDeficit): THREE.Vector3 | null {
 }
 
 // ── VR: HUD-Gruppe folgt der Kamera jeden Frame ──────────────────────────────
-// offset = lokaler Versatz in Kamera-Koordinaten (z.B. [0, 0, -1.5] = 1.5 m vor Kamera)
 interface VRHudProps {
   offset?: [number, number, number]
   children: React.ReactNode
@@ -126,12 +139,10 @@ function VRHud({ offset = [0, 0, -1.5], children }: VRHudProps) {
 
   useFrame(({ camera }) => {
     if (!groupRef.current) return
-    // Position: Kamera + rotierten Offset
     const pos = new THREE.Vector3(offset[0], offset[1], offset[2])
       .applyQuaternion(camera.quaternion)
       .add(camera.position)
     groupRef.current.position.copy(pos)
-    // Rotation: Panel-Vorderseite zeigt zur Kamera (Panel+Z = Kamera+Z = hinter Kamera)
     groupRef.current.quaternion.copy(camera.quaternion)
   })
 
@@ -188,17 +199,6 @@ function VRButton({
   )
 }
 
-// ── VR: Modus-Erkennung ──────────────────────────────────────────────────────
-function VRModeDetector({ onVRChange }: { onVRChange: (isVR: boolean) => void }) {
-  const visibility = useXRSessionVisibilityState()
-
-  useEffect(() => {
-    onVRChange(visibility === 'visible')
-  }, [visibility, onVRChange])
-
-  return null
-}
-
 // ── VR: Fortschritts-Panel (oben links) ─────────────────────────────────────
 interface VRProgressPanelProps {
   sceneName:  string
@@ -209,49 +209,30 @@ interface VRProgressPanelProps {
 }
 
 function VRProgressPanel({ sceneName, kontext, foundCount, totalCount, dots }: VRProgressPanelProps) {
-  const maxDots = Math.min(dots.length, 10)
-  const shownDots = dots.slice(0, maxDots)
-  // X-Startposition fuer Dots zentriert
+  const maxDots    = Math.min(dots.length, 10)
+  const shownDots  = dots.slice(0, maxDots)
   const dotStep    = 0.038
   const dotsWidth  = (shownDots.length - 1) * dotStep
   const dotsStartX = -dotsWidth / 2
 
   return (
     <VRHud offset={[-0.55, 0.36, -1.5]}>
-      {/* Hintergrund */}
       <mesh>
         <planeGeometry args={[0.56, 0.24]} />
         <meshBasicMaterial color="#080c18" transparent opacity={0.88} />
       </mesh>
-      {/* Kontext-Label */}
-      <Text
-        position={[0, 0.08, 0.003]}
-        fontSize={0.020}
-        color="rgba(255,255,255,0.45)"
-        anchorX="center"
-        anchorY="middle"
-      >
+      <Text position={[0, 0.08, 0.003]} fontSize={0.020} color="rgba(255,255,255,0.45)" anchorX="center" anchorY="middle">
         {kontext}
       </Text>
-      {/* Szenenname */}
-      <Text
-        position={[0, 0.035, 0.003]}
-        fontSize={0.030}
-        color="#ffffff"
-        anchorX="center"
-        anchorY="middle"
-        maxWidth={0.50}
-      >
+      <Text position={[0, 0.035, 0.003]} fontSize={0.030} color="#ffffff" anchorX="center" anchorY="middle" maxWidth={0.50}>
         {sceneName}
       </Text>
-      {/* Fortschritts-Dots */}
       {shownDots.map((d, i) => (
         <mesh key={i} position={[dotsStartX + i * dotStep, -0.055, 0.003]}>
           <circleGeometry args={[0.013, 16]} />
           <meshBasicMaterial color={d.found ? '#1A7F1F' : '#3a3f4a'} />
         </mesh>
       ))}
-      {/* Zaehler */}
       <Text
         position={[dotsStartX + shownDots.length * dotStep + 0.01, -0.055, 0.003]}
         fontSize={0.024}
@@ -275,13 +256,10 @@ interface VRControlBarProps {
 function VRControlBar({ hintActive, onHint, onBeenden }: VRControlBarProps) {
   return (
     <VRHud offset={[0, -0.44, -1.5]}>
-      {/* Hintergrund-Leiste */}
       <mesh>
         <planeGeometry args={[1.02, 0.11]} />
         <meshBasicMaterial color="#080c18" transparent opacity={0.80} />
       </mesh>
-
-      {/* Hinweis-Button oder Status */}
       {!hintActive ? (
         <VRButton
           label="Hinweis"
@@ -295,18 +273,10 @@ function VRControlBar({ hintActive, onHint, onBeenden }: VRControlBarProps) {
           onClick={onHint}
         />
       ) : (
-        <Text
-          position={[-0.27, 0, 0.003]}
-          fontSize={0.030}
-          color="#F0A500"
-          anchorX="center"
-          anchorY="middle"
-        >
+        <Text position={[-0.27, 0, 0.003]} fontSize={0.030} color="#F0A500" anchorX="center" anchorY="middle">
           Hinweis aktiv
         </Text>
       )}
-
-      {/* Szene beenden */}
       <VRButton
         label="Szene beenden"
         position={[0.27, 0, 0.002]}
@@ -332,44 +302,26 @@ function VRKategoriePanel({ onSelect, onCancel }: VRKategoriePanelProps) {
   const btnH    = 0.077
   const btnGap  = 0.010
   const btnStep = btnH + btnGap
-  const numBtn  = VR_KATEGORIEN.length + 1  // +1 fuer Abbrechen
+  const numBtn  = VR_KATEGORIEN.length + 1
   const panelH  = 0.18 + numBtn * btnStep + 0.04
   const panelW  = 0.80
 
   return (
     <VRHud offset={[0, 0, -1.5]}>
-      {/* Rand */}
       <mesh position={[0, 0, -0.003]}>
         <planeGeometry args={[panelW + 0.012, panelH + 0.012]} />
         <meshBasicMaterial color="#1a3060" transparent opacity={0.90} />
       </mesh>
-      {/* Hintergrund */}
       <mesh position={[0, 0, -0.002]}>
         <planeGeometry args={[panelW, panelH]} />
         <meshBasicMaterial color="#090d1b" transparent opacity={0.96} />
       </mesh>
-
-      {/* Header */}
-      <Text
-        position={[0, panelH / 2 - 0.048, 0.003]}
-        fontSize={0.022}
-        color="rgba(255,255,255,0.45)"
-        anchorX="center"
-        anchorY="middle"
-      >
+      <Text position={[0, panelH / 2 - 0.048, 0.003]} fontSize={0.022} color="rgba(255,255,255,0.45)" anchorX="center" anchorY="middle">
         Schritt 0 — Kategorisierung
       </Text>
-      <Text
-        position={[0, panelH / 2 - 0.090, 0.003]}
-        fontSize={0.036}
-        color="#ffffff"
-        anchorX="center"
-        anchorY="middle"
-      >
+      <Text position={[0, panelH / 2 - 0.090, 0.003]} fontSize={0.036} color="#ffffff" anchorX="center" anchorY="middle">
         Was hast du identifiziert?
       </Text>
-
-      {/* Kategorie-Buttons */}
       {VR_KATEGORIEN.map(({ value, label }, i) => (
         <VRButton
           key={value}
@@ -383,8 +335,6 @@ function VRKategoriePanel({ onSelect, onCancel }: VRKategoriePanelProps) {
           onClick={() => onSelect(value)}
         />
       ))}
-
-      {/* Abbrechen */}
       <VRButton
         label="Abbrechen"
         position={[0, panelH / 2 - 0.158 - VR_KATEGORIEN.length * btnStep, 0.002]}
@@ -414,49 +364,30 @@ const VR_FEEDBACK_CFG: Record<KlickFeedbackType, { bg: string; title: string; su
 }
 
 function VRFeedback({ type, onClose }: VRFeedbackProps) {
-  const cfg = VR_FEEDBACK_CFG[type]
+  const cfg      = VR_FEEDBACK_CFG[type]
+  const hasSubtext = cfg.sub.length > 0
+  const panelH   = hasSubtext ? 0.19 : 0.13
 
   useEffect(() => {
     const t = setTimeout(onClose, cfg.dauer)
     return () => clearTimeout(t)
   }, [onClose, cfg.dauer])
 
-  const hasSubtext = cfg.sub.length > 0
-  const panelH     = hasSubtext ? 0.19 : 0.13
-
   return (
     <VRHud offset={[0, 0.06, -1.5]}>
-      {/* Rand */}
       <mesh position={[0, 0, -0.002]}>
         <planeGeometry args={[0.76, panelH + 0.012]} />
         <meshBasicMaterial color="rgba(255,255,255,0.18)" transparent opacity={0.30} />
       </mesh>
-      {/* Hintergrund */}
       <mesh>
         <planeGeometry args={[0.75, panelH]} />
         <meshBasicMaterial color={cfg.bg} transparent opacity={0.95} />
       </mesh>
-      {/* Haupt-Text */}
-      <Text
-        position={[0, hasSubtext ? 0.042 : 0, 0.003]}
-        fontSize={0.034}
-        color="#ffffff"
-        anchorX="center"
-        anchorY="middle"
-        maxWidth={0.68}
-      >
+      <Text position={[0, hasSubtext ? 0.042 : 0, 0.003]} fontSize={0.034} color="#ffffff" anchorX="center" anchorY="middle" maxWidth={0.68}>
         {cfg.title}
       </Text>
-      {/* Unter-Text */}
       {hasSubtext && (
-        <Text
-          position={[0, -0.042, 0.003]}
-          fontSize={0.026}
-          color="rgba(255,255,255,0.75)"
-          anchorX="center"
-          anchorY="middle"
-          maxWidth={0.68}
-        >
+        <Text position={[0, -0.042, 0.003]} fontSize={0.026} color="rgba(255,255,255,0.75)" anchorX="center" anchorY="middle" maxWidth={0.68}>
           {cfg.sub}
         </Text>
       )}
@@ -468,18 +399,11 @@ function VRFeedback({ type, onClose }: VRFeedbackProps) {
 function VRAllFound({ onBeenden }: { onBeenden: () => void }) {
   return (
     <VRHud offset={[0, -0.22, -1.5]}>
-      {/* Hintergrund */}
       <mesh position={[0, 0, -0.002]}>
         <planeGeometry args={[0.82, 0.22]} />
         <meshBasicMaterial color="#083a0c" transparent opacity={0.95} />
       </mesh>
-      <Text
-        position={[0, 0.048, 0.003]}
-        fontSize={0.032}
-        color="#ffffff"
-        anchorX="center"
-        anchorY="middle"
-      >
+      <Text position={[0, 0.048, 0.003]} fontSize={0.032} color="#ffffff" anchorX="center" anchorY="middle">
         Alle Sicherheitsdefizite gefunden!
       </Text>
       <VRButton
@@ -504,14 +428,12 @@ interface SceneContentProps {
   hintActive:     boolean
   onSphereClick:  (e: ThreeEvent<MouseEvent>) => void
   startblick?:    { theta: number; phi: number } | null
-  // VR-spezifisch
-  isVR:              boolean
-  onVRModeChange:    (v: boolean) => void
-  phase:             Phase
-  feedbackType:      KlickFeedbackType
-  progress:          { id: string; found: boolean }[]
+  onVRModeChange: (v: boolean) => void
+  phase:          Phase
+  feedbackType:   KlickFeedbackType
+  progress:       { id: string; found: boolean }[]
+  sceneName:      string
   sceneKontextLabel: string
-  sceneName:         string
   onKategorieSelect: (k: DefizitKategorie) => void
   onKategorieCancel: () => void
   onFeedbackClose:   () => void
@@ -522,15 +444,24 @@ interface SceneContentProps {
 function SceneContent({
   scene, deficits, foundDeficits, hintActive,
   onSphereClick, startblick,
-  isVR, onVRModeChange,
+  onVRModeChange,
   phase, feedbackType, progress,
-  sceneKontextLabel, sceneName,
+  sceneName, sceneKontextLabel,
   onKategorieSelect, onKategorieCancel, onFeedbackClose,
   onHintRequest, onBeenden,
 }: SceneContentProps) {
   const foundIds    = new Set(foundDeficits.map(f => f.deficitId))
   const allFound    = foundDeficits.length === deficits.length
   const controlsRef = useRef<OrbitControlsImpl>(null)
+
+  // XR-Session direkt via useXR erkennen (keine Verzoegerung durch State-Update)
+  const xrSession = useXR(s => s.session)
+  const isInXR    = xrSession != null
+
+  // HTML-Overlay-Zustand an SceneViewer weitergeben
+  useEffect(() => {
+    onVRModeChange(isInXR)
+  }, [isInXR, onVRModeChange])
 
   // Startblick setzen
   useEffect(() => {
@@ -546,10 +477,13 @@ function SceneContent({
 
   return (
     <>
-      {/* OrbitControls nur im Browser-Modus */}
+      {/* Hintergrundfarbe: verhindert weissen Quest-Hintergrund wenn Scene kurz leer */}
+      <color attach="background" args={['#000000']} />
+
+      {/* OrbitControls nur im Browser-Modus aktiv */}
       <OrbitControls
         ref={controlsRef}
-        enabled={!isVR}
+        enabled={!isInXR}
         enablePan={false}
         enableZoom={false}
         rotateSpeed={-0.45}
@@ -563,56 +497,46 @@ function SceneContent({
       {hintActive && deficits.map(d => {
         const renderPos = getHotspotPosition(d)
         if (!renderPos) return null
-        return (
-          <Hotspot key={d.id} position={renderPos} found={foundIds.has(d.id)} />
-        )
+        return <Hotspot key={d.id} position={renderPos} found={foundIds.has(d.id)} />
       })}
 
-      {/* VR-Modus-Erkennung */}
-      <VRModeDetector onVRChange={onVRModeChange} />
-
-      {/* ── VR-spezifische 3D-Panels ─────────────────────────────────────── */}
-      {isVR && (
-        <Suspense fallback={null}>
-          {/* Fortschritts-Panel (immer sichtbar) */}
-          <VRProgressPanel
-            sceneName={sceneName}
-            kontext={sceneKontextLabel}
-            foundCount={foundDeficits.length}
-            totalCount={deficits.length}
-            dots={progress}
-          />
-
-          {/* Kontroll-Leiste (immer sichtbar, ausser bei aktivem Panel) */}
-          {phase === 'exploring' && (
-            <VRControlBar
-              hintActive={hintActive}
-              onHint={onHintRequest}
-              onBeenden={onBeenden}
+      {/* ── VR-Panels: nur wenn XR-Session aktiv ──
+          VRErrorBoundary verhindert dass Panel-Fehler die Scene crashen.
+          Suspense faengt Font-Laden von Text-Komponenten ab. */}
+      {isInXR && (
+        <VRErrorBoundary>
+          <Suspense fallback={null}>
+            <VRProgressPanel
+              sceneName={sceneName}
+              kontext={sceneKontextLabel}
+              foundCount={foundDeficits.length}
+              totalCount={deficits.length}
+              dots={progress}
             />
-          )}
-
-          {/* Alle gefunden */}
-          {allFound && phase === 'exploring' && (
-            <VRAllFound onBeenden={onBeenden} />
-          )}
-
-          {/* Kategorie-Auswahl */}
-          {phase === 'kategoriePanel' && (
-            <VRKategoriePanel
-              onSelect={onKategorieSelect}
-              onCancel={onKategorieCancel}
-            />
-          )}
-
-          {/* Klick-Feedback */}
-          {phase === 'klickFeedback' && (
-            <VRFeedback
-              type={feedbackType}
-              onClose={onFeedbackClose}
-            />
-          )}
-        </Suspense>
+            {phase === 'exploring' && (
+              <VRControlBar
+                hintActive={hintActive}
+                onHint={onHintRequest}
+                onBeenden={onBeenden}
+              />
+            )}
+            {allFound && phase === 'exploring' && (
+              <VRAllFound onBeenden={onBeenden} />
+            )}
+            {phase === 'kategoriePanel' && (
+              <VRKategoriePanel
+                onSelect={onKategorieSelect}
+                onCancel={onKategorieCancel}
+              />
+            )}
+            {phase === 'klickFeedback' && (
+              <VRFeedback
+                type={feedbackType}
+                onClose={onFeedbackClose}
+              />
+            )}
+          </Suspense>
+        </VRErrorBoundary>
       )}
     </>
   )
@@ -743,11 +667,10 @@ export default function SceneViewer({
   const foundIds = new Set(foundDeficits.map(f => f.deficitId))
   const allFound = foundDeficits.length === deficits.length
 
-  // ── VR-Modus-Wechsel (Callback fuer VRModeDetector) ────────────────────────
+  // VR-Modus-Wechsel (von SceneContent via useXR gemeldet)
   const handleVRModeChange = useCallback((v: boolean) => {
     setIsVR(v)
-    // Beim Verlassen des VR-Modus aktive Dialoge schliessen
-    if (!v && (phase === 'kategoriePanel')) {
+    if (!v && phase === 'kategoriePanel') {
       hitDeficit.current = null
       setPhase('exploring')
     }
@@ -786,15 +709,12 @@ export default function SceneViewer({
   const handleKategorieSelect = useCallback((gewaehlteKategorie: DefizitKategorie) => {
     const d = hitDeficit.current
     if (!d) return
-
-    const kategorieRichtig    = d.kategorie === gewaehlteKategorie
-    hitKatRichtig.current     = kategorieRichtig
-
+    const kategorieRichtig = d.kategorie === gewaehlteKategorie
+    hitKatRichtig.current  = kategorieRichtig
     setFeedback(kategorieRichtig ? 'richtig' : 'kategorie_falsch')
     setPhase('klickFeedback')
   }, [])
 
-  // ── KategoriePanel abgebrochen ──────────────────────────────────────────────
   const handleKategorieCancel = useCallback(() => {
     hitDeficit.current = null
     setPhase('exploring')
@@ -803,7 +723,6 @@ export default function SceneViewer({
   // ── Feedback-Anzeige abgelaufen ─────────────────────────────────────────────
   const handleFeedbackClose = useCallback(() => {
     const d = hitDeficit.current
-
     if (d && (feedbackType === 'richtig' || feedbackType === 'kategorie_falsch')) {
       onDeficitConfirmed({
         deficit:          d,
@@ -811,15 +730,13 @@ export default function SceneViewer({
         hintPenalty:      hintActive,
       })
     }
-
     hitDeficit.current = null
     setPhase('exploring')
   }, [feedbackType, hintActive, onDeficitConfirmed])
 
-  // ── Hint-Anfrage (aus VR oder Browser) ─────────────────────────────────────
+  // ── Hint aktivieren ─────────────────────────────────────────────────────────
   const handleHintRequest = useCallback(() => {
     if (isVR) {
-      // Im VR kein Dialog – Hinweis sofort aktivieren
       onHintActivate()
     } else {
       setPhase('hintDialog')
@@ -844,9 +761,7 @@ export default function SceneViewer({
 
   const sceneName         = ml(scene.nameI18n, lang)
   const sceneKontextLabel = scene.kontext === 'io' ? 'Innerorts' : 'Ausserorts'
-
-  // ── HTML-Overlays ausblenden wenn VR aktiv ──────────────────────────────────
-  const htmlVisible = !isVR
+  const htmlVisible       = !isVR
 
   return (
     <div style={{ position: 'relative', flex: 1, background: '#1a1c22', overflow: 'hidden' }}>
@@ -857,37 +772,31 @@ export default function SceneViewer({
         style={{ position: 'absolute', inset: 0 }}
         gl={{ antialias: true }}
       >
-        {/* Schwarzer Hintergrund verhindert weissen Meta-Quest-Hintergrund im XR-Modus */}
-        <color attach="background" args={['#000000']} />
         <XR store={xrStore}>
-          <Suspense fallback={null}>
-            <SceneContent
-              scene={scene}
-              deficits={deficits}
-              foundDeficits={foundDeficits}
-              hintActive={hintActive}
-              onSphereClick={handleSphereClick}
-              startblick={scene.startblick}
-              isVR={isVR}
-              onVRModeChange={handleVRModeChange}
-              phase={phase}
-              feedbackType={feedbackType}
-              progress={progress}
-              sceneKontextLabel={sceneKontextLabel}
-              sceneName={sceneName}
-              onKategorieSelect={handleKategorieSelect}
-              onKategorieCancel={handleKategorieCancel}
-              onFeedbackClose={handleFeedbackClose}
-              onHintRequest={handleHintRequest}
-              onBeenden={onBeenden}
-            />
-          </Suspense>
+          <SceneContent
+            scene={scene}
+            deficits={deficits}
+            foundDeficits={foundDeficits}
+            hintActive={hintActive}
+            onSphereClick={handleSphereClick}
+            startblick={scene.startblick}
+            onVRModeChange={handleVRModeChange}
+            phase={phase}
+            feedbackType={feedbackType}
+            progress={progress}
+            sceneName={sceneName}
+            sceneKontextLabel={sceneKontextLabel}
+            onKategorieSelect={handleKategorieSelect}
+            onKategorieCancel={handleKategorieCancel}
+            onFeedbackClose={handleFeedbackClose}
+            onHintRequest={handleHintRequest}
+            onBeenden={onBeenden}
+          />
         </XR>
       </Canvas>
 
       {/* ── HTML-Overlays (nur Browser-Modus) ── */}
 
-      {/* Oben links: Szenenname + Fortschritt */}
       {htmlVisible && (
         <div style={{
           position: 'absolute', top: '16px', left: '16px',
@@ -925,14 +834,12 @@ export default function SceneViewer({
         </div>
       )}
 
-      {/* Oben rechts: Hinweis + VR + Beenden */}
       {htmlVisible && (
         <div style={{
           position: 'absolute', top: '16px', right: '16px',
           display: 'flex', flexDirection: 'column', gap: '8px',
           zIndex: 50,
         }}>
-          {/* Hinweis-Button */}
           {!hintActive && (
             <button
               onClick={() => setPhase('hintDialog')}
@@ -952,7 +859,6 @@ export default function SceneViewer({
               <Eye size={14} /> Hinweis
             </button>
           )}
-
           {hintActive && (
             <div style={{
               display: 'flex', alignItems: 'center', gap: '6px',
@@ -966,8 +872,6 @@ export default function SceneViewer({
               <MapPin size={13} /> Hinweis aktiv
             </div>
           )}
-
-          {/* VR-Button */}
           <button
             onClick={() => xrStore.enterVR()}
             title="VR-Modus starten (Meta Quest)"
@@ -988,7 +892,6 @@ export default function SceneViewer({
         </div>
       )}
 
-      {/* Unten: Szene beenden */}
       {htmlVisible && (
         <div style={{
           position: 'absolute', bottom: '20px', left: '50%',
@@ -1014,12 +917,10 @@ export default function SceneViewer({
         </div>
       )}
 
-      {/* Alle-gefunden-Banner */}
       {htmlVisible && allFound && phase === 'exploring' && (
         <AllFoundBanner onBeenden={onBeenden} />
       )}
 
-      {/* Overlay: KategoriePanel */}
       {htmlVisible && phase === 'kategoriePanel' && (
         <KategoriePanel
           onSelect={handleKategorieSelect}
@@ -1027,7 +928,6 @@ export default function SceneViewer({
         />
       )}
 
-      {/* Overlay: KlickFeedback */}
       {htmlVisible && phase === 'klickFeedback' && (
         <KlickFeedback
           type={feedbackType}
@@ -1035,7 +935,6 @@ export default function SceneViewer({
         />
       )}
 
-      {/* Overlay: HintDialog */}
       {htmlVisible && phase === 'hintDialog' && (
         <HintDialog
           hintCount={deficits.filter(d => !foundIds.has(d.id)).length}
