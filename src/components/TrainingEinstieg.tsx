@@ -145,17 +145,16 @@ export default function TrainingEinstieg({ scene, topic, onStart, onBack }: Prop
         ))}
       </div>
 
-      {/* Beschreibungstext – nur wenn vorhanden */}
-      {beschreibung.length > 0 && (
-        <p style={{
-          fontSize: '15px',
-          lineHeight: 1.6,
-          color: 'var(--zh-color-text-muted)',
-          marginBottom: '24px',
-        }}>
-          {beschreibung}
-        </p>
-      )}
+      {/* Beschreibungstext – immer sichtbar, Platzhalter wenn leer */}
+      <p style={{
+        fontSize: '15px',
+        lineHeight: 1.6,
+        color: beschreibung.length > 0 ? 'var(--zh-color-text-muted)' : 'var(--zh-color-text-disabled)',
+        fontStyle: beschreibung.length > 0 ? 'normal' : 'italic',
+        marginBottom: '24px',
+      }}>
+        {beschreibung.length > 0 ? beschreibung : t('einstieg.kein_beschrieb')}
+      </p>
 
       {/* Strassenmerkmale-Tabelle – nur wenn Eintraege vorhanden */}
       {zeigeMerkmale && (
