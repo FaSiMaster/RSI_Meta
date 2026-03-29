@@ -107,7 +107,7 @@ export default function TrainingEinstieg({ scene, topic, onStart, onBack }: Prop
                   <circle cx="12" cy="13" r="4" />
                 </svg>
                 <span style={{ fontSize: '12px', color: 'var(--zh-color-text-disabled)', textAlign: 'center', padding: '0 12px' }}>
-                  {t('einstieg.bild_phase3')}
+                  {t('einstieg.kein_bild')}
                 </span>
               </>
             )}
@@ -115,12 +115,10 @@ export default function TrainingEinstieg({ scene, topic, onStart, onBack }: Prop
         ))}
       </div>
 
-      {/* Erlaeuterungstext */}
-      {beschreibung && (
-        <p style={{ fontSize: '15px', lineHeight: 1.6, color: 'var(--zh-color-text-muted)', marginBottom: '24px' }}>
-          {beschreibung}
-        </p>
-      )}
+      {/* Erlaeuterungstext – immer anzeigen, Platzhalter wenn leer */}
+      <p style={{ fontSize: '15px', lineHeight: 1.6, color: beschreibung ? 'var(--zh-color-text-muted)' : 'var(--zh-color-text-disabled)', fontStyle: beschreibung ? 'normal' : 'italic', marginBottom: '24px' }}>
+        {beschreibung || t('einstieg.kein_beschrieb')}
+      </p>
 
       {/* Strassenmerkmale-Tabelle */}
       <div style={{ marginBottom: '24px' }}>

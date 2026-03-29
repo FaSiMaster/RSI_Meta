@@ -3,14 +3,14 @@
 // Themen: Hierarchie-Ansicht + Thema-Modal
 // Kurse: Kurs-Tabelle + Kurs-Modal
 
-import { Plus, Pencil, Trash2, X, Save, ChevronDown, ChevronRight, ChevronUp, Download, Upload } from 'lucide-react'
+import { Plus, Pencil, Trash2, X, Save, ChevronDown, ChevronRight, ChevronUp, Download, Upload, Eye, EyeOff } from 'lucide-react'
 import { useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import {
   getTopics, saveTopic, deleteTopic,
   getScenes, saveScene, deleteScene, getAllScenes,
   getDeficits, saveDeficit, deleteDeficit, getAllDeficits,
-  getKurse, saveKurs, deleteKurs,
+  getKurse, saveKurs, deleteKurs, getKursStatus,
   getTopicsTree, getOberthemen, ml,
   type AppTopic, type AppScene, type AppDeficit, type TopicNode, type Kurs, type StrassenMerkmal,
 } from '../data/appData'
@@ -82,6 +82,9 @@ function emptyKurs(): Kurs {
     topicIds: [],
     isActive: true,
     createdAt: Date.now(),
+    gueltigVon: null,
+    gueltigBis: null,
+    passwort: null,
   }
 }
 
@@ -172,6 +175,7 @@ export default function AdminDashboard() {
   const [kurse, setKurse] = useState<Kurs[]>([])
   const [kursModalOpen, setKursModalOpen] = useState(false)
   const [editingKurs, setEditingKurs] = useState<Kurs | null>(null)
+  const [showKursPasswort, setShowKursPasswort] = useState(false)
 
   // Daten laden
   useEffect(() => {
@@ -712,9 +716,20 @@ export default function AdminDashboard() {
                           <code style={{ fontSize: '12px', background: 'var(--zh-color-bg-secondary)', padding: '2px 8px', borderRadius: '4px', color: 'var(--zh-blau)', fontFamily: 'monospace' }}>{k.zugangscode}</code>
                         </td>
                         <td style={{ padding: '12px 16px' }}>
-                          <span style={{ padding: '2px 8px', borderRadius: '4px', fontSize: '11px', fontWeight: 700, background: k.isActive ? 'rgba(26,127,31,0.1)' : 'var(--zh-color-bg-tertiary)', color: k.isActive ? '#1A7F1F' : 'var(--zh-color-text-disabled)' }}>
-                            {k.isActive ? t('admin.kurs_aktiv') : 'Inaktiv'}
-                          </span>
+                          {(() => {
+                            const status = getKursStatus(k)
+                            const statusConfig = {
+                              aktiv:     { bg: 'rgba(26,127,31,0.1)',   color: '#1A7F1F',                    label: t('kurs.aktiv') },
+                              bald:      { bg: 'rgba(0,118,189,0.1)',   color: 'var(--zh-blau)',             label: t('kurs.bald') },
+                              abgelaufen:{ bg: 'var(--zh-color-bg-tertiary)', color: 'var(--zh-color-text-disabled)', label: t('kurs.abgelaufen') },
+                              inaktiv:   { bg: 'var(--zh-color-bg-tertiary)', color: 'var(--zh-color-text-disabled)', label: 'Inaktiv' },
+                            }[status]
+                            return (
+                              <span style={{ padding: '2px 8px', borderRadius: '4px', fontSize: '11px', fontWeight: 700, background: statusConfig.bg, color: statusConfig.color }}>
+                                {statusConfig.label}
+                              </span>
+                            )
+                          })()}
                         </td>
                         <td style={{ padding: '12px 16px' }}>
                           <div style={{ display: 'flex', gap: '6px' }}>
@@ -1138,6 +1153,45 @@ export default function AdminDashboard() {
             <Section label={t('admin.kurs_datum')}>
               <input type="date" value={editingKurs.datum} onChange={e => setEditingKurs(prev => prev ? { ...prev, datum: e.target.value } : prev)}
                 style={{ width: '100%', padding: '8px 12px', borderRadius: '6px', border: '1px solid var(--zh-color-border)', background: 'var(--zh-color-bg-secondary)', color: 'var(--zh-color-text)', fontSize: '13px', fontFamily: 'var(--zh-font)', boxSizing: 'border-box' }} />
+            </Section>
+
+            <Section label={`${t('admin.gueltig_von')} / ${t('admin.gueltig_bis')}`}>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
+                <div>
+                  <div style={{ fontSize: '10px', fontWeight: 700, color: 'var(--zh-color-text-disabled)', marginBottom: '3px', textTransform: 'uppercase', letterSpacing: '0.1em' }}>{t('admin.gueltig_von')}</div>
+                  <input type="datetime-local"
+                    value={editingKurs.gueltigVon != null ? new Date(editingKurs.gueltigVon).toISOString().slice(0, 16) : ''}
+                    onChange={e => setEditingKurs(prev => prev ? { ...prev, gueltigVon: e.target.value ? new Date(e.target.value).getTime() : null } : prev)}
+                    style={{ width: '100%', padding: '7px 10px', borderRadius: '6px', border: '1px solid var(--zh-color-border)', background: 'var(--zh-color-bg-secondary)', color: 'var(--zh-color-text)', fontSize: '12px', fontFamily: 'var(--zh-font)', boxSizing: 'border-box' }} />
+                </div>
+                <div>
+                  <div style={{ fontSize: '10px', fontWeight: 700, color: 'var(--zh-color-text-disabled)', marginBottom: '3px', textTransform: 'uppercase', letterSpacing: '0.1em' }}>{t('admin.gueltig_bis')}</div>
+                  <input type="datetime-local"
+                    value={editingKurs.gueltigBis != null ? new Date(editingKurs.gueltigBis).toISOString().slice(0, 16) : ''}
+                    onChange={e => setEditingKurs(prev => prev ? { ...prev, gueltigBis: e.target.value ? new Date(e.target.value).getTime() : null } : prev)}
+                    style={{ width: '100%', padding: '7px 10px', borderRadius: '6px', border: '1px solid var(--zh-color-border)', background: 'var(--zh-color-bg-secondary)', color: 'var(--zh-color-text)', fontSize: '12px', fontFamily: 'var(--zh-font)', boxSizing: 'border-box' }} />
+                </div>
+              </div>
+            </Section>
+
+            <Section label={t('admin.passwort')}>
+              <div style={{ position: 'relative' }}>
+                <input
+                  type={showKursPasswort ? 'text' : 'password'}
+                  value={editingKurs.passwort ?? ''}
+                  onChange={e => setEditingKurs(prev => prev ? { ...prev, passwort: e.target.value || null } : prev)}
+                  placeholder={t('admin.passwort_hinweis')}
+                  style={{ width: '100%', padding: '8px 40px 8px 12px', borderRadius: '6px', border: '1px solid var(--zh-color-border)', background: 'var(--zh-color-bg-secondary)', color: 'var(--zh-color-text)', fontSize: '13px', fontFamily: 'var(--zh-font)', boxSizing: 'border-box' }}
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowKursPasswort(v => !v)}
+                  style={{ position: 'absolute', right: '8px', top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', cursor: 'pointer', color: 'var(--zh-color-text-muted)', display: 'flex', alignItems: 'center' }}
+                >
+                  {showKursPasswort ? <EyeOff size={15} /> : <Eye size={15} />}
+                </button>
+              </div>
+              <p style={{ fontSize: '11px', color: 'var(--zh-color-text-disabled)', marginTop: '4px' }}>{t('admin.passwort_hinweis')}</p>
             </Section>
 
             <Section label={t('admin.kurs_code')}>

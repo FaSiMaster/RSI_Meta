@@ -81,6 +81,7 @@ export interface UserSession {
   score: number
   completedScenes: string[]
   kursId?: string | null
+  kursName?: string | null
 }
 
 export interface RankingEntry {
@@ -120,6 +121,10 @@ export interface Kurs {
   topicIds: string[]
   isActive: boolean
   createdAt: number
+  // Zeitliche Steuerung (optional, rueckwaertskompatibel)
+  gueltigVon: number | null
+  gueltigBis: number | null
+  passwort:   string | null
 }
 
 // Topic-Hierarchie-Knoten (neu)
@@ -617,7 +622,10 @@ const DEFAULT_KURSE_SEED: Kurs[] = [
       "tp-1774780651056"
     ],
     "isActive": true,
-    "createdAt": 1774780717922
+    "createdAt": 1774780717922,
+    "gueltigVon": null,
+    "gueltigBis": null,
+    "passwort": null
   }
 ]
 
@@ -755,6 +763,26 @@ export function clearSceneSession(): void {
 // ── Kurse ──
 export function getKurse(): Kurs[] {
   return readJSON<Kurs>(K_KURSE, [])
+}
+
+// Liefert Kurse die aktuell zeitlich gueltig sind (gueltigVon <= now <= gueltigBis oder kein Zeitlimit)
+export function getKurseZeitlichAktiv(): Kurs[] {
+  const now = Date.now()
+  return getKurse().filter(k => {
+    if (!k.isActive) return false
+    const vonOk = k.gueltigVon == null || k.gueltigVon <= now
+    const bisOk = k.gueltigBis == null || k.gueltigBis >= now
+    return vonOk && bisOk
+  })
+}
+
+// Hilfsfunktion: Kurs-Status ermitteln
+export function getKursStatus(k: Kurs): 'aktiv' | 'bald' | 'abgelaufen' | 'inaktiv' {
+  if (!k.isActive) return 'inaktiv'
+  const now = Date.now()
+  if (k.gueltigBis != null && k.gueltigBis < now) return 'abgelaufen'
+  if (k.gueltigVon != null && k.gueltigVon > now) return 'bald'
+  return 'aktiv'
 }
 export function saveKurs(kurs: Kurs): void {
   const list = getKurse()

@@ -1,42 +1,54 @@
 // Landing Page – Zweispaltig, ZH Corporate Design
-// Links: Logo + Taglines + Features | Rechts: Login-Card mit optionalem Kurs-Code
+// Links: Logo + Taglines + Features | Rechts: Login-Card mit Kurs-Auswahl
 
 import { useState } from 'react'
-import { Shield, Eye, BarChart3, BookOpen } from 'lucide-react'
+import { Shield, Eye, BarChart3, BookOpen, EyeOff } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import LanguageSwitcher from './LanguageSwitcher'
-import { getSession, getKurse } from '../data/appData'
+import { getSession, getKurseZeitlichAktiv, type Kurs } from '../data/appData'
 
 interface Props {
-  onStart: (username: string, kursCode: string | null) => void
+  onStart: (username: string, kursCode: string | null, kursName: string | null) => void
   onAdmin: () => void
 }
 
 export default function LandingPage({ onStart, onAdmin }: Props) {
   const { t } = useTranslation()
   const saved = getSession()
+
   const [name, setName] = useState(saved.username ?? '')
-  const [kursCode, setKursCode] = useState('')
-  const [kursError, setKursError] = useState(false)
+  const [selectedKursId, setSelectedKursId] = useState<string>('')
+  const [passwortInput, setPasswortInput] = useState('')
+  const [passwortFehler, setPasswortFehler] = useState(false)
+  const [showPasswort, setShowPasswort] = useState(false)
+
+  // Nur zeitlich gueltige und aktive Kurse im Dropdown anzeigen
+  const kurse: Kurs[] = getKurseZeitlichAktiv()
+  const selectedKurs = kurse.find(k => k.id === selectedKursId) ?? null
+  const kursHatPasswort = selectedKurs?.passwort != null && selectedKurs.passwort.trim().length > 0
+
+  // "Training starten" aktiv wenn:
+  // - Name ausgefuellt
+  // - kein Kurs gewaehlt ODER Kurs ohne Passwort ODER Passwort korrekt eingegeben
+  const passwortKorrekt = !kursHatPasswort || passwortInput === (selectedKurs?.passwort ?? '')
+  const canStart = name.trim().length > 0 && passwortKorrekt
 
   function handleStart() {
-    const trimmed = name.trim()
-    if (!trimmed) return
-
-    if (kursCode.trim()) {
-      // Kurs-Code validieren
-      const kurse = getKurse()
-      const found = kurse.find(k => k.zugangscode === kursCode.trim() && k.isActive)
-      if (!found) {
-        setKursError(true)
-        return
-      }
-      setKursError(false)
-      onStart(trimmed, kursCode.trim())
-    } else {
-      setKursError(false)
-      onStart(trimmed, null)
+    if (!name.trim()) return
+    if (kursHatPasswort && passwortInput !== (selectedKurs?.passwort ?? '')) {
+      setPasswortFehler(true)
+      return
     }
+    setPasswortFehler(false)
+    const kursCode = selectedKurs?.zugangscode ?? null
+    const kursName = selectedKurs?.name ?? null
+    onStart(name.trim(), kursCode, kursName)
+  }
+
+  function handleKursChange(id: string) {
+    setSelectedKursId(id)
+    setPasswortInput('')
+    setPasswortFehler(false)
   }
 
   return (
@@ -103,28 +115,60 @@ export default function LandingPage({ onStart, onAdmin }: Props) {
             style={{ width: '100%', padding: '12px 14px', borderRadius: '8px', border: '1px solid var(--zh-color-border)', background: 'var(--zh-color-bg-secondary)', color: 'var(--zh-color-text)', fontSize: '15px', marginBottom: '20px', outline: 'none', fontFamily: 'var(--zh-font)', boxSizing: 'border-box' }}
           />
 
-          {/* Kurs-Code */}
+          {/* Kurs-Auswahl (Dropdown) */}
           <label style={{ fontSize: '12px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.12em', color: 'var(--zh-color-text-muted)', display: 'block', marginBottom: '8px' }}>
-            {t('login.kurs_code')}
+            {t('kurs.waehlen')}
           </label>
-          <input
-            type="text"
-            value={kursCode}
-            onChange={e => { setKursCode(e.target.value); setKursError(false) }}
-            onKeyDown={e => { if (e.key === 'Enter') handleStart() }}
-            placeholder={t('login.kurs_placeholder')}
-            style={{ width: '100%', padding: '12px 14px', borderRadius: '8px', border: kursError ? '1px solid #D40053' : '1px solid var(--zh-color-border)', background: 'var(--zh-color-bg-secondary)', color: 'var(--zh-color-text)', fontSize: '15px', marginBottom: kursError ? '6px' : '20px', outline: 'none', fontFamily: 'var(--zh-font)', boxSizing: 'border-box' }}
-          />
-          {kursError && (
+          <select
+            value={selectedKursId}
+            onChange={e => handleKursChange(e.target.value)}
+            style={{ width: '100%', padding: '12px 14px', borderRadius: '8px', border: '1px solid var(--zh-color-border)', background: 'var(--zh-color-bg-secondary)', color: 'var(--zh-color-text)', fontSize: '15px', marginBottom: '20px', outline: 'none', fontFamily: 'var(--zh-font)', boxSizing: 'border-box', cursor: 'pointer' }}
+          >
+            <option value="">{t('kurs.kein')}</option>
+            {kurse.map(k => (
+              <option key={k.id} value={k.id}>
+                {k.name}{k.datum ? ` (${k.datum})` : ''}
+              </option>
+            ))}
+          </select>
+
+          {/* Passwort-Feld – erscheint nur wenn Kurs mit Passwort gewaehlt */}
+          {selectedKurs && kursHatPasswort && (
+            <div style={{ marginBottom: passwortFehler ? '6px' : '20px' }}>
+              <label style={{ fontSize: '12px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.12em', color: 'var(--zh-color-text-muted)', display: 'block', marginBottom: '8px' }}>
+                {t('kurs.passwort_eingeben')}
+              </label>
+              <div style={{ position: 'relative' }}>
+                <input
+                  type={showPasswort ? 'text' : 'password'}
+                  value={passwortInput}
+                  onChange={e => { setPasswortInput(e.target.value); setPasswortFehler(false) }}
+                  onKeyDown={e => { if (e.key === 'Enter') handleStart() }}
+                  placeholder={t('kurs.passwort')}
+                  style={{ width: '100%', padding: '12px 44px 12px 14px', borderRadius: '8px', border: passwortFehler ? '1px solid #D40053' : '1px solid var(--zh-color-border)', background: 'var(--zh-color-bg-secondary)', color: 'var(--zh-color-text)', fontSize: '15px', outline: 'none', fontFamily: 'var(--zh-font)', boxSizing: 'border-box' }}
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPasswort(v => !v)}
+                  style={{ position: 'absolute', right: '12px', top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', cursor: 'pointer', color: 'var(--zh-color-text-muted)', display: 'flex', alignItems: 'center', padding: 0 }}
+                >
+                  {showPasswort ? <EyeOff size={16} /> : <Eye size={16} />}
+                </button>
+              </div>
+            </div>
+          )}
+
+          {/* Passwort-Fehlermeldung */}
+          {passwortFehler && (
             <p style={{ fontSize: '12px', color: '#D40053', marginBottom: '14px', marginTop: '2px' }}>
-              {t('login.kurs_ungueltig')}
+              {t('kurs.passwort_falsch')}
             </p>
           )}
 
           <button
             onClick={handleStart}
-            disabled={!name.trim()}
-            style={{ width: '100%', padding: '13px', borderRadius: 'var(--zh-radius-btn)', background: name.trim() ? 'var(--zh-dunkelblau)' : 'var(--zh-color-bg-tertiary)', color: name.trim() ? 'white' : 'var(--zh-color-text-disabled)', fontWeight: 700, fontSize: '15px', cursor: name.trim() ? 'pointer' : 'not-allowed', border: 'none', fontFamily: 'var(--zh-font)' }}
+            disabled={!canStart}
+            style={{ width: '100%', padding: '13px', borderRadius: 'var(--zh-radius-btn)', background: canStart ? 'var(--zh-dunkelblau)' : 'var(--zh-color-bg-tertiary)', color: canStart ? 'white' : 'var(--zh-color-text-disabled)', fontWeight: 700, fontSize: '15px', cursor: canStart ? 'pointer' : 'not-allowed', border: 'none', fontFamily: 'var(--zh-font)' }}
           >
             {t('landing.startBtn')} →
           </button>

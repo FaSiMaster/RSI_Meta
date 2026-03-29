@@ -151,7 +151,16 @@
     "kein_defizit": "Veuillez d'abord saisir un déficit de sécurité dans le catalogue.",
     "gruppe_name": "Désignation du groupe (facultatif)",
     "vorschaubild_1": "Image d'aperçu 1 (URL)",
-    "vorschaubild_2": "Image d'aperçu 2 (URL)"
+    "vorschaubild_2": "Image d'aperçu 2 (URL)",
+    "gueltig_von": "Valable dès",
+    "gueltig_bis": "Valable jusqu'au",
+    "passwort": "Mot de passe",
+    "passwort_hinweis": "Laisser vide pour cours public",
+    "beschrieb": "Texte descriptif",
+    "beschrieb_de": "Texte descriptif (Allemand)",
+    "beschrieb_fr": "Description (Français)",
+    "beschrieb_it": "Descrizione (Italiano)",
+    "beschrieb_en": "Description (English)"
   },
   "score": {
     "points": "pts"
@@ -266,7 +275,24 @@
     "hinweis": "Recherchez indépendamment les déficits de sécurité dans le panorama 360°. Les points chauds ne sont pas marqués. Vous pouvez afficher des indices — avec déduction de points.",
     "starten": "Démarrer la formation",
     "zurueck": "Retour",
-    "bild_phase3": "Image 360° disponible en phase 3"
+    "bild_phase3": "Image 360° disponible en phase 3",
+    "kein_bild": "Image 360° à venir",
+    "aus_panorama": "Reprendre du panorama",
+    "bild_hochladen": "Télécharger une image",
+    "kein_beschrieb": "Aucun texte descriptif saisi."
+  },
+  "kurs": {
+    "kein": "Aucun cours — formation libre",
+    "waehlen": "Sélectionner un cours (optionnel)",
+    "passwort": "Mot de passe du cours",
+    "passwort_eingeben": "Saisir le mot de passe du cours",
+    "passwort_falsch": "Le mot de passe saisi est incorrect. Veuillez réessayer.",
+    "aktiv": "Actif",
+    "bald": "Bientôt disponible",
+    "abgelaufen": "Expiré",
+    "gueltig_von": "Valable dès",
+    "gueltig_bis": "Valable jusqu'au",
+    "passwort_feld": "Mot de passe (laisser vide pour cours public)"
   },
   "login": {
     "kurs_code": "Code de cours (optionnel)",

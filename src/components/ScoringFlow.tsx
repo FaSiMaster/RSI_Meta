@@ -146,23 +146,49 @@ function Matrix({ type, highlightRow, highlightCol, showIntersection }: MatrixPr
   )
 }
 
-// ── Auswahl-Button ──
-function ChoiceBtn({ label, sub, active, onClick }: { label: string; sub?: string; active: boolean; onClick: () => void }) {
+// ── Auswahl-Button (kompakt, max 120px fuer 3er-Reihe) ──
+function ChoiceBtn({ label, sub, active, onClick, compact }: { label: string; sub?: string; active: boolean; onClick: () => void; compact?: boolean }) {
+  if (compact) {
+    // Kompakter Modus: 3 Buttons nebeneinander, fixe Breite
+    return (
+      <button
+        onClick={onClick}
+        style={{
+          padding: '8px 16px',
+          borderRadius: 'var(--zh-radius-btn)',
+          border: active ? '2px solid var(--zh-blau)' : '1px solid var(--zh-color-border)',
+          background: active ? 'var(--zh-blau)' : 'transparent',
+          color: active ? 'white' : 'var(--zh-color-text)',
+          fontWeight: active ? 700 : 500,
+          fontSize: '14px',
+          textAlign: 'center',
+          maxWidth: '120px',
+          minWidth: '80px',
+          cursor: 'pointer',
+          transition: 'all 0.15s',
+          fontFamily: 'var(--zh-font)',
+        }}
+      >
+        {label}
+      </button>
+    )
+  }
   return (
     <button
       onClick={onClick}
       style={{
-        padding: '14px 20px',
+        padding: '10px 16px',
         borderRadius: 'var(--zh-radius-btn)',
         border: active ? '2px solid var(--zh-blau)' : '1px solid var(--zh-color-border)',
         background: active ? 'rgba(0,118,189,0.08)' : 'var(--zh-color-surface)',
         color: active ? 'var(--zh-color-accent)' : 'var(--zh-color-text)',
         fontWeight: active ? 700 : 500,
-        fontSize: '15px',
+        fontSize: '14px',
         textAlign: 'left',
         width: '100%',
         cursor: 'pointer',
         transition: 'all 0.15s',
+        fontFamily: 'var(--zh-font)',
       }}
     >
       <div>{label}</div>
@@ -301,9 +327,9 @@ export default function ScoringFlow({ deficit, scene, onComplete, onBack }: Omit
           {prefillWichtigkeit && (
             <InfoBox text={`Gemaess WICHTIGKEIT_TABLE (TBA-Fachkurs): ${prefillWichtigkeit.toUpperCase()} — bitte bestaetigen oder anpassen.`} />
           )}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', marginTop: '16px' }}>
+          <div style={{ display: 'flex', flexDirection: 'row', flexWrap: 'wrap', gap: '8px', marginTop: '16px' }}>
             {(['gross', 'mittel', 'klein'] as RSIDimension[]).map(w => (
-              <ChoiceBtn key={w} label={dimensionLabel(w)} active={wichtigkeit === w}
+              <ChoiceBtn key={w} label={dimensionLabel(w)} active={wichtigkeit === w} compact
                 onClick={() => { setWichtigkeit(w); setTimeout(goNext, 280) }} />
             ))}
           </div>

@@ -150,7 +150,16 @@
     "kein_defizit": "Bitte zuerst ein Sicherheitsdefizit im Defizit-Katalog erfassen.",
     "gruppe_name": "Gruppenbezeichnung (optional)",
     "vorschaubild_1": "Vorschaubild 1 (URL)",
-    "vorschaubild_2": "Vorschaubild 2 (URL)"
+    "vorschaubild_2": "Vorschaubild 2 (URL)",
+    "gueltig_von": "Gültig von",
+    "gueltig_bis": "Gültig bis",
+    "passwort": "Passwort",
+    "passwort_hinweis": "Leer lassen für öffentlichen Kurs",
+    "beschrieb": "Beschreibungstext",
+    "beschrieb_de": "Beschreibungstext (Deutsch)",
+    "beschrieb_fr": "Description (Français)",
+    "beschrieb_it": "Descrizione (Italiano)",
+    "beschrieb_en": "Description (English)"
   },
   "score": {
     "points": "Pkt."
@@ -265,7 +274,24 @@
     "hinweis": "Suche selbständig Sicherheitsdefizite im 360°-Panorama. Hotspots sind nicht markiert. Du kannst Hinweise einblenden — mit Punktabzug.",
     "starten": "Training starten",
     "zurueck": "Zurück",
-    "bild_phase3": "360°-Bild folgt in Phase 3"
+    "bild_phase3": "360°-Bild folgt in Phase 3",
+    "kein_bild": "360°-Bild folgt",
+    "aus_panorama": "Aus Panorama übernehmen",
+    "bild_hochladen": "Eigenes Bild hochladen",
+    "kein_beschrieb": "Noch kein Beschreibungstext erfasst."
+  },
+  "kurs": {
+    "kein": "Kein Kurs — freies Training",
+    "waehlen": "Kurs auswählen (optional)",
+    "passwort": "Kurs-Passwort",
+    "passwort_eingeben": "Kurs-Passwort eingeben",
+    "passwort_falsch": "Das eingegebene Passwort ist nicht korrekt. Bitte erneut versuchen.",
+    "aktiv": "Aktiv",
+    "bald": "Bald verfügbar",
+    "abgelaufen": "Abgelaufen",
+    "gueltig_von": "Gültig von",
+    "gueltig_bis": "Gültig bis",
+    "passwort_feld": "Passwort (leer lassen für öffentlichen Kurs)"
   },
   "login": {
     "kurs_code": "Kurs-Code (optional)",

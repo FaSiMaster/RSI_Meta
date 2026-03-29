@@ -150,7 +150,16 @@
     "kein_defizit": "Please first add a safety deficit to the catalogue.",
     "gruppe_name": "Group name (optional)",
     "vorschaubild_1": "Preview image 1 (URL)",
-    "vorschaubild_2": "Preview image 2 (URL)"
+    "vorschaubild_2": "Preview image 2 (URL)",
+    "gueltig_von": "Valid from",
+    "gueltig_bis": "Valid until",
+    "passwort": "Password",
+    "passwort_hinweis": "Leave empty for public course",
+    "beschrieb": "Description text",
+    "beschrieb_de": "Description text (German)",
+    "beschrieb_fr": "Description (French)",
+    "beschrieb_it": "Description (Italian)",
+    "beschrieb_en": "Description (English)"
   },
   "score": {
     "points": "pts"
@@ -265,7 +274,24 @@
     "hinweis": "Independently search for safety deficits in the 360° panorama. Hotspots are not marked. You can reveal hints — with a point deduction.",
     "starten": "Start training",
     "zurueck": "Back",
-    "bild_phase3": "360° image coming in Phase 3"
+    "bild_phase3": "360° image coming in Phase 3",
+    "kein_bild": "360° image coming soon",
+    "aus_panorama": "Take from panorama",
+    "bild_hochladen": "Upload image",
+    "kein_beschrieb": "No description text entered yet."
+  },
+  "kurs": {
+    "kein": "No course — free training",
+    "waehlen": "Select a course (optional)",
+    "passwort": "Course password",
+    "passwort_eingeben": "Enter course password",
+    "passwort_falsch": "The password entered is incorrect. Please try again.",
+    "aktiv": "Active",
+    "bald": "Coming soon",
+    "abgelaufen": "Expired",
+    "gueltig_von": "Valid from",
+    "gueltig_bis": "Valid until",
+    "passwort_feld": "Password (leave empty for public course)"
   },
   "login": {
     "kurs_code": "Course code (optional)",

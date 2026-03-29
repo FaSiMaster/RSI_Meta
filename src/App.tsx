@@ -65,10 +65,11 @@ export default function App() {
     document.documentElement.setAttribute('data-theme', next)
   }
 
-  function handleLogin(name: string, kursCode: string | null) {
+  function handleLogin(name: string, kursCode: string | null, kursName: string | null = null) {
     const session = getSession()
     session.username = name
     session.kursId = kursCode
+    session.kursName = kursName
     saveSession(session)
     setUsername(name)
     setScore(session.score)
@@ -216,12 +217,12 @@ export default function App() {
         />
       )}
 
-      <div className="flex-1 flex flex-col overflow-auto">
+      <div className="flex-1 flex flex-col" style={{ overflowY: 'auto', overflowX: 'hidden' }}>
         <AnimatePresence mode="wait">
 
           {view === 'landing' && (
             <motion.div key="landing" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.2 }} className="flex-1">
-              <LandingPage onStart={handleLogin} onAdmin={() => setView('admin')} />
+              <LandingPage onStart={(name, kursCode, kursName) => handleLogin(name, kursCode, kursName ?? null)} onAdmin={() => setView('admin')} />
             </motion.div>
           )}
 

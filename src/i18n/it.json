@@ -150,7 +150,16 @@
     "kein_defizit": "Si prega di inserire prima un deficit di sicurezza nel catalogo.",
     "gruppe_name": "Nome del gruppo (opzionale)",
     "vorschaubild_1": "Immagine anteprima 1 (URL)",
-    "vorschaubild_2": "Immagine anteprima 2 (URL)"
+    "vorschaubild_2": "Immagine anteprima 2 (URL)",
+    "gueltig_von": "Valido dal",
+    "gueltig_bis": "Valido fino al",
+    "passwort": "Password",
+    "passwort_hinweis": "Lasciare vuoto per corso pubblico",
+    "beschrieb": "Testo descrittivo",
+    "beschrieb_de": "Testo descrittivo (Tedesco)",
+    "beschrieb_fr": "Description (Francese)",
+    "beschrieb_it": "Descrizione (Italiano)",
+    "beschrieb_en": "Description (Inglese)"
   },
   "score": {
     "points": "pt"
@@ -265,7 +274,24 @@
     "hinweis": "Cerca autonomamente i deficit di sicurezza nel panorama 360°. I punti caldi non sono contrassegnati. Puoi mostrare suggerimenti — con deduzione di punti.",
     "starten": "Avvia la formazione",
     "zurueck": "Indietro",
-    "bild_phase3": "Immagine 360° disponibile nella fase 3"
+    "bild_phase3": "Immagine 360° disponibile nella fase 3",
+    "kein_bild": "Immagine 360° in arrivo",
+    "aus_panorama": "Riprendere dal panorama",
+    "bild_hochladen": "Caricare un'immagine",
+    "kein_beschrieb": "Nessun testo descrittivo inserito."
+  },
+  "kurs": {
+    "kein": "Nessun corso — formazione libera",
+    "waehlen": "Selezionare un corso (opzionale)",
+    "passwort": "Password del corso",
+    "passwort_eingeben": "Inserire la password del corso",
+    "passwort_falsch": "La password inserita non è corretta. Si prega di riprovare.",
+    "aktiv": "Attivo",
+    "bald": "Disponibile a breve",
+    "abgelaufen": "Scaduto",
+    "gueltig_von": "Valido dal",
+    "gueltig_bis": "Valido fino al",
+    "passwort_feld": "Password (lasciare vuoto per corso pubblico)"
   },
   "login": {
     "kurs_code": "Codice corso (opzionale)",
