@@ -1,16 +1,28 @@
-// BildUpload.tsx – Panoramabild-Upload-Komponente (Phase 3A)
-// Unterstuetzt Datei-Upload (Drag & Drop, Datei-Dialog) und URL-Eingabe
+// BildUpload.tsx – Panoramabild-Upload-Komponente
+// Empfohlener Weg: /textures/dateiname.webp (Vercel CDN)
+// Alternativ: lokale Datei als base64 (nur fuer kleine Test-Bilder)
 
 import { useEffect, useRef, useState, useCallback } from 'react'
-import { Upload } from 'lucide-react'
+import { Upload, FolderOpen, Link } from 'lucide-react'
 
 interface Props {
   szeneId:       string
-  aktuelleUrl?:  string | null  // bestehende panoramaBildUrl (falls gesetzt)
+  aktuelleUrl?:  string | null
   onBildGeladen: (bildData: string, breite: number, hoehe: number) => void
 }
 
 type Phase = 'auswahl' | 'laden' | 'vorschau' | 'fehler'
+type Modus = 'pfad' | 'datei'
+
+// Bekannte Texturen in public/textures/
+const VERFUEGBARE_TEXTUREN = [
+  'street-360.jpg',
+  'sc1.webp',
+  'sc2.webp',
+  'sc3.webp',
+  'sc4.webp',
+  '5.webp',
+]
 
 export default function BildUpload({ aktuelleUrl, onBildGeladen }: Props) {
   const [phase, setPhase]               = useState<Phase>('auswahl')
@@ -20,16 +32,15 @@ export default function BildUpload({ aktuelleUrl, onBildGeladen }: Props) {
   const [vorschauHoehe, setVorschauHoehe]   = useState<number>(0)
   const [urlInput, setUrlInput]         = useState<string>('')
   const [isDragOver, setIsDragOver]     = useState<boolean>(false)
+  const [modus, setModus]               = useState<Modus>('pfad')
 
   const fileInputRef = useRef<HTMLInputElement>(null)
 
-  // Hilfsfunktion: Fehler anzeigen
   function zeigeError(text: string) {
     setFehlerText(text)
     setPhase('fehler')
   }
 
-  // Hilfsfunktion: Vorschau aus Bild-URL oder Data-URL laden
   const ladeVorschau = useCallback((src: string) => {
     setPhase('laden')
     const img = new Image()
@@ -46,16 +57,14 @@ export default function BildUpload({ aktuelleUrl, onBildGeladen }: Props) {
     img.src = src
   }, [])
 
-  // Bei Mount: bestehende URL als Vorschau laden
   useEffect(() => {
     if (aktuelleUrl) ladeVorschau(aktuelleUrl)
   }, [aktuelleUrl, ladeVorschau])
 
-  // Datei-Handling (Weg 1: Drag & Drop, Weg 2: Datei-Dialog)
   function handleDatei(datei: File) {
     const erlaubteTypen = ['image/jpeg', 'image/png', 'image/webp']
     if (!erlaubteTypen.includes(datei.type)) {
-      zeigeError('Dieses Dateiformat wird nicht unterstützt. Erlaubt sind JPG, PNG und WEBP.')
+      zeigeError('Dieses Dateiformat wird nicht unterstuetzt. Erlaubt sind JPG, PNG und WEBP.')
       return
     }
     if (datei.size > 20 * 1024 * 1024) {
@@ -70,25 +79,30 @@ export default function BildUpload({ aktuelleUrl, onBildGeladen }: Props) {
     reader.readAsDataURL(datei)
   }
 
-  // URL-Weg (Weg 3)
   function handleUrlLaden() {
-    if (!urlInput.trim()) return
-    ladeVorschau(urlInput.trim())
+    const val = urlInput.trim()
+    if (!val) return
+    ladeVorschau(val)
   }
 
-  // Seitenverhältnis-Warnung (mehr als 10% Abweichung von 2:1)
+  function handleTexturWaehlen(name: string) {
+    const pfad = `/textures/${name}`
+    setUrlInput(pfad)
+    ladeVorschau(pfad)
+  }
+
+  // Seitenverhaeltnis-Warnung (mehr als 10% Abweichung von 2:1)
   const seitenverhaeltnis = vorschauBreite > 0 && vorschauHoehe > 0
     ? vorschauBreite / vorschauHoehe
     : null
   const zeigeVerhaeltnisWarnung = seitenverhaeltnis !== null
     && Math.abs(seitenverhaeltnis - 2.0) / 2.0 > 0.1
 
-  // Pixel-Anzeige im Schweizer Format
   const pixelText = vorschauBreite > 0 && vorschauHoehe > 0
     ? `${vorschauBreite.toLocaleString('de-CH')} × ${vorschauHoehe.toLocaleString('de-CH')} Pixel`
     : ''
 
-  // Gemeinsame Stil-Variablen
+  // ── Stile ──
   const inputStyle: React.CSSProperties = {
     padding: '7px 10px',
     borderRadius: '6px',
@@ -125,17 +139,25 @@ export default function BildUpload({ aktuelleUrl, onBildGeladen }: Props) {
     whiteSpace: 'nowrap',
   }
 
+  const tabStyle = (aktiv: boolean): React.CSSProperties => ({
+    padding: '6px 14px',
+    borderRadius: '6px',
+    fontSize: '12px',
+    fontWeight: 600,
+    border: aktiv ? 'none' : '1px solid var(--zh-color-border)',
+    background: aktiv ? 'var(--zh-dunkelblau)' : 'transparent',
+    color: aktiv ? 'white' : 'var(--zh-color-text-muted)',
+    cursor: 'pointer',
+    fontFamily: 'var(--zh-font)',
+    display: 'flex',
+    alignItems: 'center',
+    gap: '5px',
+  })
+
   // ── Phase: Laden ──
   if (phase === 'laden') {
     return (
-      <div style={{
-        padding: '32px',
-        textAlign: 'center',
-        color: 'var(--zh-color-text-disabled)',
-        fontSize: '13px',
-        border: '1px dashed var(--zh-color-border)',
-        borderRadius: '8px',
-      }}>
+      <div style={{ padding: '32px', textAlign: 'center', color: 'var(--zh-color-text-disabled)', fontSize: '13px', border: '1px dashed var(--zh-color-border)', borderRadius: '8px' }}>
         Panoramabild wird geladen...
       </div>
     )
@@ -145,20 +167,10 @@ export default function BildUpload({ aktuelleUrl, onBildGeladen }: Props) {
   if (phase === 'fehler') {
     return (
       <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-        <div style={{
-          padding: '14px 16px',
-          background: 'rgba(212,0,83,0.07)',
-          border: '1px solid rgba(212,0,83,0.25)',
-          borderRadius: '8px',
-          color: '#D40053',
-          fontSize: '13px',
-        }}>
+        <div style={{ padding: '14px 16px', background: 'rgba(212,0,83,0.07)', border: '1px solid rgba(212,0,83,0.25)', borderRadius: '8px', color: '#D40053', fontSize: '13px' }}>
           {fehlerText}
         </div>
-        <button
-          onClick={() => { setPhase('auswahl'); setFehlerText(null) }}
-          style={btnSekundaerStyle}
-        >
+        <button onClick={() => { setPhase('auswahl'); setFehlerText(null) }} style={btnSekundaerStyle}>
           Anderes Bild wählen
         </button>
       </div>
@@ -169,64 +181,36 @@ export default function BildUpload({ aktuelleUrl, onBildGeladen }: Props) {
   if (phase === 'vorschau' && vorschauUrl) {
     return (
       <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-        {/* Vorschau-Bild */}
-        <div style={{
-          border: '1px solid var(--zh-color-border)',
-          borderRadius: '8px',
-          overflow: 'hidden',
-          background: '#111',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          maxHeight: '200px',
-        }}>
-          <img
-            src={vorschauUrl}
-            alt="Vorschau"
-            style={{ maxHeight: '200px', width: '100%', objectFit: 'contain' }}
-          />
+        <div style={{ border: '1px solid var(--zh-color-border)', borderRadius: '8px', overflow: 'hidden', background: '#111', display: 'flex', alignItems: 'center', justifyContent: 'center', maxHeight: '200px' }}>
+          <img src={vorschauUrl} alt="Vorschau" style={{ maxHeight: '200px', width: '100%', objectFit: 'contain' }} />
         </div>
-
-        {/* Abmessungen */}
         {pixelText && (
-          <p style={{ fontSize: '12px', color: 'var(--zh-color-text-muted)', margin: 0 }}>
-            {pixelText}
+          <p style={{ fontSize: '12px', color: 'var(--zh-color-text-muted)', margin: 0 }}>{pixelText}</p>
+        )}
+        {/* Pfad-Anzeige wenn kein base64 */}
+        {!vorschauUrl.startsWith('data:') && (
+          <p style={{ fontSize: '12px', color: 'var(--zh-blau)', margin: 0, fontFamily: 'monospace' }}>
+            {vorschauUrl}
           </p>
         )}
-
-        {/* Seitenverhältnis-Warnung */}
-        {zeigeVerhaeltnisWarnung && (
-          <div style={{
-            padding: '10px 14px',
-            background: 'rgba(184,115,0,0.08)',
-            border: '1px solid rgba(184,115,0,0.3)',
-            borderRadius: '6px',
-            fontSize: '12px',
-            color: '#B87300',
-            lineHeight: 1.5,
-          }}>
-            Hinweis: Panoramabilder haben üblicherweise das Seitenverhältnis 2:1 (Breite:Höhe).
-            Dieses Bild weicht davon ab und könnte verzerrt dargestellt werden.
+        {/* base64-Warnung */}
+        {vorschauUrl.startsWith('data:') && (
+          <div style={{ padding: '10px 14px', background: 'rgba(184,115,0,0.08)', border: '1px solid rgba(184,115,0,0.3)', borderRadius: '6px', fontSize: '12px', color: '#B87300', lineHeight: 1.5 }}>
+            Lokale Datei: Nur fuer Tests geeignet. Fuer Produktion Bild in
+            <code style={{ margin: '0 4px', fontFamily: 'monospace' }}>public/textures/</code>
+            ablegen, committen und Pfad verwenden.
           </div>
         )}
-
-        {/* Buttons */}
+        {zeigeVerhaeltnisWarnung && (
+          <div style={{ padding: '10px 14px', background: 'rgba(184,115,0,0.08)', border: '1px solid rgba(184,115,0,0.3)', borderRadius: '6px', fontSize: '12px', color: '#B87300', lineHeight: 1.5 }}>
+            Hinweis: Panoramabilder haben üblicherweise das Seitenverhältnis 2:1. Dieses Bild weicht davon ab.
+          </div>
+        )}
         <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
-          <button
-            onClick={() => onBildGeladen(vorschauUrl, vorschauBreite, vorschauHoehe)}
-            style={btnPrimaerStyle}
-          >
+          <button onClick={() => onBildGeladen(vorschauUrl, vorschauBreite, vorschauHoehe)} style={btnPrimaerStyle}>
             Bild verwenden
           </button>
-          <button
-            onClick={() => {
-              setPhase('auswahl')
-              setVorschauUrl(null)
-              setVorschauBreite(0)
-              setVorschauHoehe(0)
-            }}
-            style={btnSekundaerStyle}
-          >
+          <button onClick={() => { setPhase('auswahl'); setVorschauUrl(null); setVorschauBreite(0); setVorschauHoehe(0) }} style={btnSekundaerStyle}>
             Anderes Bild wählen
           </button>
         </div>
@@ -236,75 +220,105 @@ export default function BildUpload({ aktuelleUrl, onBildGeladen }: Props) {
 
   // ── Phase: Auswahl ──
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-      {/* Verstecktes File-Input */}
-      <input
-        ref={fileInputRef}
-        type="file"
-        accept="image/jpeg,image/png,image/webp"
-        style={{ display: 'none' }}
-        onChange={e => {
-          if (e.target.files?.[0]) handleDatei(e.target.files[0])
-        }}
-      />
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
 
-      {/* Dropzone */}
-      <div
-        onDragOver={e => { e.preventDefault(); setIsDragOver(true) }}
-        onDragLeave={() => setIsDragOver(false)}
-        onDrop={e => {
-          e.preventDefault()
-          setIsDragOver(false)
-          const datei = e.dataTransfer.files[0]
-          if (datei) handleDatei(datei)
-        }}
-        style={{
-          height: '180px',
-          border: `2px dashed ${isDragOver ? '#0076BD' : 'var(--zh-color-border)'}`,
-          borderRadius: '8px',
-          background: isDragOver ? 'rgba(0,118,189,0.06)' : 'var(--zh-color-bg-secondary)',
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-          justifyContent: 'center',
-          gap: '8px',
-          cursor: 'pointer',
-          transition: 'border-color 0.15s, background 0.15s',
-        }}
-        onClick={() => fileInputRef.current?.click()}
-      >
-        <Upload size={32} color={isDragOver ? '#0076BD' : 'var(--zh-color-text-disabled)'} />
-        <span style={{ fontSize: '13px', fontWeight: 600, color: isDragOver ? '#0076BD' : 'var(--zh-color-text-muted)' }}>
-          Panoramabild hierher ziehen
-        </span>
-        <span style={{ fontSize: '11px', color: 'var(--zh-color-text-disabled)' }}>
-          JPG, PNG, WEBP · max. 20 MB
-        </span>
-      </div>
-
-      {/* Datei-Button + URL-Zeile */}
-      <div style={{ display: 'flex', gap: '8px', alignItems: 'center', flexWrap: 'wrap' }}>
-        <button
-          onClick={() => fileInputRef.current?.click()}
-          style={btnPrimaerStyle}
-        >
-          Datei auswählen
+      {/* Modus-Tabs */}
+      <div style={{ display: 'flex', gap: '6px' }}>
+        <button style={tabStyle(modus === 'pfad')} onClick={() => setModus('pfad')}>
+          <Link size={11} /> Vercel-Pfad
         </button>
-        <span style={{ fontSize: '12px', color: 'var(--zh-color-text-disabled)', flexShrink: 0 }}>oder</span>
-        <input
-          value={urlInput}
-          onChange={e => setUrlInput(e.target.value)}
-          placeholder="Panorama-URL (equirectangulär) oder base64"
-          onKeyDown={e => { if (e.key === 'Enter') handleUrlLaden() }}
-          style={{ ...inputStyle, flex: 1, minWidth: '120px' }}
-        />
-        <button
-          onClick={handleUrlLaden}
-          style={{ ...btnSekundaerStyle, flexShrink: 0 }}
-        >
-          Laden
+        <button style={tabStyle(modus === 'datei')} onClick={() => setModus('datei')}>
+          <FolderOpen size={11} /> Lokale Datei
         </button>
       </div>
+
+      {/* ── Modus: Pfad (empfohlen) ── */}
+      {modus === 'pfad' && (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+
+          {/* Info-Banner */}
+          <div style={{ padding: '10px 14px', background: 'rgba(0,118,189,0.07)', border: '1px solid rgba(0,118,189,0.2)', borderRadius: '6px', fontSize: '12px', color: 'var(--zh-color-text-muted)', lineHeight: 1.6 }}>
+            Bild in <code style={{ color: 'var(--zh-blau)', fontFamily: 'monospace' }}>public/textures/</code> ablegen
+            → committen → Pfad hier eingeben. Bilder sind dann auf allen Geräten verfügbar.
+          </div>
+
+          {/* Verfuegbare Texturen */}
+          {VERFUEGBARE_TEXTUREN.length > 0 && (
+            <div>
+              <p style={{ fontSize: '11px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.1em', color: 'var(--zh-color-text-disabled)', marginBottom: '6px' }}>
+                Verfügbar in /textures/
+              </p>
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
+                {VERFUEGBARE_TEXTUREN.map(name => (
+                  <button
+                    key={name}
+                    onClick={() => handleTexturWaehlen(name)}
+                    style={{ padding: '4px 10px', borderRadius: '5px', border: '1px solid var(--zh-color-border)', background: 'var(--zh-color-bg-secondary)', fontSize: '12px', color: 'var(--zh-blau)', cursor: 'pointer', fontFamily: 'monospace' }}
+                  >
+                    {name}
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* URL-Eingabe */}
+          <div style={{ display: 'flex', gap: '8px' }}>
+            <input
+              value={urlInput}
+              onChange={e => setUrlInput(e.target.value)}
+              placeholder="/textures/mein-panorama.webp"
+              onKeyDown={e => { if (e.key === 'Enter') handleUrlLaden() }}
+              style={{ ...inputStyle, flex: 1 }}
+            />
+            <button onClick={handleUrlLaden} style={{ ...btnPrimaerStyle }}>
+              Laden
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* ── Modus: Lokale Datei ── */}
+      {modus === 'datei' && (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+
+          {/* Warnung */}
+          <div style={{ padding: '10px 14px', background: 'rgba(184,115,0,0.07)', border: '1px solid rgba(184,115,0,0.25)', borderRadius: '6px', fontSize: '12px', color: '#B87300', lineHeight: 1.6 }}>
+            Lokale Dateien werden als base64 in localStorage gespeichert — nur fuer Tests geeignet.
+            Fuer Produktion Pfad-Modus verwenden.
+          </div>
+
+          {/* Verstecktes File-Input */}
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept="image/jpeg,image/png,image/webp"
+            style={{ display: 'none' }}
+            onChange={e => { if (e.target.files?.[0]) handleDatei(e.target.files[0]) }}
+          />
+
+          {/* Dropzone */}
+          <div
+            onDragOver={e => { e.preventDefault(); setIsDragOver(true) }}
+            onDragLeave={() => setIsDragOver(false)}
+            onDrop={e => { e.preventDefault(); setIsDragOver(false); const d = e.dataTransfer.files[0]; if (d) handleDatei(d) }}
+            style={{ height: '140px', border: `2px dashed ${isDragOver ? '#0076BD' : 'var(--zh-color-border)'}`, borderRadius: '8px', background: isDragOver ? 'rgba(0,118,189,0.06)' : 'var(--zh-color-bg-secondary)', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '8px', cursor: 'pointer', transition: 'border-color 0.15s, background 0.15s' }}
+            onClick={() => fileInputRef.current?.click()}
+          >
+            <Upload size={28} color={isDragOver ? '#0076BD' : 'var(--zh-color-text-disabled)'} />
+            <span style={{ fontSize: '13px', fontWeight: 600, color: isDragOver ? '#0076BD' : 'var(--zh-color-text-muted)' }}>
+              Datei hierher ziehen oder klicken
+            </span>
+            <span style={{ fontSize: '11px', color: 'var(--zh-color-text-disabled)' }}>
+              JPG, PNG, WEBP · max. 20 MB
+            </span>
+          </div>
+
+          <button onClick={() => fileInputRef.current?.click()} style={btnSekundaerStyle}>
+            Datei auswählen
+          </button>
+        </div>
+      )}
     </div>
   )
 }
