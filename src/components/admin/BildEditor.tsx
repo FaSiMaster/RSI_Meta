@@ -14,6 +14,16 @@ import {
 // ── Typen ──
 type Modus = 'idle' | 'startblick' | 'punkt' | 'polygon' | 'gruppe'
 
+// Bekannte Texturen in public/textures/
+const VERFUEGBARE_TEXTUREN = [
+  'street-360.jpg',
+  'sc1.webp',
+  'sc2.webp',
+  'sc3.webp',
+  'sc4.webp',
+  '5.webp',
+]
+
 interface Props {
   scene: AppScene
   deficits: AppDeficit[]
@@ -71,6 +81,13 @@ export default function BildEditor({ scene, deficits, onSave, onClose, initialDe
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const imgRef    = useRef<HTMLImageElement>(null)
   const containerRef = useRef<HTMLDivElement>(null)
+
+  // ── Auto-Laden beim Mount wenn URL bekannt ──
+  useEffect(() => {
+    if (imgRef.current && urlInput.trim()) {
+      imgRef.current.src = urlInput.trim()
+    }
+  }, []) // eslint-disable-line react-hooks/exhaustive-deps
 
   // ── Bild laden ──
   const handleImgLoad = useCallback(() => {
@@ -386,11 +403,36 @@ export default function BildEditor({ scene, deficits, onSave, onClose, initialDe
           flexShrink: 0,
           overflow: 'hidden',
         }}>
+          {/* Texturen-Schnellauswahl */}
+          <select
+            value=""
+            onChange={e => {
+              const val = e.target.value
+              if (!val) return
+              const pfad = `/textures/${val}`
+              setUrlInput(pfad)
+              if (imgRef.current) { imgRef.current.src = pfad }
+            }}
+            style={{
+              padding: '5px 8px', borderRadius: '6px',
+              border: '1px solid var(--zh-color-border)',
+              background: 'var(--zh-color-bg-secondary)',
+              color: 'var(--zh-color-text)',
+              fontSize: '12px', fontFamily: 'var(--zh-font)',
+              cursor: 'pointer', flexShrink: 0,
+            }}
+          >
+            <option value="">Textur wählen…</option>
+            {VERFUEGBARE_TEXTUREN.map(name => (
+              <option key={name} value={name}>{name}</option>
+            ))}
+          </select>
+
           {/* URL-Eingabe */}
           <input
             value={urlInput}
             onChange={e => setUrlInput(e.target.value)}
-            placeholder="Panorama-URL (equirectangulär) oder base64"
+            placeholder="/textures/panorama.webp oder https://..."
             style={{
               flex: 1, padding: '6px 10px', borderRadius: '6px',
               border: '1px solid var(--zh-color-border)',
