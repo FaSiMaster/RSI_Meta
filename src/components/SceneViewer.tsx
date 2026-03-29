@@ -5,7 +5,7 @@
 import * as THREE from 'three'
 import { Canvas, useLoader, useFrame } from '@react-three/fiber'
 import { OrbitControls, Billboard, Text } from '@react-three/drei'
-import { createXRStore, XR, DefaultXRController, useXRSessionVisibilityState } from '@react-three/xr'
+import { createXRStore, XR, useXRSessionVisibilityState } from '@react-three/xr'
 import { Suspense, useCallback, useState, useRef, useEffect } from 'react'
 import type { ThreeEvent } from '@react-three/fiber'
 import { Eye, X, Glasses, MapPin } from 'lucide-react'
@@ -568,9 +568,6 @@ function SceneContent({
         )
       })}
 
-      {/* Controller-Modelle (nur im VR-Modus sichtbar) */}
-      <DefaultXRController />
-
       {/* VR-Modus-Erkennung */}
       <VRModeDetector onVRChange={onVRModeChange} />
 
@@ -860,6 +857,8 @@ export default function SceneViewer({
         style={{ position: 'absolute', inset: 0 }}
         gl={{ antialias: true }}
       >
+        {/* Schwarzer Hintergrund verhindert weissen Meta-Quest-Hintergrund im XR-Modus */}
+        <color attach="background" args={['#000000']} />
         <XR store={xrStore}>
           <Suspense fallback={null}>
             <SceneContent
