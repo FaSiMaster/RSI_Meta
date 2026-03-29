@@ -3,13 +3,13 @@
 // Themen: Hierarchie-Ansicht + Thema-Modal
 // Kurse: Kurs-Tabelle + Kurs-Modal
 
-import { Plus, Pencil, Trash2, X, Save, ChevronDown, ChevronRight, ChevronUp } from 'lucide-react'
-import { useEffect, useState } from 'react'
+import { Plus, Pencil, Trash2, X, Save, ChevronDown, ChevronRight, ChevronUp, Download, Upload } from 'lucide-react'
+import { useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import {
   getTopics, saveTopic, deleteTopic,
-  getScenes, saveScene, deleteScene,
-  getDeficits, saveDeficit, deleteDeficit,
+  getScenes, saveScene, deleteScene, getAllScenes,
+  getDeficits, saveDeficit, deleteDeficit, getAllDeficits,
   getKurse, saveKurs, deleteKurs,
   getTopicsTree, getOberthemen, ml,
   type AppTopic, type AppScene, type AppDeficit, type TopicNode, type Kurs, type StrassenMerkmal,
@@ -135,6 +135,8 @@ export default function AdminDashboard() {
   const lang = i18n.language
 
   const [activeTab, setActiveTab] = useState<AdminTab>('defizite')
+  const [importFeedback, setImportFeedback] = useState<string | null>(null)
+  const importInputRef = useRef<HTMLInputElement>(null)
 
   // ── Defizite-Tab State ──
   const [topics, setTopics] = useState<AppTopic[]>([])
@@ -368,6 +370,58 @@ export default function AdminDashboard() {
     deleteKurs(id)
     setKurse(getKurse())
   }
+
+  // ── Export / Import ──
+  function handleExport() {
+    const payload = {
+      exportedAt: new Date().toISOString(),
+      version: 'rsi-v3',
+      topics:   getTopics(),
+      scenes:   getAllScenes(),
+      deficits: getAllDeficits(),
+      kurse:    getKurse(),
+    }
+    const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' })
+    const url  = URL.createObjectURL(blob)
+    const a    = document.createElement('a')
+    const datum = new Date().toISOString().slice(0, 10)
+    a.href     = url
+    a.download = `rsi-daten-${datum}.json`
+    a.click()
+    URL.revokeObjectURL(url)
+  }
+
+  function handleImport(file: File) {
+    const reader = new FileReader()
+    reader.onload = e => {
+      try {
+        const data = JSON.parse(e.target?.result as string)
+        if (data.version !== 'rsi-v3') throw new Error('Falsches Format')
+        if (data.topics)   { data.topics.forEach(saveTopic) }
+        if (data.scenes)   { data.scenes.forEach(saveScene) }
+        if (data.deficits) { data.deficits.forEach(saveDeficit) }
+        if (data.kurse)    { data.kurse.forEach(saveKurs) }
+        // Alle States neu laden
+        const ts = getTopics()
+        setTopics(ts)
+        setTopicsTree(getTopicsTree())
+        setKurse(getKurse())
+        if (selectedTopic) {
+          const sc = getScenes(selectedTopic.id)
+          setScenes(sc)
+          setSelectedScene(sc[0] ?? null)
+        }
+        const count = (data.topics?.length ?? 0) + (data.scenes?.length ?? 0) + (data.deficits?.length ?? 0)
+        setImportFeedback(`Import erfolgreich: ${count} Datensätze geladen.`)
+        setTimeout(() => setImportFeedback(null), 4000)
+      } catch {
+        setImportFeedback('Fehler: Datei konnte nicht importiert werden.')
+        setTimeout(() => setImportFeedback(null), 4000)
+      }
+    }
+    reader.readAsText(file)
+  }
+
   function toggleKursTopic(topicId: string) {
     if (!editingKurs) return
     const ids = editingKurs.topicIds.includes(topicId)
@@ -418,11 +472,41 @@ export default function AdminDashboard() {
       {/* Hauptbereich */}
       <main style={{ flex: 1, overflowY: 'auto', padding: '24px 32px' }}>
 
-        {/* Tab-Navigation */}
-        <div style={{ display: 'flex', gap: '8px', marginBottom: '28px', flexWrap: 'wrap' }}>
-          {tabPill('defizite', t('admin.deficits'))}
-          {tabPill('themen', t('admin.topics'))}
-          {tabPill('kurse', t('admin.kurse'))}
+        {/* Tab-Navigation + Export/Import */}
+        <div style={{ display: 'flex', gap: '8px', marginBottom: '28px', flexWrap: 'wrap', alignItems: 'center', justifyContent: 'space-between' }}>
+          <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+            {tabPill('defizite', t('admin.deficits'))}
+            {tabPill('themen', t('admin.topics'))}
+            {tabPill('kurse', t('admin.kurse'))}
+          </div>
+          <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+            {/* Import-Feedback */}
+            {importFeedback && (
+              <span style={{ fontSize: '12px', color: importFeedback.startsWith('Fehler') ? '#D40053' : '#1A7F1F', fontWeight: 600 }}>
+                {importFeedback}
+              </span>
+            )}
+            {/* Verstecktes File-Input */}
+            <input
+              ref={importInputRef}
+              type="file"
+              accept=".json"
+              style={{ display: 'none' }}
+              onChange={e => { if (e.target.files?.[0]) { handleImport(e.target.files[0]); e.target.value = '' } }}
+            />
+            <button
+              onClick={() => importInputRef.current?.click()}
+              style={{ display: 'flex', alignItems: 'center', gap: '5px', padding: '7px 14px', borderRadius: '20px', fontSize: '12px', fontWeight: 600, border: '1px solid var(--zh-color-border)', background: 'var(--zh-color-surface)', color: 'var(--zh-color-text-muted)', cursor: 'pointer' }}
+            >
+              <Upload size={12} /> Importieren
+            </button>
+            <button
+              onClick={handleExport}
+              style={{ display: 'flex', alignItems: 'center', gap: '5px', padding: '7px 14px', borderRadius: '20px', fontSize: '12px', fontWeight: 700, border: 'none', background: 'var(--zh-dunkelblau)', color: 'white', cursor: 'pointer' }}
+            >
+              <Download size={12} /> Exportieren
+            </button>
+          </div>
         </div>
 
         {/* ═══ TAB: DEFIZITE ═══ */}
