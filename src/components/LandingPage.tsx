@@ -100,7 +100,7 @@ export default function LandingPage({ onStart, onAdmin }: Props) {
         {/* Rechts: Login-Card */}
         <div style={{ borderRadius: 'var(--zh-radius-card)', border: '1px solid var(--zh-color-border)', background: 'var(--zh-color-surface)', padding: '40px 36px', boxShadow: 'var(--zh-shadow-md)' }}>
           <h2 style={{ fontSize: '22px', fontWeight: 700, color: 'var(--zh-color-text)', marginBottom: '6px' }}>Willkommen.</h2>
-          <p style={{ fontSize: '14px', color: 'var(--zh-color-text-muted)', marginBottom: '28px' }}>Identifizieren Sie sich fuer das Ranking.</p>
+          <p style={{ fontSize: '14px', color: 'var(--zh-color-text-muted)', marginBottom: '28px' }}>Identifizieren Sie sich für das Ranking.</p>
 
           {/* Name */}
           <label style={{ fontSize: '12px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.12em', color: 'var(--zh-color-text-muted)', display: 'block', marginBottom: '8px' }}>

@@ -58,7 +58,7 @@ export default function SceneList({ topic, isAdmin, onBack, onSelectScene }: Pro
 
       {/* Szenen-Grid */}
       {scenes.length === 0 ? (
-        <p style={{ fontSize: '14px', color: 'var(--zh-color-text-disabled)', fontStyle: 'italic' }}>Noch keine Szenen fuer dieses Thema vorhanden.</p>
+        <p style={{ fontSize: '14px', color: 'var(--zh-color-text-disabled)', fontStyle: 'italic' }}>Noch keine Szenen für dieses Thema vorhanden.</p>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
           {scenes.map((scene, i) => {

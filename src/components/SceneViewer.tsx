@@ -588,7 +588,7 @@ function HintDialog({ hintCount, onBestaetigen, onAbbrechen }: HintDialogProps) 
           <strong style={{ color: '#F0A500' }}> 50% der Punkte abgezogen</strong>.
         </p>
         <p style={{ fontSize: '12px', color: 'rgba(255,255,255,0.40)', marginBottom: '20px' }}>
-          Der Hinweis bleibt fuer die gesamte Szene aktiv.
+          Der Hinweis bleibt für die gesamte Szene aktiv.
         </p>
         <div style={{ display: 'flex', gap: '10px' }}>
           <button

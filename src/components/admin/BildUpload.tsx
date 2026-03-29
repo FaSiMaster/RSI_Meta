@@ -196,7 +196,7 @@ export default function BildUpload({ aktuelleUrl, onBildGeladen }: Props) {
         {/* base64-Warnung */}
         {vorschauUrl.startsWith('data:') && (
           <div style={{ padding: '10px 14px', background: 'rgba(184,115,0,0.08)', border: '1px solid rgba(184,115,0,0.3)', borderRadius: '6px', fontSize: '12px', color: '#B87300', lineHeight: 1.5 }}>
-            Lokale Datei: Nur fuer Tests geeignet. Fuer Produktion Bild in
+            Lokale Datei: Nur für Tests geeignet. Für Produktion Bild in
             <code style={{ margin: '0 4px', fontFamily: 'monospace' }}>public/textures/</code>
             ablegen, committen und Pfad verwenden.
           </div>
@@ -284,8 +284,8 @@ export default function BildUpload({ aktuelleUrl, onBildGeladen }: Props) {
 
           {/* Warnung */}
           <div style={{ padding: '10px 14px', background: 'rgba(184,115,0,0.07)', border: '1px solid rgba(184,115,0,0.25)', borderRadius: '6px', fontSize: '12px', color: '#B87300', lineHeight: 1.6 }}>
-            Lokale Dateien werden als base64 in localStorage gespeichert — nur fuer Tests geeignet.
-            Fuer Produktion Pfad-Modus verwenden.
+            Lokale Dateien werden als base64 in localStorage gespeichert — nur für Tests geeignet.
+            Für Produktion Pfad-Modus verwenden.
           </div>
 
           {/* Verstecktes File-Input */}
