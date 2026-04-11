@@ -5,3 +5,22 @@ dist-ssr
 .DS_Store
 .env
 .env.local
+.env.*.local
+
+# Coverage / Tests
+coverage/
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+Thumbs.db
+
+# Logs
+*.log
+npm-debug.log*
+
+# Lokale Claude-Einstellungen (nie committen)
+.claude/settings.local.json
+.claude/worktrees/
