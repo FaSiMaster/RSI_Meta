@@ -44,9 +44,12 @@ interface CompactMatrixProps {
   highlightRow?: string
   highlightCol?: string
   showIntersection?: boolean
+  // Korrekte Lösung markieren (zweiter Marker)
+  correctRow?: string
+  correctCol?: string
 }
 
-function CompactMatrix({ type, highlightRow, highlightCol, showIntersection }: CompactMatrixProps) {
+function CompactMatrix({ type, highlightRow, highlightCol, showIntersection, correctRow, correctCol }: CompactMatrixProps) {
   const isR = type === 'relevanz'
 
   const rows = isR
@@ -133,7 +136,10 @@ function CompactMatrix({ type, highlightRow, highlightCol, showIntersection }: C
                 {cols.map((col) => {
                   const val         = cellVal(String(row), String(col))
                   const isIntersect = showIntersection === true && row === highlightRow && col === highlightCol
-                  const isAxisHL    = !isIntersect && (row === highlightRow || col === highlightCol) && (highlightRow !== undefined || highlightCol !== undefined)
+                  const isCorrect   = correctRow !== undefined && correctCol !== undefined && row === correctRow && col === correctCol
+                  const isAxisHL    = !isIntersect && !isCorrect && (row === highlightRow || col === highlightCol) && (highlightRow !== undefined || highlightCol !== undefined)
+                  // User falsch + korrekte Lösung an anderer Stelle
+                  const showCorrectMarker = isCorrect && !isIntersect
                   return (
                     <div key={String(col)} style={{
                       textAlign: 'center',
@@ -141,22 +147,27 @@ function CompactMatrix({ type, highlightRow, highlightCol, showIntersection }: C
                       borderRadius: '4px',
                       minHeight: '32px',
                       display: 'flex', alignItems: 'center', justifyContent: 'center',
-                      fontSize: isIntersect ? '11px' : '10px',
-                      fontWeight: isIntersect ? 800 : 600,
+                      fontSize: (isIntersect || showCorrectMarker) ? '11px' : '10px',
+                      fontWeight: (isIntersect || showCorrectMarker) ? 800 : 600,
                       background: isIntersect
                         ? resultColor(val)
-                        : isAxisHL
-                          ? resultBg(val)
-                          : 'var(--zh-color-bg-secondary)',
-                      color: isIntersect ? 'white' : resultColor(val),
+                        : showCorrectMarker
+                          ? '#1A7F1F'
+                          : isAxisHL
+                            ? resultBg(val)
+                            : 'var(--zh-color-bg-secondary)',
+                      color: (isIntersect || showCorrectMarker) ? 'white' : resultColor(val),
                       border: isIntersect
                         ? `2px solid ${resultColor(val)}`
-                        : isAxisHL
-                          ? `1px solid ${resultColor(val)}44`
-                          : '1px solid var(--zh-color-border)',
-                      transform: isIntersect ? 'scale(1.05)' : 'none',
+                        : showCorrectMarker
+                          ? '2px dashed #1A7F1F'
+                          : isAxisHL
+                            ? `1px solid ${resultColor(val)}44`
+                            : '1px solid var(--zh-color-border)',
+                      transform: (isIntersect || showCorrectMarker) ? 'scale(1.05)' : 'none',
                       transition: 'all 0.25s',
-                      boxShadow: isIntersect ? `0 2px 10px ${resultColor(val)}44` : 'none',
+                      boxShadow: isIntersect ? `0 2px 10px ${resultColor(val)}44` : showCorrectMarker ? '0 2px 10px rgba(26,127,31,0.4)' : 'none',
+                      position: 'relative',
                     }}>
                       {resultLabel(val)}
                     </div>
@@ -561,21 +572,49 @@ export default function ScoringFlow({ deficit, scene, onComplete, onBack, prefil
           </div>
         </div>
 
-        {/* Matrizen ausklappbar */}
-        <Collapsible title="Relevanz-Matrix anzeigen">
+        {/* Matrizen mit Vergleich (User-Wahl vs. korrekt) */}
+        <Collapsible title="Relevanz-Matrix" defaultOpen={!allCorrect}>
+          <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', marginBottom: '8px', fontSize: '10px' }}>
+            <span style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+              <span style={{ width: '10px', height: '10px', borderRadius: '3px', background: resultColor(relevanzSD ?? 'gering'), display: 'inline-block' }} />
+              Deine Wahl
+            </span>
+            {relevanzSD !== ca.relevanzSD && (
+              <span style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                <span style={{ width: '10px', height: '10px', borderRadius: '3px', background: '#1A7F1F', border: '1px dashed #1A7F1F', display: 'inline-block' }} />
+                Korrekt
+              </span>
+            )}
+          </div>
           <CompactMatrix
             type="relevanz"
             highlightRow={wichtigkeit ?? undefined}
             highlightCol={abweichung ?? undefined}
             showIntersection
+            correctRow={ca.wichtigkeit}
+            correctCol={ca.abweichung}
           />
         </Collapsible>
-        <Collapsible title="Unfallrisiko-Matrix anzeigen">
+        <Collapsible title="Unfallrisiko-Matrix" defaultOpen={!allCorrect}>
+          <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', marginBottom: '8px', fontSize: '10px' }}>
+            <span style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+              <span style={{ width: '10px', height: '10px', borderRadius: '3px', background: resultColor(unfallrisiko ?? 'gering'), display: 'inline-block' }} />
+              Deine Wahl
+            </span>
+            {unfallrisiko !== ca.unfallrisiko && (
+              <span style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                <span style={{ width: '10px', height: '10px', borderRadius: '3px', background: '#1A7F1F', border: '1px dashed #1A7F1F', display: 'inline-block' }} />
+                Korrekt
+              </span>
+            )}
+          </div>
           <CompactMatrix
             type="unfallrisiko"
             highlightRow={relevanzSD ?? undefined}
             highlightCol={nacaSchwere ?? undefined}
             showIntersection
+            correctRow={ca.relevanzSD}
+            correctCol={ca.unfallschwere}
           />
         </Collapsible>
 
@@ -661,7 +700,7 @@ export default function ScoringFlow({ deficit, scene, onComplete, onBack, prefil
                   </div>
                 )}
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-                  {(['gross', 'mittel', 'klein'] as RSIDimension[]).map(w => {
+                  {(['klein', 'mittel', 'gross'] as RSIDimension[]).map(w => {
                     const isActive = wichtigkeit === w
                     return (
                       <button

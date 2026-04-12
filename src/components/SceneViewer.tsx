@@ -454,6 +454,7 @@ interface SceneContentProps {
   onBeenden:         () => void
   aktivePerspektiveId: string | null
   aktiveBildUrl:       string | null | undefined
+  pendingClickPos:     { theta: number; phi: number } | null
 }
 
 function SceneContent({
@@ -464,7 +465,7 @@ function SceneContent({
   sceneName, sceneKontextLabel,
   onKategorieSelect, onKategorieCancel, onFeedbackClose,
   onHintRequest, onBeenden,
-  aktivePerspektiveId, aktiveBildUrl,
+  aktivePerspektiveId, aktiveBildUrl, pendingClickPos,
 }: SceneContentProps) {
   const foundIds    = new Set(foundDeficits.map(f => f.deficitId))
   const allFound    = foundDeficits.length === deficits.length
@@ -515,6 +516,20 @@ function SceneContent({
         if (!renderPos) return null
         return <Hotspot key={d.id} position={renderPos} found={foundIds.has(d.id)} />
       })}
+
+      {/* Pending-Klick-Marker (Browser: pulsierender Ring) */}
+      {pendingClickPos && (
+        <Billboard position={sphericalToVector3(pendingClickPos, 60)} follow lockX={false} lockY={false} lockZ={false}>
+          <mesh>
+            <ringGeometry args={[4, 6, 32]} />
+            <meshBasicMaterial color="#FFFFFF" transparent opacity={0.9} side={THREE.DoubleSide} depthTest={false} />
+          </mesh>
+          <mesh>
+            <circleGeometry args={[4, 32]} />
+            <meshBasicMaterial color="#FFFFFF" transparent opacity={0.15} side={THREE.DoubleSide} depthTest={false} />
+          </mesh>
+        </Billboard>
+      )}
 
       {/* ── VR-Panels: nur wenn XR-Session aktiv ──
           VRErrorBoundary verhindert dass Panel-Fehler die Scene crashen.
@@ -666,6 +681,7 @@ interface Props {
 
 type Phase =
   | 'exploring'
+  | 'pendingConfirm'
   | 'kategoriePanel'
   | 'klickFeedback'
   | 'hintDialog'
@@ -696,6 +712,10 @@ export default function SceneViewer({
 
   const hitDeficit    = useRef<AppDeficit | null>(null)
   const hitKatRichtig = useRef<boolean>(false)
+
+  // Klick-Bestätigungs-Marker (Browser: Klick → Marker → Bestätigen)
+  const [pendingClickPos, setPendingClickPos] = useState<{ theta: number; phi: number } | null>(null)
+  const pendingTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   // Ref fuer Phase – vermeidet stale-closure in handleVRModeChange
   const phaseRef      = useRef<Phase>('exploring')
   phaseRef.current = phase
@@ -707,29 +727,44 @@ export default function SceneViewer({
   const foundIds = new Set(foundDeficits.map(f => f.deficitId))
   const allFound = foundDeficits.length === deficits.length
 
+  // ESC-Taste: VR beenden oder Szene verlassen
+  useEffect(() => {
+    function handleKeyDown(e: KeyboardEvent) {
+      if (e.key === 'Escape') {
+        // VR-Session beenden falls aktiv
+        const session = xrStore.getState().session
+        if (session) { session.end(); return }
+        // Sonst: Pending abbrechen oder Szene beenden
+        if (phaseRef.current === 'pendingConfirm') {
+          setPendingClickPos(null)
+          setPhase('exploring')
+        } else {
+          onBeenden()
+        }
+      }
+    }
+    window.addEventListener('keydown', handleKeyDown)
+    return () => window.removeEventListener('keydown', handleKeyDown)
+  }, [onBeenden])
+
   // VR-Modus-Wechsel (von SceneContent via useXR gemeldet)
   // Kein phase-Dependency – phaseRef verhindert dass jeder Phase-Wechsel
   // das useEffect in SceneContent neu ausloest und den Klick-Flow resetzt
   const handleVRModeChange = useCallback((v: boolean) => {
     setIsVR(v)
     const p = phaseRef.current
-    if (!v && (p === 'kategoriePanel' || p === 'bewertungW' || p === 'bewertungA' || p === 'bewertungN')) {
+    if (!v && (p === 'kategoriePanel' || p === 'pendingConfirm' || p === 'bewertungW' || p === 'bewertungA' || p === 'bewertungN')) {
       hitDeficit.current = null
       setUserWichtigkeit(null)
       setUserAbweichung(null)
+      setPendingClickPos(null)
       setPhase('exploring')
     }
   }, [])
 
-  // ── Klick auf die Sphere ────────────────────────────────────────────────────
-  const handleSphereClick = useCallback((e: ThreeEvent<MouseEvent>) => {
-    e.stopPropagation()
-    if (phase !== 'exploring') return
-
-    const clickPos = clickToSpherical(e.point)
-
+  // ── Treffer-Prüfung (gemeinsam für Browser-Bestätigung und VR-Direktklick) ──
+  const runHitCheck = useCallback((clickPos: { theta: number; phi: number }) => {
     const hit = deficits.find(d => {
-      // Perspektivenabhaengige Verortung pruefen
       const verortung = getVerortungFuerPerspektive(d, aktivePerspektiveId)
       if (verortung) return trefferpruefung(clickPos, verortung)
       if (!d.position) return false
@@ -739,18 +774,62 @@ export default function SceneViewer({
     if (!hit) {
       setFeedback('kein_treffer')
       setPhase('klickFeedback')
+      setPendingClickPos(null)
       return
     }
 
     if (foundIds.has(hit.id)) {
       setFeedback('bereits_gefunden')
       setPhase('klickFeedback')
+      setPendingClickPos(null)
       return
     }
 
     hitDeficit.current = hit
+    setPendingClickPos(null)
     setPhase('kategoriePanel')
-  }, [phase, deficits, foundIds, aktivePerspektiveId])
+  }, [deficits, foundIds, aktivePerspektiveId])
+
+  // ── Klick auf die Sphere ────────────────────────────────────────────────────
+  const handleSphereClick = useCallback((e: ThreeEvent<MouseEvent>) => {
+    e.stopPropagation()
+
+    // Während pendingConfirm: neuer Klick ersetzt den alten Marker
+    if (phase !== 'exploring' && phase !== 'pendingConfirm') return
+
+    const clickPos = clickToSpherical(e.point)
+
+    if (isVR) {
+      // VR: Direkter Treffer-Check (Controller-Ray ist präzise)
+      runHitCheck(clickPos)
+      return
+    }
+
+    // Browser: Marker setzen, warten auf Bestätigung
+    setPendingClickPos(clickPos)
+    setPhase('pendingConfirm')
+
+    // Auto-Ausblenden nach 5 Sekunden
+    if (pendingTimerRef.current) clearTimeout(pendingTimerRef.current)
+    pendingTimerRef.current = setTimeout(() => {
+      setPendingClickPos(null)
+      setPhase('exploring')
+    }, 5000)
+  }, [phase, isVR, runHitCheck])
+
+  // ── Browser: Klick bestätigen ──────────────────────────────────────────────
+  const handleConfirmClick = useCallback(() => {
+    if (!pendingClickPos) return
+    if (pendingTimerRef.current) clearTimeout(pendingTimerRef.current)
+    runHitCheck(pendingClickPos)
+  }, [pendingClickPos, runHitCheck])
+
+  // ── Browser: Klick abbrechen ──────────────────────────────────────────────
+  const handleCancelPending = useCallback(() => {
+    if (pendingTimerRef.current) clearTimeout(pendingTimerRef.current)
+    setPendingClickPos(null)
+    setPhase('exploring')
+  }, [])
 
   // ── Kategorie gewaehlt ──────────────────────────────────────────────────────
   const handleKategorieSelect = useCallback((gewaehlteKategorie: DefizitKategorie) => {
@@ -840,6 +919,7 @@ export default function SceneViewer({
             onBeenden={onBeenden}
             aktivePerspektiveId={aktivePerspektiveId}
             aktiveBildUrl={aktiveBildUrl}
+            pendingClickPos={pendingClickPos}
           />
         </XR>
       </Canvas>
@@ -977,6 +1057,45 @@ export default function SceneViewer({
         />
       )}
 
+      {/* Bestätigungs-Overlay (Browser: Klick bestätigen) */}
+      {htmlVisible && phase === 'pendingConfirm' && pendingClickPos && (
+        <div style={{
+          position: 'absolute', bottom: '80px', left: '50%', transform: 'translateX(-50%)',
+          display: 'flex', gap: '8px', alignItems: 'center',
+          background: 'rgba(0,0,0,0.80)', backdropFilter: 'blur(12px)',
+          borderRadius: '12px', padding: '10px 16px',
+          border: '1px solid rgba(255,255,255,0.20)',
+          boxShadow: '0 8px 32px rgba(0,0,0,0.5)',
+          zIndex: 200, fontFamily: 'var(--zh-font)',
+        }}>
+          <span style={{ fontSize: '13px', color: 'rgba(255,255,255,0.70)' }}>
+            Sicherheitsdefizit hier?
+          </span>
+          <button
+            onClick={handleConfirmClick}
+            style={{
+              padding: '8px 18px', borderRadius: '8px', border: 'none',
+              background: '#1A7F1F', color: 'white',
+              fontSize: '13px', fontWeight: 700, cursor: 'pointer',
+              fontFamily: 'var(--zh-font)',
+            }}
+          >
+            Bestätigen
+          </button>
+          <button
+            onClick={handleCancelPending}
+            style={{
+              padding: '8px 12px', borderRadius: '8px',
+              border: '1px solid rgba(255,255,255,0.15)', background: 'transparent',
+              color: 'rgba(255,255,255,0.50)',
+              fontSize: '13px', cursor: 'pointer', fontFamily: 'var(--zh-font)',
+            }}
+          >
+            <X size={14} />
+          </button>
+        </div>
+      )}
+
       {htmlVisible && phase === 'klickFeedback' && (
         <KlickFeedback
           type={feedbackType}
@@ -1015,7 +1134,7 @@ export default function SceneViewer({
               </p>
             )}
             <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-              {(['gross', 'mittel', 'klein'] as RSIDimension[]).map(w => (
+              {(['klein', 'mittel', 'gross'] as RSIDimension[]).map(w => (
                 <button
                   key={w}
                   onClick={() => { setUserWichtigkeit(w); setPhase('bewertungA') }}
