@@ -126,7 +126,7 @@ export default function App() {
     setPendingWichtigkeit(payload.userWichtigkeit)
     setPendingAbweichung(payload.userAbweichung)
     setPendingNacaSchwere(payload.userNacaSchwere)
-    deficitStartTime.current = Date.now()
+    deficitStartTime.current = payload.bewertungStartMs
     // VR beenden damit der HTML-ScoringFlow sichtbar ist
     xrStore.getState().session?.end()
     setView('scoring')

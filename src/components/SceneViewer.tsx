@@ -667,6 +667,8 @@ export interface DeficitConfirmedPayload {
   userWichtigkeit:  RSIDimension
   userAbweichung:   RSIDimension
   userNacaSchwere:  NACADimension
+  // Zeitpunkt des Bewertungsbeginns (für Dauer-Berechnung)
+  bewertungStartMs: number
 }
 
 interface Props {
@@ -721,6 +723,7 @@ export default function SceneViewer({
   // Bewertungs-State (Overlay im Viewer)
   const [userWichtigkeit, setUserWichtigkeit] = useState<RSIDimension | null>(null)
   const [userAbweichung, setUserAbweichung]   = useState<RSIDimension | null>(null)
+  const bewertungStartTime = useRef<number>(0)
 
   const foundIds = new Set(foundDeficits.map(f => f.deficitId))
   const allFound = foundDeficits.length === deficits.length
@@ -854,6 +857,7 @@ export default function SceneViewer({
       // Bewertung starten (bleibt im Viewer als Overlay)
       setUserWichtigkeit(null)
       setUserAbweichung(null)
+      bewertungStartTime.current = Date.now()
       setPhase('bewertungW')
       return
     }
@@ -1227,6 +1231,7 @@ export default function SceneViewer({
                     userWichtigkeit:  userWichtigkeit!,
                     userAbweichung:   userAbweichung!,
                     userNacaSchwere:  g.wert,
+                    bewertungStartMs: bewertungStartTime.current,
                   })
                   hitDeficit.current = null
                   setPhase('exploring')
@@ -1249,7 +1254,7 @@ export default function SceneViewer({
       )}
 
       {/* Perspektiven-Switcher */}
-      {htmlVisible && perspektiven.length > 1 && phase === 'exploring' && (
+      {htmlVisible && perspektiven.length > 1 && (phase === 'exploring' || phase === 'pendingConfirm') && (
         <div style={{
           position: 'absolute', bottom: '72px', left: '16px',
           display: 'flex', flexDirection: 'column', gap: '6px',

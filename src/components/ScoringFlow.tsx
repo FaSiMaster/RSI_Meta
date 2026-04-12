@@ -631,7 +631,7 @@ export default function ScoringFlow({ deficit, scene, onComplete, onBack, prefil
 
         {/* Weiter-Button */}
         <button
-          onClick={() => onComplete(calcScore())}
+          onClick={() => onComplete(pts)}
           style={{
             width: '100%', padding: '12px 20px', marginTop: '16px',
             borderRadius: 'var(--zh-radius-btn)',

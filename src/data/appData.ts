@@ -583,16 +583,15 @@ function initIfNeeded(): void {
   const storedVersion = parseInt(localStorage.getItem(K_SCHEMA) ?? '0', 10)
   if (storedVersion < SCHEMA_VERSION) {
     console.info(`[RSI] Schema-Migration: v${storedVersion} → v${SCHEMA_VERSION}`)
-    // Seed-Daten neu schreiben (nur wenn noch nie initialisiert oder Schema veraltet)
-    if (!localStorage.getItem(K_INIT)) {
-      localStorage.setItem(K_TOPICS,   JSON.stringify(DEFAULT_TOPICS))
-      localStorage.setItem(K_SCENES,   JSON.stringify(DEFAULT_SCENES))
-      localStorage.setItem(K_DEFICITS, JSON.stringify(DEFAULT_DEFICITS))
-      localStorage.setItem(K_RANKING,  JSON.stringify(DEFAULT_RANKING))
-      localStorage.setItem(K_KURSE,    JSON.stringify(DEFAULT_KURSE_SEED))
-      localStorage.setItem(K_INIT, '1')
-    }
-    // Schema-Version aktualisieren
+    // Seed-Daten immer neu schreiben bei Schema-Upgrade
+    // (neue Default-Szenen, korrigierte Texte etc. werden so uebernommen)
+    // User-Daten (SceneResults, Session) bleiben unangetastet
+    localStorage.setItem(K_TOPICS,   JSON.stringify(DEFAULT_TOPICS))
+    localStorage.setItem(K_SCENES,   JSON.stringify(DEFAULT_SCENES))
+    localStorage.setItem(K_DEFICITS, JSON.stringify(DEFAULT_DEFICITS))
+    localStorage.setItem(K_RANKING,  JSON.stringify(DEFAULT_RANKING))
+    localStorage.setItem(K_KURSE,    JSON.stringify(DEFAULT_KURSE_SEED))
+    localStorage.setItem(K_INIT, '1')
     localStorage.setItem(K_SCHEMA, String(SCHEMA_VERSION))
     return
   }
