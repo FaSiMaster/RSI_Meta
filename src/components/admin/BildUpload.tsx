@@ -9,6 +9,9 @@ interface Props {
   szeneId:       string
   aktuelleUrl?:  string | null
   onBildGeladen: (bildData: string, breite: number, hoehe: number) => void
+  // Maximale Breite für base64-Bilder (wird automatisch runterskaliert)
+  // Default: 0 = keine Komprimierung (Panorama). Für Vorschaubilder z.B. 400
+  maxBreite?:    number
 }
 
 type Phase = 'auswahl' | 'laden' | 'vorschau' | 'fehler'
@@ -24,7 +27,32 @@ const VERFUEGBARE_TEXTUREN = [
   '5.webp',
 ]
 
-export default function BildUpload({ aktuelleUrl, onBildGeladen }: Props) {
+// Bild auf Canvas verkleinern und als JPEG base64 zurückgeben
+function komprimiereBild(dataUrl: string, maxBreite: number): Promise<{ url: string; breite: number; hoehe: number }> {
+  return new Promise((resolve, reject) => {
+    const img = new Image()
+    img.onload = () => {
+      let w = img.naturalWidth
+      let h = img.naturalHeight
+      if (w > maxBreite) {
+        h = Math.round(h * (maxBreite / w))
+        w = maxBreite
+      }
+      const canvas = document.createElement('canvas')
+      canvas.width = w
+      canvas.height = h
+      const ctx = canvas.getContext('2d')
+      if (!ctx) { reject(new Error('Canvas nicht verfügbar')); return }
+      ctx.drawImage(img, 0, 0, w, h)
+      const url = canvas.toDataURL('image/jpeg', 0.7)
+      resolve({ url, breite: w, hoehe: h })
+    }
+    img.onerror = () => reject(new Error('Bild konnte nicht geladen werden'))
+    img.src = dataUrl
+  })
+}
+
+export default function BildUpload({ aktuelleUrl, onBildGeladen, maxBreite = 0 }: Props) {
   const [phase, setPhase]               = useState<Phase>('auswahl')
   const [fehlerText, setFehlerText]     = useState<string | null>(null)
   const [vorschauUrl, setVorschauUrl]   = useState<string | null>(null)
@@ -64,7 +92,7 @@ export default function BildUpload({ aktuelleUrl, onBildGeladen }: Props) {
   function handleDatei(datei: File) {
     const erlaubteTypen = ['image/jpeg', 'image/png', 'image/webp']
     if (!erlaubteTypen.includes(datei.type)) {
-      zeigeError('Dieses Dateiformat wird nicht unterstuetzt. Erlaubt sind JPG, PNG und WEBP.')
+      zeigeError('Dieses Dateiformat wird nicht unterstützt. Erlaubt sind JPG, PNG und WEBP.')
       return
     }
     if (datei.size > 20 * 1024 * 1024) {
@@ -72,9 +100,19 @@ export default function BildUpload({ aktuelleUrl, onBildGeladen }: Props) {
       return
     }
     const reader = new FileReader()
-    reader.onload = e => {
+    reader.onload = async e => {
       const dataUrl = e.target?.result as string
-      ladeVorschau(dataUrl)
+      if (maxBreite > 0) {
+        // Automatisch verkleinern für localStorage
+        try {
+          const { url } = await komprimiereBild(dataUrl, maxBreite)
+          ladeVorschau(url)
+        } catch {
+          zeigeError('Bild konnte nicht komprimiert werden.')
+        }
+      } else {
+        ladeVorschau(dataUrl)
+      }
     }
     reader.readAsDataURL(datei)
   }
@@ -193,12 +231,13 @@ export default function BildUpload({ aktuelleUrl, onBildGeladen }: Props) {
             {vorschauUrl}
           </p>
         )}
-        {/* base64-Warnung */}
+        {/* base64-Info */}
         {vorschauUrl.startsWith('data:') && (
-          <div style={{ padding: '10px 14px', background: 'rgba(184,115,0,0.08)', border: '1px solid rgba(184,115,0,0.3)', borderRadius: '6px', fontSize: '12px', color: '#B87300', lineHeight: 1.5 }}>
-            Lokale Datei: Nur für Tests geeignet. Für Produktion Bild in
-            <code style={{ margin: '0 4px', fontFamily: 'monospace' }}>public/textures/</code>
-            ablegen, committen und Pfad verwenden.
+          <div style={{ padding: '10px 14px', background: maxBreite > 0 ? 'rgba(26,127,31,0.07)' : 'rgba(184,115,0,0.08)', border: `1px solid ${maxBreite > 0 ? 'rgba(26,127,31,0.3)' : 'rgba(184,115,0,0.3)'}`, borderRadius: '6px', fontSize: '12px', color: maxBreite > 0 ? '#1A7F1F' : '#B87300', lineHeight: 1.5 }}>
+            {maxBreite > 0
+              ? `Bild wird automatisch auf max. ${maxBreite}px Breite komprimiert (JPEG 70%).`
+              : <>Lokale Datei: Nur für Tests geeignet. Für Produktion Bild in <code style={{ margin: '0 4px', fontFamily: 'monospace' }}>public/textures/</code> ablegen.</>
+            }
           </div>
         )}
         {zeigeVerhaeltnisWarnung && (

@@ -1503,6 +1503,7 @@ function VorschaubildEditor({
             szeneId={`${szeneId}-vorschau`}
             aktuelleUrl={value && value !== 'panorama' ? value : null}
             onBildGeladen={(url) => onBildGeladen(url)}
+            maxBreite={400}
           />
         </div>
       )}
