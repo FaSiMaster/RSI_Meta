@@ -1078,6 +1078,88 @@ export default function AdminDashboard() {
               )}
             </Section>
 
+            {/* Perspektiven (mehrere Panorama-Bilder pro Szene) */}
+            <Section label="Perspektiven (Standortwechsel)">
+              <p style={{ fontSize: '11px', color: 'var(--zh-color-text-muted)', marginBottom: '10px' }}>
+                Mehrere Panoramabilder für dieselbe Szene. Defizite können pro Perspektive neu verortet werden.
+              </p>
+              {(editingScene.perspektiven ?? []).map((p, i) => (
+                <div key={p.id} style={{
+                  padding: '10px 12px', borderRadius: '8px',
+                  border: '1px solid var(--zh-color-border)',
+                  background: 'var(--zh-color-bg-secondary)',
+                  marginBottom: '8px',
+                }}>
+                  <div style={{ display: 'flex', gap: '8px', alignItems: 'center', marginBottom: '8px' }}>
+                    <span style={{ fontSize: '12px', fontWeight: 700, color: 'var(--zh-blau)', minWidth: '20px' }}>{i + 1}</span>
+                    <input
+                      value={p.label}
+                      onChange={e => {
+                        const updated = [...(editingScene.perspektiven ?? [])]
+                        updated[i] = { ...updated[i], label: e.target.value }
+                        setEditingScene(prev => prev ? { ...prev, perspektiven: updated } : prev)
+                      }}
+                      placeholder="Label (z.B. Standort A)"
+                      style={{
+                        flex: 1, padding: '5px 8px', borderRadius: '4px',
+                        border: '1px solid var(--zh-color-border)', background: 'var(--zh-color-surface)',
+                        color: 'var(--zh-color-text)', fontSize: '12px', fontFamily: 'var(--zh-font)',
+                      }}
+                    />
+                    <button
+                      onClick={() => {
+                        const updated = (editingScene.perspektiven ?? []).filter((_, j) => j !== i)
+                        setEditingScene(prev => prev ? { ...prev, perspektiven: updated } : prev)
+                      }}
+                      style={{
+                        background: 'none', border: 'none', cursor: 'pointer',
+                        color: '#D40053', padding: '2px', flexShrink: 0,
+                      }}
+                    >
+                      <Trash2 size={14} />
+                    </button>
+                  </div>
+                  {/* Panoramabild für Perspektive */}
+                  <BildUpload
+                    szeneId={`${editingScene.id}-${p.id}`}
+                    aktuelleUrl={p.bildUrl || null}
+                    onBildGeladen={(url) => {
+                      const updated = [...(editingScene.perspektiven ?? [])]
+                      updated[i] = { ...updated[i], bildUrl: url }
+                      setEditingScene(prev => prev ? { ...prev, perspektiven: updated } : prev)
+                    }}
+                  />
+                  {p.bildUrl && (
+                    <p style={{ fontSize: '10px', color: 'var(--zh-color-text-disabled)', marginTop: '4px' }}>
+                      {p.bildUrl}
+                    </p>
+                  )}
+                </div>
+              ))}
+              <button
+                onClick={() => {
+                  const newP = {
+                    id: `persp-${Date.now()}`,
+                    label: `Standort ${(editingScene.perspektiven ?? []).length + 1}`,
+                    bildUrl: '',
+                  }
+                  setEditingScene(prev => prev ? {
+                    ...prev,
+                    perspektiven: [...(prev.perspektiven ?? []), newP],
+                  } : prev)
+                }}
+                style={{
+                  padding: '7px 14px', borderRadius: '6px',
+                  border: '1px dashed var(--zh-color-border)',
+                  background: 'transparent', color: 'var(--zh-blau)',
+                  fontSize: '12px', fontWeight: 600, cursor: 'pointer',
+                  fontFamily: 'var(--zh-font)',
+                }}
+              >
+                + Perspektive hinzufügen
+              </button>
+            </Section>
+
             {/* Vorschaubilder */}
             <Section label={t('admin.einstieg_titel')}>
               {/* Vorschaubild 1 */}

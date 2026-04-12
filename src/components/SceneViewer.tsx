@@ -17,19 +17,21 @@ import {
   isInTolerance,
   trefferpruefung,
 } from '../utils/sphereCoords'
-import { ml, type AppScene, type AppDeficit, type DefizitKategorie, type FoundDeficit } from '../data/appData'
+import { ml, getVerortungFuerPerspektive, type AppScene, type AppDeficit, type DefizitKategorie, type FoundDeficit } from '../data/appData'
 import KategoriePanel from './KategoriePanel'
 import KlickFeedback, { type KlickFeedbackType } from './KlickFeedback'
 import { useTranslation } from 'react-i18next'
+import { WICHTIGKEIT_TABLE, ABWEICHUNG_KATEGORIEN, KRITERIUM_LABELS } from '../data/scoringEngine'
+import type { RSIDimension, NACADimension } from '../types'
 
 // Modul-Level Singleton – nie innerhalb von Komponenten erzeugen
 
 // Kategorien fuer VR-Panel
 const VR_KATEGORIEN: { value: DefizitKategorie; label: string }[] = [
-  { value: 'verkehrsfuehrung', label: 'Verkehrsfuehrung'       },
+  { value: 'verkehrsfuehrung', label: 'Verkehrsführung'        },
   { value: 'sicht',            label: 'Sicht'                  },
-  { value: 'ausruestung',      label: 'Ausruestung'            },
-  { value: 'zustand',          label: 'Zustand Verkehrsflaeche'},
+  { value: 'ausruestung',      label: 'Ausrüstung'             },
+  { value: 'zustand',          label: 'Zustand Verkehrsfläche' },
   { value: 'strassenrand',     label: 'Strassenrand'           },
   { value: 'verkehrsablauf',   label: 'Verkehrsablauf'         },
   { value: 'baustelle',        label: 'Baustelle'              },
@@ -99,20 +101,21 @@ function Hotspot({ position, found }: HotspotProps) {
   )
 }
 
-// ── Hotspot-Position fuer ein Defizit bestimmen ──────────────────────────────
-function getHotspotPosition(d: AppDeficit): THREE.Vector3 | null {
-  if (d.verortung) {
-    if (d.verortung.typ === 'punkt') {
-      return sphericalToVector3(d.verortung.position, 60)
+// ── Hotspot-Position fuer ein Defizit bestimmen (perspektivenabhaengig) ──────
+function getHotspotPosition(d: AppDeficit, perspektivenId: string | null = null): THREE.Vector3 | null {
+  const verortung = getVerortungFuerPerspektive(d, perspektivenId)
+  if (verortung) {
+    if (verortung.typ === 'punkt') {
+      return sphericalToVector3(verortung.position, 60)
     }
-    if (d.verortung.typ === 'polygon' && d.verortung.punkte.length > 0) {
-      const n        = d.verortung.punkte.length
-      const sumTheta = d.verortung.punkte.reduce((s, p) => s + p.theta, 0)
-      const sumPhi   = d.verortung.punkte.reduce((s, p) => s + p.phi,   0)
+    if (verortung.typ === 'polygon' && verortung.punkte.length > 0) {
+      const n        = verortung.punkte.length
+      const sumTheta = verortung.punkte.reduce((s, p) => s + p.theta, 0)
+      const sumPhi   = verortung.punkte.reduce((s, p) => s + p.phi,   0)
       return sphericalToVector3({ theta: sumTheta / n, phi: sumPhi / n }, 60)
     }
-    if (d.verortung.typ === 'gruppe' && d.verortung.elemente.length > 0) {
-      const erstesElement = d.verortung.elemente[0]
+    if (verortung.typ === 'gruppe' && verortung.elemente.length > 0) {
+      const erstesElement = verortung.elemente[0]
       if (erstesElement.typ === 'punkt') {
         return sphericalToVector3(erstesElement.position, 60)
       }
@@ -449,6 +452,8 @@ interface SceneContentProps {
   onFeedbackClose:   () => void
   onHintRequest:     () => void
   onBeenden:         () => void
+  aktivePerspektiveId: string | null
+  aktiveBildUrl:       string | null | undefined
 }
 
 function SceneContent({
@@ -459,6 +464,7 @@ function SceneContent({
   sceneName, sceneKontextLabel,
   onKategorieSelect, onKategorieCancel, onFeedbackClose,
   onHintRequest, onBeenden,
+  aktivePerspektiveId, aktiveBildUrl,
 }: SceneContentProps) {
   const foundIds    = new Set(foundDeficits.map(f => f.deficitId))
   const allFound    = foundDeficits.length === deficits.length
@@ -473,7 +479,7 @@ function SceneContent({
     onVRModeChange(isInXR)
   }, [isInXR, onVRModeChange])
 
-  // Startblick setzen
+  // Startblick setzen (auch bei Perspektivenwechsel)
   useEffect(() => {
     if (!controlsRef.current || !startblick) return
     const azimuth = -(startblick.theta * Math.PI / 180)
@@ -481,9 +487,9 @@ function SceneContent({
     controlsRef.current.setAzimuthalAngle(azimuth)
     controlsRef.current.setPolarAngle(polar)
     controlsRef.current.update()
-  }, []) // eslint-disable-line react-hooks/exhaustive-deps
+  }, [startblick])
 
-  const bildUrl = scene.panoramaBildUrl ?? scene.bildUrl
+  const bildUrl = aktiveBildUrl ?? scene.panoramaBildUrl ?? scene.bildUrl
 
   return (
     <>
@@ -503,9 +509,9 @@ function SceneContent({
       {/* Panorama */}
       <PanoramaSphere bildUrl={bildUrl} onClick={onSphereClick} />
 
-      {/* Hotspots */}
+      {/* Hotspots (perspektivenabhaengig) */}
       {hintActive && deficits.map(d => {
-        const renderPos = getHotspotPosition(d)
+        const renderPos = getHotspotPosition(d, aktivePerspektiveId)
         if (!renderPos) return null
         return <Hotspot key={d.id} position={renderPos} found={foundIds.has(d.id)} />
       })}
@@ -642,6 +648,10 @@ export interface DeficitConfirmedPayload {
   deficit:          AppDeficit
   kategorieRichtig: boolean
   hintPenalty:      boolean
+  // Bewertungs-Auswahlen aus dem Viewer-Overlay
+  userWichtigkeit:  RSIDimension
+  userAbweichung:   RSIDimension
+  userNacaSchwere:  NACADimension
 }
 
 interface Props {
@@ -659,6 +669,9 @@ type Phase =
   | 'kategoriePanel'
   | 'klickFeedback'
   | 'hintDialog'
+  | 'bewertungW'
+  | 'bewertungA'
+  | 'bewertungN'
 
 export default function SceneViewer({
   scene, deficits, foundDeficits, hintActive,
@@ -671,11 +684,25 @@ export default function SceneViewer({
   const [feedbackType, setFeedback] = useState<KlickFeedbackType>('kein_treffer')
   const [isVR, setIsVR]             = useState(false)
 
+  // Perspektiven
+  const perspektiven = scene.perspektiven ?? []
+  const hatPerspektiven = perspektiven.length > 0
+  const [aktivePerspektiveId, setAktivePerspektiveId] = useState<string | null>(
+    hatPerspektiven ? perspektiven[0].id : null
+  )
+  const aktivePerspektive = perspektiven.find(p => p.id === aktivePerspektiveId) ?? null
+  const aktiveBildUrl = aktivePerspektive?.bildUrl ?? scene.panoramaBildUrl ?? scene.bildUrl
+  const aktiveStartblick = aktivePerspektive?.startblick ?? scene.startblick
+
   const hitDeficit    = useRef<AppDeficit | null>(null)
   const hitKatRichtig = useRef<boolean>(false)
   // Ref fuer Phase – vermeidet stale-closure in handleVRModeChange
   const phaseRef      = useRef<Phase>('exploring')
   phaseRef.current = phase
+
+  // Bewertungs-State (Overlay im Viewer)
+  const [userWichtigkeit, setUserWichtigkeit] = useState<RSIDimension | null>(null)
+  const [userAbweichung, setUserAbweichung]   = useState<RSIDimension | null>(null)
 
   const foundIds = new Set(foundDeficits.map(f => f.deficitId))
   const allFound = foundDeficits.length === deficits.length
@@ -699,7 +726,9 @@ export default function SceneViewer({
     const clickPos = clickToSpherical(e.point)
 
     const hit = deficits.find(d => {
-      if (d.verortung) return trefferpruefung(clickPos, d.verortung)
+      // Perspektivenabhaengige Verortung pruefen
+      const verortung = getVerortungFuerPerspektive(d, aktivePerspektiveId)
+      if (verortung) return trefferpruefung(clickPos, verortung)
       if (!d.position) return false
       return isInTolerance(clickPos, d.position, d.tolerance ?? 15)
     })
@@ -718,7 +747,7 @@ export default function SceneViewer({
 
     hitDeficit.current = hit
     setPhase('kategoriePanel')
-  }, [phase, deficits, foundIds])
+  }, [phase, deficits, foundIds, aktivePerspektiveId])
 
   // ── Kategorie gewaehlt ──────────────────────────────────────────────────────
   const handleKategorieSelect = useCallback((gewaehlteKategorie: DefizitKategorie) => {
@@ -735,19 +764,19 @@ export default function SceneViewer({
     setPhase('exploring')
   }, [])
 
-  // ── Feedback-Anzeige abgelaufen ─────────────────────────────────────────────
+  // ── Feedback-Anzeige abgelaufen → Bewertungs-Flow starten ──────────────────
   const handleFeedbackClose = useCallback(() => {
     const d = hitDeficit.current
     if (d && (feedbackType === 'richtig' || feedbackType === 'kategorie_falsch')) {
-      onDeficitConfirmed({
-        deficit:          d,
-        kategorieRichtig: hitKatRichtig.current,
-        hintPenalty:      hintActive,
-      })
+      // Bewertung starten (bleibt im Viewer als Overlay)
+      setUserWichtigkeit(null)
+      setUserAbweichung(null)
+      setPhase('bewertungW')
+      return
     }
     hitDeficit.current = null
     setPhase('exploring')
-  }, [feedbackType, hintActive, onDeficitConfirmed])
+  }, [feedbackType])
 
   // ── Hint aktivieren ─────────────────────────────────────────────────────────
   const handleHintRequest = useCallback(() => {
@@ -794,7 +823,7 @@ export default function SceneViewer({
             foundDeficits={foundDeficits}
             hintActive={hintActive}
             onSphereClick={handleSphereClick}
-            startblick={scene.startblick}
+            startblick={aktiveStartblick}
             onVRModeChange={handleVRModeChange}
             phase={phase}
             feedbackType={feedbackType}
@@ -806,6 +835,8 @@ export default function SceneViewer({
             onFeedbackClose={handleFeedbackClose}
             onHintRequest={handleHintRequest}
             onBeenden={onBeenden}
+            aktivePerspektiveId={aktivePerspektiveId}
+            aktiveBildUrl={aktiveBildUrl}
           />
         </XR>
       </Canvas>
@@ -948,6 +979,193 @@ export default function SceneViewer({
           type={feedbackType}
           onClose={handleFeedbackClose}
         />
+      )}
+
+      {/* ── Bewertungs-Overlays (3 Schritte im KategoriePanel-Style) ── */}
+
+      {htmlVisible && phase === 'bewertungW' && hitDeficit.current && (() => {
+        const d = hitDeficit.current!
+        const tableWert = WICHTIGKEIT_TABLE[d.kriteriumId]
+        const prefill: RSIDimension | null = tableWert
+          ? ((tableWert[d.kontext] as RSIDimension | '') || null)
+          : null
+        return (
+          <div style={{
+            position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)',
+            background: 'rgba(0,0,0,0.90)', backdropFilter: 'blur(16px)',
+            borderRadius: '14px', border: '1px solid rgba(255,255,255,0.12)',
+            padding: '24px 28px', width: '380px', maxWidth: '92vw',
+            boxShadow: '0 16px 48px rgba(0,0,0,0.7)', zIndex: 300, fontFamily: 'var(--zh-font)',
+          }}>
+            <p style={{ fontSize: '10px', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.16em', color: 'rgba(255,255,255,0.45)', marginBottom: '3px' }}>
+              Schritt 1 von 3 — Wichtigkeit
+            </p>
+            <h3 style={{ fontSize: '17px', fontWeight: 700, color: 'white', marginBottom: '12px' }}>
+              Wie wichtig ist dieses Kriterium?
+            </h3>
+            <p style={{ fontSize: '12px', color: 'rgba(255,255,255,0.55)', marginBottom: '6px' }}>
+              {KRITERIUM_LABELS[d.kriteriumId] ?? d.kriteriumId} · {d.kontext === 'io' ? 'Innerorts' : 'Ausserorts'}
+            </p>
+            {prefill && (
+              <p style={{ fontSize: '11px', color: 'rgba(0,118,189,0.85)', marginBottom: '14px' }}>
+                Gemäss Tabelle: <strong>{prefill === 'gross' ? 'Gross' : prefill === 'mittel' ? 'Mittel' : 'Klein'}</strong>
+              </p>
+            )}
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+              {(['gross', 'mittel', 'klein'] as RSIDimension[]).map(w => (
+                <button
+                  key={w}
+                  onClick={() => { setUserWichtigkeit(w); setPhase('bewertungA') }}
+                  style={{
+                    textAlign: 'left', padding: '11px 16px', borderRadius: '8px',
+                    border: '1px solid rgba(255,255,255,0.10)', background: 'rgba(255,255,255,0.05)',
+                    color: 'white', fontSize: '14px', fontWeight: 600,
+                    cursor: 'pointer', fontFamily: 'var(--zh-font)',
+                  }}
+                  onMouseEnter={e => { e.currentTarget.style.background = 'rgba(0,118,189,0.45)'; e.currentTarget.style.borderColor = 'rgba(0,118,189,0.6)' }}
+                  onMouseLeave={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.05)'; e.currentTarget.style.borderColor = 'rgba(255,255,255,0.10)' }}
+                >
+                  {w === 'gross' ? 'Gross' : w === 'mittel' ? 'Mittel' : 'Klein'}
+                </button>
+              ))}
+            </div>
+          </div>
+        )
+      })()}
+
+      {htmlVisible && phase === 'bewertungA' && hitDeficit.current && (
+        <div style={{
+          position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)',
+          background: 'rgba(0,0,0,0.90)', backdropFilter: 'blur(16px)',
+          borderRadius: '14px', border: '1px solid rgba(255,255,255,0.12)',
+          padding: '24px 28px', width: '380px', maxWidth: '92vw',
+          boxShadow: '0 16px 48px rgba(0,0,0,0.7)', zIndex: 300, fontFamily: 'var(--zh-font)',
+        }}>
+          <p style={{ fontSize: '10px', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.16em', color: 'rgba(255,255,255,0.45)', marginBottom: '3px' }}>
+            Schritt 2 von 3 — Abweichung
+          </p>
+          <h3 style={{ fontSize: '17px', fontWeight: 700, color: 'white', marginBottom: '14px' }}>
+            Wie stark weicht es von der Norm ab?
+          </h3>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+            {ABWEICHUNG_KATEGORIEN.map(k => (
+              <button
+                key={k.wert}
+                onClick={() => { setUserAbweichung(k.wert); setPhase('bewertungN') }}
+                style={{
+                  textAlign: 'left', padding: '11px 16px', borderRadius: '8px',
+                  border: '1px solid rgba(255,255,255,0.10)', background: 'rgba(255,255,255,0.05)',
+                  color: 'white', fontSize: '14px', fontWeight: 600,
+                  cursor: 'pointer', fontFamily: 'var(--zh-font)',
+                }}
+                onMouseEnter={e => { e.currentTarget.style.background = 'rgba(0,118,189,0.45)'; e.currentTarget.style.borderColor = 'rgba(0,118,189,0.6)' }}
+                onMouseLeave={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.05)'; e.currentTarget.style.borderColor = 'rgba(255,255,255,0.10)' }}
+              >
+                <span style={{ display: 'block' }}>{k.label}</span>
+                <span style={{ display: 'block', fontSize: '11px', color: 'rgba(255,255,255,0.50)', fontWeight: 400, marginTop: '2px' }}>{k.beschreibung}</span>
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {htmlVisible && phase === 'bewertungN' && hitDeficit.current && (
+        <div style={{
+          position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)',
+          background: 'rgba(0,0,0,0.90)', backdropFilter: 'blur(16px)',
+          borderRadius: '14px', border: '1px solid rgba(255,255,255,0.12)',
+          padding: '24px 28px', width: '380px', maxWidth: '92vw',
+          boxShadow: '0 16px 48px rgba(0,0,0,0.7)', zIndex: 300, fontFamily: 'var(--zh-font)',
+        }}>
+          <p style={{ fontSize: '10px', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.16em', color: 'rgba(255,255,255,0.45)', marginBottom: '3px' }}>
+            Schritt 3 von 3 — Unfallschwere
+          </p>
+          <h3 style={{ fontSize: '17px', fontWeight: 700, color: 'white', marginBottom: '8px' }}>
+            Wie schwer wären die Verletzungen?
+          </h3>
+          <p style={{ fontSize: '12px', color: 'rgba(255,255,255,0.45)', marginBottom: '14px' }}>
+            Stell dir vor, ein Unfall passiert genau hier.
+          </p>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+            {([
+              { wert: 'leicht' as NACADimension, label: 'Leicht', sub: 'NACA 0–1 · Keine bis geringfügige Verletzung', color: '#1A7F1F' },
+              { wert: 'mittel' as NACADimension, label: 'Mittel', sub: 'NACA 2–3 · Leichte bis mässige Verletzung', color: '#B87300' },
+              { wert: 'schwer' as NACADimension, label: 'Schwer', sub: 'NACA 4–7 · Schwere Verletzung bis Tod', color: '#D40053' },
+            ]).map(g => (
+              <button
+                key={g.wert}
+                onClick={() => {
+                  // Alle 3 Schritte fertig → Payload an App.tsx
+                  const d = hitDeficit.current!
+                  onDeficitConfirmed({
+                    deficit:          d,
+                    kategorieRichtig: hitKatRichtig.current,
+                    hintPenalty:      hintActive,
+                    userWichtigkeit:  userWichtigkeit!,
+                    userAbweichung:   userAbweichung!,
+                    userNacaSchwere:  g.wert,
+                  })
+                  hitDeficit.current = null
+                  setPhase('exploring')
+                }}
+                style={{
+                  textAlign: 'left', padding: '11px 16px', borderRadius: '8px',
+                  border: '1px solid rgba(255,255,255,0.10)', background: 'rgba(255,255,255,0.05)',
+                  color: 'white', fontSize: '14px', fontWeight: 600,
+                  cursor: 'pointer', fontFamily: 'var(--zh-font)',
+                }}
+                onMouseEnter={e => { e.currentTarget.style.background = `${g.color}55`; e.currentTarget.style.borderColor = `${g.color}88` }}
+                onMouseLeave={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.05)'; e.currentTarget.style.borderColor = 'rgba(255,255,255,0.10)' }}
+              >
+                <span style={{ display: 'block', color: g.color }}>{g.label}</span>
+                <span style={{ display: 'block', fontSize: '11px', color: 'rgba(255,255,255,0.50)', fontWeight: 400, marginTop: '2px' }}>{g.sub}</span>
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Perspektiven-Switcher */}
+      {htmlVisible && hatPerspektiven && perspektiven.length > 1 && phase === 'exploring' && (
+        <div style={{
+          position: 'absolute', bottom: '72px', left: '16px',
+          display: 'flex', flexDirection: 'column', gap: '6px',
+          zIndex: 60,
+        }}>
+          <span style={{
+            fontSize: '10px', fontWeight: 700, textTransform: 'uppercase',
+            letterSpacing: '0.1em', color: 'rgba(255,255,255,0.45)',
+            marginBottom: '2px', paddingLeft: '2px',
+          }}>
+            Perspektive
+          </span>
+          {perspektiven.map((p, i) => {
+            const isActive = p.id === aktivePerspektiveId
+            return (
+              <button
+                key={p.id}
+                onClick={() => setAktivePerspektiveId(p.id)}
+                style={{
+                  display: 'flex', alignItems: 'center', gap: '8px',
+                  padding: '8px 14px', borderRadius: '9px',
+                  border: isActive ? '2px solid #0076BD' : '1px solid rgba(255,255,255,0.18)',
+                  background: isActive ? 'rgba(0,118,189,0.25)' : 'rgba(0,0,0,0.55)',
+                  backdropFilter: 'blur(10px)',
+                  color: isActive ? 'white' : 'rgba(255,255,255,0.70)',
+                  fontSize: '13px', fontWeight: isActive ? 700 : 500,
+                  cursor: isActive ? 'default' : 'pointer',
+                  fontFamily: 'var(--zh-font)',
+                  transition: 'all 0.15s',
+                  minWidth: '140px',
+                  textAlign: 'left',
+                }}
+              >
+                <MapPin size={13} style={{ flexShrink: 0, opacity: isActive ? 1 : 0.5 }} />
+                <span>{p.label || `Standort ${i + 1}`}</span>
+              </button>
+            )
+          })}
+        </div>
       )}
 
       {htmlVisible && phase === 'hintDialog' && (

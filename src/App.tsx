@@ -45,6 +45,11 @@ export default function App() {
   const [pendingKatRichtig,     setPendingKatRichtig]     = useState(true)
   const [pendingHintPenalty,    setPendingHintPenalty]    = useState(false)
 
+  // Bewertungen aus dem Viewer-Overlay
+  const [pendingWichtigkeit, setPendingWichtigkeit] = useState<'gross' | 'mittel' | 'klein' | null>(null)
+  const [pendingAbweichung,  setPendingAbweichung]  = useState<'gross' | 'mittel' | 'klein' | null>(null)
+  const [pendingNacaSchwere, setPendingNacaSchwere]  = useState<'leicht' | 'mittel' | 'schwer' | null>(null)
+
   // Session + Theme beim Start laden
   useEffect(() => {
     const session = getSession()
@@ -99,11 +104,14 @@ export default function App() {
     setView('viewer')
   }
 
-  // ── Defizit im Viewer bestaetigt → ScoringFlow starten ────────────────────
+  // ── Defizit im Viewer bestaetigt → ScoringFlow (Auswertung) starten ────────
   function handleDeficitConfirmed(payload: DeficitConfirmedPayload) {
     setScoringDeficit(payload.deficit)
     setPendingKatRichtig(payload.kategorieRichtig)
     setPendingHintPenalty(payload.hintPenalty)
+    setPendingWichtigkeit(payload.userWichtigkeit)
+    setPendingAbweichung(payload.userAbweichung)
+    setPendingNacaSchwere(payload.userNacaSchwere)
     // VR beenden damit der HTML-ScoringFlow sichtbar ist
     xrStore.getState().session?.end()
     setView('scoring')
@@ -276,6 +284,9 @@ export default function App() {
                     username={username}
                     onComplete={handleScoringComplete}
                     onBack={() => setView('viewer')}
+                    prefillWichtigkeit={pendingWichtigkeit ?? undefined}
+                    prefillAbweichung={pendingAbweichung ?? undefined}
+                    prefillNacaSchwere={pendingNacaSchwere ?? undefined}
                   />
                 </div>
               )}

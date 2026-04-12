@@ -36,6 +36,14 @@ export interface AppTopic {
   createdAt?: number
 }
 
+// Perspektive innerhalb einer Szene (mehrere Blickwinkel auf dieselben Defizite)
+export interface Perspektive {
+  id: string
+  label: string                    // z.B. "Standort A", "Gegenrichtung"
+  bildUrl: string                  // Panorama-URL fuer diese Perspektive
+  startblick?: { theta: number; phi: number } | null
+}
+
 export interface AppScene {
   id: string
   topicId: string
@@ -51,6 +59,8 @@ export interface AppScene {
   vorschauBild2?: string | null
   panoramaBildUrl?: string | null
   startblick?: { theta: number; phi: number } | null
+  // Perspektiven: mehrere Panorama-Bilder pro Szene (Standortwechsel)
+  perspektiven?: Perspektive[]
   isActive: boolean
 }
 
@@ -78,6 +88,8 @@ export interface AppDeficit {
   tolerance?: number          // Trefferradius in Grad (default: 15)
   kategorie?: DefizitKategorie
   verortung?: DefizitVerortung | null
+  // Verortung pro Perspektive (Key = Perspektive.id)
+  verortungen?: Record<string, DefizitVerortung> | null
 }
 
 export interface UserSession {
@@ -160,7 +172,7 @@ const DEFAULT_TOPICS: AppTopic[] = [
       "en": "Pedestrians"
     },
     "beschreibungI18n": {
-      "de": "Gehwege, Querungen und Fussgaengerbereiche.",
+      "de": "Gehwege, Querungen und Fussgängerbereiche.",
       "fr": "Trottoirs et traversées.",
       "it": "Marciapiedi e attraversamenti.",
       "en": "Footpaths and crossings."
@@ -214,7 +226,7 @@ const DEFAULT_TOPICS: AppTopic[] = [
       "en": "Construction"
     },
     "beschreibungI18n": {
-      "de": "Absicherung und temporaere Fuehrung.",
+      "de": "Absicherung und temporäre Führung.",
       "fr": "Sécurisation et guidage temporaire.",
       "it": "Sicurezza e guida temporanea.",
       "en": "Safety and temporary guidance."
@@ -275,7 +287,7 @@ const DEFAULT_SCENES: AppScene[] = [
     "kontext": "io",
     "isActive": true,
     "nameI18n": {
-      "de": "Kreuzung – eingeschraenkte Sichtweite",
+      "de": "Kreuzung – eingeschränkte Sichtweite",
       "fr": "Carrefour – visibilité réduite",
       "it": "Incrocio – visibilità ridotta",
       "en": "Junction – restricted sight line"
@@ -292,7 +304,7 @@ const DEFAULT_SCENES: AppScene[] = [
     "kontext": "ao",
     "isActive": true,
     "nameI18n": {
-      "de": "Baustelle – temporaere Verkehrsfuehrung",
+      "de": "Baustelle – temporäre Verkehrsführung",
       "fr": "Chantier – guidage temporaire",
       "it": "Cantiere – guida temporanea",
       "en": "Construction – temp traffic guidance"
@@ -405,7 +417,7 @@ const DEFAULT_DEFICITS: AppDeficit[] = [
       "en": "Interrupted cycle lane"
     },
     "beschreibungI18n": {
-      "de": "Radstreifen endet vor Kreuzung ohne Weiterfuehrung.",
+      "de": "Radstreifen endet vor Kreuzung ohne Weiterführung.",
       "fr": "Piste cyclable interrompue avant le carrefour.",
       "it": "Corsia ciclabile interrotta prima dell'incrocio.",
       "en": "Cycle lane ends before junction."
@@ -537,11 +549,28 @@ function readJSON<T>(key: string, fallback: T[]): T[] {
 }
 
 function writeJSON<T>(key: string, data: T[]): void {
-  try { localStorage.setItem(key, JSON.stringify(data)) } catch { /* noop */ }
+  try {
+    localStorage.setItem(key, JSON.stringify(data))
+  } catch (e) {
+    console.error(`[RSI] localStorage-Fehler beim Speichern von "${key}":`, e)
+    alert(`Speichern fehlgeschlagen — localStorage ist voll.\nBitte grosse Bilder als URL statt base64 verwenden.\n\nKey: ${key}`)
+  }
 }
 
 export function ml(text: MultiLang, lang: string): string {
   return text[lang as keyof MultiLang] ?? text.de
+}
+
+// Verortung eines Defizits fuer eine bestimmte Perspektive ermitteln
+// Prioritaet: verortungen[perspektivenId] > verortung > position (Legacy)
+export function getVerortungFuerPerspektive(
+  deficit: AppDeficit,
+  perspektivenId: string | null,
+): DefizitVerortung | null {
+  if (perspektivenId && deficit.verortungen?.[perspektivenId]) {
+    return deficit.verortungen[perspektivenId]
+  }
+  return deficit.verortung ?? null
 }
 
 // ── Topics ──
