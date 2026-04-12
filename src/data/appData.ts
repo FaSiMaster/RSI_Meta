@@ -553,7 +553,17 @@ function writeJSON<T>(key: string, data: T[]): void {
     localStorage.setItem(key, JSON.stringify(data))
   } catch (e) {
     console.error(`[RSI] localStorage-Fehler beim Speichern von "${key}":`, e)
-    alert(`Speichern fehlgeschlagen — localStorage ist voll.\nBitte grosse Bilder als URL statt base64 verwenden.\n\nKey: ${key}`)
+    // Fehlermeldung als DOM-Toast statt alert() (Quest-kompatibel)
+    const toast = document.createElement('div')
+    toast.textContent = `Speichern fehlgeschlagen — localStorage ist voll. Bilder als URL statt Upload verwenden.`
+    Object.assign(toast.style, {
+      position: 'fixed', bottom: '20px', left: '50%', transform: 'translateX(-50%)',
+      background: '#D40053', color: 'white', padding: '12px 20px', borderRadius: '8px',
+      fontSize: '13px', fontWeight: '700', zIndex: '9999', maxWidth: '90vw', textAlign: 'center',
+      boxShadow: '0 4px 20px rgba(0,0,0,0.4)',
+    })
+    document.body.appendChild(toast)
+    setTimeout(() => toast.remove(), 6000)
   }
 }
 

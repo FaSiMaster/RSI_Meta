@@ -712,8 +712,11 @@ export default function SceneViewer({
   // das useEffect in SceneContent neu ausloest und den Klick-Flow resetzt
   const handleVRModeChange = useCallback((v: boolean) => {
     setIsVR(v)
-    if (!v && phaseRef.current === 'kategoriePanel') {
+    const p = phaseRef.current
+    if (!v && (p === 'kategoriePanel' || p === 'bewertungW' || p === 'bewertungA' || p === 'bewertungN')) {
       hitDeficit.current = null
+      setUserWichtigkeit(null)
+      setUserAbweichung(null)
       setPhase('exploring')
     }
   }, [])
@@ -1126,7 +1129,7 @@ export default function SceneViewer({
       )}
 
       {/* Perspektiven-Switcher */}
-      {htmlVisible && hatPerspektiven && perspektiven.length > 1 && phase === 'exploring' && (
+      {htmlVisible && perspektiven.length > 1 && phase === 'exploring' && (
         <div style={{
           position: 'absolute', bottom: '72px', left: '16px',
           display: 'flex', flexDirection: 'column', gap: '6px',
