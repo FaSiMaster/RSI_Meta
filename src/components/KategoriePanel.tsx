@@ -1,7 +1,8 @@
 // KategoriePanel – Floating Panel nach Klick auf die Szene
-// User muss Kategorie wählen, bevor der 9-Schritt-Flow startet
+// User muss Kategorie wählen, bevor der Bewertungsflow startet
 
 import { X } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 import type { DefizitKategorie } from '../data/appData'
 
 interface Props {
@@ -9,17 +10,19 @@ interface Props {
   onCancel: () => void
 }
 
-const KATEGORIEN: { value: DefizitKategorie; label: string }[] = [
-  { value: 'verkehrsfuehrung', label: 'Verkehrsführung'        },
-  { value: 'sicht',            label: 'Sicht'                   },
-  { value: 'ausruestung',      label: 'Ausrüstung'              },
-  { value: 'zustand',          label: 'Zustand Verkehrsfläche'  },
-  { value: 'strassenrand',     label: 'Strassenrand'            },
-  { value: 'verkehrsablauf',   label: 'Verkehrsablauf'          },
-  { value: 'baustelle',        label: 'Baustelle'               },
+const KATEGORIE_KEYS: { value: DefizitKategorie; key: string }[] = [
+  { value: 'verkehrsfuehrung', key: 'kategorie.verkehrsfuehrung' },
+  { value: 'sicht',            key: 'kategorie.sicht'            },
+  { value: 'ausruestung',      key: 'kategorie.ausruestung'      },
+  { value: 'zustand',          key: 'kategorie.zustand'          },
+  { value: 'strassenrand',     key: 'kategorie.strassenrand'     },
+  { value: 'verkehrsablauf',   key: 'kategorie.verkehrsablauf'   },
+  { value: 'baustelle',        key: 'kategorie.baustelle'        },
 ]
 
 export default function KategoriePanel({ onSelect, onCancel }: Props) {
+  const { t } = useTranslation()
+
   return (
     <div
       style={{
@@ -43,9 +46,9 @@ export default function KategoriePanel({ onSelect, onCancel }: Props) {
       <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: '18px' }}>
         <div>
           <p style={{ fontSize: '10px', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.16em', color: 'rgba(255,255,255,0.45)', marginBottom: '3px' }}>
-            Schritt 0 — Kategorisierung
+            {t('kategorie.schritt_label')}
           </p>
-          <h3 style={{ fontSize: '17px', fontWeight: 700, color: 'white' }}>Was hast du identifiziert?</h3>
+          <h3 style={{ fontSize: '17px', fontWeight: 700, color: 'white' }}>{t('kategorie.frage')}</h3>
         </div>
         <button
           onClick={onCancel}
@@ -56,12 +59,12 @@ export default function KategoriePanel({ onSelect, onCancel }: Props) {
       </div>
 
       <p style={{ fontSize: '12px', color: 'rgba(255,255,255,0.45)', marginBottom: '14px' }}>
-        Wähle die Kategorie des Sicherheitsdefizits:
+        {t('kategorie.subtitle')}
       </p>
 
       {/* Kategorie-Buttons */}
       <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', marginBottom: '16px' }}>
-        {KATEGORIEN.map(({ value, label }) => (
+        {KATEGORIE_KEYS.map(({ value, key }) => (
           <button
             key={value}
             onClick={() => onSelect(value)}
@@ -80,7 +83,7 @@ export default function KategoriePanel({ onSelect, onCancel }: Props) {
             onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.background = 'rgba(0,118,189,0.45)'; (e.currentTarget as HTMLButtonElement).style.borderColor = 'rgba(0,118,189,0.6)' }}
             onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.background = 'rgba(255,255,255,0.05)'; (e.currentTarget as HTMLButtonElement).style.borderColor = 'rgba(255,255,255,0.10)' }}
           >
-            {label}
+            {t(key)}
           </button>
         ))}
       </div>
@@ -89,7 +92,7 @@ export default function KategoriePanel({ onSelect, onCancel }: Props) {
         onClick={onCancel}
         style={{ width: '100%', padding: '9px', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.10)', background: 'transparent', color: 'rgba(255,255,255,0.45)', fontSize: '13px', cursor: 'pointer', fontFamily: 'var(--zh-font)' }}
       >
-        Abbrechen
+        {t('admin.cancelBtn')}
       </button>
     </div>
   )

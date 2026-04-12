@@ -37,7 +37,7 @@ function SterneAnzeige({ sterne, size = 14 }: { sterne: 0 | 1 | 2 | 3; size?: nu
 export { SterneAnzeige }
 
 export default function SceneList({ topic, username, isAdmin, onBack, onSelectScene }: Props) {
-  const { i18n } = useTranslation()
+  const { i18n, t } = useTranslation()
   const lang = i18n.language
   const [scenes, setScenes] = useState<AppScene[]>([])
   const [deficitCounts, setDeficitCounts] = useState<Record<string, number>>({})
@@ -70,7 +70,7 @@ export default function SceneList({ topic, username, isAdmin, onBack, onSelectSc
           onClick={onBack}
           style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '14px', color: 'var(--zh-color-text-muted)', fontWeight: 500, marginBottom: '20px', background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}
         >
-          <ArrowLeft size={15} /> Zurück
+          <ArrowLeft size={15} /> {t('scenes.back')}
         </button>
 
         <div className="flex items-end justify-between">
@@ -151,7 +151,7 @@ export default function SceneList({ topic, username, isAdmin, onBack, onSelectSc
                     className="w-full flex items-center justify-center gap-2 font-bold text-white transition-all hover:scale-[1.02]"
                     style={{ padding: '10px', borderRadius: 'var(--zh-radius-btn)', background: 'var(--zh-dunkelblau)', fontSize: '14px', border: 'none', cursor: 'pointer' }}
                   >
-                    <Play size={15} fill="white" /> {stats && stats.versuche > 0 ? 'Nochmals trainieren' : 'Training starten'}
+                    <Play size={15} fill="white" /> {stats && stats.versuche > 0 ? t('scenes.retryBtn') : t('scenes.startBtn')}
                   </button>
                 </div>
               </motion.div>

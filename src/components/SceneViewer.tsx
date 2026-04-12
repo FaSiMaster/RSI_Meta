@@ -693,7 +693,7 @@ export default function SceneViewer({
   scene, deficits, foundDeficits, hintActive,
   onDeficitConfirmed, onHintActivate, onBeenden,
 }: Props) {
-  const { i18n } = useTranslation()
+  const { i18n, t } = useTranslation()
   const lang     = i18n.language
 
   const [phase, setPhase]           = useState<Phase>('exploring')
@@ -887,7 +887,7 @@ export default function SceneViewer({
   }))
 
   const sceneName         = ml(scene.nameI18n, lang)
-  const sceneKontextLabel = scene.kontext === 'io' ? 'Innerorts' : 'Ausserorts'
+  const sceneKontextLabel = scene.kontext === 'io' ? t('einstieg.kontext_io') : t('einstieg.kontext_ao')
   const htmlVisible       = !isVR
 
   return (
@@ -1070,7 +1070,7 @@ export default function SceneViewer({
           zIndex: 200, fontFamily: 'var(--zh-font)',
         }}>
           <span style={{ fontSize: '13px', color: 'rgba(255,255,255,0.70)' }}>
-            Sicherheitsdefizit hier?
+            {t('szene.defizit_hier')}
           </span>
           <button
             onClick={handleConfirmClick}
@@ -1081,7 +1081,7 @@ export default function SceneViewer({
               fontFamily: 'var(--zh-font)',
             }}
           >
-            Bestätigen
+            {t('szene.bestaetigen')}
           </button>
           <button
             onClick={handleCancelPending}
@@ -1121,10 +1121,10 @@ export default function SceneViewer({
             boxShadow: '0 16px 48px rgba(0,0,0,0.7)', zIndex: 300, fontFamily: 'var(--zh-font)',
           }}>
             <p style={{ fontSize: '10px', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.16em', color: 'rgba(255,255,255,0.45)', marginBottom: '3px' }}>
-              Schritt 1 von 3 — Wichtigkeit
+              {t('scoring.bewertung_schritt', { nr: 1 })} — {t('scoring.phase_a')}
             </p>
             <h3 style={{ fontSize: '17px', fontWeight: 700, color: 'white', marginBottom: '12px' }}>
-              Wie wichtig ist dieses Kriterium?
+              {t('scoring.wie_wichtig')}
             </h3>
             <p style={{ fontSize: '12px', color: 'rgba(255,255,255,0.55)', marginBottom: '6px' }}>
               {KRITERIUM_LABELS[d.kriteriumId] ?? d.kriteriumId} · {d.kontext === 'io' ? 'Innerorts' : 'Ausserorts'}
@@ -1165,10 +1165,10 @@ export default function SceneViewer({
           boxShadow: '0 16px 48px rgba(0,0,0,0.7)', zIndex: 300, fontFamily: 'var(--zh-font)',
         }}>
           <p style={{ fontSize: '10px', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.16em', color: 'rgba(255,255,255,0.45)', marginBottom: '3px' }}>
-            Schritt 2 von 3 — Abweichung
+            {t('scoring.bewertung_schritt', { nr: 2 })} — {t('scoring.phase_b')}
           </p>
           <h3 style={{ fontSize: '17px', fontWeight: 700, color: 'white', marginBottom: '14px' }}>
-            Wie stark weicht es von der Norm ab?
+            {t('scoring.wie_abweichung')}
           </h3>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
             {ABWEICHUNG_KATEGORIEN.map(k => (
@@ -1201,13 +1201,13 @@ export default function SceneViewer({
           boxShadow: '0 16px 48px rgba(0,0,0,0.7)', zIndex: 300, fontFamily: 'var(--zh-font)',
         }}>
           <p style={{ fontSize: '10px', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.16em', color: 'rgba(255,255,255,0.45)', marginBottom: '3px' }}>
-            Schritt 3 von 3 — Unfallschwere
+            {t('scoring.bewertung_schritt', { nr: 3 })} — {t('scoring.phase_d')}
           </p>
           <h3 style={{ fontSize: '17px', fontWeight: 700, color: 'white', marginBottom: '8px' }}>
-            Wie schwer wären die Verletzungen?
+            {t('scoring.wie_schwer')}
           </h3>
           <p style={{ fontSize: '12px', color: 'rgba(255,255,255,0.45)', marginBottom: '14px' }}>
-            Stell dir vor, ein Unfall passiert genau hier.
+            {t('scoring.stell_dir_vor')}
           </p>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
             {([

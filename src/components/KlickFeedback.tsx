@@ -3,6 +3,7 @@
 
 import { useEffect } from 'react'
 import { CheckCircle2, Info, AlertCircle } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 
 export type KlickFeedbackType = 'kein_treffer' | 'bereits_gefunden' | 'kategorie_falsch' | 'richtig'
 
@@ -11,55 +12,59 @@ interface Props {
   onClose: () => void
 }
 
-const CONFIGS: Record<KlickFeedbackType, {
+const CFG_STATIC: Record<KlickFeedbackType, {
   icon: React.ReactNode
   bg: string
   color: string
-  title: string
-  sub: string
+  titleKey: string
+  subKey: string
   dauer: number
 }> = {
   kein_treffer: {
-    icon:  <Info size={18} />,
-    bg:    'rgba(0,0,0,0.78)',
-    color: '#F0F0F0',
-    title: 'Kein Sicherheitsdefizit an dieser Stelle.',
-    sub:   'Versuche es an einer anderen Stelle.',
-    dauer: 2000,
+    icon:     <Info size={18} />,
+    bg:       'rgba(0,0,0,0.78)',
+    color:    '#F0F0F0',
+    titleKey: 'szene.kein_treffer',
+    subKey:   'szene.kein_treffer_sub',
+    dauer:    2000,
   },
   bereits_gefunden: {
-    icon:  <Info size={18} />,
-    bg:    'rgba(0,64,124,0.88)',
-    color: 'white',
-    title: 'Dieses Defizit hast du bereits gefunden.',
-    sub:   '',
-    dauer: 2000,
+    icon:     <Info size={18} />,
+    bg:       'rgba(0,64,124,0.88)',
+    color:    'white',
+    titleKey: 'szene.bereits_gefunden',
+    subKey:   '',
+    dauer:    2000,
   },
   kategorie_falsch: {
-    icon:  <AlertCircle size={18} />,
-    bg:    'rgba(184,115,0,0.92)',
-    color: 'white',
-    title: 'Gefunden — aber falsche Kategorie.',
-    sub:   '-10% Abzug. Weiter zur RSI-Bewertung...',
-    dauer: 1800,
+    icon:     <AlertCircle size={18} />,
+    bg:       'rgba(184,115,0,0.92)',
+    color:    'white',
+    titleKey: 'szene.kategorie_falsch',
+    subKey:   'szene.kategorie_falsch_sub',
+    dauer:    1800,
   },
   richtig: {
-    icon:  <CheckCircle2 size={18} />,
-    bg:    'rgba(26,127,31,0.92)',
-    color: 'white',
-    title: 'Richtige Kategorie!',
-    sub:   'Weiter zur RSI-Bewertung...',
-    dauer: 1500,
+    icon:     <CheckCircle2 size={18} />,
+    bg:       'rgba(26,127,31,0.92)',
+    color:    'white',
+    titleKey: 'szene.kategorie_richtig',
+    subKey:   'szene.weiter_bewertung',
+    dauer:    1500,
   },
 }
 
 export default function KlickFeedback({ type, onClose }: Props) {
-  const cfg = CONFIGS[type]
+  const { t } = useTranslation()
+  const cfg = CFG_STATIC[type]
 
   useEffect(() => {
-    const t = setTimeout(onClose, cfg.dauer)
-    return () => clearTimeout(t)
+    const timer = setTimeout(onClose, cfg.dauer)
+    return () => clearTimeout(timer)
   }, [onClose, cfg.dauer])
+
+  const title = t(cfg.titleKey)
+  const sub = cfg.subKey ? t(cfg.subKey) : ''
 
   return (
     <div
@@ -86,8 +91,8 @@ export default function KlickFeedback({ type, onClose }: Props) {
     >
       <div style={{ flexShrink: 0, marginTop: '1px' }}>{cfg.icon}</div>
       <div>
-        <p style={{ fontSize: '14px', fontWeight: 700, lineHeight: 1.3 }}>{cfg.title}</p>
-        {cfg.sub && <p style={{ fontSize: '12px', opacity: 0.8, marginTop: '3px' }}>{cfg.sub}</p>}
+        <p style={{ fontSize: '14px', fontWeight: 700, lineHeight: 1.3 }}>{title}</p>
+        {sub && <p style={{ fontSize: '12px', opacity: 0.8, marginTop: '3px' }}>{sub}</p>}
       </div>
     </div>
   )

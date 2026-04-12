@@ -31,7 +31,7 @@ export default function SzenenAbschluss({
   sceneResult, username,
   onToTopics, onToRanking, onNextScene,
 }: Props) {
-  const { i18n } = useTranslation()
+  const { i18n, t } = useTranslation()
   const lang = i18n.language
 
   const foundMap = new Map(foundDeficits.map(f => [f.deficitId, f]))
@@ -69,10 +69,10 @@ export default function SzenenAbschluss({
             <Trophy size={24} style={{ color: allFound ? '#1A7F1F' : 'var(--zh-blau)' }} />
           </div>
           <h1 style={{ fontSize: '24px', fontWeight: 800, color: 'var(--zh-color-text)', marginBottom: '4px' }}>
-            Szene abgeschlossen
+            {t('completion.titel')}
           </h1>
           <p style={{ fontSize: '13px', color: 'var(--zh-color-text-muted)' }}>
-            {ml(scene.nameI18n, lang)} · {scene.kontext === 'io' ? 'Innerorts' : 'Ausserorts'}
+            {ml(scene.nameI18n, lang)} · {scene.kontext === 'io' ? t('einstieg.kontext_io') : t('einstieg.kontext_ao')}
           </p>
 
           {/* Sterne */}
