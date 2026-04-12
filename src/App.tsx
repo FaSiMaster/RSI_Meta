@@ -8,6 +8,7 @@ import {
   getSession, saveSession, getDeficits, getAllScenes, saveRankingEntry,
   saveSceneResult, getVersuchAnzahl, getGesamtScore,
 } from './data/appData'
+import { MAX_PUNKTE_PRO_DEFIZIT } from './data/scoreCalc'
 import type { AppTopic, AppScene, AppDeficit, FoundDeficit, DefizitResult, SceneResult } from './data/appData'
 
 import { xrStore } from './xrStore'
@@ -178,7 +179,7 @@ export default function App() {
     if (!currentScene || !currentTopic) return
 
     const dauerSekunden = Math.round((Date.now() - sceneStartTime) / 1000)
-    const maxPunkte = sceneDeficits.length * 363 // Max pro Defizit (STEP_WEIGHTS Summe × 25)
+    const maxPunkte = sceneDeficits.length * MAX_PUNKTE_PRO_DEFIZIT
     const prozent = maxPunkte > 0 ? Math.round((sceneScore / maxPunkte) * 100) : 0
     const versuch = getVersuchAnzahl(username, currentScene.id) + 1
 

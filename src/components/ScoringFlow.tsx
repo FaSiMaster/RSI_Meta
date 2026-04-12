@@ -12,6 +12,7 @@ import {
   calcRelevanzSD, calcUnfallrisiko,
   STEP_WEIGHTS, STEP_WEIGHT_UNIT, KRITERIUM_LABELS,
 } from '../data/scoringEngine'
+import { calcScore as calcScorePure, MAX_PUNKTE_PRO_DEFIZIT } from '../data/scoreCalc'
 import type { RSIDimension, NACADimension, ResultDimension } from '../types'
 
 // ── Farbhilfen ──
@@ -318,22 +319,19 @@ export default function ScoringFlow({ deficit, scene, onComplete, onBack, prefil
   // Aktiver Schritt
   const activeStep = !wichtigkeit ? 1 : !abweichung ? 2 : !nacaSchwere ? 3 : 0
 
-  // Punkte berechnen (unveraendert: STEP_WEIGHTS aus scoringEngine)
+  // Punkte berechnen (Pure Function aus scoreCalc.ts)
   function calcScore(): number {
-    const correct = [
-      wichtigkeit === ca.wichtigkeit,   // Schritt 1 (User)
-      true,                              // Schritt 2 (auto)
-      abweichung === ca.abweichung,     // Schritt 3 (User)
-      true,                              // Schritt 4 (auto)
-      relevanzSD === ca.relevanzSD,     // Schritt 5 (auto-abgeleitet)
-      true,                              // Schritt 6 (auto)
-      nacaSchwere === ca.unfallschwere, // Schritt 7 (User)
-      true,                              // Schritt 8 (auto)
-      unfallrisiko === ca.unfallrisiko, // Schritt 9 (auto-abgeleitet)
-    ]
-    let total = 0
-    STEP_WEIGHTS.forEach((w, i) => { if (correct[i]) total += w * STEP_WEIGHT_UNIT })
-    return Math.round(total)
+    return calcScorePure([
+      wichtigkeit === ca.wichtigkeit,
+      true,
+      abweichung === ca.abweichung,
+      true,
+      relevanzSD === ca.relevanzSD,
+      true,
+      nacaSchwere === ca.unfallschwere,
+      true,
+      unfallrisiko === ca.unfallrisiko,
+    ])
   }
 
   // Bewertung abschliessen
@@ -457,7 +455,7 @@ export default function ScoringFlow({ deficit, scene, onComplete, onBack, prefil
   // ── Ergebnis-Screen ──
   function renderResult() {
     const pts    = calcScore()
-    const maxPts = Math.round(STEP_WEIGHTS.reduce((s, w) => s + w, 0) * STEP_WEIGHT_UNIT)
+    const maxPts = MAX_PUNKTE_PRO_DEFIZIT
     const finalCorrect = unfallrisiko === ca.unfallrisiko
 
     const decisions: { label: string; user: string; correct: string; ok: boolean }[] = [

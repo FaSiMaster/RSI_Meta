@@ -188,6 +188,12 @@ export interface TopicNode {
   children: AppTopic[]
 }
 
+// ── Schema-Version (bei Breaking Changes erhoehen) ──
+// Wird beim Start geprueft. Bei Mismatch: Seed-Daten neu schreiben,
+// User-Daten (SceneResults, Session) bleiben erhalten.
+const SCHEMA_VERSION  = 2
+const K_SCHEMA        = 'rsi-v3-schema'
+
 // ── Storage-Keys ──
 const K_TOPICS        = 'rsi-v3-topics'
 const K_SCENES        = 'rsi-v3-scenes'
@@ -573,6 +579,25 @@ const DEFAULT_RANKING: RankingEntry[] = [
 
 // ── Hilfsfunktionen ──
 function initIfNeeded(): void {
+  // Schema-Versionscheck: bei Mismatch Seed-Daten neu schreiben
+  const storedVersion = parseInt(localStorage.getItem(K_SCHEMA) ?? '0', 10)
+  if (storedVersion < SCHEMA_VERSION) {
+    console.info(`[RSI] Schema-Migration: v${storedVersion} → v${SCHEMA_VERSION}`)
+    // Seed-Daten neu schreiben (nur wenn noch nie initialisiert oder Schema veraltet)
+    if (!localStorage.getItem(K_INIT)) {
+      localStorage.setItem(K_TOPICS,   JSON.stringify(DEFAULT_TOPICS))
+      localStorage.setItem(K_SCENES,   JSON.stringify(DEFAULT_SCENES))
+      localStorage.setItem(K_DEFICITS, JSON.stringify(DEFAULT_DEFICITS))
+      localStorage.setItem(K_RANKING,  JSON.stringify(DEFAULT_RANKING))
+      localStorage.setItem(K_KURSE,    JSON.stringify(DEFAULT_KURSE_SEED))
+      localStorage.setItem(K_INIT, '1')
+    }
+    // Schema-Version aktualisieren
+    localStorage.setItem(K_SCHEMA, String(SCHEMA_VERSION))
+    return
+  }
+
+  // Normale Initialisierung (erste Nutzung)
   if (localStorage.getItem(K_INIT)) return
   localStorage.setItem(K_TOPICS,   JSON.stringify(DEFAULT_TOPICS))
   localStorage.setItem(K_SCENES,   JSON.stringify(DEFAULT_SCENES))
@@ -580,6 +605,7 @@ function initIfNeeded(): void {
   localStorage.setItem(K_RANKING,  JSON.stringify(DEFAULT_RANKING))
   localStorage.setItem(K_KURSE,    JSON.stringify(DEFAULT_KURSE_SEED))
   localStorage.setItem(K_INIT, '1')
+  localStorage.setItem(K_SCHEMA, String(SCHEMA_VERSION))
 }
 
 function readJSON<T>(key: string, fallback: T[]): T[] {
