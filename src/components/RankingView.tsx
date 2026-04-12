@@ -5,9 +5,9 @@
 
 import { Trophy, ArrowLeft, Clock } from 'lucide-react'
 import {
-  getGesamtRanking, getThemaRanking, getSzeneRanking,
-  getTopics, getAllScenes, berechneSterne, ml,
-  type AppTopic, type AppScene, type SceneResult,
+  getGesamtRanking, getThemaRanking, getSzeneRanking, getKursRanking,
+  getTopics, getAllScenes, getKurse, berechneSterne, ml,
+  type AppTopic, type AppScene, type SceneResult, type Kurs,
 } from '../data/appData'
 import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -18,7 +18,7 @@ interface Props {
   onBack: () => void
 }
 
-type RankingTab = 'gesamt' | 'thema' | 'szene'
+type RankingTab = 'gesamt' | 'kurs' | 'thema' | 'szene'
 
 // Rang-Anzeige
 function RangCell({ idx }: { idx: number }) {
@@ -44,17 +44,34 @@ export default function RankingView({ username, onBack }: Props) {
   const [scenes, setScenes] = useState<AppScene[]>([])
   const [selectedTopicId, setSelectedTopicId] = useState<string>('')
   const [selectedSceneId, setSelectedSceneId] = useState<string>('')
+  const [kurse, setKurse] = useState<Kurs[]>([])
+  const [selectedKursId, setSelectedKursId] = useState<string>('')
+  const [kursCodeInput, setKursCodeInput] = useState('')
 
   // Ranking-Daten
   const [gesamtData, setGesamtData] = useState<{ username: string; score: number; szenen: number; besteProzent: number }[]>([])
+  const [kursData, setKursData] = useState<{ username: string; score: number; szenen: number; besteProzent: number }[]>([])
   const [themaData, setThemaData] = useState<{ username: string; score: number; szenen: number; besteProzent: number }[]>([])
   const [szeneData, setSzeneData] = useState<SceneResult[]>([])
 
   useEffect(() => {
     setTopics(getTopics().filter(t => t.isActive))
     setScenes(getAllScenes().filter(s => s.isActive))
+    setKurse(getKurse().filter(k => k.isActive))
     setGesamtData(getGesamtRanking())
   }, [])
+
+  useEffect(() => {
+    if (selectedKursId) {
+      setKursData(getKursRanking(selectedKursId))
+    } else if (kursCodeInput.trim()) {
+      const found = kurse.find(k => k.zugangscode === kursCodeInput.trim())
+      if (found) setKursData(getKursRanking(found.id))
+      else setKursData([])
+    } else {
+      setKursData([])
+    }
+  }, [selectedKursId, kursCodeInput, kurse])
 
   useEffect(() => {
     if (selectedTopicId) {
@@ -107,8 +124,9 @@ export default function RankingView({ username, onBack }: Props) {
       {/* Tab-Pills */}
       <div style={{ display: 'flex', gap: '8px', marginBottom: '24px', flexWrap: 'wrap' }}>
         <button style={pillStyle(tab === 'gesamt')} onClick={() => setTab('gesamt')}>Gesamt</button>
-        <button style={pillStyle(tab === 'thema')} onClick={() => setTab('thema')}>Nach Thema</button>
-        <button style={pillStyle(tab === 'szene')} onClick={() => setTab('szene')}>Nach Szene</button>
+        <button style={pillStyle(tab === 'kurs')} onClick={() => setTab('kurs')}>Kurs</button>
+        <button style={pillStyle(tab === 'thema')} onClick={() => setTab('thema')}>Thema</button>
+        <button style={pillStyle(tab === 'szene')} onClick={() => setTab('szene')}>Szene</button>
       </div>
 
       {/* ═══ TAB: GESAMT ═══ */}
@@ -145,6 +163,70 @@ export default function RankingView({ username, onBack }: Props) {
             </tbody>
           </table>
         </div>
+      )}
+
+      {/* ═══ TAB: KURS ═══ */}
+      {tab === 'kurs' && (
+        <>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginBottom: '20px' }}>
+            <div>
+              <label style={{ fontSize: '11px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.12em', color: 'var(--zh-color-text-muted)', display: 'block', marginBottom: '6px' }}>
+                Kurs wählen
+              </label>
+              <select value={selectedKursId} onChange={e => { setSelectedKursId(e.target.value); setKursCodeInput('') }} style={selectStyle}>
+                <option value="">— Kurs wählen —</option>
+                {kurse.map(k => (
+                  <option key={k.id} value={k.id}>{k.name} ({k.datum})</option>
+                ))}
+              </select>
+            </div>
+            <div>
+              <label style={{ fontSize: '11px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.12em', color: 'var(--zh-color-text-muted)', display: 'block', marginBottom: '6px' }}>
+                Oder Zugangscode eingeben
+              </label>
+              <input
+                type="text"
+                value={kursCodeInput}
+                onChange={e => { setKursCodeInput(e.target.value); setSelectedKursId('') }}
+                placeholder="FaSi4safety"
+                style={{ ...selectStyle, boxSizing: 'border-box' as const }}
+              />
+            </div>
+          </div>
+
+          <div style={{ borderRadius: 'var(--zh-radius-card)', border: '1px solid var(--zh-color-border)', background: 'var(--zh-color-surface)', overflow: 'hidden' }}>
+            <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+              <thead>
+                <tr style={{ borderBottom: '1px solid var(--zh-color-border)', background: 'var(--zh-color-bg-secondary)' }}>
+                  {['Rang', 'Name', 'Score', 'Szenen', 'Ø %'].map(h => (
+                    <th key={h} style={{ padding: '10px 16px', fontSize: '10px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.12em', color: 'var(--zh-color-text-muted)', textAlign: h === 'Name' ? 'left' : 'right' }}>{h}</th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody>
+                {kursData.map((entry, idx) => {
+                  const isOwn = entry.username === username
+                  return (
+                    <tr key={entry.username} style={{ borderBottom: '1px solid var(--zh-color-border)', background: isOwn ? 'rgba(0,118,189,0.08)' : 'transparent' }}>
+                      <td style={{ padding: '12px 16px', textAlign: 'right' }}><RangCell idx={idx} /></td>
+                      <td style={{ padding: '12px 16px', fontWeight: isOwn ? 700 : 500, color: isOwn ? 'var(--zh-blau)' : 'var(--zh-color-text)', textAlign: 'left' }}>
+                        {entry.username}{isOwn && <span style={{ marginLeft: '6px', fontSize: '10px', fontWeight: 700, color: 'var(--zh-blau)', opacity: 0.7 }}>(Du)</span>}
+                      </td>
+                      <td style={{ padding: '12px 16px', fontWeight: 800, color: 'var(--zh-blau)', textAlign: 'right' }}>{entry.score.toLocaleString('de-CH')}</td>
+                      <td style={{ padding: '12px 16px', color: 'var(--zh-color-text-muted)', textAlign: 'right' }}>{entry.szenen}</td>
+                      <td style={{ padding: '12px 16px', fontWeight: 700, color: entry.besteProzent >= 90 ? '#1A7F1F' : '#B87300', textAlign: 'right' }}>{entry.besteProzent}%</td>
+                    </tr>
+                  )
+                })}
+                {kursData.length === 0 && (
+                  <tr><td colSpan={5} style={{ padding: '32px', textAlign: 'center', color: 'var(--zh-color-text-disabled)', fontSize: '13px' }}>
+                    {selectedKursId || kursCodeInput.trim() ? 'Noch keine Resultate für diesen Kurs.' : 'Bitte einen Kurs wählen oder Zugangscode eingeben.'}
+                  </td></tr>
+                )}
+              </tbody>
+            </table>
+          </div>
+        </>
       )}
 
       {/* ═══ TAB: THEMA ═══ */}

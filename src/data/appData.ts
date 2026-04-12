@@ -898,6 +898,32 @@ export function getThemaRanking(topicId: string): { username: string; score: num
   return ranking.sort((a, b) => b.score - a.score)
 }
 
+// Kurs-Ranking: Best-of pro User, gefiltert nach KursId
+export function getKursRanking(kursId: string): { username: string; score: number; szenen: number; besteProzent: number }[] {
+  const all = getAllSceneResults().filter(r => r.kursId === kursId)
+  const userMap = new Map<string, SceneResult[]>()
+  all.forEach(r => {
+    const list = userMap.get(r.username) ?? []
+    list.push(r)
+    userMap.set(r.username, list)
+  })
+
+  const ranking: { username: string; score: number; szenen: number; besteProzent: number }[] = []
+  userMap.forEach((results, username) => {
+    const byScene = new Map<string, SceneResult>()
+    results.forEach(r => {
+      const existing = byScene.get(r.sceneId)
+      if (!existing || r.punkte > existing.punkte) byScene.set(r.sceneId, r)
+    })
+    const bests = Array.from(byScene.values())
+    const score = bests.reduce((s, r) => s + r.punkte, 0)
+    const avgProzent = bests.length > 0 ? Math.round(bests.reduce((s, r) => s + r.prozent, 0) / bests.length) : 0
+    ranking.push({ username, score, szenen: bests.length, besteProzent: avgProzent })
+  })
+
+  return ranking.sort((a, b) => b.score - a.score)
+}
+
 // Szene-Ranking: alle Versuche einer Szene, sortiert nach Punkten
 export function getSzeneRanking(sceneId: string): SceneResult[] {
   // Pro User nur das beste Resultat
