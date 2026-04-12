@@ -613,13 +613,15 @@ export function ml(text: MultiLang, lang: string): string {
 }
 
 // Verortung eines Defizits fuer eine bestimmte Perspektive ermitteln
-// Prioritaet: verortungen[perspektivenId] > verortung > position (Legacy)
+// Bei aktiver Perspektive: NUR perspektivenspezifische Verortung (kein Fallback)
+// Bei Haupt-Panorama (null): verortung als Fallback
 export function getVerortungFuerPerspektive(
   deficit: AppDeficit,
   perspektivenId: string | null,
 ): DefizitVerortung | null {
-  if (perspektivenId && deficit.verortungen?.[perspektivenId]) {
-    return deficit.verortungen[perspektivenId]
+  if (perspektivenId) {
+    // Nur die perspektivenspezifische Verortung — kein Fallback auf Haupt
+    return deficit.verortungen?.[perspektivenId] ?? null
   }
   return deficit.verortung ?? null
 }

@@ -144,9 +144,11 @@ export default function BildEditor({ scene, deficits, onSave, onClose, initialDe
   }
 
   // ── Aktive Verortung für ein Defizit holen ──
+  // Bei aktiver Perspektive: NUR die perspektivenspezifische Verortung zeigen
+  // KEIN Fallback auf Haupt-Verortung (sonst verwechselt man die Positionen)
   function getAktiveVerortung(d: AppDeficit): DefizitVerortung | null | undefined {
-    if (aktivePerspektiveId && d.verortungen?.[aktivePerspektiveId]) {
-      return d.verortungen[aktivePerspektiveId]
+    if (aktivePerspektiveId) {
+      return d.verortungen?.[aktivePerspektiveId] ?? null
     }
     return d.verortung
   }
@@ -173,9 +175,12 @@ export default function BildEditor({ scene, deficits, onSave, onClose, initialDe
 
     if (!verortungenSichtbar) return
 
-    // Startblick zeichnen
-    if (localScene.startblick) {
-      const { x, y } = sphericalToPixel(localScene.startblick, bildBreite, bildHoehe)
+    // Startblick zeichnen (perspektivenabhängig)
+    const aktStartblick = aktivePerspektiveId
+      ? (localScene.perspektiven ?? []).find(p => p.id === aktivePerspektiveId)?.startblick
+      : localScene.startblick
+    if (aktStartblick) {
+      const { x, y } = sphericalToPixel(aktStartblick, bildBreite, bildHoehe)
       const cx = (x / bildBreite) * cw
       const cy = (y / bildHoehe) * ch
       drawFadenkreuz(ctx, cx, cy, '#0076BD')
@@ -334,7 +339,17 @@ export default function BildEditor({ scene, deficits, onSave, onClose, initialDe
     const coord = pixelToSpherical(x, y, bildBreite, bildHoehe)
 
     if (modus === 'startblick') {
-      setLocalScene(prev => ({ ...prev, startblick: coord }))
+      if (aktivePerspektiveId) {
+        // Startblick für die aktive Perspektive setzen
+        setLocalScene(prev => ({
+          ...prev,
+          perspektiven: (prev.perspektiven ?? []).map(p =>
+            p.id === aktivePerspektiveId ? { ...p, startblick: coord } : p
+          ),
+        }))
+      } else {
+        setLocalScene(prev => ({ ...prev, startblick: coord }))
+      }
       setModus('idle')
     } else if (modus === 'punkt' && selectedDeficitId) {
       saveVerortung(selectedDeficitId, { typ: 'punkt', position: coord, toleranz })
@@ -777,26 +792,45 @@ export default function BildEditor({ scene, deficits, onSave, onClose, initialDe
               </div>
             )}
 
-            {/* Startblick-Anzeige */}
-            {localScene.startblick && (
-              <div style={{
-                padding: '8px 14px',
-                borderTop: '1px solid var(--zh-color-border)',
-                fontSize: '11px', color: 'var(--zh-color-text-muted)',
-              }}>
-                <span style={{ fontWeight: 700, color: '#0076BD' }}>Startblick:</span>{' '}
-                θ={Math.round(localScene.startblick.theta)}°, φ={Math.round(localScene.startblick.phi)}°
-                <button
-                  onClick={() => setLocalScene(prev => ({ ...prev, startblick: null }))}
-                  style={{
-                    marginLeft: '8px', background: 'none', border: 'none',
-                    cursor: 'pointer', color: '#D40053', fontSize: '11px',
-                  }}
-                >
-                  Entfernen
-                </button>
-              </div>
-            )}
+            {/* Startblick-Anzeige (perspektivenabhängig) */}
+            {(() => {
+              const aktStartblick = aktivePerspektiveId
+                ? (localScene.perspektiven ?? []).find(p => p.id === aktivePerspektiveId)?.startblick
+                : localScene.startblick
+              if (!aktStartblick) return null
+              return (
+                <div style={{
+                  padding: '8px 14px',
+                  borderTop: '1px solid var(--zh-color-border)',
+                  fontSize: '11px', color: 'var(--zh-color-text-muted)',
+                }}>
+                  <span style={{ fontWeight: 700, color: '#0076BD' }}>
+                    Startblick{aktivePerspektiveId ? ` (${aktivePerspektive?.label ?? 'Perspektive'})` : ''}:
+                  </span>{' '}
+                  θ={Math.round(aktStartblick.theta)}°, φ={Math.round(aktStartblick.phi)}°
+                  <button
+                    onClick={() => {
+                      if (aktivePerspektiveId) {
+                        setLocalScene(prev => ({
+                          ...prev,
+                          perspektiven: (prev.perspektiven ?? []).map(p =>
+                            p.id === aktivePerspektiveId ? { ...p, startblick: null } : p
+                          ),
+                        }))
+                      } else {
+                        setLocalScene(prev => ({ ...prev, startblick: null }))
+                      }
+                    }}
+                    style={{
+                      marginLeft: '8px', background: 'none', border: 'none',
+                      cursor: 'pointer', color: '#D40053', fontSize: '11px',
+                    }}
+                  >
+                    Entfernen
+                  </button>
+                </div>
+              )
+            })()}
 
             {/* Verortungs-Detailbox */}
             {selectedDeficitId && (() => {

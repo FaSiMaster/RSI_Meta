@@ -767,8 +767,11 @@ export default function SceneViewer({
     const hit = deficits.find(d => {
       const verortung = getVerortungFuerPerspektive(d, aktivePerspektiveId)
       if (verortung) return trefferpruefung(clickPos, verortung)
-      if (!d.position) return false
-      return isInTolerance(clickPos, d.position, d.tolerance ?? 15)
+      // Legacy-Fallback nur bei Haupt-Panorama (keine Perspektive aktiv)
+      if (!aktivePerspektiveId && d.position) {
+        return isInTolerance(clickPos, d.position, d.tolerance ?? 15)
+      }
+      return false
     })
 
     if (!hit) {
