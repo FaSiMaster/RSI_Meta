@@ -702,10 +702,8 @@ export default function SceneViewer({
 
   // Perspektiven
   const perspektiven = scene.perspektiven ?? []
-  const hatPerspektiven = perspektiven.length > 0
-  const [aktivePerspektiveId, setAktivePerspektiveId] = useState<string | null>(
-    hatPerspektiven ? perspektiven[0].id : null
-  )
+  // Immer mit dem Haupt-Panorama starten — Perspektiven per Button wechseln
+  const [aktivePerspektiveId, setAktivePerspektiveId] = useState<string | null>(null)
   const aktivePerspektive = perspektiven.find(p => p.id === aktivePerspektiveId) ?? null
   const aktiveBildUrl = aktivePerspektive?.bildUrl ?? scene.panoramaBildUrl ?? scene.bildUrl
   const aktiveStartblick = aktivePerspektive?.startblick ?? scene.startblick
