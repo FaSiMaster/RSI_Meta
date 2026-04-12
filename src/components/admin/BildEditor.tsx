@@ -86,6 +86,15 @@ export default function BildEditor({ scene, deficits, onSave, onClose, initialDe
   // Flag: verhindert doppeltes Laden beim Mount
   const mountedRef = useRef(false)
 
+  // Drag & Drop State
+  type DragTarget =
+    | { type: 'startblick' }
+    | { type: 'punkt'; deficitId: string }
+    | { type: 'polygonPunkt'; deficitId: string; punktIndex: number }
+    | null
+  const [dragging, setDragging] = useState<DragTarget>(null)
+  const isDragging = useRef(false)
+
   // ── Refs ──
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const imgRef    = useRef<HTMLImageElement>(null)
@@ -316,6 +325,29 @@ export default function BildEditor({ scene, deficits, onSave, onClose, initialDe
     ctx.restore()
   }
 
+  // ── Maus-Position → sphärische Koordinaten ──
+  function mouseToCoord(e: React.MouseEvent<HTMLCanvasElement>): SphericalPos | null {
+    if (!bildGeladen || bildBreite === 0) return null
+    const canvas = canvasRef.current
+    if (!canvas) return null
+    const rect = canvas.getBoundingClientRect()
+    const x = (e.clientX - rect.left) * (bildBreite / rect.width)
+    const y = (e.clientY - rect.top)  * (bildHoehe  / rect.height)
+    return pixelToSpherical(x, y, bildBreite, bildHoehe)
+  }
+
+  // ── Treffer-Test: ist die Maus nahe genug an einem Punkt? ──
+  function hitTestPunkt(mouseX: number, mouseY: number, pos: SphericalPos, schwelle: number = 12): boolean {
+    const canvas = canvasRef.current
+    if (!canvas) return false
+    const { x, y } = sphericalToPixel(pos, bildBreite, bildHoehe)
+    const px = (x / bildBreite) * canvas.width
+    const py = (y / bildHoehe) * canvas.height
+    const dx = mouseX - px
+    const dy = mouseY - py
+    return Math.sqrt(dx * dx + dy * dy) <= schwelle
+  }
+
   // ── Verortung speichern (perspektivenabhängig) ──
   function saveVerortung(deficitId: string, neueVerortung: DefizitVerortung) {
     setLocalDeficits(prev => prev.map(d => {
@@ -327,20 +359,105 @@ export default function BildEditor({ scene, deficits, onSave, onClose, initialDe
     }))
   }
 
-  // ── Klick auf Canvas ──
-  function handleCanvasClick(e: React.MouseEvent<HTMLCanvasElement>) {
+  // ── MouseDown: Drag starten oder Modus-Aktion ──
+  function handleCanvasMouseDown(e: React.MouseEvent<HTMLCanvasElement>) {
     if (!bildGeladen || bildBreite === 0) return
     const canvas = canvasRef.current
     if (!canvas) return
-
     const rect = canvas.getBoundingClientRect()
-    const x = (e.clientX - rect.left) * (bildBreite / rect.width)
-    const y = (e.clientY - rect.top)  * (bildHoehe  / rect.height)
-    const coord = pixelToSpherical(x, y, bildBreite, bildHoehe)
+    const mx = e.clientX - rect.left
+    const my = e.clientY - rect.top
+
+    // Im idle-Modus: prüfen ob ein bestehender Punkt/Startblick angeklickt wird (Drag)
+    if (modus === 'idle') {
+      // Startblick ziehbar?
+      const aktStartblick = aktivePerspektiveId
+        ? (localScene.perspektiven ?? []).find(p => p.id === aktivePerspektiveId)?.startblick
+        : localScene.startblick
+      if (aktStartblick && hitTestPunkt(mx, my, aktStartblick, 16)) {
+        setDragging({ type: 'startblick' })
+        isDragging.current = false
+        return
+      }
+
+      // Defizit-Punkt ziehbar?
+      for (const d of localDeficits) {
+        const v = getAktiveVerortung(d)
+        if (v?.typ === 'punkt' && hitTestPunkt(mx, my, v.position)) {
+          setSelectedDeficitId(d.id)
+          setDragging({ type: 'punkt', deficitId: d.id })
+          isDragging.current = false
+          return
+        }
+        if (v?.typ === 'polygon') {
+          for (let pi = 0; pi < v.punkte.length; pi++) {
+            if (hitTestPunkt(mx, my, v.punkte[pi])) {
+              setSelectedDeficitId(d.id)
+              setDragging({ type: 'polygonPunkt', deficitId: d.id, punktIndex: pi })
+              isDragging.current = false
+              return
+            }
+          }
+        }
+      }
+    }
+  }
+
+  // ── MouseMove: Drag durchführen ──
+  function handleCanvasMouseMove(e: React.MouseEvent<HTMLCanvasElement>) {
+    if (!dragging) return
+    const coord = mouseToCoord(e)
+    if (!coord) return
+    isDragging.current = true
+
+    if (dragging.type === 'startblick') {
+      if (aktivePerspektiveId) {
+        setLocalScene(prev => ({
+          ...prev,
+          perspektiven: (prev.perspektiven ?? []).map(p =>
+            p.id === aktivePerspektiveId ? { ...p, startblick: coord } : p
+          ),
+        }))
+      } else {
+        setLocalScene(prev => ({ ...prev, startblick: coord }))
+      }
+    } else if (dragging.type === 'punkt') {
+      const neueVerortung: DefizitVerortung = { typ: 'punkt', position: coord, toleranz }
+      saveVerortung(dragging.deficitId, neueVerortung)
+    } else if (dragging.type === 'polygonPunkt') {
+      setLocalDeficits(prev => prev.map(d => {
+        if (d.id !== dragging.deficitId) return d
+        const v = getAktiveVerortung(d)
+        if (v?.typ !== 'polygon') return d
+        const neuePunkte = [...v.punkte]
+        neuePunkte[dragging.punktIndex] = coord
+        const neueVerortung: DefizitVerortung = { typ: 'polygon', punkte: neuePunkte, toleranz: v.toleranz }
+        if (aktivePerspektiveId) {
+          return { ...d, verortungen: { ...(d.verortungen ?? {}), [aktivePerspektiveId]: neueVerortung } }
+        }
+        return { ...d, verortung: neueVerortung }
+      }))
+    }
+  }
+
+  // ── MouseUp: Drag beenden oder Klick-Aktion ──
+  function handleCanvasMouseUp(e: React.MouseEvent<HTMLCanvasElement>) {
+    if (dragging) {
+      // War es ein echtes Drag oder nur ein Klick auf den Punkt?
+      if (!isDragging.current) {
+        // Nur angeklickt, kein Drag — Auswahl beibehalten
+      }
+      setDragging(null)
+      isDragging.current = false
+      return
+    }
+
+    // Kein Drag → normaler Klick (Modus-Aktionen)
+    const coord = mouseToCoord(e)
+    if (!coord) return
 
     if (modus === 'startblick') {
       if (aktivePerspektiveId) {
-        // Startblick für die aktive Perspektive setzen
         setLocalScene(prev => ({
           ...prev,
           perspektiven: (prev.perspektiven ?? []).map(p =>
@@ -638,7 +755,7 @@ export default function BildEditor({ scene, deficits, onSave, onClose, initialDe
               overflow: 'auto',
               background: '#111',
               position: 'relative',
-              cursor: modus !== 'idle' ? 'crosshair' : 'default',
+              cursor: dragging ? 'grabbing' : modus !== 'idle' ? 'crosshair' : 'default',
             }}
           >
             {!bildGeladen && !bildFehler && (
@@ -661,23 +778,37 @@ export default function BildEditor({ scene, deficits, onSave, onClose, initialDe
             )}
             <canvas
               ref={canvasRef}
-              style={{ display: bildGeladen ? 'block' : 'none', maxWidth: '100%' }}
-              onClick={handleCanvasClick}
+              style={{ display: bildGeladen ? 'block' : 'none', maxWidth: '100%', cursor: dragging ? 'grabbing' : modus !== 'idle' ? 'crosshair' : 'default' }}
+              onMouseDown={handleCanvasMouseDown}
+              onMouseMove={handleCanvasMouseMove}
+              onMouseUp={handleCanvasMouseUp}
               onDoubleClick={handleCanvasDblClick}
             />
 
             {/* Modus-Hinweisleiste */}
-            {modus !== 'idle' && (
+            {(modus !== 'idle' || dragging) && (
               <div style={{
                 position: 'absolute', bottom: '12px', left: '50%', transform: 'translateX(-50%)',
-                background: 'rgba(0,64,124,0.9)', color: 'white',
+                background: dragging ? 'rgba(26,127,31,0.9)' : 'rgba(0,64,124,0.9)', color: 'white',
                 padding: '6px 16px', borderRadius: '6px', fontSize: '12px', fontWeight: 600,
                 pointerEvents: 'none',
               }}>
-                {modus === 'startblick' && 'Ins Bild klicken → Startblick setzen'}
-                {modus === 'punkt'      && 'Ins Bild klicken → Punkt setzen'}
-                {modus === 'polygon'    && 'Klicken: Punkt hinzufügen | Doppelklick: Polygon schliessen'}
-                {modus === 'gruppe'     && 'Defizite in der Seitenleiste auswählen, dann «Gruppe erstellen»'}
+                {dragging && 'Ziehen zum Verschieben — loslassen zum Platzieren'}
+                {!dragging && modus === 'startblick' && 'Ins Bild klicken → Startblick setzen'}
+                {!dragging && modus === 'punkt'      && 'Ins Bild klicken → Punkt setzen'}
+                {!dragging && modus === 'polygon'    && 'Klicken: Punkt hinzufügen | Doppelklick: Polygon schliessen'}
+                {!dragging && modus === 'gruppe'     && 'Defizite in der Seitenleiste auswählen, dann «Gruppe erstellen»'}
+              </div>
+            )}
+            {/* Idle-Hinweis */}
+            {modus === 'idle' && !dragging && bildGeladen && (
+              <div style={{
+                position: 'absolute', bottom: '12px', left: '50%', transform: 'translateX(-50%)',
+                background: 'rgba(0,0,0,0.5)', color: 'rgba(255,255,255,0.6)',
+                padding: '4px 12px', borderRadius: '4px', fontSize: '11px',
+                pointerEvents: 'none',
+              }}>
+                Punkte und Startblick per Drag verschieben
               </div>
             )}
           </div>
