@@ -2,12 +2,13 @@
 // Views: landing | topics | scenes | einstieg | viewer | scoring | szenenabschluss | admin | ranking
 // FaSi Kanton Zürich · ZH Corporate Design
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { AnimatePresence, motion } from 'motion/react'
 import {
   getSession, saveSession, getDeficits, getAllScenes, saveRankingEntry,
+  saveSceneResult, getVersuchAnzahl, getGesamtScore,
 } from './data/appData'
-import type { AppTopic, AppScene, AppDeficit, FoundDeficit } from './data/appData'
+import type { AppTopic, AppScene, AppDeficit, FoundDeficit, DefizitResult, SceneResult } from './data/appData'
 
 import { xrStore } from './xrStore'
 import LandingPage     from './components/LandingPage'
@@ -49,6 +50,16 @@ export default function App() {
   const [pendingWichtigkeit, setPendingWichtigkeit] = useState<'gross' | 'mittel' | 'klein' | null>(null)
   const [pendingAbweichung,  setPendingAbweichung]  = useState<'gross' | 'mittel' | 'klein' | null>(null)
   const [pendingNacaSchwere, setPendingNacaSchwere]  = useState<'leicht' | 'mittel' | 'schwer' | null>(null)
+
+  // Zeiterfassung
+  const [sceneStartTime, setSceneStartTime] = useState<number>(0)
+  const deficitStartTime = useRef<number>(0)
+
+  // Defizit-Einzelresultate (für SceneResult)
+  const [defizitResults, setDefizitResults] = useState<DefizitResult[]>([])
+
+  // Letztes SceneResult (für SzenenAbschluss)
+  const [lastSceneResult, setLastSceneResult] = useState<SceneResult | null>(null)
 
   // Session + Theme beim Start laden
   useEffect(() => {
@@ -96,11 +107,13 @@ export default function App() {
     setHintActive(false)
     setSceneScore(0)
     setScoringDeficit(null)
+    setDefizitResults([])
     setView('einstieg')
   }
 
   // Einstieg bestaetigt → Viewer oeffnen
   function handleEinstiegStart() {
+    setSceneStartTime(Date.now())
     setView('viewer')
   }
 
@@ -112,6 +125,7 @@ export default function App() {
     setPendingWichtigkeit(payload.userWichtigkeit)
     setPendingAbweichung(payload.userAbweichung)
     setPendingNacaSchwere(payload.userNacaSchwere)
+    deficitStartTime.current = Date.now()
     // VR beenden damit der HTML-ScoringFlow sichtbar ist
     xrStore.getState().session?.end()
     setView('scoring')
@@ -132,34 +146,77 @@ export default function App() {
       hintPenalty:      pendingHintPenalty,
     }
 
+    // Defizit-Einzelresultat für SceneResult
+    const ca = scoringDeficit.correctAssessment
+    const defResult: DefizitResult = {
+      deficitId:          scoringDeficit.id,
+      kategorieRichtig:   pendingKatRichtig,
+      hintPenalty:        pendingHintPenalty,
+      punkteRoh:          rawPts,
+      punkteFinal:        finalPts,
+      dauerSekunden:      Math.round((Date.now() - deficitStartTime.current) / 1000),
+      wichtigkeitKorrekt: pendingWichtigkeit === ca.wichtigkeit,
+      abweichungKorrekt:  pendingAbweichung === ca.abweichung,
+      nacaKorrekt:        pendingNacaSchwere === ca.unfallschwere,
+    }
+
     const updatedFound = [...foundDeficits, entry]
     const updatedSceneScore = sceneScore + finalPts
-    const newTotalScore = score + finalPts
+    const updatedDefResults = [...defizitResults, defResult]
 
     setFoundDeficits(updatedFound)
     setSceneScore(updatedSceneScore)
-    setScore(newTotalScore)
+    setDefizitResults(updatedDefResults)
 
-    const session = getSession()
-    session.score = newTotalScore
-    saveSession(session)
-
+    // Gesamt-Score wird bei Szenenende als Best-of berechnet (nicht mehr kumulativ)
     setScoringDeficit(null)
     setView('viewer')
   }
 
   // ── Szene beenden (manuell oder alle gefunden) ─────────────────────────────
   function handleBeenden() {
-    if (!currentScene) return
+    if (!currentScene || !currentTopic) return
+
+    const dauerSekunden = Math.round((Date.now() - sceneStartTime) / 1000)
+    const maxPunkte = sceneDeficits.length * 363 // Max pro Defizit (STEP_WEIGHTS Summe × 25)
+    const prozent = maxPunkte > 0 ? Math.round((sceneScore / maxPunkte) * 100) : 0
+    const versuch = getVersuchAnzahl(username, currentScene.id) + 1
+
+    // SceneResult speichern
+    const result: SceneResult = {
+      id:             `sr-${Date.now()}`,
+      sceneId:        currentScene.id,
+      topicId:        currentTopic.id,
+      username,
+      punkte:         sceneScore,
+      maxPunkte,
+      prozent,
+      gefunden:       foundDeficits.length,
+      total:          sceneDeficits.length,
+      versuch,
+      timestamp:      new Date().toISOString(),
+      dauerSekunden,
+      kursId:         kursId ?? null,
+      defizitResults: defizitResults,
+    }
+    saveSceneResult(result)
+    setLastSceneResult(result)
+
+    // Gesamt-Score als Best-of aktualisieren
+    const bestOfTotal = getGesamtScore(username)
+    setScore(bestOfTotal)
 
     const session = getSession()
+    session.score = bestOfTotal
     if (!session.completedScenes.includes(currentScene.id)) {
       session.completedScenes.push(currentScene.id)
-      saveSession(session)
     }
+    saveSession(session)
+
+    // Legacy-Ranking ebenfalls aktualisieren (Rückwärtskompatibilität)
     saveRankingEntry({
       username,
-      score,
+      score: bestOfTotal,
       scenesCount: session.completedScenes.length,
       timestamp: new Date().toISOString(),
       kursId: kursId ?? null,
@@ -241,7 +298,7 @@ export default function App() {
 
           {view === 'scenes' && currentTopic && (
             <motion.div key="scenes" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} transition={{ duration: 0.2 }} className="flex-1 flex flex-col">
-              <SceneList topic={currentTopic} onBack={() => setView('topics')} onSelectScene={handleSelectScene} />
+              <SceneList topic={currentTopic} username={username} onBack={() => setView('topics')} onSelectScene={handleSelectScene} />
             </motion.div>
           )}
 
@@ -301,6 +358,8 @@ export default function App() {
                 foundDeficits={foundDeficits}
                 sceneScore={sceneScore}
                 totalScore={score}
+                sceneResult={lastSceneResult}
+                username={username}
                 onToTopics={() => { setCurrentScene(null); setView('topics') }}
                 onToRanking={() => setView('ranking')}
                 onNextScene={nextSceneExists ? handleNextScene : null}

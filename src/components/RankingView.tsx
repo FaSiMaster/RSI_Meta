@@ -1,19 +1,26 @@
-// RankingView – 3 Tabs: Ewige Rangliste | Kurs-Rangliste | Tagesrangliste
-// Jeder Tab mit eigenem Filter und Tabelle
+// RankingView – 3-Ebenen-Ranking: Gesamt | Thema | Szene
+// Gesamt = Summe bester Resultate pro Szene
+// Thema = Best-of pro Topic
+// Szene = Alle Versuche einer Szene
 
-import { Trophy, ArrowLeft } from 'lucide-react'
-import { getRankingGesamt, getRankingByKurs, getRankingByStunde, getKurse, type RankingEntry, type Kurs } from '../data/appData'
+import { Trophy, ArrowLeft, Clock } from 'lucide-react'
+import {
+  getGesamtRanking, getThemaRanking, getSzeneRanking,
+  getTopics, getAllScenes, berechneSterne, ml,
+  type AppTopic, type AppScene, type SceneResult,
+} from '../data/appData'
 import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
+import { SterneAnzeige } from './SceneList'
 
 interface Props {
   username: string
   onBack: () => void
 }
 
-type RankingTab = 'ewig' | 'kurs' | 'tag'
+type RankingTab = 'gesamt' | 'thema' | 'szene'
 
-// Rang-Anzeige ohne Emojis
+// Rang-Anzeige
 function RangCell({ idx }: { idx: number }) {
   if (idx === 0) return <span style={{ fontWeight: 800, color: '#B87300' }}>1.</span>
   if (idx === 1) return <span style={{ fontWeight: 800, color: '#6B7280' }}>2.</span>
@@ -21,144 +28,66 @@ function RangCell({ idx }: { idx: number }) {
   return <span>#{idx + 1}</span>
 }
 
-// Gemeinsame Tabellenstruktur
-function RankingTable({
-  entries,
-  username,
-  columns,
-  emptyLabel,
-}: {
-  entries: RankingEntry[]
-  username: string
-  columns: { key: string; label: string; align?: 'left' | 'right' }[]
-  emptyLabel: string
-}) {
-  const { t } = useTranslation()
-  const ownIdx = entries.findIndex(e => e.username === username)
-
-  return (
-    <div style={{ borderRadius: 'var(--zh-radius-card)', border: '1px solid var(--zh-color-border)', background: 'var(--zh-color-surface)', overflow: 'hidden', boxShadow: 'var(--zh-shadow-sm)' }}>
-      <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-        <thead>
-          <tr style={{ borderBottom: '1px solid var(--zh-color-border)', background: 'var(--zh-color-bg-secondary)' }}>
-            <th style={{ padding: '12px 20px', fontSize: '11px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.14em', color: 'var(--zh-color-text-muted)', textAlign: 'left' }}>
-              {t('ranking.rank')}
-            </th>
-            {columns.map(col => (
-              <th key={col.key} style={{ padding: '12px 20px', fontSize: '11px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.14em', color: 'var(--zh-color-text-muted)', textAlign: col.align ?? 'left' }}>
-                {col.label}
-              </th>
-            ))}
-          </tr>
-        </thead>
-        <tbody>
-          {entries.map((entry, idx) => {
-            const isOwn = idx === ownIdx
-            return (
-              <tr key={`${entry.id ?? entry.username}-${idx}`}
-                style={{ borderBottom: '1px solid var(--zh-color-border)', background: isOwn ? 'rgba(0,118,189,0.08)' : 'transparent' }}>
-                <td style={{ padding: '14px 20px', fontFamily: 'monospace', fontSize: '14px', color: 'var(--zh-color-text-muted)', fontWeight: isOwn ? 700 : 400 }}>
-                  <RangCell idx={idx} />
-                </td>
-                {columns.map(col => {
-                  if (col.key === 'username') return (
-                    <td key={col.key} style={{ padding: '14px 20px', fontSize: '14px', fontWeight: isOwn ? 700 : 500, color: isOwn ? 'var(--zh-color-accent)' : 'var(--zh-color-text)', textAlign: col.align ?? 'left' }}>
-                      {entry.username}
-                      {isOwn && <span style={{ marginLeft: '8px', fontSize: '10px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.12em', color: 'var(--zh-color-accent)', opacity: 0.7 }}>(Sie)</span>}
-                    </td>
-                  )
-                  if (col.key === 'score') return (
-                    <td key={col.key} style={{ padding: '14px 20px', fontSize: '15px', fontWeight: 800, color: 'var(--zh-color-accent)', textAlign: col.align ?? 'right' }}>
-                      {entry.score.toLocaleString('de-CH')}
-                    </td>
-                  )
-                  if (col.key === 'scenesCount') return (
-                    <td key={col.key} style={{ padding: '14px 20px', fontSize: '14px', color: 'var(--zh-color-text-muted)', textAlign: col.align ?? 'right' }}>
-                      {entry.scenesCount}
-                    </td>
-                  )
-                  if (col.key === 'datum') return (
-                    <td key={col.key} style={{ padding: '14px 20px', fontSize: '13px', color: 'var(--zh-color-text-muted)', textAlign: col.align ?? 'left' }}>
-                      {new Date(entry.timestamp).toLocaleDateString('de-CH')}
-                    </td>
-                  )
-                  if (col.key === 'zeit') return (
-                    <td key={col.key} style={{ padding: '14px 20px', fontSize: '13px', color: 'var(--zh-color-text-muted)', textAlign: col.align ?? 'left' }}>
-                      {new Date(entry.timestamp).toLocaleTimeString('de-CH', { hour: '2-digit', minute: '2-digit' })}
-                    </td>
-                  )
-                  return <td key={col.key} />
-                })}
-              </tr>
-            )
-          })}
-          {entries.length === 0 && (
-            <tr>
-              <td colSpan={columns.length + 1} style={{ padding: '32px 20px', textAlign: 'center', fontSize: '14px', color: 'var(--zh-color-text-disabled)' }}>
-                {emptyLabel}
-              </td>
-            </tr>
-          )}
-        </tbody>
-      </table>
-    </div>
-  )
+function formatDauer(sek: number): string {
+  const min = Math.floor(sek / 60)
+  const s = sek % 60
+  if (min === 0) return `${s}s`
+  return `${min}m ${s}s`
 }
 
 export default function RankingView({ username, onBack }: Props) {
-  const { t } = useTranslation()
+  const { i18n } = useTranslation()
+  const lang = i18n.language
 
-  const [tab, setTab] = useState<RankingTab>('ewig')
+  const [tab, setTab] = useState<RankingTab>('gesamt')
+  const [topics, setTopics] = useState<AppTopic[]>([])
+  const [scenes, setScenes] = useState<AppScene[]>([])
+  const [selectedTopicId, setSelectedTopicId] = useState<string>('')
+  const [selectedSceneId, setSelectedSceneId] = useState<string>('')
 
-  // Ewige Rangliste
-  const [ewigEntries, setEwigEntries] = useState<RankingEntry[]>([])
-
-  // Kurs-Rangliste
-  const [kurse, setKurse] = useState<Kurs[]>([])
-  const [selectedKursId, setSelectedKursId] = useState<string>('')
-  const [kursCodeInput, setKursCodeInput] = useState('')
-  const [kursEntries, setKursEntries] = useState<RankingEntry[]>([])
-
-  // Tagesrangliste
-  const [selectedDate, setSelectedDate] = useState<string>(new Date().toISOString().slice(0, 10))
-  const [tagEntries, setTagEntries] = useState<RankingEntry[]>([])
+  // Ranking-Daten
+  const [gesamtData, setGesamtData] = useState<{ username: string; score: number; szenen: number; besteProzent: number }[]>([])
+  const [themaData, setThemaData] = useState<{ username: string; score: number; szenen: number; besteProzent: number }[]>([])
+  const [szeneData, setSzeneData] = useState<SceneResult[]>([])
 
   useEffect(() => {
-    setEwigEntries(getRankingGesamt())
-    setKurse(getKurse())
+    setTopics(getTopics().filter(t => t.isActive))
+    setScenes(getAllScenes().filter(s => s.isActive))
+    setGesamtData(getGesamtRanking())
   }, [])
 
   useEffect(() => {
-    if (selectedKursId) {
-      setKursEntries(getRankingByKurs(selectedKursId))
-    } else if (kursCodeInput.trim()) {
-      const found = kurse.find(k => k.zugangscode === kursCodeInput.trim())
-      if (found) setKursEntries(getRankingByKurs(found.id))
-      else setKursEntries([])
+    if (selectedTopicId) {
+      setThemaData(getThemaRanking(selectedTopicId))
     } else {
-      setKursEntries([])
+      setThemaData([])
     }
-  }, [selectedKursId, kursCodeInput, kurse])
+  }, [selectedTopicId])
 
   useEffect(() => {
-    if (selectedDate) {
-      setTagEntries(getRankingByStunde(selectedDate))
+    if (selectedSceneId) {
+      setSzeneData(getSzeneRanking(selectedSceneId))
+    } else {
+      setSzeneData([])
     }
-  }, [selectedDate])
+  }, [selectedSceneId])
 
-  // Tab-Pill-Style
   function pillStyle(isActive: boolean): React.CSSProperties {
     return {
-      padding: '6px 16px',
-      borderRadius: '20px',
-      fontSize: '13px',
-      fontWeight: 600,
-      cursor: 'pointer',
+      padding: '6px 16px', borderRadius: '20px',
+      fontSize: '13px', fontWeight: 600, cursor: 'pointer',
       border: isActive ? 'none' : '1px solid var(--zh-color-border)',
       background: isActive ? 'var(--zh-dunkelblau)' : 'transparent',
       color: isActive ? 'white' : 'var(--zh-color-text-muted)',
       fontFamily: 'var(--zh-font)',
     }
+  }
+
+  const selectStyle: React.CSSProperties = {
+    width: '100%', padding: '9px 12px', borderRadius: '8px',
+    border: '1px solid var(--zh-color-border)',
+    background: 'var(--zh-color-bg-secondary)',
+    color: 'var(--zh-color-text)', fontSize: '13px', fontFamily: 'var(--zh-font)',
   }
 
   return (
@@ -167,105 +96,157 @@ export default function RankingView({ username, onBack }: Props) {
       <div className="flex items-center justify-between mb-8">
         <h1 className="flex items-center gap-3 font-bold" style={{ fontSize: '24px', color: 'var(--zh-color-text)' }}>
           <Trophy style={{ color: 'var(--zh-orange)' }} size={24} />
-          {t('ranking.title')}
+          Rangliste
         </h1>
-        <button
-          onClick={onBack}
-          style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '14px', color: 'var(--zh-color-text-muted)', fontWeight: 500, background: 'none', border: 'none', cursor: 'pointer', padding: 0, fontFamily: 'var(--zh-font)' }}
-        >
-          <ArrowLeft size={15} /> {t('einstieg.zurueck')}
+        <button onClick={onBack}
+          style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '14px', color: 'var(--zh-color-text-muted)', fontWeight: 500, background: 'none', border: 'none', cursor: 'pointer', padding: 0, fontFamily: 'var(--zh-font)' }}>
+          <ArrowLeft size={15} /> Zurück
         </button>
       </div>
 
       {/* Tab-Pills */}
       <div style={{ display: 'flex', gap: '8px', marginBottom: '24px', flexWrap: 'wrap' }}>
-        <button style={pillStyle(tab === 'ewig')} onClick={() => setTab('ewig')}>{t('ranking.ewig')}</button>
-        <button style={pillStyle(tab === 'kurs')} onClick={() => setTab('kurs')}>{t('ranking.kurs')}</button>
-        <button style={pillStyle(tab === 'tag')} onClick={() => setTab('tag')}>{t('ranking.tag')}</button>
+        <button style={pillStyle(tab === 'gesamt')} onClick={() => setTab('gesamt')}>Gesamt</button>
+        <button style={pillStyle(tab === 'thema')} onClick={() => setTab('thema')}>Nach Thema</button>
+        <button style={pillStyle(tab === 'szene')} onClick={() => setTab('szene')}>Nach Szene</button>
       </div>
 
-      {/* ═══ TAB: EWIGE RANGLISTE ═══ */}
-      {tab === 'ewig' && (
-        <RankingTable
-          entries={ewigEntries}
-          username={username}
-          columns={[
-            { key: 'username', label: t('ranking.name') },
-            { key: 'score', label: t('ranking.score'), align: 'right' },
-            { key: 'scenesCount', label: t('ranking.scenes'), align: 'right' },
-            { key: 'datum', label: 'Datum' },
-          ]}
-          emptyLabel={t('ranking.leer')}
-        />
-      )}
-
-      {/* ═══ TAB: KURS-RANGLISTE ═══ */}
-      {tab === 'kurs' && (
-        <>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginBottom: '20px' }}>
-            <div>
-              <label style={{ fontSize: '11px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.12em', color: 'var(--zh-color-text-muted)', display: 'block', marginBottom: '6px' }}>
-                {t('ranking.kurs_waehlen')}
-              </label>
-              <select value={selectedKursId} onChange={e => { setSelectedKursId(e.target.value); setKursCodeInput('') }}
-                style={{ width: '100%', padding: '9px 12px', borderRadius: '8px', border: '1px solid var(--zh-color-border)', background: 'var(--zh-color-bg-secondary)', color: 'var(--zh-color-text)', fontSize: '13px', fontFamily: 'var(--zh-font)' }}>
-                <option value="">— {t('ranking.kurs_waehlen')} —</option>
-                {kurse.filter(k => k.isActive).map(k => (
-                  <option key={k.id} value={k.id}>{k.name} ({k.datum})</option>
+      {/* ═══ TAB: GESAMT ═══ */}
+      {tab === 'gesamt' && (
+        <div style={{ borderRadius: 'var(--zh-radius-card)', border: '1px solid var(--zh-color-border)', background: 'var(--zh-color-surface)', overflow: 'hidden', boxShadow: 'var(--zh-shadow-sm)' }}>
+          <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+            <thead>
+              <tr style={{ borderBottom: '1px solid var(--zh-color-border)', background: 'var(--zh-color-bg-secondary)' }}>
+                {['Rang', 'Name', 'Score', 'Szenen', 'Ø %'].map(h => (
+                  <th key={h} style={{ padding: '10px 16px', fontSize: '10px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.12em', color: 'var(--zh-color-text-muted)', textAlign: h === 'Name' ? 'left' : 'right' }}>
+                    {h}
+                  </th>
                 ))}
-              </select>
-            </div>
-            <div>
-              <label style={{ fontSize: '11px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.12em', color: 'var(--zh-color-text-muted)', display: 'block', marginBottom: '6px' }}>
-                {t('ranking.kurs_code')}
-              </label>
-              <input
-                type="text"
-                value={kursCodeInput}
-                onChange={e => { setKursCodeInput(e.target.value); setSelectedKursId('') }}
-                placeholder="FK-RSI-123456"
-                style={{ width: '100%', padding: '9px 12px', borderRadius: '8px', border: '1px solid var(--zh-color-border)', background: 'var(--zh-color-bg-secondary)', color: 'var(--zh-color-text)', fontSize: '13px', fontFamily: 'var(--zh-font)', boxSizing: 'border-box' }}
-              />
-            </div>
-          </div>
-          <RankingTable
-            entries={kursEntries}
-            username={username}
-            columns={[
-              { key: 'username', label: t('ranking.name') },
-              { key: 'score', label: t('ranking.score'), align: 'right' },
-              { key: 'scenesCount', label: t('ranking.scenes'), align: 'right' },
-            ]}
-            emptyLabel={t('ranking.leer')}
-          />
-        </>
+              </tr>
+            </thead>
+            <tbody>
+              {gesamtData.map((entry, idx) => {
+                const isOwn = entry.username === username
+                return (
+                  <tr key={entry.username} style={{ borderBottom: '1px solid var(--zh-color-border)', background: isOwn ? 'rgba(0,118,189,0.08)' : 'transparent' }}>
+                    <td style={{ padding: '12px 16px', fontSize: '14px', color: 'var(--zh-color-text-muted)', textAlign: 'right' }}><RangCell idx={idx} /></td>
+                    <td style={{ padding: '12px 16px', fontSize: '14px', fontWeight: isOwn ? 700 : 500, color: isOwn ? 'var(--zh-blau)' : 'var(--zh-color-text)', textAlign: 'left' }}>
+                      {entry.username}{isOwn && <span style={{ marginLeft: '6px', fontSize: '10px', fontWeight: 700, color: 'var(--zh-blau)', opacity: 0.7 }}>(Du)</span>}
+                    </td>
+                    <td style={{ padding: '12px 16px', fontSize: '15px', fontWeight: 800, color: 'var(--zh-blau)', textAlign: 'right' }}>{entry.score.toLocaleString('de-CH')}</td>
+                    <td style={{ padding: '12px 16px', fontSize: '13px', color: 'var(--zh-color-text-muted)', textAlign: 'right' }}>{entry.szenen}</td>
+                    <td style={{ padding: '12px 16px', fontSize: '13px', fontWeight: 700, color: entry.besteProzent >= 90 ? '#1A7F1F' : entry.besteProzent >= 60 ? '#B87300' : 'var(--zh-color-text-muted)', textAlign: 'right' }}>{entry.besteProzent}%</td>
+                  </tr>
+                )
+              })}
+              {gesamtData.length === 0 && (
+                <tr><td colSpan={5} style={{ padding: '32px', textAlign: 'center', color: 'var(--zh-color-text-disabled)', fontSize: '13px' }}>Noch keine Resultate vorhanden.</td></tr>
+              )}
+            </tbody>
+          </table>
+        </div>
       )}
 
-      {/* ═══ TAB: TAGESRANGLISTE ═══ */}
-      {tab === 'tag' && (
+      {/* ═══ TAB: THEMA ═══ */}
+      {tab === 'thema' && (
         <>
           <div style={{ marginBottom: '20px' }}>
             <label style={{ fontSize: '11px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.12em', color: 'var(--zh-color-text-muted)', display: 'block', marginBottom: '6px' }}>
-              {t('ranking.tag_waehlen')}
+              Thema wählen
             </label>
-            <input
-              type="date"
-              value={selectedDate}
-              onChange={e => setSelectedDate(e.target.value)}
-              style={{ padding: '9px 12px', borderRadius: '8px', border: '1px solid var(--zh-color-border)', background: 'var(--zh-color-bg-secondary)', color: 'var(--zh-color-text)', fontSize: '13px', fontFamily: 'var(--zh-font)' }}
-            />
+            <select value={selectedTopicId} onChange={e => setSelectedTopicId(e.target.value)} style={selectStyle}>
+              <option value="">— Thema wählen —</option>
+              {topics.map(t => (
+                <option key={t.id} value={t.id}>{ml(t.nameI18n, lang)}</option>
+              ))}
+            </select>
           </div>
-          <RankingTable
-            entries={tagEntries}
-            username={username}
-            columns={[
-              { key: 'username', label: t('ranking.name') },
-              { key: 'score', label: t('ranking.score'), align: 'right' },
-              { key: 'scenesCount', label: t('ranking.scenes'), align: 'right' },
-              { key: 'zeit', label: 'Zeit' },
-            ]}
-            emptyLabel={t('ranking.leer')}
-          />
+
+          {selectedTopicId && (
+            <div style={{ borderRadius: 'var(--zh-radius-card)', border: '1px solid var(--zh-color-border)', background: 'var(--zh-color-surface)', overflow: 'hidden' }}>
+              <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+                <thead>
+                  <tr style={{ borderBottom: '1px solid var(--zh-color-border)', background: 'var(--zh-color-bg-secondary)' }}>
+                    {['Rang', 'Name', 'Score', 'Szenen', 'Ø %'].map(h => (
+                      <th key={h} style={{ padding: '10px 16px', fontSize: '10px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.12em', color: 'var(--zh-color-text-muted)', textAlign: h === 'Name' ? 'left' : 'right' }}>{h}</th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody>
+                  {themaData.map((entry, idx) => {
+                    const isOwn = entry.username === username
+                    return (
+                      <tr key={entry.username} style={{ borderBottom: '1px solid var(--zh-color-border)', background: isOwn ? 'rgba(0,118,189,0.08)' : 'transparent' }}>
+                        <td style={{ padding: '12px 16px', textAlign: 'right' }}><RangCell idx={idx} /></td>
+                        <td style={{ padding: '12px 16px', fontWeight: isOwn ? 700 : 500, color: isOwn ? 'var(--zh-blau)' : 'var(--zh-color-text)', textAlign: 'left' }}>{entry.username}</td>
+                        <td style={{ padding: '12px 16px', fontWeight: 800, color: 'var(--zh-blau)', textAlign: 'right' }}>{entry.score.toLocaleString('de-CH')}</td>
+                        <td style={{ padding: '12px 16px', color: 'var(--zh-color-text-muted)', textAlign: 'right' }}>{entry.szenen}</td>
+                        <td style={{ padding: '12px 16px', fontWeight: 700, color: entry.besteProzent >= 90 ? '#1A7F1F' : '#B87300', textAlign: 'right' }}>{entry.besteProzent}%</td>
+                      </tr>
+                    )
+                  })}
+                  {themaData.length === 0 && (
+                    <tr><td colSpan={5} style={{ padding: '32px', textAlign: 'center', color: 'var(--zh-color-text-disabled)', fontSize: '13px' }}>Keine Resultate für dieses Thema.</td></tr>
+                  )}
+                </tbody>
+              </table>
+            </div>
+          )}
+        </>
+      )}
+
+      {/* ═══ TAB: SZENE ═══ */}
+      {tab === 'szene' && (
+        <>
+          <div style={{ marginBottom: '20px' }}>
+            <label style={{ fontSize: '11px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.12em', color: 'var(--zh-color-text-muted)', display: 'block', marginBottom: '6px' }}>
+              Szene wählen
+            </label>
+            <select value={selectedSceneId} onChange={e => setSelectedSceneId(e.target.value)} style={selectStyle}>
+              <option value="">— Szene wählen —</option>
+              {scenes.map(s => (
+                <option key={s.id} value={s.id}>{ml(s.nameI18n, lang)}</option>
+              ))}
+            </select>
+          </div>
+
+          {selectedSceneId && (
+            <div style={{ borderRadius: 'var(--zh-radius-card)', border: '1px solid var(--zh-color-border)', background: 'var(--zh-color-surface)', overflow: 'hidden' }}>
+              <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+                <thead>
+                  <tr style={{ borderBottom: '1px solid var(--zh-color-border)', background: 'var(--zh-color-bg-secondary)' }}>
+                    {['Rang', 'Name', 'Punkte', '%', 'Gefunden', 'Dauer', 'Sterne'].map(h => (
+                      <th key={h} style={{ padding: '10px 12px', fontSize: '10px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.1em', color: 'var(--zh-color-text-muted)', textAlign: h === 'Name' ? 'left' : 'right' }}>{h}</th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody>
+                  {szeneData.map((r, idx) => {
+                    const isOwn = r.username === username
+                    return (
+                      <tr key={r.id} style={{ borderBottom: '1px solid var(--zh-color-border)', background: isOwn ? 'rgba(0,118,189,0.08)' : 'transparent' }}>
+                        <td style={{ padding: '10px 12px', textAlign: 'right' }}><RangCell idx={idx} /></td>
+                        <td style={{ padding: '10px 12px', fontWeight: isOwn ? 700 : 500, color: isOwn ? 'var(--zh-blau)' : 'var(--zh-color-text)', textAlign: 'left', fontSize: '13px' }}>{r.username}</td>
+                        <td style={{ padding: '10px 12px', fontWeight: 800, color: 'var(--zh-blau)', textAlign: 'right', fontSize: '14px' }}>{r.punkte.toLocaleString('de-CH')}</td>
+                        <td style={{ padding: '10px 12px', fontWeight: 700, color: r.prozent >= 90 ? '#1A7F1F' : r.prozent >= 60 ? '#B87300' : 'var(--zh-color-text-muted)', textAlign: 'right' }}>{r.prozent}%</td>
+                        <td style={{ padding: '10px 12px', color: 'var(--zh-color-text-muted)', textAlign: 'right' }}>{r.gefunden}/{r.total}</td>
+                        <td style={{ padding: '10px 12px', color: 'var(--zh-color-text-muted)', textAlign: 'right', fontSize: '12px' }}>
+                          <Clock size={11} style={{ display: 'inline', verticalAlign: '-1px', marginRight: '3px' }} />
+                          {formatDauer(r.dauerSekunden)}
+                        </td>
+                        <td style={{ padding: '10px 12px', textAlign: 'right' }}>
+                          <SterneAnzeige sterne={berechneSterne(r.prozent)} size={13} />
+                        </td>
+                      </tr>
+                    )
+                  })}
+                  {szeneData.length === 0 && (
+                    <tr><td colSpan={7} style={{ padding: '32px', textAlign: 'center', color: 'var(--zh-color-text-disabled)', fontSize: '13px' }}>Keine Resultate für diese Szene.</td></tr>
+                  )}
+                </tbody>
+              </table>
+            </div>
+          )}
         </>
       )}
     </div>

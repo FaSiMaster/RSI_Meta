@@ -118,6 +118,46 @@ export interface FoundDeficit {
   hintPenalty:      boolean
 }
 
+// ── Neues Punktesystem: SceneResult (Best-of) ──
+
+// Einzelnes Defizit-Resultat innerhalb eines Versuchs
+export interface DefizitResult {
+  deficitId:           string
+  kategorieRichtig:    boolean
+  hintPenalty:         boolean
+  punkteRoh:           number    // Vor Strafen
+  punkteFinal:         number    // Nach Strafen (Kategorie + Hint)
+  dauerSekunden:       number    // Zeit für diese Bewertung
+  wichtigkeitKorrekt:  boolean
+  abweichungKorrekt:   boolean
+  nacaKorrekt:         boolean
+}
+
+// Gesamtergebnis eines Szenen-Durchlaufs
+export interface SceneResult {
+  id:              string
+  sceneId:         string
+  topicId:         string
+  username:        string
+  punkte:          number       // Summe punkteFinal aller Defizite
+  maxPunkte:       number       // Maximale erreichbare Punkte
+  prozent:         number       // 0–100
+  gefunden:        number       // Anzahl gefundene Defizite
+  total:           number       // Anzahl Defizite in Szene
+  versuch:         number       // Versuchsnummer (1-basiert)
+  timestamp:       string       // ISO
+  dauerSekunden:   number       // Gesamtdauer der Szene
+  kursId:          string | null
+  defizitResults:  DefizitResult[]
+}
+
+// Sterne-Berechnung (1-3 basierend auf Prozent)
+export function berechneSterne(prozent: number): 1 | 2 | 3 {
+  if (prozent >= 90) return 3
+  if (prozent >= 60) return 2
+  return 1
+}
+
 // Laufende Szenen-Session (fuer Wiederherstellung bei Browser-Reload)
 export interface SceneSession {
   sceneId:       string
@@ -157,6 +197,7 @@ const K_RANKING       = 'rsi-v3-ranking'
 const K_INIT          = 'rsi-v3-init-v3'
 const K_SCENE_SESSION = 'rsi-v3-scene-session'
 const K_KURSE         = 'rsi-v3-kurse'
+const K_SCENE_RESULTS = 'rsi-v3-scene-results'
 
 // ── Platzhalter-Daten ──
 const DEFAULT_TOPICS: AppTopic[] = [
@@ -757,4 +798,138 @@ export function saveRankingEntry(entry: RankingEntry): void {
   }
 
   writeJSON(K_RANKING, list.sort((a, b) => b.score - a.score))
+}
+
+// ── SceneResults (Best-of Punktesystem) ──
+
+export function getAllSceneResults(): SceneResult[] {
+  return readJSON<SceneResult>(K_SCENE_RESULTS, [])
+}
+
+export function saveSceneResult(result: SceneResult): void {
+  const list = getAllSceneResults()
+  list.push(result)
+  writeJSON(K_SCENE_RESULTS, list)
+}
+
+// Alle Resultate eines Users für eine bestimmte Szene
+export function getSceneResultsForUser(username: string, sceneId: string): SceneResult[] {
+  return getAllSceneResults()
+    .filter(r => r.username === username && r.sceneId === sceneId)
+    .sort((a, b) => b.punkte - a.punkte)
+}
+
+// Bestes Resultat eines Users für eine Szene
+export function getBestResult(username: string, sceneId: string): SceneResult | null {
+  const results = getSceneResultsForUser(username, sceneId)
+  return results.length > 0 ? results[0] : null
+}
+
+// Anzahl Versuche eines Users für eine Szene
+export function getVersuchAnzahl(username: string, sceneId: string): number {
+  return getAllSceneResults().filter(r => r.username === username && r.sceneId === sceneId).length
+}
+
+// Bestes Resultat pro Szene für einen User (für Gesamt-Ranking)
+export function getBestResultsPerScene(username: string): SceneResult[] {
+  const all = getAllSceneResults().filter(r => r.username === username)
+  const byScene = new Map<string, SceneResult>()
+  all.forEach(r => {
+    const existing = byScene.get(r.sceneId)
+    if (!existing || r.punkte > existing.punkte) byScene.set(r.sceneId, r)
+  })
+  return Array.from(byScene.values())
+}
+
+// Gesamt-Score eines Users (Summe der besten Resultate pro Szene)
+export function getGesamtScore(username: string): number {
+  return getBestResultsPerScene(username).reduce((sum, r) => sum + r.punkte, 0)
+}
+
+// Gesamt-Ranking: alle User, sortiert nach Best-of-Summe
+export function getGesamtRanking(): { username: string; score: number; szenen: number; besteProzent: number }[] {
+  const all = getAllSceneResults()
+  const userMap = new Map<string, SceneResult[]>()
+  all.forEach(r => {
+    const list = userMap.get(r.username) ?? []
+    list.push(r)
+    userMap.set(r.username, list)
+  })
+
+  const ranking: { username: string; score: number; szenen: number; besteProzent: number }[] = []
+  userMap.forEach((results, username) => {
+    const byScene = new Map<string, SceneResult>()
+    results.forEach(r => {
+      const existing = byScene.get(r.sceneId)
+      if (!existing || r.punkte > existing.punkte) byScene.set(r.sceneId, r)
+    })
+    const bests = Array.from(byScene.values())
+    const score = bests.reduce((s, r) => s + r.punkte, 0)
+    const avgProzent = bests.length > 0 ? Math.round(bests.reduce((s, r) => s + r.prozent, 0) / bests.length) : 0
+    ranking.push({ username, score, szenen: bests.length, besteProzent: avgProzent })
+  })
+
+  return ranking.sort((a, b) => b.score - a.score)
+}
+
+// Thema-Ranking: beste Resultate pro User, gefiltert nach TopicId
+export function getThemaRanking(topicId: string): { username: string; score: number; szenen: number; besteProzent: number }[] {
+  const all = getAllSceneResults().filter(r => r.topicId === topicId)
+  const userMap = new Map<string, SceneResult[]>()
+  all.forEach(r => {
+    const list = userMap.get(r.username) ?? []
+    list.push(r)
+    userMap.set(r.username, list)
+  })
+
+  const ranking: { username: string; score: number; szenen: number; besteProzent: number }[] = []
+  userMap.forEach((results, username) => {
+    const byScene = new Map<string, SceneResult>()
+    results.forEach(r => {
+      const existing = byScene.get(r.sceneId)
+      if (!existing || r.punkte > existing.punkte) byScene.set(r.sceneId, r)
+    })
+    const bests = Array.from(byScene.values())
+    const score = bests.reduce((s, r) => s + r.punkte, 0)
+    const avgProzent = bests.length > 0 ? Math.round(bests.reduce((s, r) => s + r.prozent, 0) / bests.length) : 0
+    ranking.push({ username, score, szenen: bests.length, besteProzent: avgProzent })
+  })
+
+  return ranking.sort((a, b) => b.score - a.score)
+}
+
+// Szene-Ranking: alle Versuche einer Szene, sortiert nach Punkten
+export function getSzeneRanking(sceneId: string): SceneResult[] {
+  // Pro User nur das beste Resultat
+  const all = getAllSceneResults().filter(r => r.sceneId === sceneId)
+  const byUser = new Map<string, SceneResult>()
+  all.forEach(r => {
+    const existing = byUser.get(r.username)
+    if (!existing || r.punkte > existing.punkte) byUser.set(r.username, r)
+  })
+  return Array.from(byUser.values()).sort((a, b) => b.punkte - a.punkte)
+}
+
+// Admin: Durchschnittliche Erkennungszeit pro Defizit (für Schwierigkeitsgrad)
+export function getDefizitStatistik(deficitId: string): { anzahlVersuche: number; durchschnittZeit: number; erkennungsRate: number } {
+  const all = getAllSceneResults()
+  let versuche = 0
+  let totalZeit = 0
+  let gefunden = 0
+  all.forEach(r => {
+    const dr = r.defizitResults.find(d => d.deficitId === deficitId)
+    if (dr) {
+      versuche++
+      totalZeit += dr.dauerSekunden
+      if (dr.punkteFinal > 0) gefunden++
+    }
+  })
+  // Auch Szenen zählen wo das Defizit NICHT gefunden wurde
+  const szenenMitDefizit = new Set(getAllDeficits().filter(d => d.id === deficitId).map(d => d.sceneId))
+  const totalSzenenDurchlaeufe = all.filter(r => szenenMitDefizit.has(r.sceneId)).length
+  return {
+    anzahlVersuche: versuche,
+    durchschnittZeit: versuche > 0 ? Math.round(totalZeit / versuche) : 0,
+    erkennungsRate: totalSzenenDurchlaeufe > 0 ? Math.round((gefunden / totalSzenenDurchlaeufe) * 100) : 0,
+  }
 }
