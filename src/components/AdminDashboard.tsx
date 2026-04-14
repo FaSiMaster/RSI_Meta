@@ -19,6 +19,7 @@ import type { RSIDimension, NACADimension, ResultDimension } from '../types'
 import type { NacaRaw } from '../data/scoringEngine'
 import BildEditor from './admin/BildEditor'
 import BildUpload from './admin/BildUpload'
+import AdminRanking from './admin/AdminRanking'
 
 // ── Badge-Farben ──
 function riskBg(w: RSIDimension): { bg: string; color: string; label: string } {
@@ -133,7 +134,7 @@ function MLTextarea({ label, value, onChange }: { label: string; value: string; 
   )
 }
 
-type AdminTab = 'defizite' | 'themen' | 'kurse'
+type AdminTab = 'defizite' | 'themen' | 'kurse' | 'rangliste'
 type VorschauModus = 'kein' | 'panorama' | 'upload'
 
 function getVorschauModus(val: string | null | undefined): VorschauModus {
@@ -510,6 +511,7 @@ export default function AdminDashboard() {
             {tabPill('defizite', t('admin.deficits'))}
             {tabPill('themen', t('admin.topics'))}
             {tabPill('kurse', t('admin.kurse'))}
+            {tabPill('rangliste', t('admin.rangliste_titel'))}
           </div>
           <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
             {/* Feedback */}
@@ -784,6 +786,11 @@ export default function AdminDashboard() {
               </div>
             )}
           </>
+        )}
+
+        {/* ═══ TAB: RANGLISTE ═══ */}
+        {activeTab === 'rangliste' && (
+          <AdminRanking />
         )}
       </main>
 
