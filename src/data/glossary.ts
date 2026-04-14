@@ -1,4 +1,4 @@
-// glossary.ts – RSI-Fachglossar mit multilingualer Unterstuetzung
+// glossary.ts – RSI-Fachglossar mit multilingualer Unterstützung
 // Quelle: TBA-Fachkurs FK RSI V 16.09.2020, bfu-Bericht 73, VSS SN 641 723
 
 import type { MultiLang } from './appData'

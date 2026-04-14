@@ -269,7 +269,7 @@ export default function AdminDashboard() {
     if (!editingScene) return
     // vorschauBilder (Legacy) normalisieren
     const vorschauBilder = (editingScene.vorschauBilder ?? []).filter(s => s.trim().length > 0)
-    // Strassenmerkmale: FR/IT/EN mit DE-Wert vorbefuellen wenn leer
+    // Strassenmerkmale: FR/IT/EN mit DE-Wert vorbefüllen wenn leer
     const strassenmerkmale = (editingScene.strassenmerkmale ?? []).map(m => ({
       ...m,
       labelI18n: {

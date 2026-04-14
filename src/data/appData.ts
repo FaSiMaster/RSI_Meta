@@ -288,7 +288,7 @@ const DEFAULT_TOPICS: AppTopic[] = [
     "id": "tp-1774780651056",
     "nameI18n": { "de": "MIV", "fr": "", "it": "", "en": "" },
     "beschreibungI18n": {
-      "de": "Motorisierter Individualverkehr im Innerorts oder Aussertorts",
+      "de": "Motorisierter Individualverkehr im Innerorts oder Ausserorts",
       "fr": "", "it": "", "en": ""
     },
     "sortOrder": 4,

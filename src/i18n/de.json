@@ -1,7 +1,7 @@
 {
   "nav": {
     "dashboard": "Dashboard",
-    "ranking": "Ranking",
+    "ranking": "Rangliste",
     "admin": "Admin",
     "adminAccess": "Admin-Zugang"
   },
@@ -301,7 +301,20 @@
     "wie_wichtig": "Wie wichtig ist dieses Kriterium?",
     "wie_abweichung": "Wie stark weicht es von der Norm ab?",
     "wie_schwer": "Wie schwer wären die Verletzungen?",
-    "stell_dir_vor": "Stell dir vor, ein Unfall passiert genau hier."
+    "stell_dir_vor": "Stell dir vor, ein Unfall passiert genau hier.",
+    "dim_gross": "Gross",
+    "dim_mittel": "Mittel",
+    "dim_klein": "Klein",
+    "result_hoch": "Hoch",
+    "result_mittel": "Mittel",
+    "result_gering": "Gering",
+    "schwere_leicht": "Leicht",
+    "schwere_mittel": "Mittel",
+    "schwere_schwer": "Schwer",
+    "matrix_abweichung": "Abweichung",
+    "matrix_wichtigkeit": "Wichtigkeit",
+    "matrix_unfallschwere": "Unfallschwere",
+    "matrix_relevanz": "Relevanz SD"
   },
   "ranking": {
     "title": "Rangliste",

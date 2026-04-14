@@ -129,7 +129,7 @@ export default function BildUpload({ aktuelleUrl, onBildGeladen, maxBreite = 0 }
     ladeVorschau(pfad)
   }
 
-  // Seitenverhaeltnis-Warnung (mehr als 10% Abweichung von 2:1)
+  // Seitenverhältnis-Warnung (mehr als 10% Abweichung von 2:1)
   const seitenverhaeltnis = vorschauBreite > 0 && vorschauHoehe > 0
     ? vorschauBreite / vorschauHoehe
     : null

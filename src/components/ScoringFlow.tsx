@@ -26,16 +26,16 @@ function resultBg(v: ResultDimension): string {
   if (v === 'mittel') return 'rgba(184,115,0,0.10)'
   return 'rgba(26,127,31,0.10)'
 }
-function resultLabel(v: ResultDimension): string {
-  const map: Record<ResultDimension, string> = { hoch: 'Hoch', mittel: 'Mittel', gering: 'Gering' }
+function resultLabel(v: ResultDimension, t: (k: string) => string): string {
+  const map: Record<ResultDimension, string> = { hoch: t('scoring.result_hoch'), mittel: t('scoring.result_mittel'), gering: t('scoring.result_gering') }
   return map[v]
 }
-function dimLabel(v: RSIDimension): string {
-  const map: Record<RSIDimension, string> = { gross: 'Gross', mittel: 'Mittel', klein: 'Klein' }
+function dimLabel(v: RSIDimension, t: (k: string) => string): string {
+  const map: Record<RSIDimension, string> = { gross: t('scoring.dim_gross'), mittel: t('scoring.dim_mittel'), klein: t('scoring.dim_klein') }
   return map[v]
 }
-function nacaGruppeLabel(v: NACADimension): string {
-  const map: Record<NACADimension, string> = { leicht: 'Leicht', mittel: 'Mittel', schwer: 'Schwer' }
+function nacaGruppeLabel(v: NACADimension, t: (k: string) => string): string {
+  const map: Record<NACADimension, string> = { leicht: t('scoring.schwere_leicht'), mittel: t('scoring.schwere_mittel'), schwer: t('scoring.schwere_schwer') }
   return map[v]
 }
 
@@ -59,10 +59,15 @@ function CompactMatrix({ type, highlightRow, highlightCol, showIntersection, cor
   const cols = isR
     ? (['klein', 'mittel', 'gross'] as const)
     : (['leicht', 'mittel', 'schwer'] as const)
-  const rowLabels = isR ? ['Gross', 'Mittel', 'Klein'] : ['Hoch', 'Mittel', 'Gering']
-  const colLabels = isR ? ['Klein', 'Mittel', 'Gross'] : ['Leicht', 'Mittel', 'Schwer']
-  const xLabel    = isR ? 'Abweichung' : 'Unfallschwere'
-  const yLabel    = isR ? 'Wichtigkeit' : 'Relevanz SD'
+  const { t } = useTranslation()
+  const rowLabels = isR
+    ? [t('scoring.dim_gross'), t('scoring.dim_mittel'), t('scoring.dim_klein')]
+    : [t('scoring.result_hoch'), t('scoring.result_mittel'), t('scoring.result_gering')]
+  const colLabels = isR
+    ? [t('scoring.dim_klein'), t('scoring.dim_mittel'), t('scoring.dim_gross')]
+    : [t('scoring.schwere_leicht'), t('scoring.schwere_mittel'), t('scoring.schwere_schwer')]
+  const xLabel    = isR ? t('scoring.matrix_abweichung') : t('scoring.matrix_unfallschwere')
+  const yLabel    = isR ? t('scoring.matrix_wichtigkeit') : t('scoring.matrix_relevanz')
 
   function cellVal(row: string, col: string): ResultDimension {
     if (isR) return calcRelevanzSD(row as RSIDimension, col as RSIDimension)
@@ -170,7 +175,7 @@ function CompactMatrix({ type, highlightRow, highlightCol, showIntersection, cor
                       boxShadow: isIntersect ? `0 2px 10px ${resultColor(val)}44` : showCorrectMarker ? '0 2px 10px rgba(26,127,31,0.4)' : 'none',
                       position: 'relative',
                     }}>
-                      {resultLabel(val)}
+                      {resultLabel(val, t)}
                     </div>
                   )
                 })}
@@ -459,11 +464,11 @@ export default function ScoringFlow({ deficit, scene, onComplete, onBack, prefil
     const finalCorrect = unfallrisiko === ca.unfallrisiko
 
     const decisions: { label: string; user: string; correct: string; ok: boolean }[] = [
-      { label: t('scoring.phase_a'), user: wichtigkeit ? dimLabel(wichtigkeit) : '—', correct: dimLabel(ca.wichtigkeit), ok: wichtigkeit === ca.wichtigkeit },
-      { label: t('scoring.phase_b'), user: abweichung ? dimLabel(abweichung) : '—', correct: dimLabel(ca.abweichung), ok: abweichung === ca.abweichung },
-      { label: t('scoring.phase_c'), user: relevanzSD ? resultLabel(relevanzSD) : '—', correct: resultLabel(ca.relevanzSD), ok: relevanzSD === ca.relevanzSD },
-      { label: t('scoring.phase_d'), user: nacaSchwere ? nacaGruppeLabel(nacaSchwere) : '—', correct: nacaGruppeLabel(ca.unfallschwere), ok: nacaSchwere === ca.unfallschwere },
-      { label: t('scoring.unfallrisiko_titel'), user: unfallrisiko ? resultLabel(unfallrisiko) : '—', correct: resultLabel(ca.unfallrisiko), ok: finalCorrect },
+      { label: t('scoring.phase_a'), user: wichtigkeit ? dimLabel(wichtigkeit, t) : '—', correct: dimLabel(ca.wichtigkeit, t), ok: wichtigkeit === ca.wichtigkeit },
+      { label: t('scoring.phase_b'), user: abweichung ? dimLabel(abweichung, t) : '—', correct: dimLabel(ca.abweichung, t), ok: abweichung === ca.abweichung },
+      { label: t('scoring.phase_c'), user: relevanzSD ? resultLabel(relevanzSD, t) : '—', correct: resultLabel(ca.relevanzSD, t), ok: relevanzSD === ca.relevanzSD },
+      { label: t('scoring.phase_d'), user: nacaSchwere ? nacaGruppeLabel(nacaSchwere, t) : '—', correct: nacaGruppeLabel(ca.unfallschwere, t), ok: nacaSchwere === ca.unfallschwere },
+      { label: t('scoring.unfallrisiko_titel'), user: unfallrisiko ? resultLabel(unfallrisiko, t) : '—', correct: resultLabel(ca.unfallrisiko, t), ok: finalCorrect },
     ]
 
     const entscheidungsPts = [
@@ -503,7 +508,7 @@ export default function ScoringFlow({ deficit, scene, onComplete, onBack, prefil
                 {t(labelKey)}
               </p>
               <p style={{ fontSize: '18px', fontWeight: 900, color: resultColor(value as ResultDimension), margin: 0 }}>
-                {resultLabel(value as ResultDimension).toUpperCase()}
+                {resultLabel(value as ResultDimension, t).toUpperCase()}
               </p>
               {isUser && finalCorrect && (
                 <p style={{ fontSize: '11px', fontWeight: 700, color: '#1A7F1F', marginTop: '2px', margin: 0 }}>
@@ -693,7 +698,7 @@ export default function ScoringFlow({ deficit, scene, onComplete, onBack, prefil
                 {prefillWichtigkeit && (
                   <div style={{ padding: '6px 10px', borderRadius: '6px', background: 'rgba(0,118,189,0.06)', border: '1px solid rgba(0,118,189,0.18)', marginBottom: '10px' }}>
                     <p style={{ fontSize: '11px', color: 'var(--zh-color-text-muted)', margin: 0 }}>
-                      Gemäss Tabelle: <strong style={{ color: 'var(--zh-blau)' }}>{dimLabel(prefillWichtigkeit)}</strong>
+                      Gemäss Tabelle: <strong style={{ color: 'var(--zh-blau)' }}>{dimLabel(prefillWichtigkeit, t)}</strong>
                     </p>
                   </div>
                 )}
@@ -723,7 +728,7 @@ export default function ScoringFlow({ deficit, scene, onComplete, onBack, prefil
                             ? <CheckCircle2 size={14} style={{ color: '#1A7F1F' }} />
                             : <div style={{ width: '14px', height: '14px', borderRadius: '50%', border: '1.5px solid var(--zh-color-border)' }} />}
                         </span>
-                        {dimLabel(w)}
+                        {dimLabel(w, t)}
                       </button>
                     )
                   })}
@@ -790,7 +795,7 @@ export default function ScoringFlow({ deficit, scene, onComplete, onBack, prefil
                   Relevanz SD
                 </span>
                 <span style={{ fontSize: '16px', fontWeight: 900, color: resultColor(relevanzSD) }}>
-                  {resultLabel(relevanzSD)}
+                  {resultLabel(relevanzSD, t)}
                 </span>
                 <span style={{ fontSize: '10px', color: 'var(--zh-color-text-disabled)', marginLeft: 'auto' }}>auto</span>
               </motion.div>
@@ -871,7 +876,7 @@ export default function ScoringFlow({ deficit, scene, onComplete, onBack, prefil
                   Unfallrisiko
                 </span>
                 <span style={{ fontSize: '16px', fontWeight: 900, color: resultColor(unfallrisiko) }}>
-                  {resultLabel(unfallrisiko)}
+                  {resultLabel(unfallrisiko, t)}
                 </span>
                 <span style={{ fontSize: '10px', color: 'var(--zh-color-text-disabled)', marginLeft: 'auto' }}>auto</span>
               </motion.div>

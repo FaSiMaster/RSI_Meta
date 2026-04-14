@@ -1,6 +1,6 @@
-// TrainingEinstieg – Szenen-Einfuehrungsbildschirm vor dem SceneViewer
+// TrainingEinstieg – Szenen-Einführungsbildschirm vor dem SceneViewer
 // Zeigt Breadcrumb, Kontext-Badge, Vorschaubilder, Beschreibungstext,
-// Strassenmerkmale-Tabelle, Hinweis-Box und Start/Zurueck-Buttons
+// Strassenmerkmale-Tabelle, Hinweis-Box und Start/Zurück-Buttons
 
 import { Camera, Info } from 'lucide-react'
 import { useTranslation } from 'react-i18next'

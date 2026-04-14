@@ -3,6 +3,7 @@
 
 import { LayoutDashboard, BarChart3, Settings, Sun, Moon, Trophy } from 'lucide-react'
 import LanguageSwitcher from './LanguageSwitcher'
+import { useTranslation } from 'react-i18next'
 
 type View = 'topics' | 'scenes' | 'einstieg' | 'viewer' | 'scoring' | 'szenenabschluss' | 'admin' | 'ranking'
 
@@ -16,12 +17,13 @@ interface Props {
 }
 
 export default function Navbar({ view, username, score, theme, onNavigate, onToggleTheme }: Props) {
+  const { t } = useTranslation()
   const isDark = theme === 'dark'
 
   const navItems: { key: View; label: string; icon: React.ReactNode }[] = [
-    { key: 'topics',  label: 'Dashboard', icon: <LayoutDashboard size={15} /> },
-    { key: 'ranking', label: 'Rangliste',  icon: <BarChart3 size={15} />      },
-    { key: 'admin',   label: 'Admin',     icon: <Settings size={15} />        },
+    { key: 'topics',  label: t('nav.dashboard'), icon: <LayoutDashboard size={15} /> },
+    { key: 'ranking', label: t('nav.ranking'),   icon: <BarChart3 size={15} />      },
+    { key: 'admin',   label: t('nav.admin'),     icon: <Settings size={15} />        },
   ]
 
   function isActive(key: View) {
