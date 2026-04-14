@@ -95,6 +95,8 @@ export interface AppDeficit {
   verortung?: DefizitVerortung | null
   // Verortung pro Perspektive (Key = Perspektive.id)
   verortungen?: Record<string, DefizitVerortung> | null
+  // Optionale Lernkarten-Felder (befuellt im Admin)
+  erklaerungI18n?: MultiLang
 }
 
 export interface UserSession {
@@ -842,6 +844,26 @@ export function saveSceneResult(result: SceneResult): void {
   const list = getAllSceneResults()
   list.push(result)
   writeJSON(K_SCENE_RESULTS, list)
+
+  // Fire-and-forget: zusaetzlich nach Supabase schreiben (kein await, kein UI-Block)
+  import('../lib/supabase').then(({ supabase, setSupabaseStatus }) => {
+    if (!supabase) return
+    supabase.from('rsi_results').insert({
+      username:        result.username,
+      kurs_code:       result.kursId ?? null,
+      scene_id:        result.sceneId,
+      punkte:          result.punkte,
+      prozent:         result.prozent,
+      dauer_sekunden:  result.dauerSekunden,
+    }).then(({ error }) => {
+      if (error) {
+        console.warn('[RSI] Supabase insert fehlgeschlagen:', error.message)
+        setSupabaseStatus('offline')
+      } else {
+        setSupabaseStatus('live')
+      }
+    })
+  }).catch(() => { /* Supabase nicht verfuegbar */ })
 }
 
 // Alle Resultate eines Users für eine bestimmte Szene

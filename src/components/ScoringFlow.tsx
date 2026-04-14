@@ -7,6 +7,7 @@ import { useTranslation } from 'react-i18next'
 import { ArrowLeft, CheckCircle2, XCircle, ChevronDown, ChevronUp, Info, AlertTriangle } from 'lucide-react'
 import { motion, AnimatePresence } from 'motion/react'
 import { ml, type AppDeficit, type AppScene } from '../data/appData'
+import LernKarte from './LernKarte'
 import {
   WICHTIGKEIT_TABLE, NORMHIERARCHIE, ABWEICHUNG_KATEGORIEN,
   calcRelevanzSD, calcUnfallrisiko,
@@ -305,6 +306,7 @@ export default function ScoringFlow({ deficit, scene, onComplete, onBack, prefil
   const [abweichung, setAbweichung]   = useState<RSIDimension | null>(propA ?? null)
   const [nacaSchwere, setNacaSchwere] = useState<NACADimension | null>(propN ?? null)
   const [showResult, setShowResult]   = useState(hasPrefill)
+  const [showLernKarte, setShowLernKarte] = useState(false)
   const [showMethodik, setShowMethodik] = useState(false)
 
   // Abgeleitete Werte
@@ -634,9 +636,9 @@ export default function ScoringFlow({ deficit, scene, onComplete, onBack, prefil
           </div>
         )}
 
-        {/* Weiter-Button */}
+        {/* Weiter-Button → zeigt LernKarte */}
         <button
-          onClick={() => onComplete(pts)}
+          onClick={() => setShowLernKarte(true)}
           style={{
             width: '100%', padding: '12px 20px', marginTop: '16px',
             borderRadius: 'var(--zh-radius-btn)',
@@ -647,6 +649,18 @@ export default function ScoringFlow({ deficit, scene, onComplete, onBack, prefil
         >
           {t('scoring.weiter_suchen')} →
         </button>
+
+        {/* LernKarte-Overlay */}
+        {showLernKarte && (
+          <LernKarte
+            deficit={deficit}
+            kategorieRichtig={true}
+            wichtigkeitKorrekt={wichtigkeit === ca.wichtigkeit}
+            abweichungKorrekt={abweichung === ca.abweichung}
+            nacaKorrekt={nacaSchwere === ca.unfallschwere}
+            onWeiter={() => onComplete(pts)}
+          />
+        )}
       </motion.div>
     )
   }

@@ -194,6 +194,7 @@
     "back": "Back",
     "addNew": "New scene",
     "startBtn": "Start training",
+    "retryBtn": "Try again",
     "noDeficits": "No deficits defined"
   },
   "scoring": {
@@ -330,6 +331,19 @@
     "kurs_code": "Course code (optional)",
     "kurs_placeholder": "E.g. FK-RSI-123456",
     "kurs_ungueltig": "Course code not found"
+  },
+  "lernkarte": {
+    "titel": "Learning Card",
+    "normreferenz": "Norm Reference",
+    "bewertung": "Your Assessment",
+    "korrekt": "Correct",
+    "erklaerung": "Explanation",
+    "weiter": "Continue"
+  },
+  "status": {
+    "live": "Live",
+    "offline": "Local",
+    "laden": "Loading ranking..."
   },
   "upload": {
     "titel": "Load panorama",

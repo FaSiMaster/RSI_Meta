@@ -2,8 +2,10 @@
 // Links: Logo | Mitte: Nav-Links | Rechts: Score + Sprache + Dark-Toggle + Avatar
 
 import { LayoutDashboard, BarChart3, Settings, Sun, Moon, Trophy } from 'lucide-react'
+import { useState, useEffect } from 'react'
 import LanguageSwitcher from './LanguageSwitcher'
 import { useTranslation } from 'react-i18next'
+import { getSupabaseStatus, onStatusChange } from '../lib/supabase'
 
 type View = 'topics' | 'scenes' | 'einstieg' | 'viewer' | 'scoring' | 'szenenabschluss' | 'admin' | 'ranking'
 
@@ -19,6 +21,10 @@ interface Props {
 export default function Navbar({ view, username, score, theme, onNavigate, onToggleTheme }: Props) {
   const { t } = useTranslation()
   const isDark = theme === 'dark'
+
+  // Supabase Live-Indikator
+  const [sbStatus, setSbStatus] = useState(getSupabaseStatus())
+  useEffect(() => onStatusChange(() => setSbStatus(getSupabaseStatus())), [])
 
   const navItems: { key: View; label: string; icon: React.ReactNode }[] = [
     { key: 'topics',  label: t('nav.dashboard'), icon: <LayoutDashboard size={15} /> },
@@ -86,6 +92,12 @@ export default function Navbar({ view, username, score, theme, onNavigate, onTog
         <div style={{ display: 'flex', alignItems: 'center', gap: '6px', padding: '4px 12px', borderRadius: '20px', border: '1px solid var(--zh-color-accent)', background: isDark ? 'rgba(122,182,226,0.1)' : 'rgba(0,118,189,0.06)', color: 'var(--zh-color-accent)', fontSize: '13px', fontWeight: 700 }}>
           <Trophy size={12} />
           {score.toLocaleString('de-CH')} Pkt.
+        </div>
+
+        {/* Live-Indikator */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '5px', fontSize: '10px', fontWeight: 700, color: sbStatus === 'live' ? '#1A7F1F' : 'var(--zh-color-text-disabled)' }} title={sbStatus === 'live' ? 'Supabase Live' : 'Nur localStorage'}>
+          <span style={{ width: '7px', height: '7px', borderRadius: '50%', background: sbStatus === 'live' ? '#1A7F1F' : 'var(--zh-color-text-disabled)' }} />
+          {sbStatus === 'live' ? t('status.live') : t('status.offline')}
         </div>
 
         <LanguageSwitcher />

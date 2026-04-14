@@ -194,6 +194,7 @@
     "back": "Indietro",
     "addNew": "Nuova scena",
     "startBtn": "Avvia la formazione",
+    "retryBtn": "Riprova",
     "noDeficits": "Nessun deficit definito"
   },
   "scoring": {
@@ -330,6 +331,19 @@
     "kurs_code": "Codice corso (opzionale)",
     "kurs_placeholder": "Es. FK-RSI-123456",
     "kurs_ungueltig": "Codice corso non trovato"
+  },
+  "lernkarte": {
+    "titel": "Scheda di apprendimento",
+    "normreferenz": "Riferimento normativo",
+    "bewertung": "La tua valutazione",
+    "korrekt": "Corretto",
+    "erklaerung": "Spiegazione",
+    "weiter": "Avanti"
+  },
+  "status": {
+    "live": "Live",
+    "offline": "Locale",
+    "laden": "Caricamento classifica..."
   },
   "upload": {
     "titel": "Carica panorama",

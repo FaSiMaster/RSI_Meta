@@ -195,6 +195,7 @@
     "back": "Retour",
     "addNew": "Nouvelle scène",
     "startBtn": "Démarrer la formation",
+    "retryBtn": "Réessayer",
     "noDeficits": "Aucun déficit défini"
   },
   "scoring": {
@@ -331,6 +332,19 @@
     "kurs_code": "Code de cours (optionnel)",
     "kurs_placeholder": "Ex. FK-RSI-123456",
     "kurs_ungueltig": "Code de cours introuvable"
+  },
+  "lernkarte": {
+    "titel": "Fiche d'apprentissage",
+    "normreferenz": "Référence normative",
+    "bewertung": "Votre évaluation",
+    "korrekt": "Correct",
+    "erklaerung": "Explication",
+    "weiter": "Continuer"
+  },
+  "status": {
+    "live": "Live",
+    "offline": "Local",
+    "laden": "Chargement du classement..."
   },
   "upload": {
     "titel": "Charger le panorama",

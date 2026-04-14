@@ -419,6 +419,19 @@
     "kurs_placeholder": "z.B. FK-RSI-123456",
     "kurs_ungueltig": "Kurs-Code nicht gefunden"
   },
+  "lernkarte": {
+    "titel": "Lernkarte",
+    "normreferenz": "Normreferenz",
+    "bewertung": "Deine Bewertung",
+    "korrekt": "Korrekt",
+    "erklaerung": "Erklärung",
+    "weiter": "Weiter"
+  },
+  "status": {
+    "live": "Live",
+    "offline": "Lokal",
+    "laden": "Ranking wird geladen..."
+  },
   "upload": {
     "titel": "Panoramabild laden",
     "drag": "Panoramabild hierher ziehen",
