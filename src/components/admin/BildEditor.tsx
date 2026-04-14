@@ -23,6 +23,10 @@ const VERFUEGBARE_TEXTUREN = [
   'sc3.webp',
   'sc4.webp',
   '5.webp',
+  'cobblestone_street_night.webp',
+  'modern_buildings_night.webp',
+  'neuer_zollhof.webp',
+  'st_peters_square_night.webp',
 ]
 
 interface Props {
