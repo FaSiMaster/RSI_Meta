@@ -168,7 +168,11 @@
     "kein_bild": "Kein Bild",
     "kein_panorama_hinweis": "Zuerst ein Panoramabild für diese Szene hochladen.",
     "gespeichert_einstieg": "Einstiegsseite gespeichert.",
-    "mehrsprachen_hinweis": "Weitere Sprachen werden mit dem deutschen Text vorbefüllt."
+    "mehrsprachen_hinweis": "Weitere Sprachen werden mit dem deutschen Text vorbefüllt.",
+    "pin_titel": "Admin-Zugang",
+    "pin_hinweis": "PIN eingeben",
+    "pin_falsch": "PIN ist nicht korrekt.",
+    "pin_bestaetigen": "Anmelden"
   },
   "score": {
     "points": "Pkt."
@@ -180,6 +184,7 @@
     "feature1": "Interaktive Strassenszenen nach RSI-Methodik",
     "feature2": "Bewertungsmatrizen – Wichtigkeit × Abweichung × NACA",
     "feature3": "Persönliches Ranking und Fortschritt",
+    "subtitle": "Entwickeln Sie den geschulten Blick fuer das Wesentliche. Road Safety Inspection — immersiv.",
     "loginLabel": "Ihr Name",
     "startBtn": "Training starten",
     "systemOnline": "System online",
@@ -418,6 +423,9 @@
     "kurs_code": "Kurs-Code (optional)",
     "kurs_placeholder": "z.B. FK-RSI-123456",
     "kurs_ungueltig": "Kurs-Code nicht gefunden"
+  },
+  "datenschutz": {
+    "hinweis": "Ihr Name wird nur lokal gespeichert und anonymisiert ans Ranking übermittelt. Keine personenbezogenen Daten werden dauerhaft gespeichert."
   },
   "lernkarte": {
     "titel": "Lernkarte",

@@ -640,6 +640,16 @@ function writeJSON<T>(key: string, data: T[]): void {
   }
 }
 
+// SHA-256 Hash fuer Username (DSGVO: kein Klarname in Supabase)
+// Gibt die ersten 8 Hex-Zeichen zurueck (z.B. "a3f2b8c1")
+async function hashUsername(name: string): Promise<string> {
+  const encoder = new TextEncoder()
+  const data = encoder.encode(name.toLowerCase().trim())
+  const buffer = await crypto.subtle.digest('SHA-256', data)
+  const arr = Array.from(new Uint8Array(buffer))
+  return arr.map(b => b.toString(16).padStart(2, '0')).join('').slice(0, 8)
+}
+
 export function ml(text: MultiLang, lang: string): string {
   return text[lang as keyof MultiLang] ?? text.de
 }
@@ -846,10 +856,12 @@ export function saveSceneResult(result: SceneResult): void {
   writeJSON(K_SCENE_RESULTS, list)
 
   // Fire-and-forget: zusaetzlich nach Supabase schreiben (kein await, kein UI-Block)
-  import('../lib/supabase').then(({ supabase, setSupabaseStatus }) => {
+  // Username wird als SHA-256-Hash gespeichert (DSGVO: keine personenbezogenen Daten)
+  import('../lib/supabase').then(async ({ supabase, setSupabaseStatus }) => {
     if (!supabase) return
+    const hashedName = await hashUsername(result.username)
     supabase.from('rsi_results').insert({
-      username:        result.username,
+      username:        hashedName,
       kurs_code:       result.kursId ?? null,
       scene_id:        result.sceneId,
       punkte:          result.punkte,

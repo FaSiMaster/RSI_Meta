@@ -169,7 +169,11 @@
     "kein_bild": "Aucune image",
     "kein_panorama_hinweis": "Veuillez d'abord télécharger une image panoramique pour cette scène.",
     "gespeichert_einstieg": "Page d'introduction enregistrée.",
-    "mehrsprachen_hinweis": "Les autres langues seront préremplies avec le texte allemand."
+    "mehrsprachen_hinweis": "Les autres langues seront préremplies avec le texte allemand.",
+    "pin_titel": "Accès admin",
+    "pin_hinweis": "Saisir le PIN",
+    "pin_falsch": "Le PIN est incorrect.",
+    "pin_bestaetigen": "Se connecter"
   },
   "score": {
     "points": "pts"
@@ -332,6 +336,9 @@
     "kurs_code": "Code de cours (optionnel)",
     "kurs_placeholder": "Ex. FK-RSI-123456",
     "kurs_ungueltig": "Code de cours introuvable"
+  },
+  "datenschutz": {
+    "hinweis": "Votre nom est stocké localement et transmis de manière anonyme au classement. Aucune donnée personnelle n'est conservée."
   },
   "lernkarte": {
     "titel": "Fiche d'apprentissage",

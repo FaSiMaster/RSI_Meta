@@ -1,5 +1,6 @@
 // Navbar – 52px, ZH Corporate Design
-// Links: Logo | Mitte: Nav-Links | Rechts: Score + Sprache + Dark-Toggle + Avatar
+// Links: Logo | Mitte: Nav-Links | Rechts: Score + Live + Sprache + Dark-Toggle + Avatar
+// Admin-Link nur sichtbar wenn in dieser Session authentifiziert
 
 import { LayoutDashboard, BarChart3, Settings, Sun, Moon, Trophy } from 'lucide-react'
 import { useState, useEffect } from 'react'
@@ -26,10 +27,13 @@ export default function Navbar({ view, username, score, theme, onNavigate, onTog
   const [sbStatus, setSbStatus] = useState(getSupabaseStatus())
   useEffect(() => onStatusChange(() => setSbStatus(getSupabaseStatus())), [])
 
-  const navItems: { key: View; label: string; icon: React.ReactNode }[] = [
+  // Admin nur anzeigen wenn in dieser Session authentifiziert
+  const isAdminAuth = sessionStorage.getItem('rsi-admin-auth') === '1'
+
+  const navItems: { key: View; label: string; icon: React.ReactNode; hidden?: boolean }[] = [
     { key: 'topics',  label: t('nav.dashboard'), icon: <LayoutDashboard size={15} /> },
     { key: 'ranking', label: t('nav.ranking'),   icon: <BarChart3 size={15} />      },
-    { key: 'admin',   label: t('nav.admin'),     icon: <Settings size={15} />        },
+    { key: 'admin',   label: t('nav.admin'),     icon: <Settings size={15} />, hidden: !isAdminAuth },
   ]
 
   function isActive(key: View) {
@@ -69,7 +73,7 @@ export default function Navbar({ view, username, score, theme, onNavigate, onTog
 
       {/* Nav-Links */}
       <nav style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-        {navItems.map(({ key, label, icon }) => (
+        {navItems.filter(n => !n.hidden).map(({ key, label, icon }) => (
           <button
             key={key}
             onClick={() => onNavigate(key)}

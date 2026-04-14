@@ -168,7 +168,11 @@
     "kein_bild": "No image",
     "kein_panorama_hinweis": "Please upload a panorama image for this scene first.",
     "gespeichert_einstieg": "Introduction page saved.",
-    "mehrsprachen_hinweis": "Other languages will be pre-filled with the German text."
+    "mehrsprachen_hinweis": "Other languages will be pre-filled with the German text.",
+    "pin_titel": "Admin Access",
+    "pin_hinweis": "Enter PIN",
+    "pin_falsch": "PIN is incorrect.",
+    "pin_bestaetigen": "Sign in"
   },
   "score": {
     "points": "pts"
@@ -331,6 +335,9 @@
     "kurs_code": "Course code (optional)",
     "kurs_placeholder": "E.g. FK-RSI-123456",
     "kurs_ungueltig": "Course code not found"
+  },
+  "datenschutz": {
+    "hinweis": "Your name is stored locally only and transmitted anonymously to the ranking. No personal data is permanently stored."
   },
   "lernkarte": {
     "titel": "Learning Card",
