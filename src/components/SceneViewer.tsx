@@ -130,8 +130,12 @@ function StandortNavMarker({ position, label, onClick }: StandortNavMarkerProps)
         <circleGeometry args={[hovered ? 5 : 4, 32]} />
         <meshBasicMaterial color="#0076BD" transparent opacity={hovered ? 0.95 : 0.7} side={THREE.DoubleSide} depthTest={false} />
       </mesh>
-      {/* Ring */}
-      <mesh>
+      {/* Ring (auch klickbar) */}
+      <mesh
+        onClick={e => { e.stopPropagation(); onClick() }}
+        onPointerOver={() => setHovered(true)}
+        onPointerOut={() => setHovered(false)}
+      >
         <ringGeometry args={[hovered ? 5 : 4, hovered ? 6.5 : 5.5, 32]} />
         <meshBasicMaterial color="white" transparent opacity={0.9} side={THREE.DoubleSide} depthTest={false} />
       </mesh>

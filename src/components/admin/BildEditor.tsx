@@ -113,9 +113,13 @@ export default function BildEditor({ scene, deficits, onSave, onClose, initialDe
     mountedRef.current = true
   }, []) // eslint-disable-line react-hooks/exhaustive-deps
 
-  // ── Perspektivenwechsel: Bild laden (nur nach Mount) ──
+  // ── Perspektivenwechsel: Bild laden + Modus zuruecksetzen ──
   useEffect(() => {
     if (!mountedRef.current) return
+    // Standort-Modus aufräumen (sonst landet der nächste Klick auf der falschen Perspektive)
+    setModus('idle')
+    setStandortZielId(null)
+    setNavMarkerZiel(null)
     if (aktivePerspektive) {
       const url = aktivePerspektive.bildUrl
       if (url && imgRef.current) {
@@ -200,38 +204,40 @@ export default function BildEditor({ scene, deficits, onSave, onClose, initialDe
       drawFadenkreuz(ctx, cx, cy, '#0076BD')
     }
 
+    // Standort-/Nav-Diamant zeichnen (gemeinsame Funktion)
+    function drawDiamant(pos: SphericalPos, label: string, isZiel: boolean, farbe: string) {
+      if (!ctx) return
+      const { x, y } = sphericalToPixel(pos, bildBreite, bildHoehe)
+      const px = (x / bildBreite) * cw
+      const py = (y / bildHoehe) * ch
+      ctx.save()
+      const r = isZiel ? 12 : 10
+      ctx.beginPath()
+      ctx.moveTo(px, py - r)
+      ctx.lineTo(px + r, py)
+      ctx.lineTo(px, py + r)
+      ctx.lineTo(px - r, py)
+      ctx.closePath()
+      ctx.fillStyle = farbe
+      ctx.fill()
+      ctx.strokeStyle = isZiel ? '#F0A500' : 'white'
+      ctx.lineWidth = 2
+      ctx.stroke()
+      ctx.font = 'bold 11px sans-serif'
+      ctx.fillStyle = 'white'
+      ctx.strokeStyle = 'rgba(0,0,0,0.7)'
+      ctx.lineWidth = 3
+      ctx.textAlign = 'left'
+      ctx.strokeText(label, px + r + 6, py + 4)
+      ctx.fillText(label, px + r + 6, py + 4)
+      ctx.restore()
+    }
+
     // Standort-Positionen zeichnen (nur im Haupt-Panorama)
     if (!aktivePerspektiveId) {
       (localScene.perspektiven ?? []).forEach((p, i) => {
         if (!p.standortPosition) return
-        const { x, y } = sphericalToPixel(p.standortPosition, bildBreite, bildHoehe)
-        const px = (x / bildBreite) * cw
-        const py = (y / bildHoehe) * ch
-        const isZiel = p.id === standortZielId
-        ctx.save()
-        // Diamant
-        const r = isZiel ? 12 : 10
-        ctx.beginPath()
-        ctx.moveTo(px, py - r)
-        ctx.lineTo(px + r, py)
-        ctx.lineTo(px, py + r)
-        ctx.lineTo(px - r, py)
-        ctx.closePath()
-        ctx.fillStyle = '#0076BD'
-        ctx.fill()
-        ctx.strokeStyle = isZiel ? '#F0A500' : 'white'
-        ctx.lineWidth = 2
-        ctx.stroke()
-        // Label
-        ctx.font = 'bold 11px sans-serif'
-        ctx.fillStyle = 'white'
-        ctx.strokeStyle = 'rgba(0,0,0,0.7)'
-        ctx.lineWidth = 3
-        ctx.textAlign = 'left'
-        const label = p.label || `Standort ${i + 1}`
-        ctx.strokeText(label, px + r + 6, py + 4)
-        ctx.fillText(label, px + r + 6, py + 4)
-        ctx.restore()
+        drawDiamant(p.standortPosition, p.label || `Standort ${i + 1}`, p.id === standortZielId, '#0076BD')
       })
     }
 
@@ -240,34 +246,9 @@ export default function BildEditor({ scene, deficits, onSave, onClose, initialDe
       const aktPersp = (localScene.perspektiven ?? []).find(p => p.id === aktivePerspektiveId)
       const markers = aktPersp?.navMarker ?? {}
       Object.entries(markers).forEach(([zielId, pos]) => {
-        const { x, y } = sphericalToPixel(pos, bildBreite, bildHoehe)
-        const px = (x / bildBreite) * cw
-        const py = (y / bildHoehe) * ch
-        const isZiel = zielId === navMarkerZiel
-        ctx.save()
-        const r = isZiel ? 12 : 10
-        ctx.beginPath()
-        ctx.moveTo(px, py - r)
-        ctx.lineTo(px + r, py)
-        ctx.lineTo(px, py + r)
-        ctx.lineTo(px - r, py)
-        ctx.closePath()
-        ctx.fillStyle = zielId === 'haupt' ? '#00407C' : '#0076BD'
-        ctx.fill()
-        ctx.strokeStyle = isZiel ? '#F0A500' : 'white'
-        ctx.lineWidth = 2
-        ctx.stroke()
-        // Label
         const zielPersp = (localScene.perspektiven ?? []).find(p => p.id === zielId)
         const label = zielId === 'haupt' ? 'Haupt-Panorama' : (zielPersp?.label || zielId)
-        ctx.font = 'bold 11px sans-serif'
-        ctx.fillStyle = 'white'
-        ctx.strokeStyle = 'rgba(0,0,0,0.7)'
-        ctx.lineWidth = 3
-        ctx.textAlign = 'left'
-        ctx.strokeText(label, px + r + 6, py + 4)
-        ctx.fillText(label, px + r + 6, py + 4)
-        ctx.restore()
+        drawDiamant(pos, label, zielId === navMarkerZiel, zielId === 'haupt' ? '#00407C' : '#0076BD')
       })
     }
 
