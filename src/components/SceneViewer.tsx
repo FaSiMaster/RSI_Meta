@@ -562,7 +562,7 @@ function SceneContent({
         return <Hotspot key={d.id} position={renderPos} found={foundIds.has(d.id)} />
       })}
 
-      {/* Standort-Navigationsmarker (nur im Haupt-Panorama) */}
+      {/* Standort-Navigationsmarker (Haupt-Panorama → Perspektiven) */}
       {!aktivePerspektiveId && scene.perspektiven?.map((p, i) => {
         if (!p.standortPosition) return null
         const pos = sphericalToVector3(p.standortPosition, 60)
@@ -575,6 +575,27 @@ function SceneContent({
           />
         )
       })}
+
+      {/* NavMarker (Perspektive → Haupt / andere Perspektiven) */}
+      {aktivePerspektiveId && (() => {
+        const aktPersp = scene.perspektiven?.find(p => p.id === aktivePerspektiveId)
+        if (!aktPersp?.navMarker) return null
+        return Object.entries(aktPersp.navMarker).map(([zielId, markerPos]) => {
+          const pos = sphericalToVector3(markerPos, 60)
+          const zielPersp = scene.perspektiven?.find(p => p.id === zielId)
+          const label = zielId === 'haupt'
+            ? 'Haupt'
+            : (zielPersp?.label || zielId)
+          return (
+            <StandortNavMarker
+              key={`nav-${zielId}`}
+              position={pos}
+              label={label}
+              onClick={() => onStandortWechsel(zielId === 'haupt' ? null : zielId)}
+            />
+          )
+        })
+      })()}
 
       {/* Pending-Klick-Marker (Browser: pulsierender Ring) */}
       {pendingClickPos && (

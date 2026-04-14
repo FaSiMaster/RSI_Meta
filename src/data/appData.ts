@@ -44,6 +44,9 @@ export interface Perspektive {
   startblick?: { theta: number; phi: number } | null
   // Position dieses Standorts im Haupt-Panorama (fuer Navigation im Viewer)
   standortPosition?: { theta: number; phi: number } | null
+  // Navigation: Positionen anderer Standorte von dieser Perspektive aus gesehen
+  // Keys: 'haupt' fuer Haupt-Panorama, oder perspektive.id fuer andere Perspektiven
+  navMarker?: Record<string, { theta: number; phi: number }> | null
 }
 
 export interface AppScene {

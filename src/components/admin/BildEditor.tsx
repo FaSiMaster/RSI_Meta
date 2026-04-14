@@ -84,6 +84,8 @@ export default function BildEditor({ scene, deficits, onSave, onClose, initialDe
   const [aktivePerspektiveId, setAktivePerspektiveId] = useState<string | null>(null)
   const aktivePerspektive = perspektiven.find(p => p.id === aktivePerspektiveId) ?? null
   const [standortZielId, setStandortZielId] = useState<string | null>(null)
+  // Navigation von einer Perspektive aus: Ziel-ID ('haupt' oder perspektiveId)
+  const [navMarkerZiel, setNavMarkerZiel] = useState<string | null>(null)
   // Flag: verhindert doppeltes Laden beim Mount
   const mountedRef = useRef(false)
 
@@ -93,6 +95,7 @@ export default function BildEditor({ scene, deficits, onSave, onClose, initialDe
     | { type: 'punkt'; deficitId: string }
     | { type: 'polygonPunkt'; deficitId: string; punktIndex: number }
     | { type: 'standort'; perspektiveId: string }
+    | { type: 'navMarker'; perspektiveId: string; zielId: string }
     | null
   const [dragging, setDragging] = useState<DragTarget>(null)
   const isDragging = useRef(false)
@@ -232,6 +235,42 @@ export default function BildEditor({ scene, deficits, onSave, onClose, initialDe
       })
     }
 
+    // NavMarker zeichnen (wenn auf einer Perspektive: Marker zu anderen Standorten)
+    if (aktivePerspektiveId) {
+      const aktPersp = (localScene.perspektiven ?? []).find(p => p.id === aktivePerspektiveId)
+      const markers = aktPersp?.navMarker ?? {}
+      Object.entries(markers).forEach(([zielId, pos]) => {
+        const { x, y } = sphericalToPixel(pos, bildBreite, bildHoehe)
+        const px = (x / bildBreite) * cw
+        const py = (y / bildHoehe) * ch
+        const isZiel = zielId === navMarkerZiel
+        ctx.save()
+        const r = isZiel ? 12 : 10
+        ctx.beginPath()
+        ctx.moveTo(px, py - r)
+        ctx.lineTo(px + r, py)
+        ctx.lineTo(px, py + r)
+        ctx.lineTo(px - r, py)
+        ctx.closePath()
+        ctx.fillStyle = zielId === 'haupt' ? '#00407C' : '#0076BD'
+        ctx.fill()
+        ctx.strokeStyle = isZiel ? '#F0A500' : 'white'
+        ctx.lineWidth = 2
+        ctx.stroke()
+        // Label
+        const zielPersp = (localScene.perspektiven ?? []).find(p => p.id === zielId)
+        const label = zielId === 'haupt' ? 'Haupt-Panorama' : (zielPersp?.label || zielId)
+        ctx.font = 'bold 11px sans-serif'
+        ctx.fillStyle = 'white'
+        ctx.strokeStyle = 'rgba(0,0,0,0.7)'
+        ctx.lineWidth = 3
+        ctx.textAlign = 'left'
+        ctx.strokeText(label, px + r + 6, py + 4)
+        ctx.fillText(label, px + r + 6, py + 4)
+        ctx.restore()
+      })
+    }
+
     // Defizit-Verortungen zeichnen (perspektivenabhängig)
     localDeficits.forEach(d => {
       if (!sichtbarIds.has(d.id)) return
@@ -295,7 +334,7 @@ export default function BildEditor({ scene, deficits, onSave, onClose, initialDe
     }
 
   }, [bildGeladen, bildBreite, bildHoehe, localScene, localDeficits, polygonInProgress,
-      verortungenSichtbar, selectedDeficitId, sichtbarIds, aktivePerspektiveId, standortZielId]) // eslint-disable-line react-hooks/exhaustive-deps
+      verortungenSichtbar, selectedDeficitId, sichtbarIds, aktivePerspektiveId, standortZielId, navMarkerZiel]) // eslint-disable-line react-hooks/exhaustive-deps
 
   // Hilfsfunktion: Verortung zeichnen
   function drawVerortung(
@@ -418,6 +457,19 @@ export default function BildEditor({ scene, deficits, onSave, onClose, initialDe
         }
       }
 
+      // NavMarker ziehbar? (wenn auf einer Perspektive)
+      if (aktivePerspektiveId) {
+        const aktPersp = (localScene.perspektiven ?? []).find(p => p.id === aktivePerspektiveId)
+        const markers = aktPersp?.navMarker ?? {}
+        for (const [zielId, pos] of Object.entries(markers)) {
+          if (hitTestPunkt(mx, my, pos, 14)) {
+            setDragging({ type: 'navMarker', perspektiveId: aktivePerspektiveId, zielId })
+            isDragging.current = false
+            return
+          }
+        }
+      }
+
       // Startblick ziehbar?
       const aktStartblick = aktivePerspektiveId
         ? (localScene.perspektiven ?? []).find(p => p.id === aktivePerspektiveId)?.startblick
@@ -476,6 +528,15 @@ export default function BildEditor({ scene, deficits, onSave, onClose, initialDe
           p.id === dragging.perspektiveId ? { ...p, standortPosition: coord } : p
         ),
       }))
+    } else if (dragging.type === 'navMarker') {
+      setLocalScene(prev => ({
+        ...prev,
+        perspektiven: (prev.perspektiven ?? []).map(p =>
+          p.id === dragging.perspektiveId
+            ? { ...p, navMarker: { ...(p.navMarker ?? {}), [dragging.zielId]: coord } }
+            : p
+        ),
+      }))
     } else if (dragging.type === 'punkt') {
       const neueVerortung: DefizitVerortung = { typ: 'punkt', position: coord, toleranz }
       saveVerortung(dragging.deficitId, neueVerortung)
@@ -511,7 +572,8 @@ export default function BildEditor({ scene, deficits, onSave, onClose, initialDe
     const coord = mouseToCoord(e)
     if (!coord) return
 
-    if (modus === 'standort' && standortZielId) {
+    if (modus === 'standort' && standortZielId && !aktivePerspektiveId) {
+      // Haupt-Panorama → Standort-Position fuer eine Perspektive setzen
       setLocalScene(prev => ({
         ...prev,
         perspektiven: (prev.perspektiven ?? []).map(p =>
@@ -519,6 +581,18 @@ export default function BildEditor({ scene, deficits, onSave, onClose, initialDe
         ),
       }))
       setStandortZielId(null)
+      setModus('idle')
+    } else if (modus === 'standort' && navMarkerZiel && aktivePerspektiveId) {
+      // Perspektive → NavMarker zu einem anderen Standort setzen
+      setLocalScene(prev => ({
+        ...prev,
+        perspektiven: (prev.perspektiven ?? []).map(p =>
+          p.id === aktivePerspektiveId
+            ? { ...p, navMarker: { ...(p.navMarker ?? {}), [navMarkerZiel]: coord } }
+            : p
+        ),
+      }))
+      setNavMarkerZiel(null)
       setModus('idle')
     } else if (modus === 'startblick') {
       if (aktivePerspektiveId) {
@@ -1083,6 +1157,89 @@ export default function BildEditor({ scene, deficits, onSave, onClose, initialDe
                 </div>
               )
             })()}
+          {/* Navigation von hier (wenn auf einer Perspektive) */}
+          {aktivePerspektiveId && (localScene.perspektiven ?? []).length > 0 && (() => {
+            const aktPersp = (localScene.perspektiven ?? []).find(p => p.id === aktivePerspektiveId)
+            if (!aktPersp) return null
+            const markers = aktPersp.navMarker ?? {}
+            // Ziele: Haupt-Panorama + alle anderen Perspektiven
+            const ziele: { id: string; label: string }[] = [
+              { id: 'haupt', label: 'Haupt-Panorama' },
+              ...(localScene.perspektiven ?? [])
+                .filter(p => p.id !== aktivePerspektiveId)
+                .map((p, i) => ({ id: p.id, label: p.label || `Standort ${i + 1}` })),
+            ]
+            return (
+              <div style={{
+                padding: '8px 14px',
+                borderTop: '1px solid var(--zh-color-border)',
+              }}>
+                <div style={{
+                  fontSize: '10px', fontWeight: 800, textTransform: 'uppercase',
+                  letterSpacing: '0.12em', color: 'var(--zh-color-text-disabled)',
+                  marginBottom: '6px',
+                }}>
+                  Navigation von hier
+                </div>
+                {ziele.map(z => {
+                  const pos = markers[z.id]
+                  return (
+                    <div key={z.id} style={{
+                      display: 'flex', alignItems: 'center', gap: '6px',
+                      marginBottom: '4px', fontSize: '11px',
+                    }}>
+                      <MapPin size={11} style={{ color: z.id === 'haupt' ? '#00407C' : '#0076BD', flexShrink: 0 }} />
+                      <span style={{ flex: 1, color: 'var(--zh-color-text)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                        {z.label}
+                      </span>
+                      {pos ? (
+                        <>
+                          <span style={{ color: 'var(--zh-color-text-muted)', fontSize: '10px', flexShrink: 0 }}>
+                            {Math.round(pos.theta)}°
+                          </span>
+                          <button
+                            onClick={() => {
+                              setLocalScene(prev => ({
+                                ...prev,
+                                perspektiven: (prev.perspektiven ?? []).map(p => {
+                                  if (p.id !== aktivePerspektiveId) return p
+                                  const updated = { ...(p.navMarker ?? {}) }
+                                  delete updated[z.id]
+                                  return { ...p, navMarker: Object.keys(updated).length > 0 ? updated : null }
+                                }),
+                              }))
+                            }}
+                            style={{
+                              background: 'none', border: 'none', cursor: 'pointer',
+                              color: '#D40053', fontSize: '12px', padding: '0 2px', flexShrink: 0,
+                            }}
+                          >
+                            ×
+                          </button>
+                        </>
+                      ) : (
+                        <button
+                          onClick={() => {
+                            setNavMarkerZiel(z.id)
+                            setModus('standort')
+                          }}
+                          style={{
+                            background: 'none', border: '1px solid var(--zh-blau)',
+                            borderRadius: '4px', cursor: 'pointer',
+                            color: 'var(--zh-blau)', fontSize: '10px', padding: '2px 6px',
+                            fontFamily: 'var(--zh-font)', flexShrink: 0,
+                          }}
+                        >
+                          Setzen
+                        </button>
+                      )}
+                    </div>
+                  )
+                })}
+              </div>
+            )
+          })()}
+
           {/* Standort-Positionen (nur im Haupt-Panorama) */}
           {!aktivePerspektiveId && (localScene.perspektiven ?? []).length > 0 && (
             <div style={{
