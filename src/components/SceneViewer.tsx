@@ -1253,8 +1253,8 @@ export default function SceneViewer({
         </div>
       )}
 
-      {/* Perspektiven-Switcher */}
-      {htmlVisible && perspektiven.length > 1 && (phase === 'exploring' || phase === 'pendingConfirm') && (
+      {/* Perspektiven-Switcher (Standortwechsel) */}
+      {htmlVisible && perspektiven.length > 0 && (phase === 'exploring' || phase === 'pendingConfirm') && (
         <div style={{
           position: 'absolute', bottom: '72px', left: '16px',
           display: 'flex', flexDirection: 'column', gap: '6px',
@@ -1265,8 +1265,30 @@ export default function SceneViewer({
             letterSpacing: '0.1em', color: 'rgba(255,255,255,0.45)',
             marginBottom: '2px', paddingLeft: '2px',
           }}>
-            Perspektive
+            Standort
           </span>
+          {/* Haupt-Panorama */}
+          <button
+            onClick={() => setAktivePerspektiveId(null)}
+            style={{
+              display: 'flex', alignItems: 'center', gap: '8px',
+              padding: '8px 14px', borderRadius: '9px',
+              border: !aktivePerspektiveId ? '2px solid #0076BD' : '1px solid rgba(255,255,255,0.18)',
+              background: !aktivePerspektiveId ? 'rgba(0,118,189,0.25)' : 'rgba(0,0,0,0.55)',
+              backdropFilter: 'blur(10px)',
+              color: !aktivePerspektiveId ? 'white' : 'rgba(255,255,255,0.70)',
+              fontSize: '13px', fontWeight: !aktivePerspektiveId ? 700 : 500,
+              cursor: !aktivePerspektiveId ? 'default' : 'pointer',
+              fontFamily: 'var(--zh-font)',
+              transition: 'all 0.15s',
+              minWidth: '140px',
+              textAlign: 'left',
+            }}
+          >
+            <MapPin size={13} style={{ flexShrink: 0, opacity: !aktivePerspektiveId ? 1 : 0.5 }} />
+            <span>Haupt</span>
+          </button>
+          {/* Perspektiven */}
           {perspektiven.map((p, i) => {
             const isActive = p.id === aktivePerspektiveId
             return (
