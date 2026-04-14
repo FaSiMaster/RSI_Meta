@@ -42,6 +42,8 @@ export interface Perspektive {
   label: string                    // z.B. "Standort A", "Gegenrichtung"
   bildUrl: string                  // Panorama-URL fuer diese Perspektive
   startblick?: { theta: number; phi: number } | null
+  // Position dieses Standorts im Haupt-Panorama (fuer Navigation im Viewer)
+  standortPosition?: { theta: number; phi: number } | null
 }
 
 export interface AppScene {

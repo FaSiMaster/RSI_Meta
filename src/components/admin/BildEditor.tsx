@@ -13,7 +13,7 @@ import {
 } from '../../utils/sphereCoords'
 
 // ── Typen ──
-type Modus = 'idle' | 'startblick' | 'punkt' | 'polygon' | 'gruppe'
+type Modus = 'idle' | 'startblick' | 'punkt' | 'polygon' | 'gruppe' | 'standort'
 
 // Bekannte Texturen in public/textures/
 const VERFUEGBARE_TEXTUREN = [
@@ -83,6 +83,7 @@ export default function BildEditor({ scene, deficits, onSave, onClose, initialDe
   const hatPerspektiven = perspektiven.length > 0
   const [aktivePerspektiveId, setAktivePerspektiveId] = useState<string | null>(null)
   const aktivePerspektive = perspektiven.find(p => p.id === aktivePerspektiveId) ?? null
+  const [standortZielId, setStandortZielId] = useState<string | null>(null)
   // Flag: verhindert doppeltes Laden beim Mount
   const mountedRef = useRef(false)
 
@@ -91,6 +92,7 @@ export default function BildEditor({ scene, deficits, onSave, onClose, initialDe
     | { type: 'startblick' }
     | { type: 'punkt'; deficitId: string }
     | { type: 'polygonPunkt'; deficitId: string; punktIndex: number }
+    | { type: 'standort'; perspektiveId: string }
     | null
   const [dragging, setDragging] = useState<DragTarget>(null)
   const isDragging = useRef(false)
@@ -195,6 +197,41 @@ export default function BildEditor({ scene, deficits, onSave, onClose, initialDe
       drawFadenkreuz(ctx, cx, cy, '#0076BD')
     }
 
+    // Standort-Positionen zeichnen (nur im Haupt-Panorama)
+    if (!aktivePerspektiveId) {
+      (localScene.perspektiven ?? []).forEach((p, i) => {
+        if (!p.standortPosition) return
+        const { x, y } = sphericalToPixel(p.standortPosition, bildBreite, bildHoehe)
+        const px = (x / bildBreite) * cw
+        const py = (y / bildHoehe) * ch
+        const isZiel = p.id === standortZielId
+        ctx.save()
+        // Diamant
+        const r = isZiel ? 12 : 10
+        ctx.beginPath()
+        ctx.moveTo(px, py - r)
+        ctx.lineTo(px + r, py)
+        ctx.lineTo(px, py + r)
+        ctx.lineTo(px - r, py)
+        ctx.closePath()
+        ctx.fillStyle = '#0076BD'
+        ctx.fill()
+        ctx.strokeStyle = isZiel ? '#F0A500' : 'white'
+        ctx.lineWidth = 2
+        ctx.stroke()
+        // Label
+        ctx.font = 'bold 11px sans-serif'
+        ctx.fillStyle = 'white'
+        ctx.strokeStyle = 'rgba(0,0,0,0.7)'
+        ctx.lineWidth = 3
+        ctx.textAlign = 'left'
+        const label = p.label || `Standort ${i + 1}`
+        ctx.strokeText(label, px + r + 6, py + 4)
+        ctx.fillText(label, px + r + 6, py + 4)
+        ctx.restore()
+      })
+    }
+
     // Defizit-Verortungen zeichnen (perspektivenabhängig)
     localDeficits.forEach(d => {
       if (!sichtbarIds.has(d.id)) return
@@ -258,7 +295,7 @@ export default function BildEditor({ scene, deficits, onSave, onClose, initialDe
     }
 
   }, [bildGeladen, bildBreite, bildHoehe, localScene, localDeficits, polygonInProgress,
-      verortungenSichtbar, selectedDeficitId, sichtbarIds, aktivePerspektiveId]) // eslint-disable-line react-hooks/exhaustive-deps
+      verortungenSichtbar, selectedDeficitId, sichtbarIds, aktivePerspektiveId, standortZielId]) // eslint-disable-line react-hooks/exhaustive-deps
 
   // Hilfsfunktion: Verortung zeichnen
   function drawVerortung(
@@ -370,6 +407,17 @@ export default function BildEditor({ scene, deficits, onSave, onClose, initialDe
 
     // Im idle-Modus: prüfen ob ein bestehender Punkt/Startblick angeklickt wird (Drag)
     if (modus === 'idle') {
+      // Standort-Marker ziehbar? (nur im Haupt-Panorama)
+      if (!aktivePerspektiveId) {
+        for (const p of (localScene.perspektiven ?? [])) {
+          if (p.standortPosition && hitTestPunkt(mx, my, p.standortPosition, 14)) {
+            setDragging({ type: 'standort', perspektiveId: p.id })
+            isDragging.current = false
+            return
+          }
+        }
+      }
+
       // Startblick ziehbar?
       const aktStartblick = aktivePerspektiveId
         ? (localScene.perspektiven ?? []).find(p => p.id === aktivePerspektiveId)?.startblick
@@ -421,6 +469,13 @@ export default function BildEditor({ scene, deficits, onSave, onClose, initialDe
       } else {
         setLocalScene(prev => ({ ...prev, startblick: coord }))
       }
+    } else if (dragging.type === 'standort') {
+      setLocalScene(prev => ({
+        ...prev,
+        perspektiven: (prev.perspektiven ?? []).map(p =>
+          p.id === dragging.perspektiveId ? { ...p, standortPosition: coord } : p
+        ),
+      }))
     } else if (dragging.type === 'punkt') {
       const neueVerortung: DefizitVerortung = { typ: 'punkt', position: coord, toleranz }
       saveVerortung(dragging.deficitId, neueVerortung)
@@ -456,7 +511,16 @@ export default function BildEditor({ scene, deficits, onSave, onClose, initialDe
     const coord = mouseToCoord(e)
     if (!coord) return
 
-    if (modus === 'startblick') {
+    if (modus === 'standort' && standortZielId) {
+      setLocalScene(prev => ({
+        ...prev,
+        perspektiven: (prev.perspektiven ?? []).map(p =>
+          p.id === standortZielId ? { ...p, standortPosition: coord } : p
+        ),
+      }))
+      setStandortZielId(null)
+      setModus('idle')
+    } else if (modus === 'startblick') {
       if (aktivePerspektiveId) {
         setLocalScene(prev => ({
           ...prev,
@@ -797,6 +861,7 @@ export default function BildEditor({ scene, deficits, onSave, onClose, initialDe
                 {!dragging && modus === 'startblick' && 'Ins Bild klicken → Startblick setzen'}
                 {!dragging && modus === 'punkt'      && 'Ins Bild klicken → Punkt setzen'}
                 {!dragging && modus === 'polygon'    && 'Klicken: Punkt hinzufügen | Doppelklick: Polygon schliessen'}
+                {!dragging && modus === 'standort'   && 'Ins Bild klicken → Standort-Position setzen'}
                 {!dragging && modus === 'gruppe'     && 'Defizite in der Seitenleiste auswählen, dann «Gruppe erstellen»'}
               </div>
             )}
@@ -1018,6 +1083,70 @@ export default function BildEditor({ scene, deficits, onSave, onClose, initialDe
                 </div>
               )
             })()}
+          {/* Standort-Positionen (nur im Haupt-Panorama) */}
+          {!aktivePerspektiveId && (localScene.perspektiven ?? []).length > 0 && (
+            <div style={{
+              padding: '8px 14px',
+              borderTop: '1px solid var(--zh-color-border)',
+            }}>
+              <div style={{
+                fontSize: '10px', fontWeight: 800, textTransform: 'uppercase',
+                letterSpacing: '0.12em', color: 'var(--zh-color-text-disabled)',
+                marginBottom: '6px',
+              }}>
+                Standort-Positionen
+              </div>
+              {(localScene.perspektiven ?? []).map((p, i) => (
+                <div key={p.id} style={{
+                  display: 'flex', alignItems: 'center', gap: '6px',
+                  marginBottom: '4px', fontSize: '11px',
+                }}>
+                  <MapPin size={11} style={{ color: '#0076BD', flexShrink: 0 }} />
+                  <span style={{ flex: 1, color: 'var(--zh-color-text)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                    {p.label || `Standort ${i + 1}`}
+                  </span>
+                  {p.standortPosition ? (
+                    <>
+                      <span style={{ color: 'var(--zh-color-text-muted)', fontSize: '10px', flexShrink: 0 }}>
+                        {Math.round(p.standortPosition.theta)}°
+                      </span>
+                      <button
+                        onClick={() => {
+                          setLocalScene(prev => ({
+                            ...prev,
+                            perspektiven: (prev.perspektiven ?? []).map(x =>
+                              x.id === p.id ? { ...x, standortPosition: null } : x
+                            ),
+                          }))
+                        }}
+                        style={{
+                          background: 'none', border: 'none', cursor: 'pointer',
+                          color: '#D40053', fontSize: '12px', padding: '0 2px', flexShrink: 0,
+                        }}
+                      >
+                        ×
+                      </button>
+                    </>
+                  ) : (
+                    <button
+                      onClick={() => {
+                        setStandortZielId(p.id)
+                        setModus('standort')
+                      }}
+                      style={{
+                        background: 'none', border: '1px solid var(--zh-blau)',
+                        borderRadius: '4px', cursor: 'pointer',
+                        color: 'var(--zh-blau)', fontSize: '10px', padding: '2px 6px',
+                        fontFamily: 'var(--zh-font)', flexShrink: 0,
+                      }}
+                    >
+                      Setzen
+                    </button>
+                  )}
+                </div>
+              ))}
+            </div>
+          )}
           </div>
         </div>
 

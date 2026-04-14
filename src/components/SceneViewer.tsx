@@ -101,6 +101,50 @@ function Hotspot({ position, found }: HotspotProps) {
   )
 }
 
+// ── Standort-Navigationsmarker (klickbar, wechselt Perspektive) ─────────────
+interface StandortNavMarkerProps {
+  position: THREE.Vector3
+  label: string
+  onClick: () => void
+}
+
+function StandortNavMarker({ position, label, onClick }: StandortNavMarkerProps) {
+  const [hovered, setHovered] = useState(false)
+  return (
+    <Billboard
+      position={position}
+      follow lockX={false} lockY={false} lockZ={false}
+    >
+      {/* Hintergrund-Kreis */}
+      <mesh
+        onClick={e => { e.stopPropagation(); onClick() }}
+        onPointerOver={() => setHovered(true)}
+        onPointerOut={() => setHovered(false)}
+      >
+        <circleGeometry args={[hovered ? 5 : 4, 32]} />
+        <meshBasicMaterial color="#0076BD" transparent opacity={hovered ? 0.95 : 0.7} side={THREE.DoubleSide} depthTest={false} />
+      </mesh>
+      {/* Ring */}
+      <mesh>
+        <ringGeometry args={[hovered ? 5 : 4, hovered ? 6.5 : 5.5, 32]} />
+        <meshBasicMaterial color="white" transparent opacity={0.9} side={THREE.DoubleSide} depthTest={false} />
+      </mesh>
+      {/* Label */}
+      <Text
+        position={[0, -8, 0]}
+        fontSize={3}
+        color="white"
+        anchorX="center"
+        anchorY="top"
+        outlineWidth={0.3}
+        outlineColor="#000000"
+      >
+        {label}
+      </Text>
+    </Billboard>
+  )
+}
+
 // ── Hotspot-Position fuer ein Defizit bestimmen (perspektivenabhaengig) ──────
 function getHotspotPosition(d: AppDeficit, perspektivenId: string | null = null): THREE.Vector3 | null {
   const verortung = getVerortungFuerPerspektive(d, perspektivenId)
@@ -455,6 +499,7 @@ interface SceneContentProps {
   aktivePerspektiveId: string | null
   aktiveBildUrl:       string | null | undefined
   pendingClickPos:     { theta: number; phi: number } | null
+  onStandortWechsel:   (id: string | null) => void
 }
 
 function SceneContent({
@@ -465,7 +510,7 @@ function SceneContent({
   sceneName, sceneKontextLabel,
   onKategorieSelect, onKategorieCancel, onFeedbackClose,
   onHintRequest, onBeenden,
-  aktivePerspektiveId, aktiveBildUrl, pendingClickPos,
+  aktivePerspektiveId, aktiveBildUrl, pendingClickPos, onStandortWechsel,
 }: SceneContentProps) {
   const foundIds    = new Set(foundDeficits.map(f => f.deficitId))
   const allFound    = foundDeficits.length === deficits.length
@@ -515,6 +560,20 @@ function SceneContent({
         const renderPos = getHotspotPosition(d, aktivePerspektiveId)
         if (!renderPos) return null
         return <Hotspot key={d.id} position={renderPos} found={foundIds.has(d.id)} />
+      })}
+
+      {/* Standort-Navigationsmarker (nur im Haupt-Panorama) */}
+      {!aktivePerspektiveId && scene.perspektiven?.map((p, i) => {
+        if (!p.standortPosition) return null
+        const pos = sphericalToVector3(p.standortPosition, 60)
+        return (
+          <StandortNavMarker
+            key={`nav-${p.id}`}
+            position={pos}
+            label={p.label || `Standort ${i + 1}`}
+            onClick={() => onStandortWechsel(p.id)}
+          />
+        )
       })}
 
       {/* Pending-Klick-Marker (Browser: pulsierender Ring) */}
@@ -709,6 +768,13 @@ export default function SceneViewer({
   const aktivePerspektive = perspektiven.find(p => p.id === aktivePerspektiveId) ?? null
   const aktiveBildUrl = aktivePerspektive?.bildUrl ?? scene.panoramaBildUrl ?? scene.bildUrl
   const aktiveStartblick = aktivePerspektive?.startblick ?? scene.startblick
+
+  // Standortwechsel: Perspektive wechseln + Pending-State aufräumen
+  const handleStandortWechsel = useCallback((id: string | null) => {
+    setAktivePerspektiveId(id)
+    setPendingClickPos(null)
+    setPhase('exploring')
+  }, [])
 
   const hitDeficit    = useRef<AppDeficit | null>(null)
   const hitKatRichtig = useRef<boolean>(false)
@@ -925,6 +991,7 @@ export default function SceneViewer({
             aktivePerspektiveId={aktivePerspektiveId}
             aktiveBildUrl={aktiveBildUrl}
             pendingClickPos={pendingClickPos}
+            onStandortWechsel={handleStandortWechsel}
           />
         </XR>
       </Canvas>
@@ -1269,7 +1336,7 @@ export default function SceneViewer({
           </span>
           {/* Haupt-Panorama */}
           <button
-            onClick={() => setAktivePerspektiveId(null)}
+            onClick={() => handleStandortWechsel(null)}
             style={{
               display: 'flex', alignItems: 'center', gap: '8px',
               padding: '8px 14px', borderRadius: '9px',
@@ -1294,7 +1361,7 @@ export default function SceneViewer({
             return (
               <button
                 key={p.id}
-                onClick={() => setAktivePerspektiveId(p.id)}
+                onClick={() => handleStandortWechsel(p.id)}
                 style={{
                   display: 'flex', alignItems: 'center', gap: '8px',
                   padding: '8px 14px', borderRadius: '9px',
