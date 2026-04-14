@@ -1,5 +1,6 @@
 // Landing Page – Zweispaltig, ZH Corporate Design
 // Links: Logo + Taglines + Features | Rechts: Login-Card mit Kurs-Auswahl
+// Responsive: 1-spaltig auf Mobile (<640px), 2-spaltig ab sm
 
 import { useState } from 'react'
 import { Shield, Eye, BarChart3, BookOpen, EyeOff } from 'lucide-react'
@@ -52,15 +53,15 @@ export default function LandingPage({ onStart, onAdmin }: Props) {
   }
 
   return (
-    <div style={{ minHeight: '100dvh', background: 'var(--zh-color-bg)', fontFamily: 'var(--zh-font)', display: 'flex', flexDirection: 'column' }}>
+    <div style={{ minHeight: '100dvh', background: 'var(--zh-color-bg)', fontFamily: 'var(--zh-font)' }} className="flex flex-col">
       {/* Top-Bar */}
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', padding: '16px 32px', borderBottom: '1px solid var(--zh-color-border)', gap: '16px' }}>
+      <div className="flex items-center justify-end gap-4 px-4 sm:px-8 py-4" style={{ borderBottom: '1px solid var(--zh-color-border)' }}>
         <LanguageSwitcher />
         <button onClick={onAdmin} style={{ fontSize: '12px', color: 'var(--zh-color-text-disabled)', fontWeight: 600, background: 'none', border: 'none', cursor: 'pointer' }}>Admin</button>
       </div>
 
-      {/* Zweispaltig */}
-      <div style={{ flex: 1, display: 'grid', gridTemplateColumns: '1fr 1fr', maxWidth: '1100px', margin: '0 auto', width: '100%', padding: '48px 32px', gap: '64px', alignItems: 'center' }}>
+      {/* Zweispaltig (responsive) */}
+      <div className="flex-1 grid grid-cols-1 sm:grid-cols-2 gap-8 sm:gap-16 items-center w-full max-w-[1100px] mx-auto px-5 sm:px-8 py-8 sm:py-12">
         {/* Links */}
         <div>
           <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '32px' }}>
@@ -77,7 +78,7 @@ export default function LandingPage({ onStart, onAdmin }: Props) {
 
           <div style={{ marginBottom: '32px' }}>
             {([t('landing.tagline1'), t('landing.tagline2'), t('landing.tagline3')] as const).map((tag, i) => (
-              <div key={tag} style={{ fontSize: '36px', fontWeight: 900, lineHeight: 1.15, color: i === 0 ? 'var(--zh-dunkelblau)' : i === 1 ? 'var(--zh-blau)' : 'var(--zh-color-text-muted)' }}>
+              <div key={tag} className="text-2xl sm:text-4xl" style={{ fontWeight: 900, lineHeight: 1.15, color: i === 0 ? 'var(--zh-dunkelblau)' : i === 1 ? 'var(--zh-blau)' : 'var(--zh-color-text-muted)' }}>
                 {tag}
               </div>
             ))}
@@ -98,7 +99,7 @@ export default function LandingPage({ onStart, onAdmin }: Props) {
         </div>
 
         {/* Rechts: Login-Card */}
-        <div style={{ borderRadius: 'var(--zh-radius-card)', border: '1px solid var(--zh-color-border)', background: 'var(--zh-color-surface)', padding: '40px 36px', boxShadow: 'var(--zh-shadow-md)' }}>
+        <div style={{ borderRadius: 'var(--zh-radius-card)', border: '1px solid var(--zh-color-border)', background: 'var(--zh-color-surface)', padding: '40px 36px', boxShadow: 'var(--zh-shadow-md)' }} className="w-full">
           <h2 style={{ fontSize: '22px', fontWeight: 700, color: 'var(--zh-color-text)', marginBottom: '6px' }}>Willkommen.</h2>
           <p style={{ fontSize: '14px', color: 'var(--zh-color-text-muted)', marginBottom: '28px' }}>Identifizieren Sie sich für das Ranking.</p>
 
@@ -176,7 +177,7 @@ export default function LandingPage({ onStart, onAdmin }: Props) {
       </div>
 
       {/* Footer */}
-      <div style={{ borderTop: '1px solid var(--zh-color-border)', padding: '14px 32px', display: 'flex', alignItems: 'center', gap: '8px', fontSize: '12px', color: 'var(--zh-color-text-disabled)' }}>
+      <div className="flex items-center gap-2 px-4 sm:px-8 py-3.5" style={{ borderTop: '1px solid var(--zh-color-border)', fontSize: '12px', color: 'var(--zh-color-text-disabled)' }}>
         <span style={{ color: '#1A7F1F', fontWeight: 800 }}>●</span>
         {t('landing.systemOnline')} · V3.0 · Fachstelle Verkehrssicherheit · Kanton Zürich
       </div>
