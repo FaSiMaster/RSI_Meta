@@ -73,6 +73,12 @@ function PanoramaSphere({ bildUrl, onClick }: PanoramaSphereProps) {
 function PanoramaTextureMaterial({ url }: { url: string }) {
   const texture = useLoader(THREE.TextureLoader, url)
   texture.colorSpace = THREE.SRGBColorSpace
+  // BackSide spiegelt die Textur horizontal — repeat.x=-1 hebt die Spiegelung auf,
+  // offset.x=0.75 korrigiert den 90°-Versatz zwischen Three.js UV-Mapping und
+  // unserer theta-Konvention (theta=0 = -Z = vorne)
+  texture.wrapS = THREE.RepeatWrapping
+  texture.repeat.x = -1
+  texture.offset.x = 0.75
   return <meshBasicMaterial map={texture} side={THREE.BackSide} />
 }
 
