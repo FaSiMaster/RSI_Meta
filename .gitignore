@@ -24,3 +24,7 @@ npm-debug.log*
 # Lokale Claude-Einstellungen (nie committen)
 .claude/settings.local.json
 .claude/worktrees/
+
+# Archiv (lokale Referenz, nicht deployen)
+_Archiv/
+1RSI_Meta/
