@@ -114,12 +114,18 @@ export default function RankingView({ username, onBack }: Props) {
   const [themaLocal, setThemaLocal] = useState<{ username: string; score: number; szenen: number; besteProzent: number }[]>([])
   const [szeneLocal, setSzeneLocal] = useState<SceneResult[]>([])
 
-  // Stammdaten laden
+  // Stammdaten + lokale Ranking-Daten bei jedem Mount laden
   useEffect(() => {
     setTopics(getTopics().filter(tp => tp.isActive))
     setScenes(getAllScenes().filter(s => s.isActive))
     setKurse(getKurse().filter(k => k.isActive))
     setGesamtLocal(getGesamtRanking())
+  }, [])
+
+  // Lokale Daten nochmal nach 1s auffrischen (faengt gerade gespeicherte Resultate ab)
+  useEffect(() => {
+    const t = setTimeout(() => setGesamtLocal(getGesamtRanking()), 1000)
+    return () => clearTimeout(t)
   }, [])
 
   // Supabase: Initial-Fetch + Realtime
@@ -148,6 +154,9 @@ export default function RankingView({ username, onBack }: Props) {
 
     fetchAll()
 
+    // Nachladen nach 2s (faengt fire-and-forget Inserts ab die noch unterwegs sind)
+    const refreshTimer = setTimeout(() => { if (!cancelled) fetchAll() }, 2000)
+
     // Realtime-Subscription
     const channel = supabase.channel('rsi_results_realtime')
       .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'rsi_results' }, (payload) => {
@@ -164,6 +173,7 @@ export default function RankingView({ username, onBack }: Props) {
 
     return () => {
       cancelled = true
+      clearTimeout(refreshTimer)
       channel.unsubscribe()
     }
   }, [])
