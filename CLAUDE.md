@@ -18,11 +18,11 @@
 | Framework | React + Vite + TypeScript | React 18, Vite 5, TS strict |
 | Animation | Framer Motion (motion/react) | v12 |
 | i18n | react-i18next | — |
-| 3D Rendering | `@react-three/fiber` | v8 (Phase 3+) |
-| WebXR | `@react-three/xr` | v6 (Phase 3+) |
+| 3D Rendering | `@react-three/fiber` | v8 |
+| WebXR | `@react-three/xr` | v6 |
 | Icons | lucide-react | — |
 | Build | Vite 5 + vite-plugin-pwa | PWA, Service Worker |
-| Hosting | Vercel (Primär) / GitHub Pages | HTTPS-Pflicht fuer WebXR |
+| Hosting | Vercel (Primär) | HTTPS-Pflicht für WebXR |
 | Persistenz | localStorage (rsi-v3-* Keys) | Kein Backend |
 
 **Target Device:** Meta Quest 3 (Meta Horizon OS, Meta Quest Browser)
@@ -30,7 +30,7 @@
 
 ---
 
-## Aktuelle Projektstruktur (Phase 2 Stand)
+## Projektstruktur
 
 ```
 RSI_Meta/
@@ -40,50 +40,74 @@ RSI_Meta/
 ├── package.json
 ├── vite.config.ts
 ├── tsconfig.json
+├── index.html
 ├── public/
-│   └── icons/                      # PWA-Icons: icon-192.png, icon-512.png
+│   ├── icons/                      # PWA-Icons: icon-192.png, icon-512.png
+│   └── textures/                   # 11 Panorama-Texturen (WebP/JPG)
 ├── src/
 │   ├── main.tsx                    # React-Einstieg, i18n-Init
 │   ├── App.tsx                     # Haupt-Router (view-State), Theme, Score
 │   ├── index.css                   # Reset + CSS-Design-Tokens (--zh-*)
+│   ├── xrStore.ts                  # XR-Session Singleton (createXRStore)
 │   ├── types/
 │   │   └── index.ts                # RSIDimension, NACADimension, ResultDimension, MultiLang
 │   ├── data/
-│   │   ├── appData.ts              # localStorage CRUD, Typen, ml(), Seed-Daten
-│   │   ├── scoringEngine.ts        # WICHTIGKEIT_TABLE (58), Matrizen, calcRelevanzSD/Unfallrisiko
-│   │   └── glossary.ts             # RSI-Fachglossar (25+ Eintraege, multilingual)
+│   │   ├── appData.ts              # localStorage CRUD, Typen, ml(), Seed-Daten, Perspektive
+│   │   ├── scoringEngine.ts        # WICHTIGKEIT_TABLE (58), Matrizen (SACRED)
+│   │   └── scoreCalc.ts            # calcScore Pure Function
+│   ├── utils/
+│   │   └── sphereCoords.ts         # Sphärische Koordinaten, Trefferpruefung
+│   ├── lib/
+│   │   └── utils.ts                # Hilfsfunktionen
+│   ├── styles/
+│   │   └── design-tokens.css       # CSS-Variablen
 │   ├── i18n/
-│   │   ├── de.json                 # Deutsch (Referenzsprache)
-│   │   ├── fr.json
-│   │   ├── it.json
-│   │   └── en.json
+│   │   ├── index.ts                # i18n-Setup
+│   │   ├── de.json                 # Deutsch (401 Keys, Referenzsprache)
+│   │   ├── fr.json                 # Französisch (~82%)
+│   │   ├── it.json                 # Italienisch (~82%)
+│   │   └── en.json                 # Englisch (~82%)
 │   └── components/
 │       ├── LandingPage.tsx         # Login / Username
 │       ├── Navbar.tsx              # Navigation, Score-Pill, Theme-Toggle, Avatar
-│       ├── TopicDashboard.tsx      # 4-spaltiges Topic-Grid (walk/bike/junction/construction)
-│       ├── SceneList.tsx           # Szenen-Cards mit Defizit-Count und Start-Button
-│       ├── ScoringFlow.tsx         # 9-Schritte RSI-Beurteilungsfluss + Feedback
-│       ├── RankingView.tsx         # Rangliste-Tabelle mit eigenem Eintrag hervorgehoben
-│       ├── AdminDashboard.tsx      # Defizit-Katalog CRUD, WICHTIGKEIT preview, Auto-Recompute
-│       └── LanguageSwitcher.tsx    # Sprachauswahl (de/fr/it/en)
-├── Normen_Ausbildung/              # RSI-Normen und Checklisten (PDFs, DOCX)
-└── Google_Voarbeiten/              # Recherche-Materialien
+│       ├── TopicDashboard.tsx      # 4-spaltiges Topic-Grid
+│       ├── SceneList.tsx           # Szenen-Cards mit Sterne und Start-Button
+│       ├── TrainingEinstieg.tsx    # Szenen-Einführung vor dem Viewer
+│       ├── SceneViewer.tsx         # 360°-Viewer, Klick-Flow, Standort-Navigation, VR
+│       ├── ScoringFlow.tsx         # Ergebnis-Screen nach Bewertung
+│       ├── SzenenAbschluss.tsx     # Szenen-Statistik, Best-of, Zeit
+│       ├── RankingView.tsx         # 4-Ebenen-Rangliste
+│       ├── AdminDashboard.tsx      # Defizit-CRUD, WICHTIGKEIT, Auto-Recompute
+│       ├── LanguageSwitcher.tsx    # Sprachauswahl (de/fr/it/en)
+│       ├── KategoriePanel.tsx      # Kategorie-Auswahl (Browser + VR)
+│       ├── KlickFeedback.tsx       # Treffer/Fehlschlag-Anzeige
+│       └── admin/
+│           ├── BildEditor.tsx      # Canvas-Verortungs-Editor, Drag&Drop, Standorte, NavMarker
+│           └── BildUpload.tsx      # Panorama-Upload mit Komprimierung
+└── _Archiv/                        # Lokal, nicht im Git (.gitignore)
+    ├── Google_Voarbeiten/          # Altes Gemini-API-Projekt
+    ├── Normen_Ausbildung/          # RSI-Normen PDFs (Referenz)
+    ├── Export/                     # Daten-Dumps
+    ├── Bilder_Seite/               # Screenshots + HDR-Quelldateien
+    └── dead_code/                  # glossary.ts, static.ts, VRButton.tsx
 ```
 
 ---
 
 ## Code-Regeln
 
-1. **Vollstaendige Dateien** liefern — kein Diff, kein Snippet, immer die ganze Datei
+1. **Vollständige Dateien** liefern — kein Diff, kein Snippet, immer die ganze Datei
 2. **QA-Check** vor jeder Ausgabe: Typen, Imports, JSX-Struktur, tsc 0 Fehler
 3. **TypeScript strict** — kein `any`, alle Props typisiert
-4. **Keine `ß`** — immer `ss`
-5. **Kommentare auf Deutsch**, Code-Identifier auf Englisch
-6. **Keine Emojis** ausser bei expliziter Anfrage
-7. **Schweizer Zahlenformat:** `toLocaleString('de-CH')` fuer Anzeige
-8. **Design-Token CSS-Variablen** fuer alle Farben (kein Hartcoding ausser RSI-spezifische Farben)
-9. **localStorage-Keys** immer mit Prefix `rsi-v3-` (bestehende Keys nicht aendern)
-10. **Primärfarbe KZH:** `--zh-dunkelblau: #00407C`, `--zh-blau: #0076BD`
+4. **Keine `ß`** — immer `ss` (Schweizer Hochdeutsch)
+5. **Umlaute** — ä, ö, ü verwenden, nicht ae, oe, ue
+6. **Kommentare auf Deutsch**, Code-Identifier auf Englisch
+7. **Keine Emojis** ausser bei expliziter Anfrage
+8. **Schweizer Zahlenformat:** `toLocaleString('de-CH')` für Anzeige
+9. **Design-Token CSS-Variablen** für alle Farben (kein Hartcoding ausser RSI-spezifische)
+10. **localStorage-Keys** immer mit Prefix `rsi-v3-` (bestehende Keys nicht ändern)
+11. **Primärfarbe KZH:** `--zh-dunkelblau: #00407C`, `--zh-blau: #0076BD`
+12. **i18n:** User-facing Strings über `t()`, dynamische Daten über `ml()`
 
 ---
 
@@ -91,7 +115,7 @@ RSI_Meta/
 
 ### RSI 9-Schritte-Methodik
 
-Die RSI-Beurteilung im Tool folgt exakt dem TBA-Fachkurs FK RSI (V 16.09.2020):
+Die RSI-Beurteilung folgt exakt dem TBA-Fachkurs FK RSI (V 16.09.2020):
 
 | Schritt | Typ | Inhalt | Quelle |
 |---|---|---|---|
@@ -131,7 +155,7 @@ Die RSI-Beurteilung im Tool folgt exakt dem TBA-Fachkurs FK RSI (V 16.09.2020):
 
 ### WICHTIGKEIT_TABLE
 
-58 Kriterien aus dem TBA-Fachkurs FK RSI, je mit io- und ao-Wert (RSIDimension | ''). Gespeichert in `src/data/scoringEngine.ts`. Jede Aenderung muss gegen den Fachkurs FK RSI V 16.09.2020 verifiziert werden.
+58 Kriterien aus dem TBA-Fachkurs FK RSI, je mit io- und ao-Wert (RSIDimension | ''). Gespeichert in `src/data/scoringEngine.ts`. Jede Änderung muss gegen den Fachkurs FK RSI V 16.09.2020 verifiziert werden.
 
 ---
 
@@ -156,6 +180,15 @@ type NACADimension = 'leicht' | 'mittel' | 'schwer'
 type ResultDimension = 'hoch' | 'mittel' | 'gering'
 type NacaRaw = 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7
 
+interface Perspektive {
+  id: string
+  label: string
+  bildUrl: string
+  startblick?: { theta: number; phi: number } | null
+  standortPosition?: { theta: number; phi: number } | null  // Position im Haupt-Panorama
+  navMarker?: Record<string, { theta: number; phi: number }> | null  // Navigation zu anderen Standorten
+}
+
 interface AppDeficit {
   id: string
   sceneId: string
@@ -167,26 +200,29 @@ interface AppDeficit {
   correctAssessment: {
     wichtigkeit: RSIDimension
     abweichung: RSIDimension
-    relevanzSD: ResultDimension    // = calcRelevanzSD(wichtigkeit, abweichung)
+    relevanzSD: ResultDimension
     naca: NacaRaw
-    unfallschwere: NACADimension   // = nacaToSchwere(naca)
-    unfallrisiko: ResultDimension  // = calcUnfallrisiko(relevanzSD, unfallschwere)
+    unfallschwere: NACADimension
+    unfallrisiko: ResultDimension
   }
   isPflicht: boolean
   isBooster: boolean
   normRefs: string[]
+  verortung?: DefizitVerortung | null
+  verortungen?: Record<string, DefizitVerortung> | null  // Pro Perspektive
 }
 ```
 
 ---
 
-## Bekannte Probleme (Backlog)
+## 360°-Panorama Technik
 
-| ID | Priorität | Beschreibung |
-|---|---|---|
-| P3-4 | Backlog | calcScore() sollte in scoringEngine.ts als Pure Function stehen |
-
-Details: `AUDIT_REPORT.md`
+- **Sphere:** radius=500, `side={THREE.BackSide}`, Kamera bei `[0,0,0.01]`
+- **Textur-Fix:** `repeat.x=-1` + `offset.x=0.75` — korrigiert BackSide-Spiegelung und 90°-UV-Offset
+- **Startblick:** `azimuth = -(theta * PI/180)` (OrbitControls-Konvention)
+- **Perspektiven:** Kein Fallback auf Haupt-Verortung bei aktiver Perspektive
+- **Standort-Navigation:** Bidirektional via standortPosition + navMarker
+- **XR-Store:** `model: false` — Pflicht (verhindert CDN-GLTF-Download-Crash)
 
 ---
 
@@ -199,27 +235,26 @@ Details: `AUDIT_REPORT.md`
 
 ### Phase 2 – Browser-Training (abgeschlossen)
 - [x] 9-Schritte RSI-Beurteilungsfluss (ScoringFlow)
-- [x] WICHTIGKEIT_TABLE (58 Kriterien, TBA FK RSI V 16.09.2020)
-- [x] Normative Matrizen (calcRelevanzSD, calcUnfallrisiko)
-- [x] NACA-Einstufung mit bfu-Referenz
-- [x] Admin-Dashboard (Defizit-CRUD, Auto-Recompute)
-- [x] Rangliste, Themen, Szenen
-- [x] i18n-Infrastruktur (de/fr/it/en), Inhalte multilingual via ml()
+- [x] Klick-Bestätigung, Bewertungs-Overlays
+- [x] Perspektiven, Standort-Navigation (bidirektional)
+- [x] Best-of Punktesystem, Sterne, Zeiterfassung
+- [x] 4-Ebenen-Ranking, ESC-Taste
+- [x] Admin-Dashboard (Defizit-CRUD, BildEditor mit Drag&Drop)
+- [x] i18n (de/fr/it/en), alle Labels via t()
 - [x] Dark/Light Theme, ZH Corporate Design
-- [x] PWA Build (445 kB JS / 137 kB gzip)
-- [x] Glossar (src/data/glossary.ts, 25+ Eintraege)
-- [x] Vollaudit (AUDIT_REPORT.md, 2026-03-28)
+- [x] Panorama-Textur Spiegelung korrigiert
+- [x] Projektstruktur aufgeräumt (2026-04-15)
 
-### Phase 3 – VR-Integration (geplant)
-- [ ] 360-Grad-Hintergrund / HDRI-Strassenszene
+### Phase 3 – VR-Integration (nächster Schritt)
+- [ ] Eigene 360°-Strassenszenen (Insta360 / Ricoh Theta)
 - [ ] WebXR `immersive-vr` Session (Meta Quest 3)
 - [ ] Controller-Tracking, Teleport-Navigation
-- [ ] Raeumliche Orientierungshilfen (Kompass, Distanz)
+- [ ] Räumliche Orientierungshilfen (Kompass, Distanz)
 
 ### Phase 4 – VR-Mangelmarkierung (geplant)
 - [ ] Raycasting mit Controller
 - [ ] 3D-Mangel-Marker setzen
-- [ ] Floating Panel fuer Kategorisierung
+- [ ] Floating Panel für Kategorisierung
 
 ### Phase 5 – Dokumentation & Export (geplant)
 - [ ] PDF-Export (RSI-konform, KZH CD)
@@ -238,14 +273,13 @@ Details: `AUDIT_REPORT.md`
 npm install
 npm run dev
 # → http://localhost:5173
-# → http://[lokale-IP]:5173  (fuer Meta Quest im selben WLAN)
+# → http://[lokale-IP]:5173  (für Meta Quest im selben WLAN)
 
 npm run build       # Production-Build (Vite + PWA)
 npm run preview -- --host  # Build lokal testen
 ```
 
 **Vercel:** Kein Konfig nötig, `base: '/'`.
-**GitHub Pages:** `base: '/RSI_Meta/'` in `vite.config.ts` setzen.
 
 ---
 
@@ -253,11 +287,15 @@ npm run preview -- --host  # Build lokal testen
 
 - `createXRStore()` immer ausserhalb der Komponente (Singleton)
 - `<XR store={xrStore}>` umschliesst die gesamte R3F-Szene
-- HTTPS Pflicht fuer WebXR auf echtem Geraet (localhost Ausnahme)
+- HTTPS Pflicht für WebXR auf echtem Gerät (localhost Ausnahme)
 - Emulator: Chrome Extension "Immersive Web Emulator" (Meta)
 
 ---
 
 ## Skill
 
-`/fasi-check` — FaSi-Qualitaetscheck fuer Visualisierungen und Texte
+`/fasi-check` — FaSi-Qualitätscheck für Visualisierungen und Texte
+
+---
+
+*Letzte Aktualisierung: 2026-04-15*
