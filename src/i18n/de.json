@@ -431,6 +431,39 @@
     "kurs_placeholder": "z.B. FK-RSI-123456",
     "kurs_ungueltig": "Kurs-Code nicht gefunden"
   },
+  "popover": {
+    "logout": "Abmelden"
+  },
+  "guide": {
+    "title": "So funktioniert das Training",
+    "subtitle": "In vier Schritten vom Panorama zur RSI-Bewertung.",
+    "step1_title": "Szene wählen",
+    "step1_desc": "Wählen Sie ein Thema und eine Strassenszene aus dem Katalog.",
+    "step2_title": "Defizite suchen",
+    "step2_desc": "Klicken Sie auf Stellen im 360°-Panorama, die Ihnen unsicher erscheinen.",
+    "step3_title": "RSI-Bewertung",
+    "step3_desc": "Bewerten Sie Wichtigkeit, Abweichung und NACA-Schwere nach der 9-Schritte-Methodik.",
+    "step4_title": "Ergebnis vergleichen",
+    "step4_desc": "Sehen Sie Ihr Ergebnis und vergleichen Sie sich im Kurs-Ranking."
+  },
+  "methodik": {
+    "title": "RSI 9-Schritte-Methodik",
+    "subtitle": "Bewertungsmatrizen und NACA-Skala — Nachschlagewerk",
+    "relevanz_title": "Relevanz-Matrix",
+    "relevanz_desc": "Wichtigkeit × Abweichung ergibt die Relevanz des Sicherheitsdefizits.",
+    "risiko_title": "Unfallrisiko-Matrix",
+    "risiko_desc": "Relevanz SD × Unfallschwere ergibt das Unfallrisiko.",
+    "naca_title": "NACA → Unfallschwere",
+    "naca_desc": "NACA-Score wird in drei Schweregrade eingeteilt.",
+    "wichtigkeit": "Wichtigkeit",
+    "relevanz_sd": "Relevanz SD",
+    "achse": "Achsen",
+    "zeile_wichtigkeit": "Zeile = Wichtigkeit",
+    "spalte_abweichung": "Spalte = Abweichung",
+    "zeile_relevanz": "Zeile = Relevanz SD",
+    "spalte_schwere": "Spalte = Unfallschwere",
+    "quellen": "Quellen"
+  },
   "datenschutz": {
     "hinweis": "Ihr Name wird nur lokal gespeichert und anonymisiert ans Ranking übermittelt. Keine personenbezogenen Daten werden dauerhaft gespeichert."
   },

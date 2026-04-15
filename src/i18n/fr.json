@@ -344,6 +344,39 @@
     "kurs_placeholder": "Ex. FK-RSI-123456",
     "kurs_ungueltig": "Code de cours introuvable"
   },
+  "popover": {
+    "logout": "Se déconnecter"
+  },
+  "guide": {
+    "title": "Comment fonctionne la formation",
+    "subtitle": "En quatre étapes, du panorama à l'évaluation RSI.",
+    "step1_title": "Choisir une scène",
+    "step1_desc": "Sélectionnez un thème et une scène routière dans le catalogue.",
+    "step2_title": "Chercher les déficits",
+    "step2_desc": "Cliquez sur les endroits du panorama 360° qui vous semblent dangereux.",
+    "step3_title": "Évaluation RSI",
+    "step3_desc": "Évaluez l'importance, l'écart et la gravité NACA selon la méthode en 9 étapes.",
+    "step4_title": "Comparer les résultats",
+    "step4_desc": "Consultez votre résultat et comparez-vous dans le classement du cours."
+  },
+  "methodik": {
+    "title": "Méthode RSI en 9 étapes",
+    "subtitle": "Matrices d'évaluation et échelle NACA — référence",
+    "relevanz_title": "Matrice de pertinence",
+    "relevanz_desc": "Importance × Écart donne la pertinence du déficit de sécurité.",
+    "risiko_title": "Matrice de risque d'accident",
+    "risiko_desc": "Pertinence SD × Gravité donne le risque d'accident.",
+    "naca_title": "NACA → Gravité",
+    "naca_desc": "Le score NACA est classé en trois niveaux de gravité.",
+    "wichtigkeit": "Importance",
+    "relevanz_sd": "Pertinence SD",
+    "achse": "Axes",
+    "zeile_wichtigkeit": "Ligne = Importance",
+    "spalte_abweichung": "Colonne = Écart",
+    "zeile_relevanz": "Ligne = Pertinence SD",
+    "spalte_schwere": "Colonne = Gravité",
+    "quellen": "Sources"
+  },
   "datenschutz": {
     "hinweis": "Votre nom est stocké localement et transmis de manière anonyme au classement. Aucune donnée personnelle n'est conservée."
   },

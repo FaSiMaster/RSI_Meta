@@ -343,6 +343,39 @@
     "kurs_placeholder": "E.g. FK-RSI-123456",
     "kurs_ungueltig": "Course code not found"
   },
+  "popover": {
+    "logout": "Sign out"
+  },
+  "guide": {
+    "title": "How the training works",
+    "subtitle": "In four steps, from panorama to RSI assessment.",
+    "step1_title": "Choose a scene",
+    "step1_desc": "Select a topic and a road scene from the catalogue.",
+    "step2_title": "Find deficits",
+    "step2_desc": "Click on spots in the 360° panorama that seem unsafe to you.",
+    "step3_title": "RSI assessment",
+    "step3_desc": "Assess importance, deviation and NACA severity using the 9-step methodology.",
+    "step4_title": "Compare results",
+    "step4_desc": "View your result and compare yourself in the course ranking."
+  },
+  "methodik": {
+    "title": "RSI 9-step methodology",
+    "subtitle": "Assessment matrices and NACA scale — reference",
+    "relevanz_title": "Relevance matrix",
+    "relevanz_desc": "Importance × Deviation yields the relevance of the safety deficit.",
+    "risiko_title": "Accident risk matrix",
+    "risiko_desc": "Relevance SD × Severity yields the accident risk.",
+    "naca_title": "NACA → Severity",
+    "naca_desc": "The NACA score is classified into three severity levels.",
+    "wichtigkeit": "Importance",
+    "relevanz_sd": "Relevance SD",
+    "achse": "Axes",
+    "zeile_wichtigkeit": "Row = Importance",
+    "spalte_abweichung": "Column = Deviation",
+    "zeile_relevanz": "Row = Relevance SD",
+    "spalte_schwere": "Column = Severity",
+    "quellen": "Sources"
+  },
   "datenschutz": {
     "hinweis": "Your name is stored locally only and transmitted anonymously to the ranking. No personal data is permanently stored."
   },

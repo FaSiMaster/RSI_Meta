@@ -32,6 +32,7 @@ export default function App() {
   const [score, setScore]   = useState(0)
   const [theme, setTheme]   = useState<'light' | 'dark'>('light')
   const [kursId, setKursId] = useState<string | null>(null)
+  const [kursName, setKursName] = useState<string | null>(null)
 
   const [currentTopic, setCurrentTopic] = useState<AppTopic | null>(null)
   const [currentScene, setCurrentScene] = useState<AppScene | null>(null)
@@ -70,6 +71,7 @@ export default function App() {
       setScore(session.score)
     }
     if (session.kursId) setKursId(session.kursId)
+    if (session.kursName) setKursName(session.kursName)
     const saved = (localStorage.getItem('rsi-theme') as 'light' | 'dark') ?? 'light'
     setTheme(saved)
     document.documentElement.setAttribute('data-theme', saved)
@@ -91,7 +93,20 @@ export default function App() {
     setUsername(name)
     setScore(session.score)
     setKursId(kursCode)
+    setKursName(kursName)
     setView('topics')
+  }
+
+  function handleLogout() {
+    setUsername('')
+    setScore(0)
+    setKursId(null)
+    setKursName(null)
+    setCurrentTopic(null)
+    setCurrentScene(null)
+    saveSession({ username: '', score: 0, completedScenes: [] })
+    sessionStorage.removeItem('rsi-admin-auth')
+    setView('landing')
   }
 
   function handleSelectTopic(topic: AppTopic) {
@@ -277,8 +292,10 @@ export default function App() {
           username={username}
           score={score}
           theme={theme}
+          kursName={kursName}
           onNavigate={handleNavigate}
           onToggleTheme={handleToggleTheme}
+          onLogout={handleLogout}
         />
       )}
 

@@ -343,6 +343,39 @@
     "kurs_placeholder": "Es. FK-RSI-123456",
     "kurs_ungueltig": "Codice corso non trovato"
   },
+  "popover": {
+    "logout": "Disconnettersi"
+  },
+  "guide": {
+    "title": "Come funziona la formazione",
+    "subtitle": "In quattro passi, dal panorama alla valutazione RSI.",
+    "step1_title": "Scegliere una scena",
+    "step1_desc": "Selezionate un tema e una scena stradale dal catalogo.",
+    "step2_title": "Cercare i deficit",
+    "step2_desc": "Cliccate sui punti del panorama 360° che vi sembrano pericolosi.",
+    "step3_title": "Valutazione RSI",
+    "step3_desc": "Valutate l'importanza, lo scostamento e la gravità NACA secondo il metodo a 9 passi.",
+    "step4_title": "Confrontare i risultati",
+    "step4_desc": "Consultate il vostro risultato e confrontatevi nella classifica del corso."
+  },
+  "methodik": {
+    "title": "Metodo RSI a 9 passi",
+    "subtitle": "Matrici di valutazione e scala NACA — riferimento",
+    "relevanz_title": "Matrice di rilevanza",
+    "relevanz_desc": "Importanza × Scostamento dà la rilevanza del deficit di sicurezza.",
+    "risiko_title": "Matrice di rischio incidente",
+    "risiko_desc": "Rilevanza SD × Gravità dà il rischio di incidente.",
+    "naca_title": "NACA → Gravità",
+    "naca_desc": "Il punteggio NACA viene classificato in tre livelli di gravità.",
+    "wichtigkeit": "Importanza",
+    "relevanz_sd": "Rilevanza SD",
+    "achse": "Assi",
+    "zeile_wichtigkeit": "Riga = Importanza",
+    "spalte_abweichung": "Colonna = Scostamento",
+    "zeile_relevanz": "Riga = Rilevanza SD",
+    "spalte_schwere": "Colonna = Gravità",
+    "quellen": "Fonti"
+  },
   "datenschutz": {
     "hinweis": "Il vostro nome viene memorizzato localmente e trasmesso in forma anonima alla classifica. Nessun dato personale viene conservato."
   },
