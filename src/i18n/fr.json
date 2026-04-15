@@ -191,7 +191,10 @@
     "loginLabel": "Votre nom",
     "startBtn": "Démarrer la formation",
     "systemOnline": "Système en ligne",
-    "adminLink": "Accès Admin"
+    "adminLink": "Accès Admin",
+    "resetApp": "Réinitialiser l'app",
+    "resetConfirm": "Supprimer toutes les données locales et le cache? L'application redémarrera complètement.",
+    "resetDone": "Cache vidé — rechargement de la page..."
   },
   "topics": {
     "title": "Domaines thématiques",

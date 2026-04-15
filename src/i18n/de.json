@@ -191,7 +191,10 @@
     "loginLabel": "Ihr Name",
     "startBtn": "Training starten",
     "systemOnline": "System online",
-    "adminLink": "Admin-Zugang"
+    "adminLink": "Admin-Zugang",
+    "resetApp": "App zurücksetzen",
+    "resetConfirm": "Alle lokalen Daten und den Cache löschen? Die App startet danach komplett neu.",
+    "resetDone": "Cache gelöscht — Seite wird neu geladen..."
   },
   "topics": {
     "title": "Themenbereiche",

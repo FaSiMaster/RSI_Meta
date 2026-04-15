@@ -3,7 +3,7 @@
 // Enthält Datenschutzhinweis (DSGVO) und Admin-Zugang via PIN
 
 import { useState } from 'react'
-import { Shield, Eye, BarChart3, BookOpen, EyeOff, Lock, ChevronRight } from 'lucide-react'
+import { Shield, Eye, BarChart3, BookOpen, EyeOff, Lock, ChevronRight, RotateCcw } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import LanguageSwitcher from './LanguageSwitcher'
 import { getSession, getKurseZeitlichAktiv, type Kurs } from '../data/appData'
@@ -22,6 +22,7 @@ export default function LandingPage({ onStart, onAdmin }: Props) {
   const [passwortInput, setPasswortInput] = useState('')
   const [passwortFehler, setPasswortFehler] = useState(false)
   const [showPasswort, setShowPasswort] = useState(false)
+  const [resetting, setResetting] = useState(false)
 
   // Admin-PIN
   const [showAdminModal, setShowAdminModal] = useState(false)
@@ -75,6 +76,33 @@ export default function LandingPage({ onStart, onAdmin }: Props) {
     setShowAdminModal(true)
     setAdminPin('')
     setAdminPinFehler(false)
+  }
+
+  // App komplett zurücksetzen: Service Worker + Caches + localStorage
+  async function handleResetApp() {
+    if (!window.confirm(t('landing.resetConfirm'))) return
+    setResetting(true)
+
+    // 1. Service Worker deregistrieren
+    if ('serviceWorker' in navigator) {
+      const registrations = await navigator.serviceWorker.getRegistrations()
+      await Promise.all(registrations.map(r => r.unregister()))
+    }
+
+    // 2. Alle Caches löschen (Workbox + sonstige)
+    if ('caches' in window) {
+      const keys = await caches.keys()
+      await Promise.all(keys.map(k => caches.delete(k)))
+    }
+
+    // 3. localStorage komplett leeren
+    localStorage.clear()
+
+    // 4. sessionStorage leeren
+    sessionStorage.clear()
+
+    // 5. Seite neu laden (Server-Fetch erzwingen)
+    window.location.reload()
   }
 
   // Gemeinsame Input-Styles
@@ -264,9 +292,29 @@ export default function LandingPage({ onStart, onAdmin }: Props) {
           <span style={{ color: '#1A7F1F', fontWeight: 800 }}>●</span>
           {t('landing.systemOnline')} · V3.1
         </div>
-        <span className="text-[10px] font-semibold" style={{ color: 'var(--zh-color-text-disabled)' }}>
-          © {new Date().getFullYear()} Tiefbauamt Kanton Zürich
-        </span>
+        <div className="flex items-center gap-3">
+          <button
+            onClick={handleResetApp}
+            disabled={resetting}
+            className="flex items-center gap-1 text-[10px] font-semibold transition-colors"
+            style={{
+              color: 'var(--zh-color-text-disabled)',
+              background: 'none',
+              border: 'none',
+              cursor: resetting ? 'wait' : 'pointer',
+              padding: 0,
+              opacity: resetting ? 0.5 : 1,
+            }}
+            title={t('landing.resetApp')}
+          >
+            <RotateCcw size={10} />
+            {resetting ? t('landing.resetDone') : t('landing.resetApp')}
+          </button>
+          <span className="text-[10px]" style={{ color: 'var(--zh-color-border)' }}>|</span>
+          <span className="text-[10px] font-semibold" style={{ color: 'var(--zh-color-text-disabled)' }}>
+            © {new Date().getFullYear()} Tiefbauamt Kanton Zürich
+          </span>
+        </div>
       </div>
 
       {/* ── Admin-PIN-Modal ── */}

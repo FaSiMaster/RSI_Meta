@@ -190,7 +190,10 @@
     "loginLabel": "Your name",
     "startBtn": "Start training",
     "systemOnline": "System online",
-    "adminLink": "Admin access"
+    "adminLink": "Admin access",
+    "resetApp": "Reset app",
+    "resetConfirm": "Delete all local data and cache? The app will restart completely.",
+    "resetDone": "Cache cleared — reloading page..."
   },
   "topics": {
     "title": "Topic Areas",
