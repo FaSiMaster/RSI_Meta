@@ -65,19 +65,6 @@
     "massnahmen": "Massnahmenlogik",
     "continueExploration": "Weiter zur Exploration"
   },
-  "completion": {
-    "title": "Training abgeschlossen!",
-    "score": "Score",
-    "allFound": "Sie haben alle {{count}} Sicherheitsdefizite erfolgreich identifiziert und bewertet.",
-    "saveScore": "Score speichern & Ranking ansehen"
-  },
-  "leaderboard": {
-    "title": "Globales Ranking",
-    "backToDashboard": "Zurück zum Dashboard",
-    "rank": "Platz",
-    "name": "Name",
-    "score": "Score"
-  },
   "admin": {
     "title": "Admin-Dashboard",
     "subtitle": "Übersicht Themenbereiche, Szenen und Defizit-Kataloge nach RSI-Methodik.",
