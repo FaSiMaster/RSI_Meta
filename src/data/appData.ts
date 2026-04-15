@@ -4,6 +4,11 @@
 import type { RSIDimension, NACADimension, ResultDimension } from '../types'
 import type { NacaRaw } from './scoringEngine'
 import type { DefizitVerortung } from '../utils/sphereCoords'
+import {
+  getTopicsSync, saveTopicSupabase, deleteTopicSupabase,
+  getScenesSync, saveSceneSupabase, deleteSceneSupabase,
+  getDeficitsSync, saveDeficitSupabase, deleteDeficitSupabase,
+} from './supabaseSync'
 
 // ── Typen ──
 
@@ -671,16 +676,21 @@ export function getVerortungFuerPerspektive(
 // ── Topics ──
 export function getTopics(): AppTopic[] {
   initIfNeeded()
-  return readJSON<AppTopic>(K_TOPICS, DEFAULT_TOPICS)
+  const synced = getTopicsSync()
+  return synced.length > 0 ? synced : readJSON<AppTopic>(K_TOPICS, DEFAULT_TOPICS)
 }
 export function saveTopic(t: AppTopic): void {
+  // localStorage sofort (synchron für UI)
   const list = getTopics()
   const i = list.findIndex(x => x.id === t.id)
   if (i >= 0) list[i] = t; else list.push(t)
   writeJSON(K_TOPICS, list)
+  // Supabase async (fire-and-forget)
+  saveTopicSupabase(t).catch(() => {})
 }
 export function deleteTopic(id: string): void {
   writeJSON(K_TOPICS, getTopics().filter(t => t.id !== id))
+  deleteTopicSupabase(id).catch(() => {})
 }
 
 export function getOberthemen(): AppTopic[] {
@@ -703,39 +713,47 @@ export function getTopicsTree(): TopicNode[] {
 // ── Scenes ──
 export function getScenes(topicId: string): AppScene[] {
   initIfNeeded()
-  return readJSON<AppScene>(K_SCENES, DEFAULT_SCENES).filter(s => s.topicId === topicId)
+  const synced = getScenesSync(topicId)
+  return synced.length > 0 ? synced : readJSON<AppScene>(K_SCENES, DEFAULT_SCENES).filter(s => s.topicId === topicId)
 }
 export function getAllScenes(): AppScene[] {
   initIfNeeded()
-  return readJSON<AppScene>(K_SCENES, DEFAULT_SCENES)
+  const synced = getScenesSync()
+  return synced.length > 0 ? synced : readJSON<AppScene>(K_SCENES, DEFAULT_SCENES)
 }
 export function saveScene(s: AppScene): void {
   const list = getAllScenes()
   const i = list.findIndex(x => x.id === s.id)
   if (i >= 0) list[i] = s; else list.push(s)
   writeJSON(K_SCENES, list)
+  saveSceneSupabase(s).catch(() => {})
 }
 export function deleteScene(id: string): void {
   writeJSON(K_SCENES, getAllScenes().filter(s => s.id !== id))
+  deleteSceneSupabase(id).catch(() => {})
 }
 
 // ── Deficits ──
 export function getDeficits(sceneId: string): AppDeficit[] {
   initIfNeeded()
-  return readJSON<AppDeficit>(K_DEFICITS, DEFAULT_DEFICITS).filter(d => d.sceneId === sceneId)
+  const synced = getDeficitsSync(sceneId)
+  return synced.length > 0 ? synced : readJSON<AppDeficit>(K_DEFICITS, DEFAULT_DEFICITS).filter(d => d.sceneId === sceneId)
 }
 export function getAllDeficits(): AppDeficit[] {
   initIfNeeded()
-  return readJSON<AppDeficit>(K_DEFICITS, DEFAULT_DEFICITS)
+  const synced = getDeficitsSync()
+  return synced.length > 0 ? synced : readJSON<AppDeficit>(K_DEFICITS, DEFAULT_DEFICITS)
 }
 export function saveDeficit(d: AppDeficit): void {
   const list = getAllDeficits()
   const i = list.findIndex(x => x.id === d.id)
   if (i >= 0) list[i] = d; else list.push(d)
   writeJSON(K_DEFICITS, list)
+  saveDeficitSupabase(d).catch(() => {})
 }
 export function deleteDeficit(id: string): void {
   writeJSON(K_DEFICITS, getAllDeficits().filter(d => d.id !== id))
+  deleteDeficitSupabase(id).catch(() => {})
 }
 
 // ── Session ──

@@ -11,6 +11,7 @@ import {
 import { MAX_PUNKTE_PRO_DEFIZIT } from './data/scoreCalc'
 import type { AppTopic, AppScene, AppDeficit, FoundDeficit, DefizitResult, SceneResult } from './data/appData'
 
+import { initSupabaseData } from './data/supabaseSync'
 import { xrStore } from './xrStore'
 import LandingPage     from './components/LandingPage'
 import Navbar          from './components/Navbar'
@@ -63,7 +64,7 @@ export default function App() {
   // Letztes SceneResult (für SzenenAbschluss)
   const [lastSceneResult, setLastSceneResult] = useState<SceneResult | null>(null)
 
-  // Session + Theme beim Start laden
+  // Session + Theme + Supabase-Sync beim Start laden
   useEffect(() => {
     const session = getSession()
     if (session.username) {
@@ -75,6 +76,8 @@ export default function App() {
     const saved = (localStorage.getItem('rsi-theme') as 'light' | 'dark') ?? 'light'
     setTheme(saved)
     document.documentElement.setAttribute('data-theme', saved)
+    // Admin-Daten aus Supabase laden (Topics, Scenes, Deficits)
+    initSupabaseData().catch(() => {})
   }, [])
 
   function handleToggleTheme() {
