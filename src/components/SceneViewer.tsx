@@ -536,14 +536,25 @@ function SceneContent({
   }, [isInXR, onVRModeChange])
 
   // Startblick setzen (auch bei Perspektivenwechsel)
+  // Stabile Werte extrahieren, damit useEffect nicht bei jeder Render-Referenz feuert
+  const startTheta = startblick?.theta ?? null
+  const startPhi   = startblick?.phi ?? null
   useEffect(() => {
-    if (!controlsRef.current || !startblick) return
-    const azimuth = -(startblick.theta * Math.PI / 180)
-    const polar   =   startblick.phi   * Math.PI / 180
-    controlsRef.current.setAzimuthalAngle(azimuth)
-    controlsRef.current.setPolarAngle(polar)
-    controlsRef.current.update()
-  }, [startblick])
+    if (startTheta == null || startPhi == null) return
+    const azimuth = -(startTheta * Math.PI / 180)
+    const polar   =   startPhi   * Math.PI / 180
+    // Controls sind ggf. noch nicht gemountet → retry via requestAnimationFrame
+    function apply() {
+      if (controlsRef.current) {
+        controlsRef.current.setAzimuthalAngle(azimuth)
+        controlsRef.current.setPolarAngle(polar)
+        controlsRef.current.update()
+      } else {
+        requestAnimationFrame(apply)
+      }
+    }
+    apply()
+  }, [startTheta, startPhi])
 
   const bildUrl = aktiveBildUrl ?? scene.panoramaBildUrl ?? scene.bildUrl
 
@@ -565,11 +576,13 @@ function SceneContent({
       {/* Panorama */}
       <PanoramaSphere bildUrl={bildUrl} onClick={onSphereClick} />
 
-      {/* Hotspots (perspektivenabhaengig) */}
-      {hintActive && deficits.map(d => {
+      {/* Hotspots: gefundene Defizite immer grün, restliche nur bei aktivem Hint */}
+      {deficits.map(d => {
+        const isFound = foundIds.has(d.id)
+        if (!isFound && !hintActive) return null
         const renderPos = getHotspotPosition(d, aktivePerspektiveId)
         if (!renderPos) return null
-        return <Hotspot key={d.id} position={renderPos} found={foundIds.has(d.id)} />
+        return <Hotspot key={d.id} position={renderPos} found={isFound} />
       })}
 
       {/* Standort-Navigationsmarker (Haupt-Panorama → Perspektiven) */}

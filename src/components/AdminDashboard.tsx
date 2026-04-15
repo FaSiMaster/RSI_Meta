@@ -18,6 +18,7 @@ import { WICHTIGKEIT_TABLE, KRITERIUM_LABELS, calcRelevanzSD, calcUnfallrisiko, 
 import type { RSIDimension, NACADimension, ResultDimension } from '../types'
 import type { NacaRaw } from '../data/scoringEngine'
 import BildEditor from './admin/BildEditor'
+import { STRASSENMERKMALE_KATALOG } from '../data/strassenmerkmale'
 import BildUpload from './admin/BildUpload'
 import AdminRanking from './admin/AdminRanking'
 
@@ -301,6 +302,23 @@ export default function AdminDashboard() {
   function setSceneML(field: 'nameI18n' | 'beschreibungI18n', l: string, v: string) {
     if (!editingScene) return
     setEditingScene(prev => prev ? { ...prev, [field]: { ...(prev[field] ?? { de:'', fr:'', it:'', en:'' }), [l]: v } } : prev)
+  }
+  // Merkmale aus dem Katalog initialisieren (falls leer)
+  function initMerkmaleFromKatalog() {
+    if (!editingScene) return
+    const existing = editingScene.strassenmerkmale ?? []
+    if (existing.length > 0) return // Bereits befüllt
+    const merkmale: StrassenMerkmal[] = []
+    for (const kat of STRASSENMERKMALE_KATALOG) {
+      for (const m of kat.merkmale) {
+        merkmale.push({
+          id: m.id,
+          labelI18n: { de: m.label, fr: m.label, it: m.label, en: m.label },
+          wertI18n: { de: '', fr: '', it: '', en: '' },
+        })
+      }
+    }
+    setEditingScene(prev => prev ? { ...prev, strassenmerkmale: merkmale } : prev)
   }
   function addMerkmal() {
     if (!editingScene) return
@@ -1029,26 +1047,53 @@ export default function AdminDashboard() {
 
             <Section label={t('admin.merkmale_label')}>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                {(editingScene.strassenmerkmale ?? []).map((m, i) => (
-                  <div key={i} style={{ display: 'flex', gap: '8px', alignItems: 'flex-end' }}>
-                    <div style={{ flex: 1 }}>
-                      <div style={{ fontSize: '10px', fontWeight: 700, color: 'var(--zh-color-text-disabled)', marginBottom: '3px', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Label (DE)</div>
-                      <input value={m.labelI18n.de} onChange={e => updateMerkmal(i, 'labelI18n', e.target.value)}
-                        style={{ width: '100%', padding: '7px 10px', borderRadius: '6px', border: '1px solid var(--zh-color-border)', background: 'var(--zh-color-bg-secondary)', color: 'var(--zh-color-text)', fontSize: '13px', fontFamily: 'var(--zh-font)', boxSizing: 'border-box' }} />
+                {(editingScene.strassenmerkmale ?? []).length === 0 && (
+                  <button onClick={initMerkmaleFromKatalog} style={{ padding: '10px 14px', borderRadius: '6px', border: '1px dashed var(--zh-color-border)', background: 'rgba(0,118,189,0.04)', color: 'var(--zh-blau)', fontSize: '13px', fontWeight: 600, cursor: 'pointer', textAlign: 'left' }}>
+                    Katalog laden (Funktionalität)
+                  </button>
+                )}
+                {(editingScene.strassenmerkmale ?? []).map((m, i) => {
+                  // Katalog-Optionen finden (falls id vorhanden)
+                  const katalogDef = m.id ? STRASSENMERKMALE_KATALOG.flatMap(k => k.merkmale).find(d => d.id === m.id) : null
+                  return (
+                    <div key={i} style={{ display: 'flex', gap: '8px', alignItems: 'flex-end' }}>
+                      <div style={{ flex: 1 }}>
+                        <div style={{ fontSize: '10px', fontWeight: 700, color: 'var(--zh-color-text-disabled)', marginBottom: '3px', textTransform: 'uppercase', letterSpacing: '0.1em' }}>
+                          {katalogDef ? katalogDef.label : 'Label (DE)'}
+                        </div>
+                        {!katalogDef ? (
+                          <input value={m.labelI18n.de} onChange={e => updateMerkmal(i, 'labelI18n', e.target.value)}
+                            style={{ width: '100%', padding: '7px 10px', borderRadius: '6px', border: '1px solid var(--zh-color-border)', background: 'var(--zh-color-bg-secondary)', color: 'var(--zh-color-text)', fontSize: '13px', fontFamily: 'var(--zh-font)', boxSizing: 'border-box' }} />
+                        ) : null}
+                      </div>
+                      <div style={{ flex: 1 }}>
+                        {katalogDef ? (
+                          <select
+                            value={m.wertI18n.de}
+                            onChange={e => updateMerkmal(i, 'wertI18n', e.target.value)}
+                            style={{ width: '100%', padding: '7px 10px', borderRadius: '6px', border: '1px solid var(--zh-color-border)', background: 'var(--zh-color-bg-secondary)', color: 'var(--zh-color-text)', fontSize: '13px', fontFamily: 'var(--zh-font)', boxSizing: 'border-box', cursor: 'pointer' }}
+                          >
+                            <option value="">— auswählen —</option>
+                            {katalogDef.optionen.map(o => (
+                              <option key={o} value={o}>{o}</option>
+                            ))}
+                          </select>
+                        ) : (
+                          <input value={m.wertI18n.de} onChange={e => updateMerkmal(i, 'wertI18n', e.target.value)}
+                            style={{ width: '100%', padding: '7px 10px', borderRadius: '6px', border: '1px solid var(--zh-color-border)', background: 'var(--zh-color-bg-secondary)', color: 'var(--zh-color-text)', fontSize: '13px', fontFamily: 'var(--zh-font)', boxSizing: 'border-box' }} />
+                        )}
+                      </div>
+                      <button onClick={() => removeMerkmal(i)} style={{ padding: '7px 10px', borderRadius: '6px', border: '1px solid rgba(212,0,83,0.2)', background: 'rgba(212,0,83,0.06)', color: '#D40053', cursor: 'pointer', flexShrink: 0 }}>
+                        <Trash2 size={13} />
+                      </button>
                     </div>
-                    <div style={{ flex: 1 }}>
-                      <div style={{ fontSize: '10px', fontWeight: 700, color: 'var(--zh-color-text-disabled)', marginBottom: '3px', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Wert (DE)</div>
-                      <input value={m.wertI18n.de} onChange={e => updateMerkmal(i, 'wertI18n', e.target.value)}
-                        style={{ width: '100%', padding: '7px 10px', borderRadius: '6px', border: '1px solid var(--zh-color-border)', background: 'var(--zh-color-bg-secondary)', color: 'var(--zh-color-text)', fontSize: '13px', fontFamily: 'var(--zh-font)', boxSizing: 'border-box' }} />
-                    </div>
-                    <button onClick={() => removeMerkmal(i)} style={{ padding: '7px 10px', borderRadius: '6px', border: '1px solid rgba(212,0,83,0.2)', background: 'rgba(212,0,83,0.06)', color: '#D40053', cursor: 'pointer', flexShrink: 0 }}>
-                      <Trash2 size={13} />
-                    </button>
-                  </div>
-                ))}
-                <button onClick={addMerkmal} style={{ padding: '7px 14px', borderRadius: '6px', border: '1px dashed var(--zh-color-border)', background: 'transparent', color: 'var(--zh-blau)', fontSize: '13px', fontWeight: 600, cursor: 'pointer', textAlign: 'left' }}>
-                  {t('admin.merkmale_hinzufuegen')}
-                </button>
+                  )
+                })}
+                {(editingScene.strassenmerkmale ?? []).length > 0 && (
+                  <button onClick={addMerkmal} style={{ padding: '7px 14px', borderRadius: '6px', border: '1px dashed var(--zh-color-border)', background: 'transparent', color: 'var(--zh-blau)', fontSize: '13px', fontWeight: 600, cursor: 'pointer', textAlign: 'left' }}>
+                    {t('admin.merkmale_hinzufuegen')}
+                  </button>
+                )}
               </div>
             </Section>
 

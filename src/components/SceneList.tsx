@@ -352,8 +352,14 @@ export default function SceneList({ topic, username, onBack, onSelectScene }: Pr
                 className="overflow-hidden"
                 style={{ borderRadius: 'var(--zh-radius-card)', border: '1px solid var(--zh-color-border)', background: 'var(--zh-color-surface)', boxShadow: 'var(--zh-shadow-sm)' }}
               >
-                {/* Bild-Platzhalter */}
-                <div className="relative h-36 flex items-end" style={{ background: 'var(--zh-color-bg-tertiary)' }}>
+                {/* Szenen-Vorschaubild */}
+                <div className="relative h-36 flex items-end" style={{ background: 'var(--zh-color-bg-tertiary)', overflow: 'hidden' }}>
+                  {(() => {
+                    const imgUrl = scene.vorschauBild1 === 'panorama' ? scene.panoramaBildUrl : scene.vorschauBild1
+                    return imgUrl ? (
+                      <img src={imgUrl} alt="" style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover' }} />
+                    ) : null
+                  })()}
                   <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
                   <div className="relative flex items-center gap-2 p-4 w-full">
                     <MapPin size={13} style={{ color: 'var(--zh-color-accent)' }} />
