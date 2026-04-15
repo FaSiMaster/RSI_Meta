@@ -23,6 +23,7 @@ export default function LandingPage({ onStart, onAdmin }: Props) {
   const [passwortFehler, setPasswortFehler] = useState(false)
   const [showPasswort, setShowPasswort] = useState(false)
   const [resetting, setResetting] = useState(false)
+  const [nameFehlend, setNameFehlend] = useState(false)
 
   // Admin-PIN
   const [showAdminModal, setShowAdminModal] = useState(false)
@@ -38,7 +39,11 @@ export default function LandingPage({ onStart, onAdmin }: Props) {
   const canStart = name.trim().length > 0 && passwortKorrekt
 
   function handleStart() {
-    if (!name.trim()) return
+    if (!name.trim()) {
+      setNameFehlend(true)
+      return
+    }
+    setNameFehlend(false)
     if (kursHatPasswort && passwortInput !== (selectedKurs?.passwort ?? '')) {
       setPasswortFehler(true)
       return
@@ -207,12 +212,16 @@ export default function LandingPage({ onStart, onAdmin }: Props) {
             <input
               type="text"
               value={name}
-              onChange={e => setName(e.target.value)}
+              onChange={e => { setName(e.target.value); if (e.target.value.trim()) setNameFehlend(false) }}
               onKeyDown={e => { if (e.key === 'Enter') handleStart() }}
               placeholder="z.B. Max Muster"
+              autoFocus
               className={inputClass}
-              style={{ padding: '11px 14px', border: '1px solid var(--zh-color-border)', background: 'var(--zh-color-bg-secondary)', color: 'var(--zh-color-text)', fontFamily: 'var(--zh-font)', marginBottom: '16px', boxSizing: 'border-box' }}
+              style={{ padding: '11px 14px', border: nameFehlend ? '1px solid #D40053' : '1px solid var(--zh-color-border)', background: 'var(--zh-color-bg-secondary)', color: 'var(--zh-color-text)', fontFamily: 'var(--zh-font)', marginBottom: nameFehlend ? '4px' : '16px', boxSizing: 'border-box' }}
             />
+            {nameFehlend && (
+              <p className="text-xs mb-3" style={{ color: '#D40053' }}>{t('landing.nameRequired')}</p>
+            )}
 
             {/* Kurs */}
             <label className="block text-[11px] font-bold uppercase tracking-wider mb-1.5" style={{ color: 'var(--zh-color-text-muted)' }}>
@@ -265,13 +274,12 @@ export default function LandingPage({ onStart, onAdmin }: Props) {
             {/* Start-Button */}
             <button
               onClick={handleStart}
-              disabled={!canStart}
               className="w-full flex items-center justify-center gap-2 rounded-lg text-[15px] font-bold transition-all"
               style={{
                 padding: '13px',
                 background: canStart ? 'var(--zh-dunkelblau)' : 'var(--zh-color-bg-tertiary)',
                 color: canStart ? 'white' : 'var(--zh-color-text-disabled)',
-                cursor: canStart ? 'pointer' : 'not-allowed',
+                cursor: 'pointer',
                 border: 'none', fontFamily: 'var(--zh-font)',
               }}
             >

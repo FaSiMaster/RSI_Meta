@@ -191,6 +191,7 @@
     "startBtn": "Avvia la formazione",
     "systemOnline": "Sistema online",
     "adminLink": "Accesso Admin",
+    "nameRequired": "Inserite il vostro nome.",
     "resetApp": "Reimposta app",
     "resetConfirm": "Eliminare tutti i dati locali e la cache? L'app verrà riavviata completamente.",
     "resetDone": "Cache svuotata — pagina in ricaricamento..."

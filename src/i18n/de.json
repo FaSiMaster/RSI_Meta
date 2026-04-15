@@ -192,6 +192,7 @@
     "startBtn": "Training starten",
     "systemOnline": "System online",
     "adminLink": "Admin-Zugang",
+    "nameRequired": "Bitte geben Sie Ihren Namen ein.",
     "resetApp": "App zurücksetzen",
     "resetConfirm": "Alle lokalen Daten und den Cache löschen? Die App startet danach komplett neu.",
     "resetDone": "Cache gelöscht — Seite wird neu geladen..."
