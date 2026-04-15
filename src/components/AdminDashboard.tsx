@@ -381,15 +381,22 @@ export default function AdminDashboard() {
   }
   function moveThema(id: string, dir: 'up' | 'down') {
     const all = getTopics()
-    const idx = all.findIndex(t => t.id === id)
+    const item = all.find(t => t.id === id)
+    if (!item) return
+    // Nur Geschwister sortieren (gleiche Ebene: gleicher parentTopicId)
+    const siblings = all
+      .filter(t => t.parentTopicId === item.parentTopicId)
+      .sort((a, b) => a.sortOrder - b.sortOrder)
+    const idx = siblings.findIndex(t => t.id === id)
     if (idx < 0) return
     const swapIdx = dir === 'up' ? idx - 1 : idx + 1
-    if (swapIdx < 0 || swapIdx >= all.length) return
-    const tmp = all[idx].sortOrder
-    all[idx] = { ...all[idx], sortOrder: all[swapIdx].sortOrder }
-    all[swapIdx] = { ...all[swapIdx], sortOrder: tmp }
-    saveTopic(all[idx])
-    saveTopic(all[swapIdx])
+    if (swapIdx < 0 || swapIdx >= siblings.length) return
+    // sortOrder tauschen
+    const tmpOrder = siblings[idx].sortOrder
+    const swapOrder = siblings[swapIdx].sortOrder
+    // Bei gleichen Werten: eindeutige sortOrder vergeben
+    saveTopic({ ...siblings[idx], sortOrder: swapOrder === tmpOrder ? swapOrder + (dir === 'up' ? -1 : 1) : swapOrder })
+    saveTopic({ ...siblings[swapIdx], sortOrder: tmpOrder })
     setTopics(getTopics())
     setTopicsTree(getTopicsTree())
   }
