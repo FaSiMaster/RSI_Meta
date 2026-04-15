@@ -54,7 +54,9 @@ RSI_Meta/
 │   ├── data/
 │   │   ├── appData.ts              # localStorage CRUD, Typen, ml(), Seed-Daten, Perspektive
 │   │   ├── scoringEngine.ts        # WICHTIGKEIT_TABLE (58), Matrizen (SACRED)
-│   │   └── scoreCalc.ts            # calcScore Pure Function
+│   │   ├── scoreCalc.ts            # calcScore Pure Function
+│   │   ├── kriteriumLabels.ts      # Anzeige-Labels mit Umlauten (aus scoringEngine ausgelagert)
+│   │   └── strassenmerkmale.ts     # Dropdown-Katalog Strassenmerkmale (Funktionalität)
 │   ├── utils/
 │   │   └── sphereCoords.ts         # Sphärische Koordinaten, Trefferpruefung
 │   ├── lib/
@@ -63,14 +65,14 @@ RSI_Meta/
 │   │   └── design-tokens.css       # CSS-Variablen
 │   ├── i18n/
 │   │   ├── index.ts                # i18n-Setup
-│   │   ├── de.json                 # Deutsch (401 Keys, Referenzsprache)
-│   │   ├── fr.json                 # Französisch (~82%)
-│   │   ├── it.json                 # Italienisch (~82%)
-│   │   └── en.json                 # Englisch (~82%)
+│   │   ├── de.json                 # Deutsch (Referenzsprache, ~460 Keys)
+│   │   ├── fr.json                 # Französisch (100%)
+│   │   ├── it.json                 # Italienisch (100%)
+│   │   └── en.json                 # Englisch (100%)
 │   └── components/
-│       ├── LandingPage.tsx         # Login / Username
-│       ├── Navbar.tsx              # Navigation, Score-Pill, Theme-Toggle, Avatar
-│       ├── TopicDashboard.tsx      # 4-spaltiges Topic-Grid
+│       ├── LandingPage.tsx         # Login, Validierung, App-Reset
+│       ├── Navbar.tsx              # Navigation, Score-Pill, Avatar-Popover, Logout
+│       ├── TopicDashboard.tsx      # Topic-Grid + Schritt-Anleitung + RSI-Methodik
 │       ├── SceneList.tsx           # Szenen-Cards mit Sterne und Start-Button
 │       ├── TrainingEinstieg.tsx    # Szenen-Einführung vor dem Viewer
 │       ├── SceneViewer.tsx         # 360°-Viewer, Klick-Flow, Standort-Navigation, VR
@@ -219,8 +221,9 @@ interface AppDeficit {
 
 - **Sphere:** radius=500, `side={THREE.BackSide}`, Kamera bei `[0,0,0.01]`
 - **Textur-Fix:** `repeat.x=-1` + `offset.x=0.75` — korrigiert BackSide-Spiegelung und 90°-UV-Offset
-- **Startblick:** `azimuth = -(theta * PI/180)` (OrbitControls-Konvention)
+- **Startblick:** `azimuth = -(theta * PI/180)` (OrbitControls-Konvention), rAF-Retry bei Mount
 - **Perspektiven:** Kein Fallback auf Haupt-Verortung bei aktiver Perspektive
+- **Gefundene Defizite:** Grüner Hotspot-Marker immer sichtbar (auch ohne Hints, über alle Perspektiven)
 - **Standort-Navigation:** Bidirektional via standortPosition + navMarker
 - **XR-Store:** `model: false` — Pflicht (verhindert CDN-GLTF-Download-Crash)
 
@@ -233,17 +236,26 @@ interface AppDeficit {
 - [x] `@react-three/fiber` + `@react-three/xr` v6 konfiguriert
 - [x] PWA-Manifest (Bubblewrap-ready)
 
-### Phase 2 – Browser-Training (abgeschlossen)
+### Phase 2 – Browser-Training (abgeschlossen, v0.3.0)
 - [x] 9-Schritte RSI-Beurteilungsfluss (ScoringFlow)
 - [x] Klick-Bestätigung, Bewertungs-Overlays
 - [x] Perspektiven, Standort-Navigation (bidirektional)
 - [x] Best-of Punktesystem, Sterne, Zeiterfassung
 - [x] 4-Ebenen-Ranking, ESC-Taste
 - [x] Admin-Dashboard (Defizit-CRUD, BildEditor mit Drag&Drop)
-- [x] i18n (de/fr/it/en), alle Labels via t()
+- [x] i18n (de/fr/it/en) 100%, alle Labels via t()
 - [x] Dark/Light Theme, ZH Corporate Design
 - [x] Panorama-Textur Spiegelung korrigiert
-- [x] Projektstruktur aufgeräumt (2026-04-15)
+- [x] App-Reset (SW + Cache + localStorage)
+- [x] Avatar-Popover (Abmelden, Reset)
+- [x] Schritt-Anleitung + RSI-Methodik-Karte (TopicDashboard)
+- [x] Startbutton-Validierung (Name-Pflichtfeld)
+- [x] Startblick-Fix (Race-Condition, rAF-Retry)
+- [x] Gefundene Defizite grün markiert (alle Perspektiven)
+- [x] Szenen-Vorschaubild in SceneList
+- [x] Strassenmerkmale-Dropdown-Katalog (Funktionalität)
+- [x] Umlaute in Kriterium-Labels (kriteriumLabels.ts)
+- [x] Themen-Sortierung im Admin funktional
 
 ### Phase 3 – VR-Integration (nächster Schritt)
 - [ ] Eigene 360°-Strassenszenen (Insta360 / Ricoh Theta)
@@ -298,4 +310,4 @@ npm run preview -- --host  # Build lokal testen
 
 ---
 
-*Letzte Aktualisierung: 2026-04-15*
+*Letzte Aktualisierung: 2026-04-16*
