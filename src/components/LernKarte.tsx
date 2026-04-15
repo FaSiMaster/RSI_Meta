@@ -5,7 +5,7 @@
 import { CheckCircle2, XCircle, ExternalLink, BookOpen } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { ml, type AppDeficit } from '../data/appData'
-import { KRITERIUM_LABELS } from '../data/scoringEngine'
+import { KRITERIUM_LABELS } from '../data/kriteriumLabels'
 import type { RSIDimension, NACADimension } from '../types'
 
 interface Props {

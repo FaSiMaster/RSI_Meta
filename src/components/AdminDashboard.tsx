@@ -14,7 +14,8 @@ import {
   getTopicsTree, getOberthemen, ml,
   type AppTopic, type AppScene, type AppDeficit, type TopicNode, type Kurs, type StrassenMerkmal,
 } from '../data/appData'
-import { WICHTIGKEIT_TABLE, KRITERIUM_LABELS, calcRelevanzSD, calcUnfallrisiko, nacaToSchwere } from '../data/scoringEngine'
+import { WICHTIGKEIT_TABLE, calcRelevanzSD, calcUnfallrisiko, nacaToSchwere } from '../data/scoringEngine'
+import { KRITERIUM_LABELS } from '../data/kriteriumLabels'
 import type { RSIDimension, NACADimension, ResultDimension } from '../types'
 import type { NacaRaw } from '../data/scoringEngine'
 import BildEditor from './admin/BildEditor'

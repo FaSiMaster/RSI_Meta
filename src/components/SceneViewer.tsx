@@ -21,7 +21,8 @@ import { ml, getVerortungFuerPerspektive, type AppScene, type AppDeficit, type D
 import KategoriePanel from './KategoriePanel'
 import KlickFeedback, { type KlickFeedbackType } from './KlickFeedback'
 import { useTranslation } from 'react-i18next'
-import { WICHTIGKEIT_TABLE, ABWEICHUNG_KATEGORIEN, KRITERIUM_LABELS } from '../data/scoringEngine'
+import { WICHTIGKEIT_TABLE, ABWEICHUNG_KATEGORIEN } from '../data/scoringEngine'
+import { KRITERIUM_LABELS } from '../data/kriteriumLabels'
 import type { RSIDimension, NACADimension } from '../types'
 
 // Modul-Level Singleton – nie innerhalb von Komponenten erzeugen
