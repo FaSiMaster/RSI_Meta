@@ -63,9 +63,11 @@ export async function initSupabaseData(): Promise<void> {
       scenesCache = (s2 ?? []).map(r => r.data as AppScene)
       deficitsCache = (d2 ?? []).map(r => r.data as AppDeficit)
     } else {
-      topicsCache = topicRows.map(r => r.data as AppTopic)
-      scenesCache = sceneRows.map(r => r.data as AppScene)
-      deficitsCache = deficitRows.map(r => r.data as AppDeficit)
+      // NUR setzen wenn noch kein lokaler Save passiert ist (Cache leer)
+      // Verhindert Race-Condition: lokaler Save → initSupabase ueberschreibt
+      if (!topicsCache) topicsCache = topicRows.map(r => r.data as AppTopic)
+      if (!scenesCache) scenesCache = sceneRows.map(r => r.data as AppScene)
+      if (!deficitsCache) deficitsCache = deficitRows.map(r => r.data as AppDeficit)
     }
 
     // localStorage als Cache aktualisieren
@@ -115,12 +117,11 @@ export function getTopicsSync(): AppTopic[] {
 }
 
 export async function saveTopicSupabase(topic: AppTopic): Promise<void> {
-  // Cache + localStorage sofort aktualisieren
-  const list = getTopicsSync()
+  // Nur Cache aktualisieren (localStorage wird bereits von appData.ts geschrieben)
+  const list = topicsCache ?? readLocal<AppTopic>(K_TOPICS)
   const i = list.findIndex(x => x.id === topic.id)
   if (i >= 0) list[i] = topic; else list.push(topic)
-  topicsCache = list
-  writeLocal(K_TOPICS, list)
+  topicsCache = [...list]
 
   // Supabase async
   if (!supabase) return
@@ -155,8 +156,7 @@ export async function saveSceneSupabase(scene: AppScene): Promise<void> {
   const list = scenesCache ?? readLocal<AppScene>(K_SCENES)
   const i = list.findIndex(x => x.id === scene.id)
   if (i >= 0) list[i] = scene; else list.push(scene)
-  scenesCache = list
-  writeLocal(K_SCENES, list)
+  scenesCache = [...list]
 
   if (!supabase) return
   const { error } = await supabase.from('rsi_scenes').upsert({
@@ -190,8 +190,7 @@ export async function saveDeficitSupabase(deficit: AppDeficit): Promise<void> {
   const list = deficitsCache ?? readLocal<AppDeficit>(K_DEFICITS)
   const i = list.findIndex(x => x.id === deficit.id)
   if (i >= 0) list[i] = deficit; else list.push(deficit)
-  deficitsCache = list
-  writeLocal(K_DEFICITS, list)
+  deficitsCache = [...list]
 
   if (!supabase) return
   const { error } = await supabase.from('rsi_deficits').upsert({

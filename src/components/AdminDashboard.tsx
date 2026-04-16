@@ -11,7 +11,7 @@ import {
   getScenes, saveScene, deleteScene, getAllScenes,
   getDeficits, saveDeficit, deleteDeficit, getAllDeficits,
   getKurse, saveKurs, deleteKurs, getKursStatus,
-  getTopicsTree, getOberthemen, ml,
+  getTopicsTree, getOberthemen, getNextSortOrder, ml,
   type AppTopic, type AppScene, type AppDeficit, type TopicNode, type Kurs, type StrassenMerkmal,
 } from '../data/appData'
 import { WICHTIGKEIT_TABLE, calcRelevanzSD, calcUnfallrisiko, nacaToSchwere } from '../data/scoringEngine'
@@ -66,14 +66,14 @@ function emptyScene(topicId: string): AppScene {
   }
 }
 
-function emptyTopic(): AppTopic {
+function emptyTopic(parentTopicId: string | null = null): AppTopic {
   return {
     id: `tp-${Date.now()}`,
     nameI18n: { de: '', fr: '', it: '', en: '' },
     beschreibungI18n: { de: '', fr: '', it: '', en: '' },
-    sortOrder: 99,
+    sortOrder: getNextSortOrder(parentTopicId),
     isActive: true,
-    parentTopicId: null,
+    parentTopicId,
     createdAt: Date.now(),
   }
 }
@@ -386,18 +386,21 @@ export default function AdminDashboard() {
     if (!item) return
     // Nur Geschwister sortieren (gleiche Ebene: gleicher parentTopicId)
     const siblings = all
-      .filter(t => t.parentTopicId === item.parentTopicId)
+      .filter(t => (t.parentTopicId ?? null) === (item.parentTopicId ?? null))
       .sort((a, b) => a.sortOrder - b.sortOrder)
     const idx = siblings.findIndex(t => t.id === id)
     if (idx < 0) return
     const swapIdx = dir === 'up' ? idx - 1 : idx + 1
     if (swapIdx < 0 || swapIdx >= siblings.length) return
-    // sortOrder tauschen
-    const tmpOrder = siblings[idx].sortOrder
-    const swapOrder = siblings[swapIdx].sortOrder
-    // Bei gleichen Werten: eindeutige sortOrder vergeben
-    saveTopic({ ...siblings[idx], sortOrder: swapOrder === tmpOrder ? swapOrder + (dir === 'up' ? -1 : 1) : swapOrder })
-    saveTopic({ ...siblings[swapIdx], sortOrder: tmpOrder })
+    // Zuerst alle Geschwister normalisieren (1, 2, 3, ...) — verhindert Duplikate
+    siblings.forEach((s, i) => { s.sortOrder = i + 1 })
+    // Dann die beiden tauschen
+    const tmp = siblings[idx].sortOrder
+    siblings[idx].sortOrder = siblings[swapIdx].sortOrder
+    siblings[swapIdx].sortOrder = tmp
+    // Alle betroffenen speichern
+    saveTopic({ ...siblings[idx] })
+    saveTopic({ ...siblings[swapIdx] })
     setTopics(getTopics())
     setTopicsTree(getTopicsTree())
   }
@@ -709,7 +712,7 @@ export default function AdminDashboard() {
                       </button>
                       <button
                         onClick={() => {
-                          setEditingThema({ ...node.topic })
+                          setEditingThema(emptyTopic(node.topic.id))
                           setThemaTyp('unter')
                           setThemaModalOpen(true)
                         }}
@@ -1282,7 +1285,7 @@ export default function AdminDashboard() {
           onClick={e => { if (e.target === e.currentTarget) setThemaModalOpen(false) }}>
           <div style={{ width: '560px', maxHeight: '88vh', overflowY: 'auto', borderRadius: 'var(--zh-radius-card)', border: '1px solid var(--zh-color-border)', background: 'var(--zh-color-surface)', padding: '28px 32px', boxShadow: 'var(--zh-shadow-lg)' }}>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '24px' }}>
-              <h3 style={{ fontSize: '18px', fontWeight: 700, color: 'var(--zh-color-text)' }}>{t('admin.thema_neu')}</h3>
+              <h3 style={{ fontSize: '18px', fontWeight: 700, color: 'var(--zh-color-text)' }}>{editingThema.nameI18n.de ? t('admin.szene_bearbeiten') : t('admin.thema_neu')}</h3>
               <button onClick={() => setThemaModalOpen(false)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--zh-color-text-muted)' }}><X size={18} /></button>
             </div>
 

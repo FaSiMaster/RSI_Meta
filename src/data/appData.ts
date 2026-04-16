@@ -689,6 +689,16 @@ export function saveTopic(t: AppTopic): void {
   saveTopicSupabase(t).catch(() => {})
 }
 export function deleteTopic(id: string): void {
+  // Kaskade: Scenes und Deficits dieses Topics loeschen
+  const scenes = getAllScenes().filter(s => s.topicId === id)
+  for (const sc of scenes) {
+    deleteScene(sc.id)
+  }
+  // Kinder-Topics loeschen
+  const children = getTopics().filter(t => t.parentTopicId === id)
+  for (const child of children) {
+    deleteTopic(child.id)
+  }
   writeJSON(K_TOPICS, getTopics().filter(t => t.id !== id))
   deleteTopicSupabase(id).catch(() => {})
 }
@@ -703,11 +713,18 @@ export function getUnterthemen(parentId: string): AppTopic[] {
 
 export function getTopicsTree(): TopicNode[] {
   const all = getTopics()
-  const oberthemen = all.filter(t => !t.parentTopicId)
+  const oberthemen = all.filter(t => !t.parentTopicId).sort((a, b) => a.sortOrder - b.sortOrder)
   return oberthemen.map(ot => ({
     topic: ot,
     children: all.filter(t => t.parentTopicId === ot.id).sort((a, b) => a.sortOrder - b.sortOrder),
   }))
+}
+
+// Naechste freie sortOrder fuer eine Ebene berechnen
+export function getNextSortOrder(parentTopicId: string | null): number {
+  const siblings = getTopics().filter(t => (t.parentTopicId ?? null) === parentTopicId)
+  if (siblings.length === 0) return 1
+  return Math.max(...siblings.map(s => s.sortOrder)) + 1
 }
 
 // ── Scenes ──
