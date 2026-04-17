@@ -3,13 +3,13 @@
 // Phase 2: Browser | Phase 3+: WebXR Meta Quest 3
 
 import * as THREE from 'three'
-import { Canvas, useLoader, useFrame } from '@react-three/fiber'
+import { Canvas, useLoader, useFrame, useThree } from '@react-three/fiber'
 import { OrbitControls, Billboard, Text } from '@react-three/drei'
 import { XR, useXR } from '@react-three/xr'
 import { xrStore } from '../xrStore'
 import { Suspense, useCallback, useState, useRef, useEffect, Component } from 'react'
 import type { ThreeEvent } from '@react-three/fiber'
-import { Eye, X, Glasses, MapPin } from 'lucide-react'
+import { Eye, X, Glasses, MapPin, ZoomIn, ZoomOut, Maximize2 } from 'lucide-react'
 import type { OrbitControls as OrbitControlsImpl } from 'three-stdlib'
 import {
   clickToSpherical,
@@ -488,6 +488,18 @@ function VRAllFound({ onBeenden }: { onBeenden: () => void }) {
   )
 }
 
+// ── FOV-Sync (Zoom via Kamera-Perspektive) ───────────────────────────────────
+function CameraSync({ fov }: { fov: number }) {
+  const { camera } = useThree()
+  useEffect(() => {
+    if (camera instanceof THREE.PerspectiveCamera) {
+      camera.fov = fov
+      camera.updateProjectionMatrix()
+    }
+  }, [camera, fov])
+  return null
+}
+
 // ── Szenen-Inhalt (3D) ───────────────────────────────────────────────────────
 interface SceneContentProps {
   scene:          AppScene
@@ -543,9 +555,11 @@ function SceneContent({
   useEffect(() => {
     if (startTheta == null || startPhi == null) return
     const azimuth = -(startTheta * Math.PI / 180)
-    const polar   =   startPhi   * Math.PI / 180
-    // Controls sind ggf. noch nicht gemountet → retry via requestAnimationFrame
+    // Innenperspektive: phi=0 (oben) → polar=π (Kamera unten, schaut hoch)
+    const polar = Math.PI - (startPhi * Math.PI / 180)
+    let active = true
     function apply() {
+      if (!active) return
       if (controlsRef.current) {
         controlsRef.current.setAzimuthalAngle(azimuth)
         controlsRef.current.setPolarAngle(polar)
@@ -554,7 +568,9 @@ function SceneContent({
         requestAnimationFrame(apply)
       }
     }
-    apply()
+    // Immer einen Frame warten: OrbitControls initialisiert sich im selben Commit
+    requestAnimationFrame(apply)
+    return () => { active = false }
   }, [startTheta, startPhi])
 
   const bildUrl = aktiveBildUrl ?? scene.panoramaBildUrl ?? scene.bildUrl
@@ -805,6 +821,12 @@ export default function SceneViewer({
   const [phase, setPhase]           = useState<Phase>('exploring')
   const [feedbackType, setFeedback] = useState<KlickFeedbackType>('kein_treffer')
   const [isVR, setIsVR]             = useState(false)
+  const [fov, setFov]               = useState(75)
+
+  const handleWheel = useCallback((e: React.WheelEvent) => {
+    e.preventDefault()
+    setFov(prev => Math.min(90, Math.max(30, prev + (e.deltaY > 0 ? 5 : -5))))
+  }, [])
 
   // Perspektiven
   const perspektiven = scene.perspektiven ?? []
@@ -1006,7 +1028,7 @@ export default function SceneViewer({
   const htmlVisible       = !isVR
 
   return (
-    <div style={{ position: 'relative', flex: 1, background: '#1a1c22', overflow: 'hidden' }}>
+    <div style={{ position: 'relative', flex: 1, background: '#1a1c22', overflow: 'hidden' }} onWheel={handleWheel}>
 
       {/* 3D Canvas */}
       <Canvas
@@ -1015,6 +1037,7 @@ export default function SceneViewer({
         gl={{ antialias: true }}
       >
         <XR store={xrStore}>
+          <CameraSync fov={fov} />
           <SceneContent
             scene={scene}
             deficits={deficits}
@@ -1135,6 +1158,32 @@ export default function SceneViewer({
           >
             <Glasses size={14} /> VR
           </button>
+
+          {/* Zoom-Kontrollen */}
+          <div style={{ display: 'flex', flexDirection: 'column', borderRadius: '9px', overflow: 'hidden', border: '1px solid rgba(255,255,255,0.15)', backdropFilter: 'blur(10px)' }}>
+            {[
+              { icon: <ZoomIn size={15} />, title: 'Reinzoomen', onClick: () => setFov(f => Math.max(30, f - 5)) },
+              { icon: <Maximize2 size={14} />, title: 'Standardansicht', onClick: () => setFov(75) },
+              { icon: <ZoomOut size={15} />, title: 'Rauszoomen', onClick: () => setFov(f => Math.min(90, f + 5)) },
+            ].map((btn, i) => (
+              <button
+                key={i}
+                onClick={btn.onClick}
+                title={btn.title}
+                style={{
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  padding: '9px 12px',
+                  border: 'none',
+                  borderTop: i > 0 ? '1px solid rgba(255,255,255,0.10)' : 'none',
+                  background: 'rgba(255,255,255,0.08)',
+                  color: 'rgba(255,255,255,0.70)',
+                  cursor: 'pointer',
+                }}
+              >
+                {btn.icon}
+              </button>
+            ))}
+          </div>
         </div>
       )}
 
