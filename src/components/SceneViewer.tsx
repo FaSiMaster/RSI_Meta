@@ -90,20 +90,31 @@ interface HotspotProps {
 }
 
 function Hotspot({ position, found }: HotspotProps) {
-  const ringColor   = found ? '#1A7F1F' : '#0076BD'
-  const fillColor   = found ? '#1A7F1F' : '#0076BD'
+  const { camera } = useThree()
+  const groupRef   = useRef<THREE.Group>(null)
+  const ringColor  = found ? '#1A7F1F' : '#0076BD'
   const fillOpacity = 0.25
+
+  // Ringe skalieren inversly zum FOV — bei Reinzoomen (FOV sinkt) werden sie kleiner
+  useFrame(() => {
+    if (groupRef.current && camera instanceof THREE.PerspectiveCamera) {
+      const s = camera.fov / 75
+      groupRef.current.scale.setScalar(s)
+    }
+  })
 
   return (
     <Billboard position={position} follow lockX={false} lockY={false} lockZ={false}>
-      <mesh>
-        <ringGeometry args={[3.5, 5, 32]} />
-        <meshBasicMaterial color={ringColor} transparent opacity={0.85} side={THREE.DoubleSide} depthTest={false} />
-      </mesh>
-      <mesh>
-        <circleGeometry args={[3.5, 32]} />
-        <meshBasicMaterial color={fillColor} transparent opacity={fillOpacity} side={THREE.DoubleSide} depthTest={false} />
-      </mesh>
+      <group ref={groupRef}>
+        <mesh>
+          <ringGeometry args={[3.5, 5, 32]} />
+          <meshBasicMaterial color={ringColor} transparent opacity={0.85} side={THREE.DoubleSide} depthTest={false} />
+        </mesh>
+        <mesh>
+          <circleGeometry args={[3.5, 32]} />
+          <meshBasicMaterial color={ringColor} transparent opacity={fillOpacity} side={THREE.DoubleSide} depthTest={false} />
+        </mesh>
+      </group>
     </Billboard>
   )
 }

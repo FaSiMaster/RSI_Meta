@@ -28,10 +28,10 @@ function nacaLabel(v: NACADimension): string {
 
 // Kategorie-Label
 const KATEGORIE_LABELS: Record<string, string> = {
-  verkehrsfuehrung: 'Verkehrsfuehrung',
+  verkehrsfuehrung: 'Verkehrsführung',
   sicht:            'Sicht',
-  ausruestung:      'Ausruestung',
-  zustand:          'Zustand Verkehrsflaeche',
+  ausruestung:      'Ausrüstung',
+  zustand:          'Zustand Verkehrsfläche',
   strassenrand:     'Strassenrand',
   verkehrsablauf:   'Verkehrsablauf',
   baustelle:        'Baustelle',

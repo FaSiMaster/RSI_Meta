@@ -41,5 +41,5 @@ export function calcScoreFromChoices(
 
 // Max erreichbare Punktzahl pro Defizit
 export const MAX_PUNKTE_PRO_DEFIZIT = Math.round(
-  STEP_WEIGHTS.reduce((s, w) => s + w, 0) * STEP_WEIGHT_UNIT
+  STEP_WEIGHTS.reduce((s: number, w) => s + w, 0) * STEP_WEIGHT_UNIT
 )

@@ -151,12 +151,9 @@ export default function App() {
   }
 
   // ── ScoringFlow abgeschlossen ──────────────────────────────────────────────
-  function handleScoringComplete(rawPts: number) {
+  // finalPts kommt bereits mit angewandten Strafen aus ScoringFlow
+  function handleScoringComplete(finalPts: number) {
     if (!scoringDeficit) return
-
-    // Strafen anwenden
-    const multiplier = (pendingKatRichtig ? 1 : 0.9) * (pendingHintPenalty ? 0.5 : 1)
-    const finalPts   = Math.round(rawPts * multiplier)
 
     const entry: FoundDeficit = {
       deficitId:        scoringDeficit.id,
@@ -171,7 +168,7 @@ export default function App() {
       deficitId:          scoringDeficit.id,
       kategorieRichtig:   pendingKatRichtig,
       hintPenalty:        pendingHintPenalty,
-      punkteRoh:          rawPts,
+      punkteRoh:          finalPts,
       punkteFinal:        finalPts,
       dauerSekunden:      Math.round((Date.now() - deficitStartTime.current) / 1000),
       wichtigkeitKorrekt: pendingWichtigkeit === ca.wichtigkeit,
@@ -360,6 +357,8 @@ export default function App() {
                     deficit={scoringDeficit}
                     scene={currentScene}
                     username={username}
+                    kategorieRichtig={pendingKatRichtig}
+                    hintPenalty={pendingHintPenalty}
                     onComplete={handleScoringComplete}
                     onBack={() => setView('viewer')}
                     prefillWichtigkeit={pendingWichtigkeit ?? undefined}

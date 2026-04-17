@@ -145,37 +145,50 @@ function CompactMatrix({ type, highlightRow, highlightCol, showIntersection, cor
                   const isIntersect = showIntersection === true && row === highlightRow && col === highlightCol
                   const isCorrect   = correctRow !== undefined && correctCol !== undefined && row === correctRow && col === correctCol
                   const isAxisHL    = !isIntersect && !isCorrect && (row === highlightRow || col === highlightCol) && (highlightRow !== undefined || highlightCol !== undefined)
-                  // User falsch + korrekte Lösung an anderer Stelle
                   const showCorrectMarker = isCorrect && !isIntersect
+                  const userCorrect = isIntersect && isCorrect
+                  const userWrong   = isIntersect && !isCorrect
                   return (
                     <div key={String(col)} style={{
                       textAlign: 'center',
                       padding: '6px 2px',
                       borderRadius: '4px',
                       minHeight: '32px',
-                      display: 'flex', alignItems: 'center', justifyContent: 'center',
+                      display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '2px',
                       fontSize: (isIntersect || showCorrectMarker) ? '11px' : '10px',
                       fontWeight: (isIntersect || showCorrectMarker) ? 800 : 600,
-                      background: isIntersect
-                        ? resultColor(val)
-                        : showCorrectMarker
-                          ? '#1A7F1F'
-                          : isAxisHL
-                            ? resultBg(val)
-                            : 'var(--zh-color-bg-secondary)',
-                      color: (isIntersect || showCorrectMarker) ? 'white' : resultColor(val),
-                      border: isIntersect
-                        ? `2px solid ${resultColor(val)}`
-                        : showCorrectMarker
-                          ? '2px dashed #1A7F1F'
-                          : isAxisHL
-                            ? `1px solid ${resultColor(val)}44`
-                            : '1px solid var(--zh-color-border)',
+                      background: userCorrect
+                        ? '#1A7F1F'
+                        : userWrong
+                          ? 'rgba(212,0,83,0.18)'
+                          : showCorrectMarker
+                            ? 'rgba(26,127,31,0.18)'
+                            : isAxisHL
+                              ? resultBg(val)
+                              : 'var(--zh-color-bg-secondary)',
+                      color: userCorrect
+                        ? 'white'
+                        : userWrong
+                          ? '#D40053'
+                          : showCorrectMarker
+                            ? '#1A7F1F'
+                            : resultColor(val),
+                      border: userCorrect
+                        ? '2px solid #1A7F1F'
+                        : userWrong
+                          ? '2px solid #D40053'
+                          : showCorrectMarker
+                            ? '2px solid #1A7F1F'
+                            : isAxisHL
+                              ? `1px solid ${resultColor(val)}44`
+                              : '1px solid var(--zh-color-border)',
                       transform: (isIntersect || showCorrectMarker) ? 'scale(1.05)' : 'none',
                       transition: 'all 0.25s',
-                      boxShadow: isIntersect ? `0 2px 10px ${resultColor(val)}44` : showCorrectMarker ? '0 2px 10px rgba(26,127,31,0.4)' : 'none',
-                      position: 'relative',
+                      boxShadow: userCorrect ? '0 2px 10px rgba(26,127,31,0.4)' : userWrong ? '0 2px 10px rgba(212,0,83,0.25)' : showCorrectMarker ? '0 2px 10px rgba(26,127,31,0.25)' : 'none',
                     }}>
+                      {userCorrect && '✓ '}
+                      {userWrong && '✗ '}
+                      {showCorrectMarker && '✓ '}
                       {resultLabel(val, t)}
                     </div>
                   )
@@ -288,6 +301,8 @@ interface Props {
   deficit:    AppDeficit
   scene:      AppScene
   username?:  string
+  kategorieRichtig?: boolean
+  hintPenalty?:      boolean
   onComplete: (score: number) => void
   onBack:     () => void
   // Vorgefuellte Bewertungen aus dem Viewer-Overlay
@@ -296,7 +311,7 @@ interface Props {
   prefillNacaSchwere?: NACADimension
 }
 
-export default function ScoringFlow({ deficit, scene, onComplete, onBack, prefillWichtigkeit: propW, prefillAbweichung: propA, prefillNacaSchwere: propN }: Props) {
+export default function ScoringFlow({ deficit, scene, kategorieRichtig = true, hintPenalty = false, onComplete, onBack, prefillWichtigkeit: propW, prefillAbweichung: propA, prefillNacaSchwere: propN }: Props) {
   const { i18n, t } = useTranslation()
   const lang = i18n.language
 
@@ -461,9 +476,13 @@ export default function ScoringFlow({ deficit, scene, onComplete, onBack, prefil
 
   // ── Ergebnis-Screen ──
   function renderResult() {
-    const pts    = calcScore()
+    const rawPts = calcScore()
     const maxPts = MAX_PUNKTE_PRO_DEFIZIT
-    const finalCorrect = unfallrisiko === ca.unfallrisiko
+    // Strafen sichtbar berechnen
+    const katMultiplier = kategorieRichtig ? 1 : 0.5
+    const hintAbzug     = hintPenalty ? 30 : 0
+    const pts           = Math.max(0, Math.round(rawPts * katMultiplier) - hintAbzug)
+    const finalCorrect  = unfallrisiko === ca.unfallrisiko
 
     const decisions: { label: string; user: string; correct: string; ok: boolean }[] = [
       { label: t('scoring.phase_a'), user: wichtigkeit ? dimLabel(wichtigkeit, t) : '—', correct: dimLabel(ca.wichtigkeit, t), ok: wichtigkeit === ca.wichtigkeit },
@@ -480,9 +499,6 @@ export default function ScoringFlow({ deficit, scene, onComplete, onBack, prefil
       Math.round(STEP_WEIGHTS[6] * STEP_WEIGHT_UNIT),
       Math.round(STEP_WEIGHTS[8] * STEP_WEIGHT_UNIT),
     ]
-    const autoBonus = Math.round(
-      (STEP_WEIGHTS[1] + STEP_WEIGHTS[3] + STEP_WEIGHTS[5] + STEP_WEIGHTS[7]) * STEP_WEIGHT_UNIT
-    )
     const allCorrect = decisions.every(d => d.ok)
 
     return (
@@ -552,11 +568,11 @@ export default function ScoringFlow({ deficit, scene, onComplete, onBack, prefil
             <span style={{ fontSize: '12px', fontWeight: 700, color: 'var(--zh-color-text)' }}>
               {t('scoring.punkte_erhalten')}
             </span>
-            <span style={{ fontSize: '20px', fontWeight: 900, color: allCorrect ? '#1A7F1F' : 'var(--zh-dunkelblau)' }}>
+            <span style={{ fontSize: '20px', fontWeight: 900, color: pts === maxPts ? '#1A7F1F' : 'var(--zh-dunkelblau)' }}>
               {pts} <span style={{ fontSize: '12px', fontWeight: 500, color: 'var(--zh-color-text-muted)' }}>/ {maxPts} Pkt.</span>
             </span>
           </div>
-          {allCorrect && (
+          {allCorrect && !hintPenalty && kategorieRichtig && (
             <p style={{ fontSize: '11px', fontWeight: 700, color: '#1A7F1F', marginBottom: '8px' }}>
               {t('scoring.allCorrect')}
             </p>
@@ -570,10 +586,26 @@ export default function ScoringFlow({ deficit, scene, onComplete, onBack, prefil
                 </span>
               </div>
             ))}
-            <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '11px', marginTop: '4px', paddingTop: '4px', borderTop: '1px solid var(--zh-color-border)' }}>
-              <span style={{ color: 'var(--zh-color-text-disabled)' }}>Übertrag-Schritte (auto)</span>
-              <span style={{ fontWeight: 700, color: '#1A7F1F' }}>+{autoBonus} Pkt.</span>
-            </div>
+            {(!kategorieRichtig || hintPenalty) && (
+              <div style={{ marginTop: '6px', paddingTop: '6px', borderTop: '1px solid var(--zh-color-border)', display: 'flex', flexDirection: 'column', gap: '3px' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '11px' }}>
+                  <span style={{ color: 'var(--zh-color-text-muted)' }}>Rohpunkte</span>
+                  <span style={{ fontWeight: 700, color: 'var(--zh-color-text)' }}>{rawPts} Pkt.</span>
+                </div>
+                {!kategorieRichtig && (
+                  <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '11px' }}>
+                    <span style={{ color: '#D40053' }}>Kategorie falsch</span>
+                    <span style={{ fontWeight: 700, color: '#D40053' }}>×0.5</span>
+                  </div>
+                )}
+                {hintPenalty && (
+                  <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '11px' }}>
+                    <span style={{ color: '#B87300' }}>Hinweis genutzt</span>
+                    <span style={{ fontWeight: 700, color: '#B87300' }}>−30 Pkt.</span>
+                  </div>
+                )}
+              </div>
+            )}
           </div>
         </div>
 
@@ -654,7 +686,7 @@ export default function ScoringFlow({ deficit, scene, onComplete, onBack, prefil
         {showLernKarte && (
           <LernKarte
             deficit={deficit}
-            kategorieRichtig={true}
+            kategorieRichtig={kategorieRichtig}
             wichtigkeitKorrekt={wichtigkeit === ca.wichtigkeit}
             abweichungKorrekt={abweichung === ca.abweichung}
             nacaKorrekt={nacaSchwere === ca.unfallschwere}
