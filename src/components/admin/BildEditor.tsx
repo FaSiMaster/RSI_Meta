@@ -109,6 +109,15 @@ export default function BildEditor({ scene, deficits, onSave, onClose, initialDe
   const imgRef    = useRef<HTMLImageElement>(null)
   const containerRef = useRef<HTMLDivElement>(null)
 
+  // ── Zoom & Pan ──
+  const [zoom, setZoom] = useState(1)
+  const [pan, setPan]   = useState({ x: 0, y: 0 })
+
+  function resetView() {
+    setZoom(1)
+    setPan({ x: 0, y: 0 })
+  }
+
   // ── Auto-Laden beim Mount wenn URL bekannt ──
   useEffect(() => {
     if (imgRef.current && urlInput.trim()) {
@@ -192,10 +201,16 @@ export default function BildEditor({ scene, deficits, onSave, onClose, initialDe
     const cw = canvas.width
     const ch = canvas.height
 
+    // Clear + Zoom/Pan anwenden
+    ctx.clearRect(0, 0, cw, ch)
+    ctx.save()
+    ctx.translate(pan.x, pan.y)
+    ctx.scale(zoom, zoom)
+
     // Hintergrundbild zeichnen
     ctx.drawImage(img, 0, 0, cw, ch)
 
-    if (!verortungenSichtbar) return
+    if (!verortungenSichtbar) { ctx.restore(); return }
 
     // Startblick zeichnen (perspektivenabhängig)
     const aktStartblick = aktivePerspektiveId
@@ -318,8 +333,12 @@ export default function BildEditor({ scene, deficits, onSave, onClose, initialDe
       ctx.restore()
     }
 
+    // Zoom/Pan-Transform beenden
+    ctx.restore()
+
   }, [bildGeladen, bildBreite, bildHoehe, localScene, localDeficits, polygonInProgress,
-      verortungenSichtbar, selectedDeficitId, sichtbarIds, aktivePerspektiveId, standortZielId, navMarkerZiel]) // eslint-disable-line react-hooks/exhaustive-deps
+      verortungenSichtbar, selectedDeficitId, sichtbarIds, aktivePerspektiveId, standortZielId, navMarkerZiel,
+      zoom, pan]) // eslint-disable-line react-hooks/exhaustive-deps
 
   // Hilfsfunktion: Verortung zeichnen
   function drawVerortung(
@@ -392,20 +411,34 @@ export default function BildEditor({ scene, deficits, onSave, onClose, initialDe
     const canvas = canvasRef.current
     if (!canvas) return null
     const rect = canvas.getBoundingClientRect()
-    const x = (e.clientX - rect.left) * (bildBreite / rect.width)
-    const y = (e.clientY - rect.top)  * (bildHoehe  / rect.height)
+    // Maus im Canvas-Pixel-Raum
+    const cx = (e.clientX - rect.left) * (canvas.width  / rect.width)
+    const cy = (e.clientY - rect.top)  * (canvas.height / rect.height)
+    // Zoom/Pan rückrechnen → Canvas-Basis-Koordinaten (bei zoom=1, pan=0)
+    const baseX = (cx - pan.x) / zoom
+    const baseY = (cy - pan.y) / zoom
+    // Basis-Canvas → Bildpixel
+    const x = baseX * (bildBreite / canvas.width)
+    const y = baseY * (bildHoehe  / canvas.height)
     return pixelToSpherical(x, y, bildBreite, bildHoehe)
   }
 
   // ── Treffer-Test: ist die Maus nahe genug an einem Punkt? ──
+  // mouseX/mouseY sind im getBoundingClientRect-Raum (CSS-Pixel relativ zum Canvas)
   function hitTestPunkt(mouseX: number, mouseY: number, pos: SphericalPos, schwelle: number = 12): boolean {
     const canvas = canvasRef.current
     if (!canvas) return false
+    const rect = canvas.getBoundingClientRect()
+    // Maus → Canvas-Pixel
+    const cx = mouseX * (canvas.width  / rect.width)
+    const cy = mouseY * (canvas.height / rect.height)
+    // Punkt → Canvas-Pixel mit Zoom/Pan
     const { x, y } = sphericalToPixel(pos, bildBreite, bildHoehe)
-    const px = (x / bildBreite) * canvas.width
-    const py = (y / bildHoehe) * canvas.height
-    const dx = mouseX - px
-    const dy = mouseY - py
+    const px = (x / bildBreite) * canvas.width  * zoom + pan.x
+    const py = (y / bildHoehe)  * canvas.height * zoom + pan.y
+    const dx = cx - px
+    const dy = cy - py
+    // Schwellwert auch skalieren damit Treffer gleich präzise bleibt
     return Math.sqrt(dx * dx + dy * dy) <= schwelle
   }
 
@@ -906,7 +939,49 @@ export default function BildEditor({ scene, deficits, onSave, onClose, initialDe
               onMouseMove={handleCanvasMouseMove}
               onMouseUp={handleCanvasMouseUp}
               onDoubleClick={handleCanvasDblClick}
+              onWheel={e => {
+                if (!bildGeladen) return
+                e.preventDefault()
+                const canvas = canvasRef.current
+                if (!canvas) return
+                const rect = canvas.getBoundingClientRect()
+                // Ankerpunkt unter Maus halten
+                const mx = (e.clientX - rect.left) * (canvas.width  / rect.width)
+                const my = (e.clientY - rect.top)  * (canvas.height / rect.height)
+                const factor = e.deltaY > 0 ? 0.9 : 1.1
+                const newZoom = Math.min(5, Math.max(1, zoom * factor))
+                const scale = newZoom / zoom
+                setPan({ x: mx - (mx - pan.x) * scale, y: my - (my - pan.y) * scale })
+                setZoom(newZoom)
+              }}
             />
+
+            {/* Zoom-Kontrollen */}
+            {bildGeladen && (
+              <div style={{ position: 'absolute', top: '12px', right: '12px', display: 'flex', flexDirection: 'column', gap: '4px', zIndex: 10 }}>
+                <button
+                  type="button"
+                  onClick={() => setZoom(z => Math.min(5, z + 0.25))}
+                  style={{ width: '32px', height: '32px', borderRadius: '6px', border: '1px solid rgba(255,255,255,0.2)', background: 'rgba(0,0,0,0.6)', color: 'white', fontSize: '18px', fontWeight: 700, cursor: 'pointer', lineHeight: 1 }}
+                  title="Reinzoomen"
+                >+</button>
+                <button
+                  type="button"
+                  onClick={resetView}
+                  style={{ width: '32px', height: '32px', borderRadius: '6px', border: '1px solid rgba(255,255,255,0.2)', background: 'rgba(0,0,0,0.6)', color: 'white', fontSize: '10px', fontWeight: 700, cursor: 'pointer' }}
+                  title="Standardansicht"
+                >1:1</button>
+                <button
+                  type="button"
+                  onClick={() => setZoom(z => Math.max(1, z - 0.25))}
+                  style={{ width: '32px', height: '32px', borderRadius: '6px', border: '1px solid rgba(255,255,255,0.2)', background: 'rgba(0,0,0,0.6)', color: 'white', fontSize: '18px', fontWeight: 700, cursor: 'pointer', lineHeight: 1 }}
+                  title="Rauszoomen"
+                >−</button>
+                <div style={{ padding: '2px 4px', textAlign: 'center', fontSize: '10px', color: 'rgba(255,255,255,0.6)', fontWeight: 600 }}>
+                  {Math.round(zoom * 100)}%
+                </div>
+              </div>
+            )}
 
             {/* Modus-Hinweisleiste */}
             {(modus !== 'idle' || dragging) && (
