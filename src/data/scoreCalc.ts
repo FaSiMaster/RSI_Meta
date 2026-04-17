@@ -1,7 +1,7 @@
 // scoreCalc.ts – Punkteberechnung als Pure Function (P3-4)
 // Ausgelagert aus ScoringFlow.tsx, nutzt STEP_WEIGHTS aus scoringEngine.ts
 
-import { STEP_WEIGHTS, STEP_WEIGHT_UNIT } from './scoringEngine'
+import { STEP_WEIGHTS, STEP_WEIGHT_UNIT, KATEGORIE_PUNKTE } from './scoringEngine'
 import type { RSIDimension, NACADimension, ResultDimension } from '../types'
 import { calcRelevanzSD, calcUnfallrisiko } from './scoringEngine'
 
@@ -42,4 +42,4 @@ export function calcScoreFromChoices(
 // Max erreichbare Punktzahl pro Defizit
 export const MAX_PUNKTE_PRO_DEFIZIT = Math.round(
   STEP_WEIGHTS.reduce((s: number, w) => s + w, 0) * STEP_WEIGHT_UNIT
-)
+) + KATEGORIE_PUNKTE

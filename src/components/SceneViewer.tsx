@@ -95,11 +95,11 @@ function Hotspot({ position, found }: HotspotProps) {
   const ringColor  = found ? '#1A7F1F' : '#0076BD'
   const fillOpacity = 0.25
 
-  // Ringe skalieren inversly zum FOV — bei Reinzoomen (FOV sinkt) werden sie kleiner
+  // Quadratische FOV-Skalierung: beim Reinzoomen werden Ringe scheinbar kleiner
   useFrame(() => {
     if (groupRef.current && camera instanceof THREE.PerspectiveCamera) {
-      const s = camera.fov / 75
-      groupRef.current.scale.setScalar(s)
+      const ratio = camera.fov / 75
+      groupRef.current.scale.setScalar(ratio * ratio)
     }
   })
 
@@ -107,11 +107,11 @@ function Hotspot({ position, found }: HotspotProps) {
     <Billboard position={position} follow lockX={false} lockY={false} lockZ={false}>
       <group ref={groupRef}>
         <mesh>
-          <ringGeometry args={[3.5, 5, 32]} />
+          <ringGeometry args={[3.8, 4.6, 32]} />
           <meshBasicMaterial color={ringColor} transparent opacity={0.85} side={THREE.DoubleSide} depthTest={false} />
         </mesh>
         <mesh>
-          <circleGeometry args={[3.5, 32]} />
+          <circleGeometry args={[3.8, 32]} />
           <meshBasicMaterial color={ringColor} transparent opacity={fillOpacity} side={THREE.DoubleSide} depthTest={false} />
         </mesh>
       </group>
@@ -148,7 +148,7 @@ function StandortNavMarker({ position, label, onClick }: StandortNavMarkerProps)
         onPointerOver={() => setHovered(true)}
         onPointerOut={() => setHovered(false)}
       >
-        <ringGeometry args={[hovered ? 5 : 4, hovered ? 6.5 : 5.5, 32]} />
+        <ringGeometry args={[hovered ? 5.5 : 4.6, hovered ? 6.2 : 5.2, 32]} />
         <meshBasicMaterial color="white" transparent opacity={0.9} side={THREE.DoubleSide} depthTest={false} />
       </mesh>
       {/* Label */}

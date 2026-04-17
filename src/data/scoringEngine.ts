@@ -229,8 +229,9 @@ export function calcUnfallrisiko(
 
 // Schritt-Gewichtungen fuer Punkteberechnung
 // Schritte 2, 4, 6, 8 sind Uebertraege (immer korrekt)
-export const STEP_WEIGHTS = [30, 0, 25, 0, 20, 0, 15, 0, 10] as const
+export const STEP_WEIGHTS = [25, 0, 25, 0, 0, 0, 25, 0, 0] as const
 export const STEP_WEIGHT_UNIT = 1
+export const KATEGORIE_PUNKTE = 25
 
 export type StepResult = {
   stepNr:      number

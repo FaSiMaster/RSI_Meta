@@ -11,7 +11,7 @@ import LernKarte from './LernKarte'
 import {
   WICHTIGKEIT_TABLE, NORMHIERARCHIE, ABWEICHUNG_KATEGORIEN,
   calcRelevanzSD, calcUnfallrisiko,
-  STEP_WEIGHTS, STEP_WEIGHT_UNIT, KRITERIUM_LABELS,
+  KRITERIUM_LABELS,
 } from '../data/scoringEngine'
 import { calcScore as calcScorePure, MAX_PUNKTE_PRO_DEFIZIT } from '../data/scoreCalc'
 import type { RSIDimension, NACADimension, ResultDimension } from '../types'
@@ -478,11 +478,11 @@ export default function ScoringFlow({ deficit, scene, kategorieRichtig = true, h
   function renderResult() {
     const rawPts = calcScore()
     const maxPts = MAX_PUNKTE_PRO_DEFIZIT
-    // Strafen sichtbar berechnen
-    const katMultiplier = kategorieRichtig ? 1 : 0.9
-    const hintAbzug     = hintPenalty ? 25 : 0
-    const pts           = Math.max(0, Math.round(rawPts * katMultiplier) - hintAbzug)
-    const finalCorrect  = unfallrisiko === ca.unfallrisiko
+    // Kategorie additiv + Hinweis-Abzug
+    const katPts       = kategorieRichtig ? 25 : 0
+    const hintAbzug    = hintPenalty ? 25 : 0
+    const pts          = Math.max(0, rawPts + katPts - hintAbzug)
+    const finalCorrect = unfallrisiko === ca.unfallrisiko
 
     const decisions: { label: string; user: string; correct: string; ok: boolean }[] = [
       { label: t('scoring.phase_a'), user: wichtigkeit ? dimLabel(wichtigkeit, t) : '—', correct: dimLabel(ca.wichtigkeit, t), ok: wichtigkeit === ca.wichtigkeit },
@@ -492,14 +492,7 @@ export default function ScoringFlow({ deficit, scene, kategorieRichtig = true, h
       { label: t('scoring.unfallrisiko_titel'), user: unfallrisiko ? resultLabel(unfallrisiko, t) : '—', correct: resultLabel(ca.unfallrisiko, t), ok: finalCorrect },
     ]
 
-    const entscheidungsPts = [
-      Math.round(STEP_WEIGHTS[0] * STEP_WEIGHT_UNIT),
-      Math.round(STEP_WEIGHTS[2] * STEP_WEIGHT_UNIT),
-      Math.round(STEP_WEIGHTS[4] * STEP_WEIGHT_UNIT),
-      Math.round(STEP_WEIGHTS[6] * STEP_WEIGHT_UNIT),
-      Math.round(STEP_WEIGHTS[8] * STEP_WEIGHT_UNIT),
-    ]
-    const allCorrect = decisions.every(d => d.ok)
+    const allCorrect = decisions.every(d => d.ok) && kategorieRichtig
 
     return (
       <motion.div
@@ -578,32 +571,28 @@ export default function ScoringFlow({ deficit, scene, kategorieRichtig = true, h
             </p>
           )}
           <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
-            {decisions.map((d, i) => (
-              <div key={i} style={{ display: 'flex', justifyContent: 'space-between', fontSize: '11px' }}>
-                <span style={{ color: 'var(--zh-color-text-muted)' }}>{d.label}</span>
-                <span style={{ fontWeight: 700, color: d.ok ? '#1A7F1F' : '#D40053' }}>
-                  {d.ok ? `+${entscheidungsPts[i]}` : '0'} Pkt.
-                </span>
-              </div>
-            ))}
-            {(!kategorieRichtig || hintPenalty) && (
-              <div style={{ marginTop: '6px', paddingTop: '6px', borderTop: '1px solid var(--zh-color-border)', display: 'flex', flexDirection: 'column', gap: '3px' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '11px' }}>
-                  <span style={{ color: 'var(--zh-color-text-muted)' }}>Rohpunkte</span>
-                  <span style={{ fontWeight: 700, color: 'var(--zh-color-text)' }}>{rawPts} Pkt.</span>
+            <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '11px' }}>
+              <span style={{ color: 'var(--zh-color-text-muted)' }}>Kategorie</span>
+              <span style={{ fontWeight: 700, color: kategorieRichtig ? '#1A7F1F' : '#D40053' }}>
+                {kategorieRichtig ? '+25' : '0'} Pkt.
+              </span>
+            </div>
+            {[0, 1, 3].map(i => {
+              const d = decisions[i]
+              const ptsStep = [25, 25, 25][[0, 1, 3].indexOf(i)]
+              return (
+                <div key={i} style={{ display: 'flex', justifyContent: 'space-between', fontSize: '11px' }}>
+                  <span style={{ color: 'var(--zh-color-text-muted)' }}>{d.label}</span>
+                  <span style={{ fontWeight: 700, color: d.ok ? '#1A7F1F' : '#D40053' }}>
+                    {d.ok ? `+${ptsStep}` : '0'} Pkt.
+                  </span>
                 </div>
-                {!kategorieRichtig && (
-                  <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '11px' }}>
-                    <span style={{ color: '#D40053' }}>Kategorie falsch</span>
-                    <span style={{ fontWeight: 700, color: '#D40053' }}>−10 %</span>
-                  </div>
-                )}
-                {hintPenalty && (
-                  <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '11px' }}>
-                    <span style={{ color: '#B87300' }}>Hinweis genutzt</span>
-                    <span style={{ fontWeight: 700, color: '#B87300' }}>−25 Pkt.</span>
-                  </div>
-                )}
+              )
+            })}
+            {hintPenalty && (
+              <div style={{ marginTop: '6px', paddingTop: '6px', borderTop: '1px solid var(--zh-color-border)', display: 'flex', justifyContent: 'space-between', fontSize: '11px' }}>
+                <span style={{ color: '#B87300' }}>Hinweis genutzt</span>
+                <span style={{ fontWeight: 700, color: '#B87300' }}>−25 Pkt.</span>
               </div>
             )}
           </div>
