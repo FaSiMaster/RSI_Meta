@@ -479,8 +479,8 @@ export default function ScoringFlow({ deficit, scene, kategorieRichtig = true, h
     const rawPts = calcScore()
     const maxPts = MAX_PUNKTE_PRO_DEFIZIT
     // Strafen sichtbar berechnen
-    const katMultiplier = kategorieRichtig ? 1 : 0.5
-    const hintAbzug     = hintPenalty ? 30 : 0
+    const katMultiplier = kategorieRichtig ? 1 : 0.9
+    const hintAbzug     = hintPenalty ? 25 : 0
     const pts           = Math.max(0, Math.round(rawPts * katMultiplier) - hintAbzug)
     const finalCorrect  = unfallrisiko === ca.unfallrisiko
 
@@ -595,13 +595,13 @@ export default function ScoringFlow({ deficit, scene, kategorieRichtig = true, h
                 {!kategorieRichtig && (
                   <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '11px' }}>
                     <span style={{ color: '#D40053' }}>Kategorie falsch</span>
-                    <span style={{ fontWeight: 700, color: '#D40053' }}>×0.5</span>
+                    <span style={{ fontWeight: 700, color: '#D40053' }}>−10 %</span>
                   </div>
                 )}
                 {hintPenalty && (
                   <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '11px' }}>
                     <span style={{ color: '#B87300' }}>Hinweis genutzt</span>
-                    <span style={{ fontWeight: 700, color: '#B87300' }}>−30 Pkt.</span>
+                    <span style={{ fontWeight: 700, color: '#B87300' }}>−25 Pkt.</span>
                   </div>
                 )}
               </div>
