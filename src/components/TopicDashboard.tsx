@@ -1,5 +1,5 @@
 // TopicDashboard – Themenkarten + Anleitung + RSI-Methodik
-// ZH Corporate Design, SVG-Icons, Schritt-fuer-Schritt + aufklappbare Methodik
+// ZH Corporate Design, SVG-Icons, Schritt-für-Schritt + aufklappbare Methodik
 
 import { motion, AnimatePresence } from 'motion/react'
 import { Trophy, Eye, MousePointerClick, BarChart3, ChevronDown, ChevronUp, BookOpen } from 'lucide-react'
@@ -56,7 +56,7 @@ export default function TopicDashboard({ username, score, onSelectTopic }: Props
     setSceneCounts(counts)
   }, [])
 
-  // Schritt-fuer-Schritt Daten
+  // Schritt-für-Schritt Daten
   const schritte = [
     { nr: 1, icon: <Eye size={20} />,               title: t('guide.step1_title'), desc: t('guide.step1_desc') },
     { nr: 2, icon: <MousePointerClick size={20} />,  title: t('guide.step2_title'), desc: t('guide.step2_desc') },
@@ -116,7 +116,7 @@ export default function TopicDashboard({ username, score, onSelectTopic }: Props
         })}
       </div>
 
-      {/* ── Schritt-fuer-Schritt Anleitung ── */}
+      {/* ── Schritt-für-Schritt Anleitung ── */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}

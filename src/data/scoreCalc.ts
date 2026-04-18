@@ -5,7 +5,7 @@ import { STEP_WEIGHTS, STEP_WEIGHT_UNIT, KATEGORIE_PUNKTE } from './scoringEngin
 import type { RSIDimension, NACADimension, ResultDimension } from '../types'
 import { calcRelevanzSD, calcUnfallrisiko } from './scoringEngine'
 
-// Punkteberechnung: 9 Schritte, Schritte 2/4/6/8 sind Uebertraege (immer korrekt)
+// Punkteberechnung: 9 Schritte, Schritte 2/4/6/8 sind Übertraege (immer korrekt)
 export function calcScore(correct: boolean[]): number {
   let total = 0
   STEP_WEIGHTS.forEach((w, i) => { if (correct[i]) total += w * STEP_WEIGHT_UNIT })

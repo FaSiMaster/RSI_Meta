@@ -225,7 +225,7 @@ export default function LandingPage({ onStart, onAdmin }: Props) {
 
             {/* Kurs */}
             <label className="block text-[11px] font-bold uppercase tracking-wider mb-1.5" style={{ color: 'var(--zh-color-text-muted)' }}>
-              {t('kurs.waehlen')}
+              {t('kurs.wählen')}
             </label>
             <select
               value={selectedKursId}
@@ -384,7 +384,7 @@ export default function LandingPage({ onStart, onAdmin }: Props) {
               className="w-full rounded-lg text-sm font-bold"
               style={{ padding: '12px', background: 'var(--zh-dunkelblau)', color: 'white', border: 'none', cursor: 'pointer', fontFamily: 'var(--zh-font)' }}
             >
-              {t('admin.pin_bestaetigen')}
+              {t('admin.pin_bestätigen')}
             </button>
           </div>
         </div>

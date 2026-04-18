@@ -44,7 +44,7 @@ export default function App() {
   const [hintActive,     setHintActive]     = useState(false)
   const [sceneScore,     setSceneScore]     = useState(0)
 
-  // Pending-Daten waehrend ScoringFlow
+  // Pending-Daten während ScoringFlow
   const [scoringDeficit,        setScoringDeficit]        = useState<AppDeficit | null>(null)
   const [pendingKatRichtig,     setPendingKatRichtig]     = useState(true)
   const [pendingHintPenalty,    setPendingHintPenalty]    = useState(false)
@@ -130,13 +130,13 @@ export default function App() {
     setView('einstieg')
   }
 
-  // Einstieg bestaetigt → Viewer oeffnen
+  // Einstieg bestätigt → Viewer öffnen
   function handleEinstiegStart() {
     setSceneStartTime(Date.now())
     setView('viewer')
   }
 
-  // ── Defizit im Viewer bestaetigt → ScoringFlow (Auswertung) starten ────────
+  // ── Defizit im Viewer bestätigt → ScoringFlow (Auswertung) starten ────────
   function handleDeficitConfirmed(payload: DeficitConfirmedPayload) {
     setScoringDeficit(payload.deficit)
     setPendingKatRichtig(payload.kategorieRichtig)
@@ -247,7 +247,7 @@ export default function App() {
     setHintActive(true)
   }
 
-  // ── Naechste Szene (gleiche Topic) ─────────────────────────────────────────
+  // ── Nächste Szene (gleiche Topic) ─────────────────────────────────────────
   function handleNextScene() {
     if (!currentScene || !currentTopic) { setView('scenes'); return }
     const allScenes = getAllScenes().filter(s => s.topicId === currentTopic.id && s.isActive)
@@ -268,7 +268,7 @@ export default function App() {
     setView(v)
   }
 
-  // Naechste Szene vorhanden?
+  // Nächste Szene vorhanden?
   const nextSceneExists = (() => {
     if (!currentScene || !currentTopic) return false
     const all = getAllScenes().filter(s => s.topicId === currentTopic.id && s.isActive)
@@ -331,8 +331,8 @@ export default function App() {
             </motion.div>
           )}
 
-          {/* SceneViewer bleibt waehrend Scoring gemountet (XR-Session laeuft weiter,
-              VR wird via xrStore.exitVR() beendet). ScoringFlow als Overlay darueber. */}
+          {/* SceneViewer bleibt während Scoring gemountet (XR-Session läuft weiter,
+              VR wird via xrStore.exitVR() beendet). ScoringFlow als Overlay darüber. */}
           {(view === 'viewer' || view === 'scoring') && currentScene && (
             <motion.div key="viewer" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.15 }} className="flex-1 flex flex-col" style={{ overflow: 'hidden', position: 'relative' }}>
               <SceneViewer

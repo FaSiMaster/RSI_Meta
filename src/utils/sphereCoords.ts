@@ -1,4 +1,4 @@
-// sphereCoords.ts – Sphärische Koordinaten-Hilfsfunktionen fuer 360°-Viewer
+// sphereCoords.ts – Sphärische Koordinaten-Hilfsfunktionen für 360°-Viewer
 // Konvention: theta=0 = Blick nach vorne (-Z), phi=90 = Horizont
 
 import { Vector3 } from 'three'
@@ -8,7 +8,7 @@ export interface SphericalPos {
   phi:   number // Vertikalwinkel in Grad (0–180), 90 = Horizont (Aequator)
 }
 
-// Alias-Typ fuer SphericalPos
+// Alias-Typ für SphericalPos
 export type SphereCoord = SphericalPos
 
 // Defizit-Verortung Union-Typ
@@ -29,7 +29,7 @@ export function clickToSpherical(point: Vector3): SphericalPos {
   return { theta, phi }
 }
 
-// Alias fuer clickToSpherical
+// Alias für clickToSpherical
 export function vector3ToSpherical(point: Vector3): SphericalPos {
   return clickToSpherical(point)
 }
@@ -57,7 +57,7 @@ export function sphericalDistance(a: SphericalPos, b: SphericalPos): number {
   return Math.acos(Math.max(-1, Math.min(1, cos))) * (180 / Math.PI)
 }
 
-// Prueft ob ein Klick innerhalb des Toleranz-Radius eines Defizits liegt
+// Prüft ob ein Klick innerhalb des Toleranz-Radius eines Defizits liegt
 export function isInTolerance(click: SphericalPos, deficitPos: SphericalPos, tolerance: number): boolean {
   return sphericalDistance(click, deficitPos) <= tolerance
 }
@@ -95,8 +95,8 @@ export function punktInPolygon(punkt: SphericalPos, polygon: SphericalPos[]): bo
   return inside
 }
 
-// Trefferpruefung fuer alle Verortungstypen
-export function trefferpruefung(klick: SphericalPos, verortung: DefizitVerortung): boolean {
+// Trefferprüfung für alle Verortungstypen
+export function trefferprüfung(klick: SphericalPos, verortung: DefizitVerortung): boolean {
   if (verortung.typ === 'punkt') {
     return sphericalDistance(klick, verortung.position) <= verortung.toleranz
   }
@@ -106,16 +106,16 @@ export function trefferpruefung(klick: SphericalPos, verortung: DefizitVerortung
     return verortung.punkte.some(p => sphericalDistance(klick, p) <= verortung.toleranz)
   }
   if (verortung.typ === 'gruppe') {
-    return verortung.elemente.some(el => trefferpruefung(klick, el))
+    return verortung.elemente.some(el => trefferprüfung(klick, el))
   }
   return false
 }
 
-// ── Deutsche Alias-Funktionen fuer sphereCoords ──
+// ── Deutsche Alias-Funktionen für sphereCoords ──
 // Erlauben deutschen Bezeichnungen in deutschen Komponenten
 
 export const pixelZuSphaerisch    = pixelToSpherical
 export const sphaerischZuPixel    = sphericalToPixel
 export const winkelAbstand        = sphericalDistance
-export const trefferPruefung      = trefferpruefung
+export const trefferPrüfung      = trefferprüfung
 export const vector3ZuSphaerisch  = vector3ToSpherical

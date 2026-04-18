@@ -1,6 +1,6 @@
 // AdminRanking – Ranglisten-Verwaltung im Admin-Dashboard
-// Zeigt alle Supabase-Eintraege, erlaubt Loeschen einzelner Eintraege,
-// aller Eintraege eines Users, eines Kurses oder komplettes Reset
+// Zeigt alle Supabase-Einträge, erlaubt Löschen einzelner Einträge,
+// aller Einträge eines Users, eines Kurses oder komplettes Reset
 
 import { useEffect, useState } from 'react'
 import { Trash2, AlertTriangle, RefreshCw, Users, Search } from 'lucide-react'
@@ -69,44 +69,44 @@ export default function AdminRanking() {
     setTimeout(() => setFeedback(null), 3000)
   }
 
-  // ── Loeschen: einzelner Eintrag ──
+  // ── Löschen: einzelner Eintrag ──
   async function deleteEntry(id: string) {
     if (!supabase) return
     const { error } = await supabase.from('rsi_results').delete().eq('id', id)
     if (error) { showFeedback(`Fehler: ${error.message}`); return }
     setResults(prev => prev.filter(r => r.id !== id))
-    showFeedback('Eintrag geloescht.')
+    showFeedback('Eintrag gelöscht.')
   }
 
-  // ── Loeschen: alle Eintraege eines Users ──
+  // ── Löschen: alle Einträge eines Users ──
   async function deleteByUsername(username: string) {
     if (!supabase) return
     const { error } = await supabase.from('rsi_results').delete().eq('username', username)
     if (error) { showFeedback(`Fehler: ${error.message}`); return }
     setResults(prev => prev.filter(r => r.username !== username))
-    showFeedback(`Alle Eintraege von "${username}" geloescht.`)
+    showFeedback(`Alle Einträge von "${username}" gelöscht.`)
   }
 
-  // ── Loeschen: alle Eintraege eines Kurses ──
+  // ── Löschen: alle Einträge eines Kurses ──
   async function deleteByKurs(kursCode: string) {
     if (!supabase) return
     const { error } = await supabase.from('rsi_results').delete().eq('kurs_code', kursCode)
     if (error) { showFeedback(`Fehler: ${error.message}`); return }
     setResults(prev => prev.filter(r => r.kurs_code !== kursCode))
-    showFeedback(`Kurs "${kursCode}" zurueckgesetzt.`)
+    showFeedback(`Kurs "${kursCode}" zurückgesetzt.`)
   }
 
-  // ── Loeschen: alles ──
+  // ── Löschen: alles ──
   async function deleteAll() {
     if (!supabase) return
     // Supabase: delete mit always-true Filter
     const { error } = await supabase.from('rsi_results').delete().gte('created_at', '1970-01-01')
     if (error) { showFeedback(`Fehler: ${error.message}`); return }
     setResults([])
-    showFeedback('Alle Eintraege geloescht.')
+    showFeedback('Alle Einträge gelöscht.')
   }
 
-  // ── Eindeutige User + Kurse fuer Schnellaktionen ──
+  // ── Eindeutige User + Kurse für Schnellaktionen ──
   const uniqueUsers = [...new Set(results.map(r => r.username))].sort()
   const uniqueKurse = [...new Set(results.filter(r => r.kurs_code).map(r => r.kurs_code!))].sort()
 
@@ -134,8 +134,8 @@ export default function AdminRanking() {
           </h2>
           <p style={{ fontSize: '12px', color: 'var(--zh-color-text-muted)', marginTop: '2px' }}>
             {isOnline
-              ? `${results.length} Eintraege in Supabase`
-              : `${localResults.length} lokale Eintraege (Supabase nicht erreichbar)`}
+              ? `${results.length} Einträge in Supabase`
+              : `${localResults.length} lokale Einträge (Supabase nicht erreichbar)`}
           </p>
         </div>
         <div style={{ display: 'flex', gap: '8px' }}>
@@ -144,10 +144,10 @@ export default function AdminRanking() {
           </button>
           {isOnline && results.length > 0 && (
             <button
-              onClick={() => setConfirmAction({ label: 'Alle Eintraege unwiderruflich loeschen?', action: deleteAll })}
+              onClick={() => setConfirmAction({ label: 'Alle Einträge unwiderruflich löschen?', action: deleteAll })}
               style={{ ...btnStyle, background: 'rgba(212,0,83,0.1)', color: '#D40053' }}
             >
-              <Trash2 size={12} /> Alles zuruecksetzen
+              <Trash2 size={12} /> Alles zurücksetzen
             </button>
           )}
         </div>
@@ -160,7 +160,7 @@ export default function AdminRanking() {
         </div>
       )}
 
-      {/* Bestaetigungs-Dialog */}
+      {/* Bestätigungs-Dialog */}
       {confirmAction && (
         <div style={{ padding: '16px', borderRadius: '10px', background: 'rgba(212,0,83,0.06)', border: '1px solid rgba(212,0,83,0.2)', marginBottom: '16px', display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap' }}>
           <AlertTriangle size={18} style={{ color: '#D40053', flexShrink: 0 }} />
@@ -171,7 +171,7 @@ export default function AdminRanking() {
             onClick={async () => { await confirmAction.action(); setConfirmAction(null) }}
             style={{ ...btnStyle, background: '#D40053', color: 'white' }}
           >
-            Ja, loeschen
+            Ja, löschen
           </button>
           <button
             onClick={() => setConfirmAction(null)}
@@ -182,7 +182,7 @@ export default function AdminRanking() {
         </div>
       )}
 
-      {/* Schnellaktionen: User loeschen */}
+      {/* Schnellaktionen: User löschen */}
       {isOnline && uniqueUsers.length > 0 && (
         <div style={{ marginBottom: '20px' }}>
           <p style={{ fontSize: '10px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.12em', color: 'var(--zh-color-text-disabled)', marginBottom: '8px' }}>
@@ -202,9 +202,9 @@ export default function AdminRanking() {
                   <span style={{ fontWeight: 600, color: 'var(--zh-color-text)' }}>{u}</span>
                   <span style={{ color: 'var(--zh-color-text-disabled)' }}>({count})</span>
                   <button
-                    onClick={() => setConfirmAction({ label: `Alle ${count} Eintraege von "${u}" loeschen?`, action: () => deleteByUsername(u) })}
+                    onClick={() => setConfirmAction({ label: `Alle ${count} Einträge von "${u}" löschen?`, action: () => deleteByUsername(u) })}
                     style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#D40053', padding: '2px', display: 'flex', alignItems: 'center' }}
-                    title={`Alle Eintraege von ${u} loeschen`}
+                    title={`Alle Einträge von ${u} löschen`}
                   >
                     <Trash2 size={12} />
                   </button>
@@ -215,7 +215,7 @@ export default function AdminRanking() {
         </div>
       )}
 
-      {/* Schnellaktionen: Kurs zuruecksetzen */}
+      {/* Schnellaktionen: Kurs zurücksetzen */}
       {isOnline && uniqueKurse.length > 0 && (
         <div style={{ marginBottom: '20px' }}>
           <p style={{ fontSize: '10px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.12em', color: 'var(--zh-color-text-disabled)', marginBottom: '8px' }}>
@@ -234,9 +234,9 @@ export default function AdminRanking() {
                   <span style={{ fontWeight: 600, color: 'var(--zh-color-text)' }}>{k}</span>
                   <span style={{ color: 'var(--zh-color-text-disabled)' }}>({count})</span>
                   <button
-                    onClick={() => setConfirmAction({ label: `Kurs "${k}" zuruecksetzen (${count} Eintraege)?`, action: () => deleteByKurs(k) })}
+                    onClick={() => setConfirmAction({ label: `Kurs "${k}" zurücksetzen (${count} Einträge)?`, action: () => deleteByKurs(k) })}
                     style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#D40053', padding: '2px', display: 'flex', alignItems: 'center' }}
-                    title={`Kurs ${k} zuruecksetzen`}
+                    title={`Kurs ${k} zurücksetzen`}
                   >
                     <Trash2 size={12} />
                   </button>
@@ -293,9 +293,9 @@ export default function AdminRanking() {
                   <td style={{ padding: '7px 10px', color: 'var(--zh-color-text-disabled)', textAlign: 'right', fontSize: '11px' }}>{new Date(r.created_at).toLocaleString('de-CH', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' })}</td>
                   <td style={{ padding: '7px 10px', textAlign: 'right' }}>
                     <button
-                      onClick={() => setConfirmAction({ label: `Eintrag von "${r.username}" (${r.punkte} Pkt.) loeschen?`, action: () => deleteEntry(r.id) })}
+                      onClick={() => setConfirmAction({ label: `Eintrag von "${r.username}" (${r.punkte} Pkt.) löschen?`, action: () => deleteEntry(r.id) })}
                       style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--zh-color-text-disabled)', padding: '2px', display: 'flex', alignItems: 'center' }}
-                      title="Eintrag loeschen"
+                      title="Eintrag löschen"
                     >
                       <Trash2 size={12} />
                     </button>
@@ -303,10 +303,10 @@ export default function AdminRanking() {
                 </tr>
               ))}
               {filtered.length === 0 && (
-                <tr><td colSpan={8} style={{ padding: '32px', textAlign: 'center', color: 'var(--zh-color-text-disabled)' }}>Keine Eintraege gefunden.</td></tr>
+                <tr><td colSpan={8} style={{ padding: '32px', textAlign: 'center', color: 'var(--zh-color-text-disabled)' }}>Keine Einträge gefunden.</td></tr>
               )}
               {filtered.length > 100 && (
-                <tr><td colSpan={8} style={{ padding: '10px', textAlign: 'center', color: 'var(--zh-color-text-disabled)', fontSize: '11px' }}>Zeige 100 von {filtered.length} Eintraegen. Filter verwenden fuer gezieltere Ansicht.</td></tr>
+                <tr><td colSpan={8} style={{ padding: '10px', textAlign: 'center', color: 'var(--zh-color-text-disabled)', fontSize: '11px' }}>Zeige 100 von {filtered.length} Einträgen. Filter verwenden für gezieltere Ansicht.</td></tr>
               )}
             </tbody>
           </table>
@@ -317,7 +317,7 @@ export default function AdminRanking() {
             Supabase nicht erreichbar — nur lokale Daten verfuegbar.
           </p>
           <p style={{ fontSize: '12px', color: 'var(--zh-color-text-disabled)' }}>
-            {localResults.length} lokale Resultate. Loeschen ist nur mit Supabase-Verbindung moeglich.
+            {localResults.length} lokale Resultate. Löschen ist nur mit Supabase-Verbindung möglich.
           </p>
         </div>
       )}

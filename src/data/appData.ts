@@ -1,5 +1,5 @@
 // localStorage-basierter Datenspeicher – RSI VR Tool Phase 2/3
-// Typen gemaess Spezifikation TBA-Fachkurs FK RSI
+// Typen gemäss Spezifikation TBA-Fachkurs FK RSI
 
 import type { RSIDimension, NACADimension, ResultDimension } from '../types'
 import type { NacaRaw } from './scoringEngine'
@@ -45,12 +45,12 @@ export interface AppTopic {
 export interface Perspektive {
   id: string
   label: string                    // z.B. "Standort A", "Gegenrichtung"
-  bildUrl: string                  // Panorama-URL fuer diese Perspektive
+  bildUrl: string                  // Panorama-URL für diese Perspektive
   startblick?: { theta: number; phi: number } | null
-  // Position dieses Standorts im Haupt-Panorama (fuer Navigation im Viewer)
+  // Position dieses Standorts im Haupt-Panorama (für Navigation im Viewer)
   standortPosition?: { theta: number; phi: number } | null
   // Navigation: Positionen anderer Standorte von dieser Perspektive aus gesehen
-  // Keys: 'haupt' fuer Haupt-Panorama, oder perspektive.id fuer andere Perspektiven
+  // Keys: 'haupt' für Haupt-Panorama, oder perspektive.id für andere Perspektiven
   navMarker?: Record<string, { theta: number; phi: number }> | null
 }
 
@@ -64,7 +64,7 @@ export interface AppScene {
   strassenmerkmale?: StrassenMerkmal[]
   // Legacy-Feld (array); neue Felder vorschauBild1/2 haben Vorrang
   vorschauBilder?: string[]
-  // Vorschaubilder: null = kein Bild, 'panorama' = Panoramabild uebernehmen, sonst URL/base64
+  // Vorschaubilder: null = kein Bild, 'panorama' = Panoramabild übernehmen, sonst URL/base64
   vorschauBild1?: string | null
   vorschauBild2?: string | null
   panoramaBildUrl?: string | null
@@ -170,7 +170,7 @@ export function berechneSterne(prozent: number): 1 | 2 | 3 {
   return 1
 }
 
-// Laufende Szenen-Session (fuer Wiederherstellung bei Browser-Reload)
+// Laufende Szenen-Session (für Wiederherstellung bei Browser-Reload)
 export interface SceneSession {
   sceneId:       string
   startedAt:     number
@@ -201,7 +201,7 @@ export interface TopicNode {
 }
 
 // ── Schema-Version (bei Breaking Changes erhoehen) ──
-// Wird beim Start geprueft. Bei Mismatch: Seed-Daten neu schreiben,
+// Wird beim Start geprüft. Bei Mismatch: Seed-Daten neu schreiben,
 // User-Daten (SceneResults, Session) bleiben erhalten.
 const SCHEMA_VERSION  = 2
 const K_SCHEMA        = 'rsi-v3-schema'
@@ -596,7 +596,7 @@ function initIfNeeded(): void {
   if (storedVersion < SCHEMA_VERSION) {
     console.info(`[RSI] Schema-Migration: v${storedVersion} → v${SCHEMA_VERSION}`)
     // Seed-Daten immer neu schreiben bei Schema-Upgrade
-    // (neue Default-Szenen, korrigierte Texte etc. werden so uebernommen)
+    // (neue Default-Szenen, korrigierte Texte etc. werden so übernommen)
     // User-Daten (SceneResults, Session) bleiben unangetastet
     localStorage.setItem(K_TOPICS,   JSON.stringify(DEFAULT_TOPICS))
     localStorage.setItem(K_SCENES,   JSON.stringify(DEFAULT_SCENES))
@@ -645,8 +645,8 @@ function writeJSON<T>(key: string, data: T[]): void {
   }
 }
 
-// SHA-256 Hash fuer Username (DSGVO: kein Klarname in Supabase)
-// Gibt die ersten 8 Hex-Zeichen zurueck (z.B. "a3f2b8c1")
+// SHA-256 Hash für Username (DSGVO: kein Klarname in Supabase)
+// Gibt die ersten 8 Hex-Zeichen zurück (z.B. "a3f2b8c1")
 async function hashUsername(name: string): Promise<string> {
   const encoder = new TextEncoder()
   const data = encoder.encode(name.toLowerCase().trim())
@@ -659,10 +659,10 @@ export function ml(text: MultiLang, lang: string): string {
   return text[lang as keyof MultiLang] ?? text.de
 }
 
-// Verortung eines Defizits fuer eine bestimmte Perspektive ermitteln
+// Verortung eines Defizits für eine bestimmte Perspektive ermitteln
 // Bei aktiver Perspektive: NUR perspektivenspezifische Verortung (kein Fallback)
 // Bei Haupt-Panorama (null): verortung als Fallback
-export function getVerortungFuerPerspektive(
+export function getVerortungFürPerspektive(
   deficit: AppDeficit,
   perspektivenId: string | null,
 ): DefizitVerortung | null {
@@ -689,12 +689,12 @@ export function saveTopic(t: AppTopic): void {
   saveTopicSupabase(t).catch(() => {})
 }
 export function deleteTopic(id: string): void {
-  // Kaskade: Scenes und Deficits dieses Topics loeschen
+  // Kaskade: Scenes und Deficits dieses Topics löschen
   const scenes = getAllScenes().filter(s => s.topicId === id)
   for (const sc of scenes) {
     deleteScene(sc.id)
   }
-  // Kinder-Topics loeschen
+  // Kinder-Topics löschen
   const children = getTopics().filter(t => t.parentTopicId === id)
   for (const child of children) {
     deleteTopic(child.id)
@@ -720,7 +720,7 @@ export function getTopicsTree(): TopicNode[] {
   }))
 }
 
-// Naechste freie sortOrder fuer eine Ebene berechnen
+// Nächste freie sortOrder für eine Ebene berechnen
 export function getNextSortOrder(parentTopicId: string | null): number {
   const siblings = getTopics().filter(t => (t.parentTopicId ?? null) === parentTopicId)
   if (siblings.length === 0) return 1

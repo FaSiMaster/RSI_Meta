@@ -126,7 +126,7 @@ export default function BildEditor({ scene, deficits, onSave, onClose, initialDe
     mountedRef.current = true
   }, []) // eslint-disable-line react-hooks/exhaustive-deps
 
-  // ── Perspektivenwechsel: Bild laden + Modus zuruecksetzen ──
+  // ── Perspektivenwechsel: Bild laden + Modus zurücksetzen ──
   useEffect(() => {
     if (!mountedRef.current) return
     // Standort-Modus aufräumen (sonst landet der nächste Klick auf der falschen Perspektive)
@@ -591,7 +591,7 @@ export default function BildEditor({ scene, deficits, onSave, onClose, initialDe
     if (!coord) return
 
     if (modus === 'standort' && standortZielId && !aktivePerspektiveId) {
-      // Haupt-Panorama → Standort-Position fuer eine Perspektive setzen
+      // Haupt-Panorama → Standort-Position für eine Perspektive setzen
       setLocalScene(prev => ({
         ...prev,
         perspektiven: (prev.perspektiven ?? []).map(p =>

@@ -1,6 +1,6 @@
 // Navbar – 52px, ZH Corporate Design
 // Links: Logo | Mitte: Nav-Links | Rechts: Score + Live + Sprache + Dark-Toggle + Avatar
-// Avatar-Klick oeffnet User-Popover (Name, Kurs, Score, Abmelden, Reset)
+// Avatar-Klick öffnet User-Popover (Name, Kurs, Score, Abmelden, Reset)
 
 import { LayoutDashboard, BarChart3, Settings, Sun, Moon, Trophy, LogOut, RotateCcw } from 'lucide-react'
 import { useState, useEffect, useRef } from 'react'
@@ -58,7 +58,7 @@ export default function Navbar({ view, username, score, theme, kursName, onNavig
     return view === key || (key === 'topics' && (view === 'scenes' || view === 'scoring' || view === 'einstieg'))
   }
 
-  // App komplett zuruecksetzen
+  // App komplett zurücksetzen
   async function handleResetApp() {
     if (!window.confirm(t('landing.resetConfirm'))) return
     if ('serviceWorker' in navigator) {

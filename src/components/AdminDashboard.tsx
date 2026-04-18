@@ -114,7 +114,7 @@ function recompute(d: AppDeficit): AppDeficit {
   }
 }
 
-// Einfaches Textfeld fuer mehrsprachige Felder
+// Einfaches Textfeld für mehrsprachige Felder
 function MLInput({ label, value, onChange }: { label: string; value: string; onChange: (v: string) => void }) {
   return (
     <div style={{ flex: 1 }}>
@@ -183,7 +183,7 @@ export default function AdminDashboard() {
   const [editingThema, setEditingThema] = useState<AppTopic | null>(null)
   const [themaTyp, setThemaTyp] = useState<'ober' | 'unter'>('ober')
 
-  // Vorschaubild-Modus fuer das Szene-Modal
+  // Vorschaubild-Modus für das Szene-Modal
   const [vorschau1Modus, setVorschau1Modus] = useState<VorschauModus>('kein')
   const [vorschau2Modus, setVorschau2Modus] = useState<VorschauModus>('kein')
   const [szeneGespeichertFeedback, setSzeneGespeichertFeedback] = useState(false)
@@ -622,7 +622,7 @@ export default function AdminDashboard() {
                 {selectedScene && <p style={{ fontSize: '12px', color: 'var(--zh-color-text-muted)', marginTop: '2px' }}>{deficits.length} in dieser Szene</p>}
               </div>
               <div style={{ display: 'flex', gap: '8px' }}>
-                {/* BildEditor oeffnen (nur wenn Szene mit Panorama vorhanden) */}
+                {/* BildEditor öffnen (nur wenn Szene mit Panorama vorhanden) */}
                 {selectedScene?.panoramaBildUrl && (
                   <button
                     onClick={() => { setBildEditorDeficitId(undefined); setBildEditorOpen(true) }}
@@ -804,7 +804,7 @@ export default function AdminDashboard() {
                               {t('admin.kurs_deaktivieren')}
                             </button>
                             <button onClick={() => handleDeleteKurs(k.id)} style={{ display: 'flex', alignItems: 'center', gap: '4px', padding: '4px 10px', borderRadius: '6px', border: '1px solid rgba(212,0,83,0.2)', background: 'rgba(212,0,83,0.06)', fontSize: '11px', color: '#D40053', cursor: 'pointer' }}>
-                              <Trash2 size={10} /> {t('admin.kurs_loeschen')}
+                              <Trash2 size={10} /> {t('admin.kurs_löschen')}
                             </button>
                           </div>
                         </td>
@@ -1102,7 +1102,7 @@ export default function AdminDashboard() {
                 })}
                 {(editingScene.strassenmerkmale ?? []).length > 0 && (
                   <button onClick={addMerkmal} style={{ padding: '7px 14px', borderRadius: '6px', border: '1px dashed var(--zh-color-border)', background: 'transparent', color: 'var(--zh-blau)', fontSize: '13px', fontWeight: 600, cursor: 'pointer', textAlign: 'left' }}>
-                    {t('admin.merkmale_hinzufuegen')}
+                    {t('admin.merkmale_hinzufügen')}
                   </button>
                 )}
               </div>
@@ -1263,7 +1263,7 @@ export default function AdminDashboard() {
                 szeneId={editingScene.id}
               />
 
-              {/* Mehrsprachiger Hinweis fuer Merkmale */}
+              {/* Mehrsprachiger Hinweis für Merkmale */}
               <p style={{ fontSize: '11px', color: 'var(--zh-color-text-disabled)', marginTop: '4px' }}>
                 {t('admin.mehrsprachen_hinweis')}
               </p>
@@ -1317,7 +1317,7 @@ export default function AdminDashboard() {
             </Section>
 
             {themaTyp === 'unter' && (
-              <Section label={t('admin.thema_oberthema_waehlen')}>
+              <Section label={t('admin.thema_oberthema_wählen')}>
                 <select
                   value={editingThema.parentTopicId ?? ''}
                   onChange={e => setEditingThema(prev => prev ? { ...prev, parentTopicId: e.target.value || null } : prev)}
@@ -1502,7 +1502,7 @@ function VorschaubildEditor({
   label, value, panoramaBildUrl, modus, onModusChange, onBildGeladen, szeneId,
 }: VorschaubildEditorProps) {
   const hasPanorama = !!panoramaBildUrl
-  // Bild-Quelle fuer Vorschau aufloesen
+  // Bild-Quelle für Vorschau aufloesen
   const previewUrl = value === 'panorama'
     ? (panoramaBildUrl ?? null)
     : (value ?? null)

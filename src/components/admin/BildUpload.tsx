@@ -1,6 +1,6 @@
 // BildUpload.tsx – Panoramabild-Upload-Komponente
 // Empfohlener Weg: /textures/dateiname.webp (Vercel CDN)
-// Alternativ: lokale Datei als base64 (nur fuer kleine Test-Bilder)
+// Alternativ: lokale Datei als base64 (nur für kleine Test-Bilder)
 
 import { useEffect, useRef, useState, useCallback } from 'react'
 import { Upload, FolderOpen, Link } from 'lucide-react'
@@ -123,18 +123,18 @@ export default function BildUpload({ aktuelleUrl, onBildGeladen, maxBreite = 0 }
     ladeVorschau(val)
   }
 
-  function handleTexturWaehlen(name: string) {
+  function handleTexturWählen(name: string) {
     const pfad = `/textures/${name}`
     setUrlInput(pfad)
     ladeVorschau(pfad)
   }
 
   // Seitenverhältnis-Warnung (mehr als 10% Abweichung von 2:1)
-  const seitenverhaeltnis = vorschauBreite > 0 && vorschauHoehe > 0
+  const seitenverhältnis = vorschauBreite > 0 && vorschauHoehe > 0
     ? vorschauBreite / vorschauHoehe
     : null
-  const zeigeVerhaeltnisWarnung = seitenverhaeltnis !== null
-    && Math.abs(seitenverhaeltnis - 2.0) / 2.0 > 0.1
+  const zeigeVerhältnisWarnung = seitenverhältnis !== null
+    && Math.abs(seitenverhältnis - 2.0) / 2.0 > 0.1
 
   const pixelText = vorschauBreite > 0 && vorschauHoehe > 0
     ? `${vorschauBreite.toLocaleString('de-CH')} × ${vorschauHoehe.toLocaleString('de-CH')} Pixel`
@@ -240,7 +240,7 @@ export default function BildUpload({ aktuelleUrl, onBildGeladen, maxBreite = 0 }
             }
           </div>
         )}
-        {zeigeVerhaeltnisWarnung && (
+        {zeigeVerhältnisWarnung && (
           <div style={{ padding: '10px 14px', background: 'rgba(184,115,0,0.08)', border: '1px solid rgba(184,115,0,0.3)', borderRadius: '6px', fontSize: '12px', color: '#B87300', lineHeight: 1.5 }}>
             Hinweis: Panoramabilder haben üblicherweise das Seitenverhältnis 2:1. Dieses Bild weicht davon ab.
           </div>
@@ -291,7 +291,7 @@ export default function BildUpload({ aktuelleUrl, onBildGeladen, maxBreite = 0 }
                 {VERFUEGBARE_TEXTUREN.map(name => (
                   <button
                     key={name}
-                    onClick={() => handleTexturWaehlen(name)}
+                    onClick={() => handleTexturWählen(name)}
                     style={{ padding: '4px 10px', borderRadius: '5px', border: '1px solid var(--zh-color-border)', background: 'var(--zh-color-bg-secondary)', fontSize: '12px', color: 'var(--zh-blau)', cursor: 'pointer', fontFamily: 'monospace' }}
                   >
                     {name}

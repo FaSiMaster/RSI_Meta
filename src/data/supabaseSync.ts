@@ -64,7 +64,7 @@ export async function initSupabaseData(): Promise<void> {
       deficitsCache = (d2 ?? []).map(r => r.data as AppDeficit)
     } else {
       // NUR setzen wenn noch kein lokaler Save passiert ist (Cache leer)
-      // Verhindert Race-Condition: lokaler Save → initSupabase ueberschreibt
+      // Verhindert Race-Condition: lokaler Save → initSupabase überschreibt
       if (!topicsCache) topicsCache = topicRows.map(r => r.data as AppTopic)
       if (!scenesCache) scenesCache = sceneRows.map(r => r.data as AppScene)
       if (!deficitsCache) deficitsCache = deficitRows.map(r => r.data as AppDeficit)

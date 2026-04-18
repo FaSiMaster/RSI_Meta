@@ -15,9 +15,9 @@ import {
   clickToSpherical,
   sphericalToVector3,
   isInTolerance,
-  trefferpruefung,
+  trefferprüfung,
 } from '../utils/sphereCoords'
-import { ml, getVerortungFuerPerspektive, type AppScene, type AppDeficit, type DefizitKategorie, type FoundDeficit } from '../data/appData'
+import { ml, getVerortungFürPerspektive, type AppScene, type AppDeficit, type DefizitKategorie, type FoundDeficit } from '../data/appData'
 import KategoriePanel from './KategoriePanel'
 import KlickFeedback, { type KlickFeedbackType } from './KlickFeedback'
 import { useTranslation } from 'react-i18next'
@@ -27,7 +27,7 @@ import type { RSIDimension, NACADimension } from '../types'
 
 // Modul-Level Singleton – nie innerhalb von Komponenten erzeugen
 
-// Kategorien fuer VR-Panel
+// Kategorien für VR-Panel
 const VR_KATEGORIEN: { value: DefizitKategorie; label: string }[] = [
   { value: 'verkehrsfuehrung', label: 'Verkehrsführung'        },
   { value: 'sicht',            label: 'Sicht'                  },
@@ -38,7 +38,7 @@ const VR_KATEGORIEN: { value: DefizitKategorie; label: string }[] = [
   { value: 'baustelle',        label: 'Baustelle'              },
 ]
 
-// ── Fehlergrenze fuer VR-Panels (verhindert Scene-Crash) ────────────────────
+// ── Fehlergrenze für VR-Panels (verhindert Scene-Crash) ────────────────────
 interface VRErrorBoundaryState { hasError: boolean }
 class VRErrorBoundary extends Component<{ children: React.ReactNode }, VRErrorBoundaryState> {
   constructor(props: { children: React.ReactNode }) {
@@ -167,9 +167,9 @@ function StandortNavMarker({ position, label, onClick }: StandortNavMarkerProps)
   )
 }
 
-// ── Hotspot-Position fuer ein Defizit bestimmen (perspektivenabhaengig) ──────
+// ── Hotspot-Position für ein Defizit bestimmen (perspektivenabhaengig) ──────
 function getHotspotPosition(d: AppDeficit, perspektivenId: string | null = null): THREE.Vector3 | null {
-  const verortung = getVerortungFuerPerspektive(d, perspektivenId)
+  const verortung = getVerortungFürPerspektive(d, perspektivenId)
   if (verortung) {
     if (verortung.typ === 'punkt') {
       return sphericalToVector3(verortung.position, 60)
@@ -197,7 +197,7 @@ function getHotspotPosition(d: AppDeficit, perspektivenId: string | null = null)
 // ── VR: Panel im Weltraum – Position einmalig bei Mount erfassen ─────────────
 // Beim ersten Frame wird die aktuelle Blickrichtung erfasst und das Panel
 // dort fixiert. Danach dreht nur noch Billboard es zur Kamera – die Position
-// bleibt unveraendert (keine Kopf-Bindung mehr).
+// bleibt unverändert (keine Kopf-Bindung mehr).
 interface VRHudProps {
   offset?: [number, number, number]
   children: React.ReactNode
@@ -707,11 +707,11 @@ function SceneContent({
 // ── Hinweis-Dialog (Browser) ─────────────────────────────────────────────────
 interface HintDialogProps {
   hintCount:     number
-  onBestaetigen: () => void
+  onBestätigen: () => void
   onAbbrechen:   () => void
 }
 
-function HintDialog({ hintCount, onBestaetigen, onAbbrechen }: HintDialogProps) {
+function HintDialog({ hintCount, onBestätigen, onAbbrechen }: HintDialogProps) {
   return (
     <div style={{
       position: 'absolute', inset: 0,
@@ -750,7 +750,7 @@ function HintDialog({ hintCount, onBestaetigen, onAbbrechen }: HintDialogProps) 
             Abbrechen
           </button>
           <button
-            onClick={onBestaetigen}
+            onClick={onBestätigen}
             style={{ flex: 1, padding: '10px', borderRadius: '8px', border: 'none', background: '#F0A500', color: '#1a1400', fontSize: '14px', fontWeight: 700, cursor: 'pointer', fontFamily: 'var(--zh-font)' }}
           >
             Trotzdem einblenden
@@ -860,7 +860,7 @@ export default function SceneViewer({
   // Klick-Bestätigungs-Marker (Browser: Klick → Marker → Bestätigen)
   const [pendingClickPos, setPendingClickPos] = useState<{ theta: number; phi: number } | null>(null)
   const pendingTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
-  // Ref fuer Phase – vermeidet stale-closure in handleVRModeChange
+  // Ref für Phase – vermeidet stale-closure in handleVRModeChange
   const phaseRef      = useRef<Phase>('exploring')
   phaseRef.current = phase
 
@@ -910,8 +910,8 @@ export default function SceneViewer({
   // ── Treffer-Prüfung (gemeinsam für Browser-Bestätigung und VR-Direktklick) ──
   const runHitCheck = useCallback((clickPos: { theta: number; phi: number }) => {
     const hit = deficits.find(d => {
-      const verortung = getVerortungFuerPerspektive(d, aktivePerspektiveId)
-      if (verortung) return trefferpruefung(clickPos, verortung)
+      const verortung = getVerortungFürPerspektive(d, aktivePerspektiveId)
+      if (verortung) return trefferprüfung(clickPos, verortung)
       // Legacy-Fallback nur bei Haupt-Panorama (keine Perspektive aktiv)
       if (!aktivePerspektiveId && d.position) {
         return isInTolerance(clickPos, d.position, d.tolerance ?? 15)
@@ -979,11 +979,11 @@ export default function SceneViewer({
     setPhase('exploring')
   }, [])
 
-  // ── Kategorie gewaehlt ──────────────────────────────────────────────────────
-  const handleKategorieSelect = useCallback((gewaehlteKategorie: DefizitKategorie) => {
+  // ── Kategorie gewählt ──────────────────────────────────────────────────────
+  const handleKategorieSelect = useCallback((gewählteKategorie: DefizitKategorie) => {
     const d = hitDeficit.current
     if (!d) return
-    const kategorieRichtig = d.kategorie === gewaehlteKategorie
+    const kategorieRichtig = d.kategorie === gewählteKategorie
     hitKatRichtig.current  = kategorieRichtig
     setFeedback(kategorieRichtig ? 'richtig' : 'kategorie_falsch')
     setPhase('klickFeedback')
@@ -1018,7 +1018,7 @@ export default function SceneViewer({
     }
   }, [isVR, onHintActivate])
 
-  const handleHintBestaetigen = useCallback(() => {
+  const handleHintBestätigen = useCallback(() => {
     onHintActivate()
     setPhase('exploring')
   }, [onHintActivate])
@@ -1257,7 +1257,7 @@ export default function SceneViewer({
               fontFamily: 'var(--zh-font)',
             }}
           >
-            {t('szene.bestaetigen')}
+            {t('szene.bestätigen')}
           </button>
           <button
             onClick={handleCancelPending}
@@ -1493,7 +1493,7 @@ export default function SceneViewer({
       {htmlVisible && phase === 'hintDialog' && (
         <HintDialog
           hintCount={deficits.filter(d => !foundIds.has(d.id)).length}
-          onBestaetigen={handleHintBestaetigen}
+          onBestätigen={handleHintBestätigen}
           onAbbrechen={handleHintAbbrechen}
         />
       )}

@@ -15,7 +15,7 @@ body,
   width: 100%;
   min-height: 100%;
   height: 100%;
-  /* overflow: auto ist noetig fuer Scroll auf allen Seiten */
+  /* overflow: auto ist nötig für Scroll auf allen Seiten */
   overflow-x: hidden;
   overflow-y: auto;
   background: var(--zh-color-bg);

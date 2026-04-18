@@ -1,6 +1,6 @@
 // xrStore – WebXR Store Singleton (modul-weit geteilt zwischen SceneViewer und App)
 // model:false verhindert CDN-Download des Controller-GLTF-Modells
-// rayPointer:true behaelt den Controller-Ray fuer onClick auf Meshes
+// rayPointer:true behält den Controller-Ray für onClick auf Meshes
 
 import { createXRStore } from '@react-three/xr'
 

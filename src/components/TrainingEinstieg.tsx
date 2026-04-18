@@ -156,7 +156,7 @@ export default function TrainingEinstieg({ scene, topic, onStart, onBack }: Prop
         {beschreibung.length > 0 ? beschreibung : t('einstieg.kein_beschrieb')}
       </p>
 
-      {/* Strassenmerkmale-Tabelle – nur wenn Eintraege vorhanden */}
+      {/* Strassenmerkmale-Tabelle – nur wenn Einträge vorhanden */}
       {zeigeMerkmale && (
         <div style={{ marginBottom: '24px' }}>
           <p style={{
@@ -278,7 +278,7 @@ export default function TrainingEinstieg({ scene, topic, onStart, onBack }: Prop
             fontFamily: 'var(--zh-font)',
           }}
         >
-          {t('einstieg.zurueck')}
+          {t('einstieg.zurück')}
         </button>
         <button
           onClick={onStart}

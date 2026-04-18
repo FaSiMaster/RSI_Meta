@@ -2,7 +2,7 @@
 // Liest URL und Key aus Vite-Umgebungsvariablen (.env.local / Vercel)
 // Falls nicht konfiguriert: supabase = null → localStorage-Fallback
 //
-// Supabase SQL-Schema (einmalig im Supabase Dashboard → SQL Editor ausfuehren):
+// Supabase SQL-Schema (einmalig im Supabase Dashboard → SQL Editor ausführen):
 //
 //   CREATE TABLE rsi_results (
 //     id uuid DEFAULT gen_random_uuid() PRIMARY KEY,
