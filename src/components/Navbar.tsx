@@ -2,9 +2,10 @@
 // Links: Logo | Mitte: Nav-Links | Rechts: Score + Live + Sprache + Dark-Toggle + Avatar
 // Avatar-Klick öffnet User-Popover (Name, Kurs, Score, Abmelden, Reset)
 
-import { LayoutDashboard, BarChart3, Settings, Sun, Moon, Trophy, LogOut, RotateCcw } from 'lucide-react'
+import { LayoutDashboard, BarChart3, Settings, Sun, Moon, Trophy, LogOut, RotateCcw, MessageSquare } from 'lucide-react'
 import { useState, useEffect, useRef } from 'react'
 import LanguageSwitcher from './LanguageSwitcher'
+import FeedbackModal from './FeedbackModal'
 import { useTranslation } from 'react-i18next'
 import { getSupabaseStatus, onStatusChange } from '../lib/supabase'
 
@@ -32,6 +33,9 @@ export default function Navbar({ view, username, score, theme, kursName, onNavig
   // Avatar-Popover
   const [showPopover, setShowPopover] = useState(false)
   const popoverRef = useRef<HTMLDivElement>(null)
+
+  // Feedback-Modal
+  const [showFeedback, setShowFeedback] = useState(false)
 
   // Klick ausserhalb schliesst Popover
   useEffect(() => {
@@ -225,6 +229,22 @@ export default function Navbar({ view, username, score, theme, kursName, onNavig
 
                 {/* Aktionen */}
                 <button
+                  onClick={() => { setShowPopover(false); setShowFeedback(true) }}
+                  style={{
+                    display: 'flex', alignItems: 'center', gap: '10px', width: '100%',
+                    padding: '10px 8px', marginTop: '4px',
+                    background: 'none', border: 'none', cursor: 'pointer', borderRadius: '6px',
+                    fontSize: '13px', fontWeight: 500, color: 'var(--zh-color-text-muted)',
+                    textAlign: 'left',
+                  }}
+                  onMouseEnter={e => { e.currentTarget.style.background = 'var(--zh-color-bg-secondary)' }}
+                  onMouseLeave={e => { e.currentTarget.style.background = 'none' }}
+                >
+                  <MessageSquare size={14} />
+                  Feedback senden
+                </button>
+
+                <button
                   onClick={() => { setShowPopover(false); onLogout() }}
                   style={{
                     display: 'flex', alignItems: 'center', gap: '10px', width: '100%',
@@ -260,6 +280,12 @@ export default function Navbar({ view, username, score, theme, kursName, onNavig
           </div>
         )}
       </div>
+
+      <FeedbackModal
+        open={showFeedback}
+        onClose={() => setShowFeedback(false)}
+        context={`View: ${view}${kursName ? ' · Kurs: ' + kursName : ''}`}
+      />
     </header>
   )
 }

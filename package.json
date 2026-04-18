@@ -12,6 +12,7 @@
     "@react-three/drei": "^9.122.0",
     "@react-three/fiber": "^8.17.10",
     "@react-three/xr": "^6.2.3",
+    "@sentry/react": "^10.49.0",
     "@supabase/supabase-js": "^2.103.0",
     "@tailwindcss/vite": "^4.2.2",
     "clsx": "^2.1.1",

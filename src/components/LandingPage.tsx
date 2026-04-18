@@ -3,9 +3,10 @@
 // Enthält Datenschutzhinweis (DSGVO) und Admin-Zugang via PIN
 
 import { useState } from 'react'
-import { Shield, Eye, BarChart3, BookOpen, EyeOff, Lock, ChevronRight, RotateCcw } from 'lucide-react'
+import { Shield, Eye, BarChart3, BookOpen, EyeOff, Lock, ChevronRight, RotateCcw, MessageSquare } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import LanguageSwitcher from './LanguageSwitcher'
+import FeedbackModal from './FeedbackModal'
 import { getSession, getKurseZeitlichAktiv, type Kurs } from '../data/appData'
 
 interface Props {
@@ -24,6 +25,7 @@ export default function LandingPage({ onStart, onAdmin }: Props) {
   const [showPasswort, setShowPasswort] = useState(false)
   const [resetting, setResetting] = useState(false)
   const [nameFehlend, setNameFehlend] = useState(false)
+  const [showFeedback, setShowFeedback] = useState(false)
 
   // Admin-PIN
   const [showAdminModal, setShowAdminModal] = useState(false)
@@ -314,6 +316,14 @@ export default function LandingPage({ onStart, onAdmin }: Props) {
           </a>
           <span className="text-[10px]" style={{ color: 'var(--zh-color-border)' }}>|</span>
           <button
+            onClick={() => setShowFeedback(true)}
+            className="flex items-center gap-1 text-[10px] font-semibold transition-colors"
+            style={{ color: 'var(--zh-color-text-disabled)', background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}
+          >
+            <MessageSquare size={10} /> Feedback
+          </button>
+          <span className="text-[10px]" style={{ color: 'var(--zh-color-border)' }}>|</span>
+          <button
             onClick={handleResetApp}
             disabled={resetting}
             className="flex items-center gap-1 text-[10px] font-semibold transition-colors"
@@ -336,6 +346,12 @@ export default function LandingPage({ onStart, onAdmin }: Props) {
           </span>
         </div>
       </div>
+
+      <FeedbackModal
+        open={showFeedback}
+        onClose={() => setShowFeedback(false)}
+        context="LandingPage (nicht eingeloggt)"
+      />
 
       {/* ── Admin-PIN-Modal ── */}
       {showAdminModal && (

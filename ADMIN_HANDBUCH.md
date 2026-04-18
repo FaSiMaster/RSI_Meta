@@ -237,9 +237,42 @@ Die Datei `src/data/scoringEngine.ts` (WICHTIGKEIT_TABLE + Matrizen) ist **norma
 
 ---
 
-## 13. Kontakt
+## 13. Test- vs. Produktivdaten
+
+Aktueller Ansatz: **ein einziges Supabase-Projekt, Trennung über Kurse.**
+
+- Für Test-/Demo-Inhalte einen eigenen Kurs anlegen (z.B. `FK RSI TEST`), zeitlich begrenzen und nach Abschluss löschen.
+- Seed-Kurs `FaSi4safety` darf nicht für reale Kurse wiederverwendet werden (Code ist im Bundle sichtbar, siehe REVIEW_SECURITY.md N-3).
+- Topics/Scenes/Deficits sind global — Änderungen im Admin wirken sofort auf alle Kurse. Vor grösseren Umbauten: Export-Dump als Snapshot sichern (siehe BACKUP.md).
+- Separater Prod/Test-Supabase würde doppelte Pflege bedeuten; der Aufwand rechtfertigt den zusätzlichen Nutzen für die aktuelle Kursgrösse nicht.
+
+Falls später ein zweites Supabase-Projekt nötig wird (z.B. Staging vor Produktiv-Rollout): siehe BACKUP.md Abschnitt "Wiederherstellung Szenario B" für die Einrichtung.
+
+---
+
+## 14. Fehler-Monitoring (Sentry)
+
+Fehler auf User-Geräten werden in Sentry protokolliert, sofern `VITE_SENTRY_DSN` in Vercel-Env gesetzt ist. Ohne DSN: kein Monitoring, keine Datenübertragung.
+
+**Zugang:** Sentry-Projekt-Dashboard (Login über separates Sentry-Konto der Fachstelle).
+
+**Was wird erfasst:**
+- Unbehandelte JavaScript-Fehler mit Stacktrace
+- Performance-Traces (10 % Sampling)
+- Session Replays nur bei Fehler (30 %), Text maskiert, Medien blockiert
+
+**Was NICHT erfasst wird:**
+- Klartext-Benutzernamen (werden in `beforeSend` entfernt)
+- Panorama-Bildinhalte (Medien blockiert)
+- Eingabetexte in Formularen (`maskAllText: true` im Replay)
+
+**Sentry deaktivieren:** `VITE_SENTRY_DSN` in Vercel entfernen + Redeploy.
+
+---
+
+## 15. Kontakt
 
 **Fachstelle Verkehrssicherheit**
 Stevan Skeledzic — Leiter Verkehrssicherheit
 Tiefbauamt, Baudirektion, Kanton Zürich
-stevan.skeledzic@bd.zh.ch · +41 43 259 31 20
+sicherheit.tba@bd.zh.ch · +41 43 259 31 20

@@ -173,7 +173,7 @@ Sterne-Übersicht pro Thema, erreichte Szenen, Gesamt-Score.
 ## 11. Support
 
 Bei Problemen, Feedback oder Bugs:
-- **E-Mail:** stevan.skeledzic@bd.zh.ch
+- **E-Mail:** sicherheit.tba@bd.zh.ch
 - **Telefon:** +41 43 259 31 20
 - **Fachstelle Verkehrssicherheit, Tiefbauamt, Kanton Zürich**
 

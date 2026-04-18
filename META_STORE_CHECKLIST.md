@@ -128,7 +128,7 @@
 - [ ] Release-Notes in deutscher Sprache für Meta-Store-Listing
 
 ### 7.3 Support
-- [ ] E-Mail-Adresse: stevan.skeledzic@bd.zh.ch (aktuell)
+- [ ] E-Mail-Adresse: sicherheit.tba@bd.zh.ch (aktuell)
 - [ ] FAQ-Link im Store-Listing
 - [ ] Bug-Report-Kanal definiert (siehe Task 15)
 
