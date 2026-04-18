@@ -76,17 +76,32 @@ export function sphericalToPixel(coord: SphericalPos, bildBreite: number, bildHo
   return { x, y }
 }
 
-// Ray-Casting Algorithmus im equirectangulären (theta/phi) Raum
+// Ray-Casting Algorithmus im equirectangulären (theta/phi) Raum.
+// Behandelt Polygone, die den 0°/360°-Umbruch überschreiten, durch temporäre
+// Rotation um 180°. Ein Polygon "überschreitet den Umbruch" wenn die Differenz
+// zwischen grösstem und kleinstem Theta-Wert mehr als 180° beträgt.
 export function punktInPolygon(punkt: SphericalPos, polygon: SphericalPos[]): boolean {
   const n = polygon.length
   if (n < 3) return false
-  let inside = false
-  const px = punkt.theta
+
+  // Prüfen ob Polygon den 0°/360°-Umbruch überspannt
+  let minTheta = Infinity
+  let maxTheta = -Infinity
+  for (const p of polygon) {
+    if (p.theta < minTheta) minTheta = p.theta
+    if (p.theta > maxTheta) maxTheta = p.theta
+  }
+  const rotate = (maxTheta - minTheta) > 180
+
+  const rot = (t: number) => rotate ? ((t + 180) % 360) : t
+  const px = rot(punkt.theta)
   const py = punkt.phi
+
+  let inside = false
   for (let i = 0, j = n - 1; i < n; j = i++) {
-    const xi = polygon[i].theta
+    const xi = rot(polygon[i].theta)
     const yi = polygon[i].phi
-    const xj = polygon[j].theta
+    const xj = rot(polygon[j].theta)
     const yj = polygon[j].phi
     const intersect = ((yi > py) !== (yj > py)) &&
       (px < (xj - xi) * (py - yi) / (yj - yi) + xi)

@@ -2,7 +2,7 @@
 // Views: landing | topics | scenes | einstieg | viewer | scoring | szenenabschluss | admin | ranking
 // FaSi Kanton Zürich · ZH Corporate Design
 
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useMemo, useRef } from 'react'
 import { AnimatePresence, motion } from 'motion/react'
 import {
   getSession, saveSession, getDeficits, getAllScenes, saveRankingEntry,
@@ -11,7 +11,7 @@ import {
 import { MAX_PUNKTE_PRO_DEFIZIT } from './data/scoreCalc'
 import type { AppTopic, AppScene, AppDeficit, FoundDeficit, DefizitResult, SceneResult } from './data/appData'
 
-import { initSupabaseData } from './data/supabaseSync'
+import { initSupabaseData, resetCache as resetSupabaseCache } from './data/supabaseSync'
 import { xrStore } from './xrStore'
 import LandingPage     from './components/LandingPage'
 import Navbar          from './components/Navbar'
@@ -109,6 +109,8 @@ export default function App() {
     setCurrentScene(null)
     saveSession({ username: '', score: 0, completedScenes: [] })
     sessionStorage.removeItem('rsi-admin-auth')
+    // Supabase-Cache leeren, damit nächster Login frische Daten holt
+    resetSupabaseCache()
     setView('landing')
   }
 
@@ -151,8 +153,8 @@ export default function App() {
   }
 
   // ── ScoringFlow abgeschlossen ──────────────────────────────────────────────
-  // finalPts kommt bereits mit angewandten Strafen aus ScoringFlow
-  function handleScoringComplete(finalPts: number) {
+  // finalPts = Punkte nach Strafen (Kategorie + Hint), rohPts = Punkte vor Strafen
+  function handleScoringComplete(finalPts: number, rohPts: number) {
     if (!scoringDeficit) return
 
     const entry: FoundDeficit = {
@@ -168,7 +170,7 @@ export default function App() {
       deficitId:          scoringDeficit.id,
       kategorieRichtig:   pendingKatRichtig,
       hintPenalty:        pendingHintPenalty,
-      punkteRoh:          finalPts,
+      punkteRoh:          rohPts,
       punkteFinal:        finalPts,
       dauerSekunden:      Math.round((Date.now() - deficitStartTime.current) / 1000),
       wichtigkeitKorrekt: pendingWichtigkeit === ca.wichtigkeit,
@@ -268,13 +270,13 @@ export default function App() {
     setView(v)
   }
 
-  // Nächste Szene vorhanden?
-  const nextSceneExists = (() => {
+  // Nächste Szene vorhanden? Nur neu berechnen wenn sich Szene oder Thema ändern.
+  const nextSceneExists = useMemo(() => {
     if (!currentScene || !currentTopic) return false
     const all = getAllScenes().filter(s => s.topicId === currentTopic.id && s.isActive)
     const idx = all.findIndex(s => s.id === currentScene.id)
     return idx >= 0 && idx < all.length - 1
-  })()
+  }, [currentScene?.id, currentTopic?.id])
 
   return (
     <div
@@ -387,7 +389,7 @@ export default function App() {
             </motion.div>
           )}
 
-          {view === 'admin' && (
+          {view === 'admin' && sessionStorage.getItem('rsi-admin-auth') === '1' && (
             <motion.div key="admin" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.2 }} className="flex-1 flex" style={{ overflow: 'hidden' }}>
               <AdminDashboard />
             </motion.div>

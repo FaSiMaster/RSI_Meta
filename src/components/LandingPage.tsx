@@ -7,7 +7,8 @@ import { Shield, Eye, BarChart3, BookOpen, EyeOff, Lock, ChevronRight, RotateCcw
 import { useTranslation } from 'react-i18next'
 import LanguageSwitcher from './LanguageSwitcher'
 import FeedbackModal from './FeedbackModal'
-import { getSession, getKurseZeitlichAktiv, type Kurs } from '../data/appData'
+import { getSession, getKurseZeitlichAktiv, pruefeKursPasswort, type Kurs } from '../data/appData'
+import { resetCache as resetSupabaseCache } from '../data/supabaseSync'
 
 interface Props {
   onStart: (username: string, kursCode: string | null, kursName: string | null) => void
@@ -37,18 +38,20 @@ export default function LandingPage({ onStart, onAdmin }: Props) {
   const kurse: Kurs[] = getKurseZeitlichAktiv()
   const selectedKurs = kurse.find(k => k.id === selectedKursId) ?? null
   const kursHatPasswort = selectedKurs?.passwort != null && selectedKurs.passwort.trim().length > 0
-  const passwortKorrekt = !kursHatPasswort || passwortInput === (selectedKurs?.passwort ?? '')
-  const canStart = name.trim().length > 0 && passwortKorrekt
+  // canStart darf nicht synchron auf Klartext prüfen, weil Hash gespeichert ist.
+  // Validierung erfolgt ausschliesslich in handleStart (async) — Button bleibt klickbar,
+  // solange Name und (bei Passwort-Pflicht) eine Eingabe vorhanden sind.
+  const canStart = name.trim().length > 0 && (!kursHatPasswort || passwortInput.length > 0)
 
-  function handleStart() {
+  async function handleStart() {
     if (!name.trim()) {
       setNameFehlend(true)
       return
     }
     setNameFehlend(false)
-    if (kursHatPasswort && passwortInput !== (selectedKurs?.passwort ?? '')) {
-      setPasswortFehler(true)
-      return
+    if (kursHatPasswort) {
+      const ok = await pruefeKursPasswort(passwortInput, selectedKurs?.passwort ?? '')
+      if (!ok) { setPasswortFehler(true); return }
     }
     setPasswortFehler(false)
     onStart(name.trim(), selectedKurs?.zugangscode ?? null, selectedKurs?.name ?? null)
@@ -108,7 +111,10 @@ export default function LandingPage({ onStart, onAdmin }: Props) {
     // 4. sessionStorage leeren
     sessionStorage.clear()
 
-    // 5. Seite neu laden (Server-Fetch erzwingen)
+    // 5. Supabase-Cache invalidieren
+    resetSupabaseCache()
+
+    // 6. Seite neu laden (Server-Fetch erzwingen)
     window.location.reload()
   }
 

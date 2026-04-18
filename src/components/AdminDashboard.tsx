@@ -10,7 +10,7 @@ import {
   getTopics, saveTopic, deleteTopic,
   getScenes, saveScene, deleteScene, getAllScenes,
   getDeficits, saveDeficit, deleteDeficit, getAllDeficits,
-  getKurse, saveKurs, deleteKurs, getKursStatus,
+  getKurse, saveKurs, deleteKurs, getKursStatus, istPasswortHash,
   getTopicsTree, getOberthemen, getNextSortOrder, ml,
   type AppTopic, type AppScene, type AppDeficit, type TopicNode, type Kurs, type StrassenMerkmal,
 } from '../data/appData'
@@ -223,6 +223,9 @@ export default function AdminDashboard() {
   }
   function openEditDef(d: AppDeficit) { setEditingDef({ ...d }); setDefModalOpen(true) }
   function handleDeleteDef(id: string) {
+    const def = deficits.find(d => d.id === id)
+    const label = def ? (def.nameI18n?.de || id) : id
+    if (!window.confirm(`Defizit «${label}» wirklich löschen? Diese Aktion ist nicht rückgängig zu machen und entfernt das Defizit auch aus Supabase.`)) return
     deleteDeficit(id)
     setDeficits(prev => prev.filter(d => d.id !== id))
   }
@@ -261,6 +264,10 @@ export default function AdminDashboard() {
     setSzeneModalOpen(true)
   }
   function handleDeleteScene(id: string) {
+    const sc = scenes.find(s => s.id === id)
+    const label = sc ? (sc.nameI18n?.de || id) : id
+    const defizitCount = getDeficits(id).length
+    if (!window.confirm(`Szene «${label}» wirklich löschen?\n\nDabei werden auch ${defizitCount} zugehörige Defizite gelöscht (Kaskade). Diese Aktion ist nicht rückgängig zu machen und entfernt die Daten auch aus Supabase.`)) return
     deleteScene(id)
     if (selectedTopic) {
       const sc = getScenes(selectedTopic.id)
@@ -418,14 +425,14 @@ export default function AdminDashboard() {
     setEditingKurs({ ...k })
     setKursModalOpen(true)
   }
-  function handleSaveKurs() {
+  async function handleSaveKurs() {
     if (!editingKurs) return
-    saveKurs(editingKurs)
+    await saveKurs(editingKurs)
     setKurse(getKurse())
     setKursModalOpen(false)
   }
-  function handleToggleKurs(k: Kurs) {
-    saveKurs({ ...k, isActive: !k.isActive })
+  async function handleToggleKurs(k: Kurs) {
+    await saveKurs({ ...k, isActive: !k.isActive })
     setKurse(getKurse())
   }
   function handleDeleteKurs(id: string) {
@@ -453,16 +460,80 @@ export default function AdminDashboard() {
     URL.revokeObjectURL(url)
   }
 
+  // Limits: schützen vor DoS durch überlange Listen und Bildern im Import
+  const MAX_IMPORT_ITEMS   = 500    // pro Kategorie (Topics/Scenes/Deficits/Kurse)
+  const MAX_BASE64_BYTES   = 2_000_000  // ~2 MB je Bild-URL
+  const ID_PATTERN         = /^[a-zA-Z0-9_-]{1,64}$/
+
+  function isValidMultiLang(v: unknown): boolean {
+    if (!v || typeof v !== 'object') return false
+    const m = v as Record<string, unknown>
+    return ['de', 'fr', 'it', 'en'].every(k => typeof m[k] === 'string' || m[k] === undefined)
+  }
+
+  function validateImport(data: unknown): { ok: true; data: {
+    topics?: AppTopic[]; scenes?: AppScene[]; deficits?: AppDeficit[]; kurse?: Kurs[];
+  } } | { ok: false; reason: string } {
+    if (!data || typeof data !== 'object') return { ok: false, reason: 'Kein gültiges JSON-Objekt' }
+    const d = data as Record<string, unknown>
+    if (d.version !== 'rsi-v3') return { ok: false, reason: `Inkompatible Version (erwartet: rsi-v3)` }
+
+    const cats: [string, unknown][] = [
+      ['topics', d.topics], ['scenes', d.scenes], ['deficits', d.deficits], ['kurse', d.kurse],
+    ]
+    for (const [name, arr] of cats) {
+      if (arr === undefined) continue
+      if (!Array.isArray(arr)) return { ok: false, reason: `${name} ist kein Array` }
+      if (arr.length > MAX_IMPORT_ITEMS) return { ok: false, reason: `${name}: mehr als ${MAX_IMPORT_ITEMS} Einträge` }
+      for (const item of arr) {
+        if (!item || typeof item !== 'object') return { ok: false, reason: `${name}: ungültiger Eintrag` }
+        const obj = item as Record<string, unknown>
+        if (typeof obj.id !== 'string' || !ID_PATTERN.test(obj.id))
+          return { ok: false, reason: `${name}: ID-Format ungültig (${obj.id})` }
+        if (name !== 'kurse' && !isValidMultiLang(obj.nameI18n))
+          return { ok: false, reason: `${name} (${obj.id}): nameI18n ungültig` }
+      }
+    }
+
+    // Base64-Bild-Grössen beschränken
+    if (Array.isArray(d.scenes)) {
+      for (const sc of d.scenes as Record<string, unknown>[]) {
+        for (const field of ['panoramaBildUrl', 'vorschauBild1', 'vorschauBild2']) {
+          const v = sc[field]
+          if (typeof v === 'string' && v.startsWith('data:') && v.length > MAX_BASE64_BYTES) {
+            return { ok: false, reason: `Szene ${sc.id}: Bild in "${field}" grösser als ${MAX_BASE64_BYTES} Bytes` }
+          }
+        }
+      }
+    }
+
+    return {
+      ok: true,
+      data: {
+        topics:   d.topics as AppTopic[] | undefined,
+        scenes:   d.scenes as AppScene[] | undefined,
+        deficits: d.deficits as AppDeficit[] | undefined,
+        kurse:    d.kurse as Kurs[] | undefined,
+      },
+    }
+  }
+
   function handleImport(file: File) {
     const reader = new FileReader()
-    reader.onload = e => {
+    reader.onload = async e => {
       try {
-        const data = JSON.parse(e.target?.result as string)
-        if (data.version !== 'rsi-v3') throw new Error('Falsches Format')
-        if (data.topics)   { data.topics.forEach(saveTopic) }
-        if (data.scenes)   { data.scenes.forEach(saveScene) }
-        if (data.deficits) { data.deficits.forEach(saveDeficit) }
-        if (data.kurse)    { data.kurse.forEach(saveKurs) }
+        const raw = JSON.parse(e.target?.result as string)
+        const check = validateImport(raw)
+        if (!check.ok) {
+          setImportFeedback(`Validierung fehlgeschlagen: ${check.reason}`)
+          setTimeout(() => setImportFeedback(null), 5000)
+          return
+        }
+        const data = check.data
+        if (data.topics)   data.topics.forEach(saveTopic)
+        if (data.scenes)   data.scenes.forEach(saveScene)
+        if (data.deficits) data.deficits.forEach(saveDeficit)
+        if (data.kurse)    await Promise.all(data.kurse.map(k => saveKurs(k)))
         // Alle States neu laden
         const ts = getTopics()
         setTopics(ts)
@@ -476,9 +547,10 @@ export default function AdminDashboard() {
         const count = (data.topics?.length ?? 0) + (data.scenes?.length ?? 0) + (data.deficits?.length ?? 0)
         setImportFeedback(`Import erfolgreich: ${count} Datensätze geladen.`)
         setTimeout(() => setImportFeedback(null), 4000)
-      } catch {
-        setImportFeedback('Fehler: Datei konnte nicht importiert werden.')
-        setTimeout(() => setImportFeedback(null), 4000)
+      } catch (err) {
+        const msg = err instanceof Error ? err.message : 'Unbekannter Fehler'
+        setImportFeedback(`Fehler beim Import: ${msg}`)
+        setTimeout(() => setImportFeedback(null), 5000)
       }
     }
     reader.readAsText(file)
@@ -1380,23 +1452,38 @@ export default function AdminDashboard() {
             </Section>
 
             <Section label={t('admin.passwort')}>
-              <div style={{ position: 'relative' }}>
-                <input
-                  type={showKursPasswort ? 'text' : 'password'}
-                  value={editingKurs.passwort ?? ''}
-                  onChange={e => setEditingKurs(prev => prev ? { ...prev, passwort: e.target.value || null } : prev)}
-                  placeholder={t('admin.passwort_hinweis')}
-                  style={{ width: '100%', padding: '8px 40px 8px 12px', borderRadius: '6px', border: '1px solid var(--zh-color-border)', background: 'var(--zh-color-bg-secondary)', color: 'var(--zh-color-text)', fontSize: '13px', fontFamily: 'var(--zh-font)', boxSizing: 'border-box' }}
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowKursPasswort(v => !v)}
-                  style={{ position: 'absolute', right: '8px', top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', cursor: 'pointer', color: 'var(--zh-color-text-muted)', display: 'flex', alignItems: 'center' }}
-                >
-                  {showKursPasswort ? <EyeOff size={15} /> : <Eye size={15} />}
-                </button>
-              </div>
-              <p style={{ fontSize: '11px', color: 'var(--zh-color-text-disabled)', marginTop: '4px' }}>{t('admin.passwort_hinweis')}</p>
+              {istPasswortHash(editingKurs.passwort) ? (
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
+                  <span style={{ fontSize: '12px', color: '#1A7F1F', fontWeight: 700 }}>Passwort gesetzt (gehasht)</span>
+                  <button
+                    type="button"
+                    onClick={() => setEditingKurs(prev => prev ? { ...prev, passwort: null } : prev)}
+                    style={{ background: 'none', border: '1px solid var(--zh-color-border)', borderRadius: '6px', padding: '4px 10px', fontSize: '11px', cursor: 'pointer', color: '#D40053', fontFamily: 'var(--zh-font)' }}
+                  >
+                    Passwort entfernen / neu setzen
+                  </button>
+                </div>
+              ) : (
+                <div style={{ position: 'relative' }}>
+                  <input
+                    type={showKursPasswort ? 'text' : 'password'}
+                    value={editingKurs.passwort ?? ''}
+                    onChange={e => setEditingKurs(prev => prev ? { ...prev, passwort: e.target.value || null } : prev)}
+                    placeholder={t('admin.passwort_hinweis')}
+                    style={{ width: '100%', padding: '8px 40px 8px 12px', borderRadius: '6px', border: '1px solid var(--zh-color-border)', background: 'var(--zh-color-bg-secondary)', color: 'var(--zh-color-text)', fontSize: '13px', fontFamily: 'var(--zh-font)', boxSizing: 'border-box' }}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowKursPasswort(v => !v)}
+                    style={{ position: 'absolute', right: '8px', top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', cursor: 'pointer', color: 'var(--zh-color-text-muted)', display: 'flex', alignItems: 'center' }}
+                  >
+                    {showKursPasswort ? <EyeOff size={15} /> : <Eye size={15} />}
+                  </button>
+                </div>
+              )}
+              <p style={{ fontSize: '11px', color: 'var(--zh-color-text-disabled)', marginTop: '4px' }}>
+                Beim Speichern wird das Passwort gehasht. Klartext ist danach nicht mehr einsehbar.
+              </p>
             </Section>
 
             <Section label={t('admin.kurs_code')}>

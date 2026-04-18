@@ -438,7 +438,7 @@ const DEFAULT_DEFICITS: AppDeficit[] = [
       "en": "Visibility obstruction – hedge"
     },
     "beschreibungI18n": {
-      "de": "Hecke ragt in Sichtraum, Fahrzeuge werden zu spaat erkannt.",
+      "de": "Hecke ragt in Sichtraum, Fahrzeuge werden zu spät erkannt.",
       "fr": "Haie dans la zone de visibilité.",
       "it": "Siepe nella zona di visibilità.",
       "en": "Hedge intrudes into sight zone."
@@ -568,20 +568,9 @@ const DEFAULT_DEFICITS: AppDeficit[] = [
   }
 ]
 
-const DEFAULT_KURSE_SEED: Kurs[] = [
-  {
-    "id": "k-1774780717922",
-    "name": "FK RSI 03/2027",
-    "datum": "2026-03-29",
-    "zugangscode": "FaSi4safety",
-    "topicIds": ["fuss", "velo", "knoten", "bau", "tp-1774780651056"],
-    "isActive": true,
-    "createdAt": 1774780717922,
-    "gueltigVon": null,
-    "gueltigBis": null,
-    "passwort": null
-  }
-]
+// Kein Demo-Zugangscode mehr im Bundle — echte Kurs-Codes ausschliesslich
+// im Admin anlegen (siehe ADMIN_HANDBUCH.md §7).
+const DEFAULT_KURSE_SEED: Kurs[] = []
 
 const DEFAULT_RANKING: RankingEntry[] = [
   { id: 'seed-1', username: 'RSI_Expert',     score: 1500, scenesCount: 4, timestamp: '2026-01-10T10:00:00Z', kursId: null, stunde: '2026-01-10' },
@@ -653,6 +642,35 @@ async function hashUsername(name: string): Promise<string> {
   const buffer = await crypto.subtle.digest('SHA-256', data)
   const arr = Array.from(new Uint8Array(buffer))
   return arr.map(b => b.toString(16).padStart(2, '0')).join('').slice(0, 8)
+}
+
+// Voller SHA-256-Hash (64 Hex-Zeichen) für Kurs-Passwörter. Vor-Token `kp:`
+// als Marker damit Klartext-Passwörter von Hashes unterscheidbar sind (Legacy).
+const PASSWORT_HASH_PREFIX = 'kp:'
+
+export async function hashKursPasswort(plain: string): Promise<string> {
+  const encoder = new TextEncoder()
+  const data = encoder.encode(plain)
+  const buffer = await crypto.subtle.digest('SHA-256', data)
+  const arr = Array.from(new Uint8Array(buffer))
+  return PASSWORT_HASH_PREFIX + arr.map(b => b.toString(16).padStart(2, '0')).join('')
+}
+
+export function istPasswortHash(value: string | null | undefined): boolean {
+  return !!value && typeof value === 'string' && value.startsWith(PASSWORT_HASH_PREFIX)
+}
+
+// Prüft eingegebenes Klartext-Passwort gegen gespeicherten Wert.
+// Rückwärtskompatibel: Klartext-Passwörter aus älteren Kursen werden direkt
+// verglichen (beim nächsten saveKurs automatisch migriert).
+export async function pruefeKursPasswort(eingabe: string, gespeichert: string | null | undefined): Promise<boolean> {
+  if (!gespeichert || gespeichert.trim().length === 0) return true
+  if (istPasswortHash(gespeichert)) {
+    const hashEingabe = await hashKursPasswort(eingabe)
+    return hashEingabe === gespeichert
+  }
+  // Legacy-Klartext
+  return eingabe === gespeichert
 }
 
 export function ml(text: MultiLang, lang: string): string {
@@ -821,10 +839,17 @@ export function getKursStatus(k: Kurs): 'aktiv' | 'bald' | 'abgelaufen' | 'inakt
   if (k.gueltigVon != null && k.gueltigVon > now) return 'bald'
   return 'aktiv'
 }
-export function saveKurs(kurs: Kurs): void {
+export async function saveKurs(kurs: Kurs): Promise<void> {
+  // Passwort bei Bedarf hashen (Klartext → Hash), bereits gehashte bleiben unverändert
+  let passwort = kurs.passwort
+  if (passwort && passwort.trim().length > 0 && !istPasswortHash(passwort)) {
+    passwort = await hashKursPasswort(passwort)
+  }
+  const toSave: Kurs = { ...kurs, passwort }
+
   const list = getKurse()
-  const i = list.findIndex(x => x.id === kurs.id)
-  if (i >= 0) list[i] = kurs; else list.push(kurs)
+  const i = list.findIndex(x => x.id === toSave.id)
+  if (i >= 0) list[i] = toSave; else list.push(toSave)
   writeJSON(K_KURSE, list)
 }
 export function deleteKurs(id: string): void {
@@ -947,20 +972,22 @@ export function getGesamtScore(username: string): number {
   return getBestResultsPerScene(username).reduce((sum, r) => sum + r.punkte, 0)
 }
 
-// Gesamt-Ranking: alle User, sortiert nach Best-of-Summe
-export function getGesamtRanking(): { username: string; score: number; szenen: number; besteProzent: number }[] {
-  const all = getAllSceneResults()
+// Generische Best-of-Ranking-Logik: gruppiert nach Username, nimmt pro Szene
+// das beste Resultat und summiert. Wird von Gesamt/Thema/Kurs-Ranking geteilt.
+type RankingEntryAggregat = { username: string; score: number; szenen: number; besteProzent: number }
+
+function buildRanking(results: SceneResult[]): RankingEntryAggregat[] {
   const userMap = new Map<string, SceneResult[]>()
-  all.forEach(r => {
+  results.forEach(r => {
     const list = userMap.get(r.username) ?? []
     list.push(r)
     userMap.set(r.username, list)
   })
 
-  const ranking: { username: string; score: number; szenen: number; besteProzent: number }[] = []
-  userMap.forEach((results, username) => {
+  const ranking: RankingEntryAggregat[] = []
+  userMap.forEach((userResults, username) => {
     const byScene = new Map<string, SceneResult>()
-    results.forEach(r => {
+    userResults.forEach(r => {
       const existing = byScene.get(r.sceneId)
       if (!existing || r.punkte > existing.punkte) byScene.set(r.sceneId, r)
     })
@@ -971,58 +998,21 @@ export function getGesamtRanking(): { username: string; score: number; szenen: n
   })
 
   return ranking.sort((a, b) => b.score - a.score)
+}
+
+// Gesamt-Ranking: alle User, sortiert nach Best-of-Summe
+export function getGesamtRanking(): RankingEntryAggregat[] {
+  return buildRanking(getAllSceneResults())
 }
 
 // Thema-Ranking: beste Resultate pro User, gefiltert nach TopicId
-export function getThemaRanking(topicId: string): { username: string; score: number; szenen: number; besteProzent: number }[] {
-  const all = getAllSceneResults().filter(r => r.topicId === topicId)
-  const userMap = new Map<string, SceneResult[]>()
-  all.forEach(r => {
-    const list = userMap.get(r.username) ?? []
-    list.push(r)
-    userMap.set(r.username, list)
-  })
-
-  const ranking: { username: string; score: number; szenen: number; besteProzent: number }[] = []
-  userMap.forEach((results, username) => {
-    const byScene = new Map<string, SceneResult>()
-    results.forEach(r => {
-      const existing = byScene.get(r.sceneId)
-      if (!existing || r.punkte > existing.punkte) byScene.set(r.sceneId, r)
-    })
-    const bests = Array.from(byScene.values())
-    const score = bests.reduce((s, r) => s + r.punkte, 0)
-    const avgProzent = bests.length > 0 ? Math.round(bests.reduce((s, r) => s + r.prozent, 0) / bests.length) : 0
-    ranking.push({ username, score, szenen: bests.length, besteProzent: avgProzent })
-  })
-
-  return ranking.sort((a, b) => b.score - a.score)
+export function getThemaRanking(topicId: string): RankingEntryAggregat[] {
+  return buildRanking(getAllSceneResults().filter(r => r.topicId === topicId))
 }
 
 // Kurs-Ranking: Best-of pro User, gefiltert nach KursId
-export function getKursRanking(kursId: string): { username: string; score: number; szenen: number; besteProzent: number }[] {
-  const all = getAllSceneResults().filter(r => r.kursId === kursId)
-  const userMap = new Map<string, SceneResult[]>()
-  all.forEach(r => {
-    const list = userMap.get(r.username) ?? []
-    list.push(r)
-    userMap.set(r.username, list)
-  })
-
-  const ranking: { username: string; score: number; szenen: number; besteProzent: number }[] = []
-  userMap.forEach((results, username) => {
-    const byScene = new Map<string, SceneResult>()
-    results.forEach(r => {
-      const existing = byScene.get(r.sceneId)
-      if (!existing || r.punkte > existing.punkte) byScene.set(r.sceneId, r)
-    })
-    const bests = Array.from(byScene.values())
-    const score = bests.reduce((s, r) => s + r.punkte, 0)
-    const avgProzent = bests.length > 0 ? Math.round(bests.reduce((s, r) => s + r.prozent, 0) / bests.length) : 0
-    ranking.push({ username, score, szenen: bests.length, besteProzent: avgProzent })
-  })
-
-  return ranking.sort((a, b) => b.score - a.score)
+export function getKursRanking(kursId: string): RankingEntryAggregat[] {
+  return buildRanking(getAllSceneResults().filter(r => r.kursId === kursId))
 }
 
 // Szene-Ranking: alle Versuche einer Szene, sortiert nach Punkten

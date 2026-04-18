@@ -51,17 +51,29 @@ export async function initSupabaseData(): Promise<void> {
       .from('rsi_deficits').select('id, scene_id, data')
     if (dErr) throw dErr
 
-    // Wenn Supabase leer ist → Seed-Daten aus localStorage hochladen
+    // Wenn Supabase leer ist → nur seeden wenn localStorage gefüllt UND explizit
+    // vom User angefordert (Flag `rsi-v3-seed-consent`). Standardverhalten: kein
+    // automatisches Hochladen, damit ein Angreifer keine manipulierten Daten per
+    // leerer Tabelle einschleusen kann (Security M-6).
     if (topicRows.length === 0) {
-      console.info('[RSI] Supabase leer — Seed-Daten werden hochgeladen')
-      await seedSupabaseFromLocal()
-      // Nochmal laden nach Seed
-      const { data: t2 } = await supabase.from('rsi_topics').select('id, data')
-      const { data: s2 } = await supabase.from('rsi_scenes').select('id, topic_id, data')
-      const { data: d2 } = await supabase.from('rsi_deficits').select('id, scene_id, data')
-      topicsCache = (t2 ?? []).map(r => r.data as AppTopic)
-      scenesCache = (s2 ?? []).map(r => r.data as AppScene)
-      deficitsCache = (d2 ?? []).map(r => r.data as AppDeficit)
+      const consent = typeof localStorage !== 'undefined'
+        && localStorage.getItem('rsi-v3-seed-consent') === '1'
+      if (consent) {
+        console.info('[RSI] Supabase leer — Seed nach explizitem Consent')
+        await seedSupabaseFromLocal()
+        localStorage.removeItem('rsi-v3-seed-consent')
+        const { data: t2 } = await supabase.from('rsi_topics').select('id, data')
+        const { data: s2 } = await supabase.from('rsi_scenes').select('id, topic_id, data')
+        const { data: d2 } = await supabase.from('rsi_deficits').select('id, scene_id, data')
+        topicsCache = (t2 ?? []).map(r => r.data as AppTopic)
+        scenesCache = (s2 ?? []).map(r => r.data as AppScene)
+        deficitsCache = (d2 ?? []).map(r => r.data as AppDeficit)
+      } else {
+        console.info('[RSI] Supabase leer — kein Seed (Consent-Flag nicht gesetzt). Admin kann Daten via Import/Seed-Button initialisieren.')
+        topicsCache = []
+        scenesCache = []
+        deficitsCache = []
+      }
     } else {
       // NUR setzen wenn noch kein lokaler Save passiert ist (Cache leer)
       // Verhindert Race-Condition: lokaler Save → initSupabase überschreibt
@@ -220,6 +232,16 @@ export function resetCache(): void {
   scenesCache = null
   deficitsCache = null
   initialized = false
+}
+
+// Consent für den einmaligen Seed von localStorage → Supabase setzen.
+// Wird vom Admin-Dashboard aufgerufen; beim nächsten initSupabaseData() wird
+// die leere Supabase-DB mit den lokalen Seed-Daten befüllt. Flag wird danach
+// automatisch entfernt.
+export function enableSeedConsent(): void {
+  if (typeof localStorage === 'undefined') return
+  localStorage.setItem('rsi-v3-seed-consent', '1')
+  initialized = false  // Erzwingt Re-Init beim nächsten Aufruf
 }
 
 export function isInitialized(): boolean {

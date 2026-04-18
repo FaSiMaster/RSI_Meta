@@ -11,8 +11,8 @@ import LernKarte from './LernKarte'
 import {
   WICHTIGKEIT_TABLE, NORMHIERARCHIE, ABWEICHUNG_KATEGORIEN,
   calcRelevanzSD, calcUnfallrisiko,
-  KRITERIUM_LABELS,
 } from '../data/scoringEngine'
+import { KRITERIUM_LABELS } from '../data/kriteriumLabels'
 import { calcScore as calcScorePure, MAX_PUNKTE_PRO_DEFIZIT } from '../data/scoreCalc'
 import type { RSIDimension, NACADimension, ResultDimension } from '../types'
 
@@ -303,7 +303,7 @@ interface Props {
   username?:  string
   kategorieRichtig?: boolean
   hintPenalty?:      boolean
-  onComplete: (score: number) => void
+  onComplete: (finalScore: number, rohScore: number) => void
   onBack:     () => void
   // Vorgefuellte Bewertungen aus dem Viewer-Overlay
   prefillWichtigkeit?: RSIDimension
@@ -679,7 +679,7 @@ export default function ScoringFlow({ deficit, scene, kategorieRichtig = true, h
             wichtigkeitKorrekt={wichtigkeit === ca.wichtigkeit}
             abweichungKorrekt={abweichung === ca.abweichung}
             nacaKorrekt={nacaSchwere === ca.unfallschwere}
-            onWeiter={() => onComplete(pts)}
+            onWeiter={() => onComplete(pts, rawPts)}
           />
         )}
       </motion.div>
@@ -693,7 +693,14 @@ export default function ScoringFlow({ deficit, scene, kategorieRichtig = true, h
       {/* Header — kompakt */}
       <div style={{ padding: '12px 20px 10px', borderBottom: '1px solid var(--zh-color-border)', flexShrink: 0 }}>
         <button
-          onClick={onBack}
+          onClick={() => {
+            // Warnung wenn bereits Eingaben gemacht und Ergebnis noch nicht angezeigt
+            const hatEingaben = wichtigkeit != null || abweichung != null || nacaSchwere != null
+            if (hatEingaben && !showResult) {
+              if (!window.confirm('Bereits eingegebene Bewertung wird verworfen. Wirklich zurück zum Viewer?')) return
+            }
+            onBack()
+          }}
           style={{
             display: 'flex', alignItems: 'center', gap: '5px',
             fontSize: '12px', color: 'var(--zh-color-text-muted)', fontWeight: 500,

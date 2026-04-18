@@ -152,6 +152,9 @@ export default function BildEditor({ scene, deficits, onSave, onClose, initialDe
         imgRef.current.src = url
       }
     }
+  // Bewusst nur auf aktivePerspektiveId — scene.panoramaBildUrl und imgRef
+  // sind stabile Referenzen über die Modal-Lebenszeit, würden sonst eine
+  // Ping-Pong-Schleife auslösen.
   }, [aktivePerspektiveId]) // eslint-disable-line react-hooks/exhaustive-deps
 
   // ── Bild laden ──
