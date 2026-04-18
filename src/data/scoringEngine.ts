@@ -4,7 +4,7 @@
 import type { RSIDimension, NACADimension, ResultDimension } from '../types'
 
 // ── Wichtigkeitstabelle (Schritt 1) ──
-// Quelle: TBA-Fachkurs FK RSI, Folie 2 — massgebend fuer Kanton ZH
+// Quelle: TBA-Fachkurs FK RSI, Folie 2 — massgebend für Kanton ZH
 export type WichtigkeitWert = RSIDimension | ''
 export const WICHTIGKEIT_TABLE: Record<string, { io: WichtigkeitWert; ao: WichtigkeitWert }> = {
   // Verkehrsfuehrung
@@ -78,7 +78,7 @@ export const WICHTIGKEIT_TABLE: Record<string, { io: WichtigkeitWert; ao: Wichti
   tempo30_begegnungszonen:           { io: 'gross',  ao: ''       },
 }
 
-// Lesbare Labels fuer die Dropdown-Auswahl im Admin
+// Lesbare Labels für die Dropdown-Auswahl im Admin
 export const KRITERIUM_LABELS: Record<string, string> = {
   visuelle_linienfuehrung:           'Visuelle Linienfuehrung',
   angebot_vertraeglichkeit:          'Angebot / Vertraeglichkeit',
@@ -227,8 +227,8 @@ export function calcUnfallrisiko(
   return matrix[relevanzSD][unfallschwere]
 }
 
-// Schritt-Gewichtungen fuer Punkteberechnung
-// Schritte 2, 4, 6, 8 sind Uebertraege (immer korrekt)
+// Schritt-Gewichtungen für Punkteberechnung
+// Schritte 2, 4, 6, 8 sind Überträge (immer korrekt)
 export const STEP_WEIGHTS = [25, 0, 25, 0, 0, 0, 25, 0, 0] as const
 export const STEP_WEIGHT_UNIT = 1
 export const KATEGORIE_PUNKTE = 25
