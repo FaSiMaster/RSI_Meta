@@ -100,6 +100,7 @@ export default function BildEditor({ scene, deficits, onSave, onClose, initialDe
     | { type: 'polygonPunkt'; deficitId: string; punktIndex: number }
     | { type: 'standort'; perspektiveId: string }
     | { type: 'navMarker'; perspektiveId: string; zielId: string }
+    | { type: 'pan'; startClientX: number; startClientY: number; startPanX: number; startPanY: number }
     | null
   const [dragging, setDragging] = useState<DragTarget>(null)
   const isDragging = useRef(false)
@@ -518,12 +519,37 @@ export default function BildEditor({ scene, deficits, onSave, onClose, initialDe
           }
         }
       }
+
+      // Kein Marker getroffen → Pan starten (verschiebt Canvas-Inhalt)
+      setDragging({
+        type: 'pan',
+        startClientX: e.clientX,
+        startClientY: e.clientY,
+        startPanX: pan.x,
+        startPanY: pan.y,
+      })
+      isDragging.current = false
     }
   }
 
   // ── MouseMove: Drag durchführen ──
   function handleCanvasMouseMove(e: React.MouseEvent<HTMLCanvasElement>) {
     if (!dragging) return
+
+    // Pan: einfacher Canvas-Pixel-Offset, kein Bild-Koord nötig
+    if (dragging.type === 'pan') {
+      const canvas = canvasRef.current
+      if (!canvas) return
+      const rect = canvas.getBoundingClientRect()
+      const sx = canvas.width  / rect.width
+      const sy = canvas.height / rect.height
+      const dx = (e.clientX - dragging.startClientX) * sx
+      const dy = (e.clientY - dragging.startClientY) * sy
+      setPan({ x: dragging.startPanX + dx, y: dragging.startPanY + dy })
+      isDragging.current = true
+      return
+    }
+
     const coord = mouseToCoord(e)
     if (!coord) return
     isDragging.current = true
@@ -911,7 +937,7 @@ export default function BildEditor({ scene, deficits, onSave, onClose, initialDe
               overflow: 'auto',
               background: '#111',
               position: 'relative',
-              cursor: dragging ? 'grabbing' : modus !== 'idle' ? 'crosshair' : 'default',
+              cursor: dragging?.type === 'pan' ? 'grabbing' : dragging ? 'grabbing' : modus !== 'idle' ? 'crosshair' : bildGeladen ? 'grab' : 'default',
             }}
           >
             {!bildGeladen && !bildFehler && (
@@ -934,7 +960,7 @@ export default function BildEditor({ scene, deficits, onSave, onClose, initialDe
             )}
             <canvas
               ref={canvasRef}
-              style={{ display: bildGeladen ? 'block' : 'none', maxWidth: '100%', cursor: dragging ? 'grabbing' : modus !== 'idle' ? 'crosshair' : 'default' }}
+              style={{ display: bildGeladen ? 'block' : 'none', maxWidth: '100%', cursor: dragging?.type === 'pan' ? 'grabbing' : dragging ? 'grabbing' : modus !== 'idle' ? 'crosshair' : 'grab' }}
               onMouseDown={handleCanvasMouseDown}
               onMouseMove={handleCanvasMouseMove}
               onMouseUp={handleCanvasMouseUp}
@@ -991,7 +1017,8 @@ export default function BildEditor({ scene, deficits, onSave, onClose, initialDe
                 padding: '6px 16px', borderRadius: '6px', fontSize: '12px', fontWeight: 600,
                 pointerEvents: 'none',
               }}>
-                {dragging && 'Ziehen zum Verschieben — loslassen zum Platzieren'}
+                {dragging?.type === 'pan' && 'Panning — loslassen zum Fixieren'}
+                {dragging && dragging.type !== 'pan' && 'Ziehen zum Verschieben — loslassen zum Platzieren'}
                 {!dragging && modus === 'startblick' && 'Ins Bild klicken → Startblick setzen'}
                 {!dragging && modus === 'punkt'      && 'Ins Bild klicken → Punkt setzen'}
                 {!dragging && modus === 'polygon'    && 'Klicken: Punkt hinzufügen | Doppelklick: Polygon schliessen'}
@@ -1007,7 +1034,7 @@ export default function BildEditor({ scene, deficits, onSave, onClose, initialDe
                 padding: '4px 12px', borderRadius: '4px', fontSize: '11px',
                 pointerEvents: 'none',
               }}>
-                Punkte und Startblick per Drag verschieben
+                Mausrad: Zoom · Ziehen: Pan · Marker direkt greifbar
               </div>
             )}
           </div>
