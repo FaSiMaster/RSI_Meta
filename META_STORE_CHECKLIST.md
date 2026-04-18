@@ -1,6 +1,6 @@
 # Meta Horizon Store — Einreichungs-Checkliste
 
-> Vorbereitung für Phase 6. Stand v0.3.0 — noch keine Einreichung erfolgt.
+> Vorbereitung für Phase 6. Stand v0.3.1 — noch keine Einreichung erfolgt.
 
 ---
 

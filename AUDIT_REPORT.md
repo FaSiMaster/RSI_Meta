@@ -277,11 +277,11 @@ Alle normativen Berechnungen (calcRelevanzSD, calcUnfallrisiko, WICHTIGKEIT_TABL
 
 ---
 
-## Update 2026-04-19 — Stand v0.3.0
+## Update 2026-04-19 — Stand v0.3.1
 
 Seit dem Ursprungs-Audit (2026-03-28) wurden folgende Bereiche erweitert:
 
-### Neue Features (v0.3.0)
+### Neue Features (v0.3.1)
 - Supabase-Sync für Topics/Scenes/Deficits als JSONB-Tabellen
 - Admin-PIN-Schutz + DSGVO-SHA-256-Pseudonymisierung
 - Live-Ranking über Supabase + AdminRanking-Verwaltung
@@ -335,4 +335,63 @@ Seit dem Ursprungs-Audit (2026-03-28) wurden folgende Bereiche erweitert:
 | **Vor Produktiv-Einsatz** | REVIEW_SECURITY M-1, M-3, M-4, M-5, REVIEW_CODE #3, #6 |
 | **Phase 3 (VR)** | Performance-Profiling Quest 3, Offline-Test systematisch |
 
-*Aktualisiert: 2026-04-19 | RSI VR Tool v0.3.0 | Review automatisiert via Claude feature-dev Agents*
+*Aktualisiert: 2026-04-19 | RSI VR Tool v0.3.1 | Review automatisiert via Claude feature-dev Agents*
+
+---
+
+## Fix-Status Release v0.3.1 — 2026-04-19
+
+Alle im Code lösbaren Findings aus REVIEW_CODE.md und REVIEW_SECURITY.md wurden
+in Commit `bb15cf8` umgesetzt. Stand vor Release v0.3.1:
+
+### Code-Review — Status
+
+| # | Finding | Status | Commit |
+|---|---|---|---|
+| 1 | punkteRoh vs punkteFinal | ✅ Gefixt | bb15cf8 |
+| 2 | KRITERIUM_LABELS-Import | ✅ Gefixt | bb15cf8 |
+| 3 | Kurs-Passwort Klartext | ✅ Gefixt (Hash + Legacy-Migration) | bb15cf8 |
+| 4 | resetCache nach Logout | ✅ Gefixt | bb15cf8 |
+| 5 | nextSceneExists useMemo | ✅ Gefixt | bb15cf8 |
+| 6 | Theta-Umbruch Polygon | ✅ Gefixt | bb15cf8 |
+| 7 | Delete-Confirm | ✅ Gefixt | bb15cf8 |
+| 8 | ScoringFlow onBack-Warnung | ✅ Gefixt | bb15cf8 |
+| 9 | Ranking-Dedup | ✅ Gefixt (buildRanking-Helper) | bb15cf8 |
+| 10 | useEffect-Kommentar BildEditor | ✅ Gefixt | bb15cf8 |
+| 11 | Typo "spaat" → "spät" | ✅ Gefixt | bb15cf8 |
+
+### Security-Review — Status
+
+| # | Finding | Status | Anmerkung |
+|---|---|---|---|
+| H-1 | Admin-PIN im Client-Bundle | ⚠️ Architekturbedingt — PIN-Rotation-Prozess in `ADMIN_HANDBUCH.md` dokumentiert; serverseitiger Check via Supabase Edge Function als Phase-3-Task |
+| H-2 | RLS-Policies Content-Tabellen | ⚠️ User-Aktion nötig (Supabase-Dashboard-Check) |
+| H-3 | Anon-Key public | ✅ Akzeptabel wenn H-2 gelöst (by design Supabase) |
+| M-1 | Admin-Guard in App.tsx | ✅ Gefixt | bb15cf8 |
+| M-2 | Kurs-Passwort Klartext | ✅ Gefixt (= Code-Review #3) | bb15cf8 |
+| M-3 | Import-Schema-Validierung | ✅ Gefixt | bb15cf8 |
+| M-4 | CSP-Header vercel.json | ✅ Gefixt | bb15cf8 |
+| M-5 | 8-Hex-Pseudonymisierung | ✅ In Datenschutzerklärung korrekt benannt |
+| M-6 | seedSupabase-Guard | ✅ Gefixt (Consent-Flag) | bb15cf8 |
+| N-1 | SW aggressive Updates | ⚠️ Akzeptabel mit CSP (jetzt vorhanden) |
+| N-2 | Supabase Rate-Limiting | ⚠️ User-Aktion (Supabase-Dashboard) |
+| N-3 | Seed-Zugangscode FaSi4safety | ✅ Gefixt (entfernt) | bb15cf8 |
+
+### Offen vor Pilot (User-Aktion)
+
+1. Supabase-Dashboard → RLS-Policies auf `rsi_topics`, `rsi_scenes`, `rsi_deficits`: nur `SELECT` für anon
+2. Admin-PIN vor jedem Kurs-Einsatz in Vercel-Env rotieren + redeployen
+3. Supabase-Rate-Limits pro IP konfigurieren
+4. Erstmaliger Supabase-Seed via `enableSeedConsent()` triggern (falls Neuaufbau)
+5. Optional: Sentry-Projekt auf sentry.io anlegen, `VITE_SENTRY_DSN` in Vercel setzen
+
+### Offen für Phase 3+
+
+- Unit-Tests (Vitest) für `scoreCalc`, `sphereCoords.punktInPolygon`, `buildRanking`
+- E2E-Tests (Playwright): Login, Szene-Flow, Admin-CRUD
+- Performance-Profiling auf Meta Quest 3
+- Lighthouse-Run + WCAG-Spot-Check (soweit anwendbar)
+- Offline-Retry-Queue für Score-Uploads
+- Server-seitiger PIN-Check via Supabase Edge Function
+
+*Release v0.3.1 freigegeben: 2026-04-19 | Tag `v0.3.1` | Commit bb15cf8 + Release-Prep*

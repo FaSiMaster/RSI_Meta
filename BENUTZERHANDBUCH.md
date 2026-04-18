@@ -1,6 +1,6 @@
 # Benutzerhandbuch — RSI VR Tool
 
-> Für Inspektorinnen und Inspektoren im Schulungseinsatz. Stand v0.3.0.
+> Für Inspektorinnen und Inspektoren im Schulungseinsatz. Stand v0.3.1.
 > Begleitend zum TBA-Fachkurs FK RSI (V 16.09.2020).
 
 ---

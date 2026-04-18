@@ -236,7 +236,7 @@ interface AppDeficit {
 - [x] `@react-three/fiber` + `@react-three/xr` v6 konfiguriert
 - [x] PWA-Manifest (Bubblewrap-ready)
 
-### Phase 2 – Browser-Training (abgeschlossen, v0.3.0)
+### Phase 2 – Browser-Training (abgeschlossen, v0.3.1)
 - [x] 9-Schritte RSI-Beurteilungsfluss (ScoringFlow)
 - [x] Klick-Bestätigung, Bewertungs-Overlays
 - [x] Perspektiven, Standort-Navigation (bidirektional)

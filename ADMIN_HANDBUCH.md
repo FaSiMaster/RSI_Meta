@@ -1,6 +1,6 @@
 # Admin-Handbuch — RSI VR Tool
 
-> Für Kursleitung / Fachstelle. Stand v0.3.0.
+> Für Kursleitung / Fachstelle. Stand v0.3.1.
 > Voraussetzung: Admin-PIN (4-stellig) gesetzt in Vercel-Env.
 
 ---

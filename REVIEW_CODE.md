@@ -1,4 +1,4 @@
-# Code Review — RSI_Meta v0.3.0
+# Code Review — RSI_Meta v0.3.1
 
 **Datum:** 2026-04-19
 **Reviewer:** Automatisiert (feature-dev code-reviewer agent)

@@ -1,6 +1,6 @@
 # Offline-Verhalten — RSI VR Tool
 
-> Was funktioniert ohne Netz, was nicht? Stand v0.3.0 — **Offline-Flow noch nicht systematisch getestet.**
+> Was funktioniert ohne Netz, was nicht? Stand v0.3.1 — **Offline-Flow noch nicht systematisch getestet.**
 
 ---
 

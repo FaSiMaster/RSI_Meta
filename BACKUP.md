@@ -1,6 +1,6 @@
 # Backup-Strategie — RSI VR Tool
 
-> Was wird wo gesichert? Was passiert wenn etwas verloren geht? Stand v0.3.0.
+> Was wird wo gesichert? Was passiert wenn etwas verloren geht? Stand v0.3.1.
 
 ---
 
@@ -22,7 +22,7 @@
 
 ### 2.1 Git
 - `main`-Branch wird nach jedem Commit automatisch auf GitHub gepusht
-- Versions-Tags (`v0.1.0`, `v0.2.0`, `v0.3.0`) als Wiederherstellungspunkte
+- Versions-Tags (`v0.1.0`, `v0.2.0`, `v0.3.1`) als Wiederherstellungspunkte
 - Vercel deployed bei jedem Push automatisch
 
 ### 2.2 Supabase

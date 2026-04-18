@@ -9,20 +9,49 @@ Versionierung nach [Semantic Versioning](https://semver.org/lang/de/).
 
 ## [Unreleased]
 
+—
+
+---
+
+## [0.3.1] — 2026-04-19
+
 ### Hinzugefügt
 - Zoom + interaktiver Pan im BildEditor (Mausrad zentriert, Drag auf leerer Fläche)
-- Globaler Git-Remote-Check-Hook bei Session-Start (claude.ai)
+- Globaler Git-Remote-Check-Hook bei Session-Start (Claude Code)
 - Footer-Layout auf LandingPage mit Impressum/Datenschutz/Glossar-Links (56px hoch)
 - Zentrale Design-Tokens `--zh-navbar-h: 56px` und `--zh-footer-h: 56px`
+- In-App-Feedback-Button (Modal, mailto) in Navbar und LandingPage
+- Sentry-Integration (optional via `VITE_SENTRY_DSN`), Error Boundary mit Fallback-UI
+- Generische `buildRanking()`-Helper für Gesamt-/Thema-/Kurs-Ranking
+- `hashKursPasswort()`, `istPasswortHash()`, `pruefeKursPasswort()` — volles SHA-256 mit `kp:`-Marker, rückwärtskompatibel zu Klartext-Legacy
+- `enableSeedConsent()` für kontrollierten Supabase-Seed
+- Theta-Umbruch-Behandlung in `punktInPolygon` (0°/360°-Grenze)
+- Import-Schema-Validierung (Array-Grenzen, ID-Format, MultiLang, Base64-Bildgrössen)
+- Security-Header in `vercel.json` (CSP, X-Frame-Options DENY, Permissions-Policy mit `xr-spatial-tracking=self`)
 
 ### Geändert
 - Navbar-Höhe von 52px auf 56px (mehr Touch-Target)
 - ASCII-Ersatzschreibungen (ae/oe/ue) in 20 Dateien durch echte Umlaute ersetzt — Ausnahme: Code-Identifier und Fremdsprach-JSON-Keys
+- `punkteRoh` und `punkteFinal` getrennt geführt (Statistik-korrekt)
+- `nextSceneExists` als `useMemo` statt IIFE bei jedem Render
+- `resetCache()` bei Logout und App-Reset aufgerufen
+- `ScoringFlow`-Back-Button zeigt Warnung bei teilweiser Eingabe
+- Delete-Bestätigung für Defizite und Szenen (kaskadierend)
+- Admin-View in `App.tsx` zusätzlich gegen `sessionStorage['rsi-admin-auth']` geprüft
+- `KRITERIUM_LABELS`-Import in `ScoringFlow` auf `kriteriumLabels.ts` umgestellt (Sacred-File unberührt)
+- `seedSupabaseFromLocal()` nur noch mit Consent-Flag statt automatisch bei leerer Tabelle
+- Support-Adresse auf `sicherheit.tba@bd.zh.ch` (Team-Mailbox)
+
+### Behoben
+- Typo "spaat" → "spät" in Seed-Daten (`appData.ts`)
+- `useEffect`-Kommentar im BildEditor dokumentiert ausgelassene Dependencies
+- Demo-Zugangscode `FaSi4safety` aus `DEFAULT_KURSE_SEED` entfernt
 
 ### Dokumentation
-- `CHANGELOG.md`, `GLOSSAR.md`, `BENUTZERHANDBUCH.md`, `ADMIN_HANDBUCH.md` ergänzt
-- `public/impressum.html` und `public/datenschutz.html`
-- `BACKUP.md`, `BROWSER.md`
+- `CHANGELOG.md`, `GLOSSAR.md`, `BENUTZERHANDBUCH.md`, `ADMIN_HANDBUCH.md`, `OFFLINE.md`, `BROWSER.md`, `BACKUP.md`, `META_STORE_CHECKLIST.md`
+- `public/impressum.html`, `public/datenschutz.html`, `public/glossar.html`
+- `REVIEW_CODE.md`, `REVIEW_SECURITY.md`
+- `AUDIT_REPORT.md` um Update-Abschnitt v0.3.1 ergänzt
 
 ---
 

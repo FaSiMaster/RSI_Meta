@@ -1,6 +1,6 @@
 # Browser-Kompatibilitäts-Matrix — RSI VR Tool
 
-> Stand v0.3.0. Zu erwartende Unterschiede zwischen Geräten / Browsern und dokumentierte Tests.
+> Stand v0.3.1. Zu erwartende Unterschiede zwischen Geräten / Browsern und dokumentierte Tests.
 
 ---
 
