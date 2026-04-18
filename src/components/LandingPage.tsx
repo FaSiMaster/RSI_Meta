@@ -160,7 +160,7 @@ export default function LandingPage({ onStart, onAdmin }: Props) {
 
             {/* Untertitel */}
             <p className="text-sm leading-relaxed" style={{ color: 'var(--zh-color-text-muted)', maxWidth: '400px' }}>
-              {t('landing.subtitle', 'Entwickeln Sie den geschulten Blick fuer das Wesentliche. Road Safety Inspection — immersiv.')}
+              {t('landing.subtitle', 'Entwickeln Sie den geschulten Blick für das Wesentliche. Road Safety Inspection — immersiv.')}
             </p>
 
             {/* Feature-Liste */}
@@ -168,7 +168,7 @@ export default function LandingPage({ onStart, onAdmin }: Props) {
               {([
                 { icon: <BookOpen size={16} />, text: '9-Schritt FaSi/bfu-Bewertungsflow nach TBA-Fachkurs FK RSI' },
                 { icon: <Eye size={16} />,      text: 'Bewertungsmatrizen — Wichtigkeit × Abweichung × NACA' },
-                { icon: <BarChart3 size={16} />, text: 'Live-Ranking und persoenlicher Fortschritt' },
+                { icon: <BarChart3 size={16} />, text: 'Live-Ranking und persönlicher Fortschritt' },
               ] as const).map(({ icon, text }) => (
                 <div key={text} className="flex items-start gap-3">
                   <div className="mt-0.5 flex-shrink-0" style={{ color: 'var(--zh-blau)' }}>{icon}</div>
