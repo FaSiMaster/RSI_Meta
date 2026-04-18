@@ -42,8 +42,8 @@
   --zh-font-features: "ss07" 1, "ss08" 1, "cv03" 1, "cv04" 1, "cv10" 1;
 
   /* Layout */
-  --zh-navbar-h:    48px;
-  --zh-footer-h:    48px;
+  --zh-navbar-h:    56px;
+  --zh-footer-h:    56px;
   --zh-radius-card: 12px;
   --zh-radius-btn:  8px;
   --zh-padding-page: 32px;

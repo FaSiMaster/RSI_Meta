@@ -274,3 +274,65 @@ Alle normativen Berechnungen (calcRelevanzSD, calcUnfallrisiko, WICHTIGKEIT_TABL
 ---
 
 *Audit durchgeführt: 2026-03-28 | RSI VR Tool Phase 2 | Fachstelle Verkehrssicherheit, Tiefbauamt Kanton Zürich*
+
+---
+
+## Update 2026-04-19 — Stand v0.3.0
+
+Seit dem Ursprungs-Audit (2026-03-28) wurden folgende Bereiche erweitert:
+
+### Neue Features (v0.3.0)
+- Supabase-Sync für Topics/Scenes/Deficits als JSONB-Tabellen
+- Admin-PIN-Schutz + DSGVO-SHA-256-Pseudonymisierung
+- Live-Ranking über Supabase + AdminRanking-Verwaltung
+- LernKarte nach Scoring
+- Bidirektionale Standort-Navigation, Perspektiven mit eigenen Verortungen
+- i18n 100 % in de/fr/it/en
+- BildEditor: Zoom + Pan (Mausrad, Toolbar, Tastatur)
+- Auslagerung `KRITERIUM_LABELS` nach `kriteriumLabels.ts` (Sacred-File-Schutz)
+
+### Neue Audit-Dokumente
+- **`REVIEW_CODE.md`** (Code-Review mit 11 Findings, Stand 2026-04-19)
+- **`REVIEW_SECURITY.md`** (Security-Review, Gesamtrisiko MITTEL, 3 HOCH-Findings)
+
+### Kritische Deltas zum Ursprungs-Audit
+
+| Neuer Befund | Priorität | Quelle |
+|---|---|---|
+| Admin-PIN im Client-Bundle sichtbar | HOCH | REVIEW_SECURITY H-1 |
+| RLS-Policies für Admin-Tabellen nicht dokumentiert | HOCH | REVIEW_SECURITY H-2 |
+| Kurs-Passwort im Klartext in localStorage | MITTEL | REVIEW_CODE #3 / REVIEW_SECURITY M-2 |
+| Supabase-Cache wird nach Logout nicht geleert | WICHTIG | REVIEW_CODE #4 |
+| `punkteRoh === punkteFinal` — Roh/Final-Unterscheidung wirkungslos | KRITISCH | REVIEW_CODE #1 |
+| `KRITERIUM_LABELS`-Doppel-Import in `ScoringFlow.tsx` | KRITISCH | REVIEW_CODE #2 |
+| CSP-Header fehlen in `vercel.json` | MITTEL | REVIEW_SECURITY M-4 |
+| Keine Unit-Tests, keine E2E-Tests | NICE-TO-HAVE | — |
+
+### Ursprungs-P2-Massnahmen — Status
+- **P2-1 Double-Save:** zu prüfen (möglicherweise nicht mehr aktuell nach Refactoring)
+- **P2-2 Matrix key:** zu prüfen
+- **P2-3 onBack:** weiterhin offen (siehe REVIEW_CODE #8)
+
+### Neue Dokumentations-Suite (Stand 2026-04-19)
+- `CHANGELOG.md` — Release-Historie
+- `GLOSSAR.md` + `public/glossar.html` — Fachbegriffe und Abkürzungen
+- `BENUTZERHANDBUCH.md` — Teilnehmer-Anleitung
+- `ADMIN_HANDBUCH.md` — Kursleitung-Referenz
+- `BACKUP.md` — Backup-Strategie
+- `BROWSER.md` — Kompatibilitäts-Matrix
+- `OFFLINE.md` — PWA-Offline-Verhalten
+- `META_STORE_CHECKLIST.md` — Phase-6-Vorbereitung
+- `public/impressum.html` — rechtliche Information
+- `public/datenschutz.html` — DSGVO/nDSG-Erklärung
+
+### Priorisierung (Stand 2026-04-19)
+
+| Phase | Aktion |
+|---|---|
+| **Sofort** | REVIEW_CODE #2 (Import-Fix), #11 (Typo) — ~10 Min total |
+| **Vor nächstem Release v0.3.1** | REVIEW_CODE #1, #4, #7, #8 |
+| **Vor Kurs-Pilot** | REVIEW_SECURITY H-1, H-2 (Supabase-RLS verifizieren, PIN-Rotation-Prozess) |
+| **Vor Produktiv-Einsatz** | REVIEW_SECURITY M-1, M-3, M-4, M-5, REVIEW_CODE #3, #6 |
+| **Phase 3 (VR)** | Performance-Profiling Quest 3, Offline-Test systematisch |
+
+*Aktualisiert: 2026-04-19 | RSI VR Tool v0.3.0 | Review automatisiert via Claude feature-dev Agents*

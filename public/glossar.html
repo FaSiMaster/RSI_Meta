@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="de-CH">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Glossar &amp; Abkürzungen — RSI VR Tool</title>
+  <style>
+    :root {
+      --text: #222;
+      --muted: #666;
+      --border: #e5e5e5;
+      --bg: #fff;
+      --accent: #00407C;
+      --accent2: #0076BD;
+    }
+    * { box-sizing: border-box; }
+    body {
+      font-family: "Inter", "Helvetica Now", "Helvetica", "Arial", sans-serif;
+      max-width: 860px;
+      margin: 0 auto;
+      padding: 32px 24px 64px;
+      color: var(--text);
+      background: var(--bg);
+      line-height: 1.55;
+    }
+    header {
+      border-bottom: 2px solid var(--accent);
+      padding-bottom: 12px;
+      margin-bottom: 24px;
+    }
+    h1 { font-size: 26px; margin: 0 0 4px; color: var(--accent); }
+    .subtitle {
+      color: var(--muted); font-size: 13px;
+      text-transform: uppercase; letter-spacing: 0.12em; font-weight: 700;
+    }
+    h2 {
+      font-size: 18px; color: var(--accent);
+      margin-top: 32px; border-left: 3px solid var(--accent2); padding-left: 10px;
+    }
+    p, li, td, th { font-size: 14px; }
+    a { color: var(--accent2); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    table {
+      border-collapse: collapse; width: 100%;
+      margin: 12px 0; font-size: 13px;
+    }
+    th, td {
+      border: 1px solid var(--border); padding: 8px 10px;
+      text-align: left; vertical-align: top;
+    }
+    th { background: #f5f8fb; font-weight: 700; color: var(--accent); }
+    td:first-child { font-family: "SF Mono", Consolas, monospace; font-weight: 700; white-space: nowrap; }
+    dl { margin: 12px 0; }
+    dt { font-weight: 700; margin-top: 12px; color: var(--accent); }
+    dd { margin-left: 0; color: var(--text); font-size: 13px; margin-top: 4px; }
+    footer {
+      margin-top: 48px; padding-top: 16px;
+      border-top: 1px solid var(--border);
+      font-size: 11px; color: var(--muted); text-align: center;
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="subtitle">Fachbegriffe und Abkürzungen</div>
+  <h1>Glossar</h1>
+</header>
+
+<p>Referenz zu den im RSI VR Tool verwendeten Begriffen. Gültig für den Anwendungskontext der Road Safety Inspection im Kanton Zürich nach TBA-Fachkurs FK RSI (V 16.09.2020).</p>
+
+<h2>Abkürzungen</h2>
+<table>
+  <thead><tr><th>Kürzel</th><th>Bedeutung</th><th>Kontext</th></tr></thead>
+  <tbody>
+    <tr><td>RSI</td><td>Road Safety Inspection</td><td>Strasseninspektion nach 9-Schritte-Verfahren</td></tr>
+    <tr><td>FaSi</td><td>Fachstelle Verkehrssicherheit</td><td>Tiefbauamt Kanton Zürich</td></tr>
+    <tr><td>KZH / KTZH</td><td>Kanton Zürich</td><td>Auftraggeber und Herausgeber</td></tr>
+    <tr><td>TBA</td><td>Tiefbauamt</td><td>Baudirektion Kanton Zürich</td></tr>
+    <tr><td>FK RSI</td><td>Fachkurs RSI</td><td>Schulungsreferenz V 16.09.2020</td></tr>
+    <tr><td>bfu</td><td>Beratungsstelle für Unfallverhütung</td><td>Schweizer Kompetenzstelle</td></tr>
+    <tr><td>ASTRA</td><td>Bundesamt für Strassen</td><td>Oberbehörde Nationalstrassen</td></tr>
+    <tr><td>NACA</td><td>National Advisory Committee for Aeronautics</td><td>Skala 0–7 für Unfallschwere (bfu-Bericht 73)</td></tr>
+    <tr><td>SD</td><td>Sicherheitsdefizit</td><td>Einzelne Abweichung von normativer Anforderung</td></tr>
+    <tr><td>io / ao</td><td>innerorts / ausserorts</td><td>Kontext der Wichtigkeits-Bewertung</td></tr>
+    <tr><td>VSS</td><td>Verband der Strassen- und Verkehrsfachleute</td><td>Schweizer Normenherausgeber (VSS 40 xxx)</td></tr>
+    <tr><td>SN</td><td>Schweizer Norm</td><td>SN 640 (Strassenbau), SN 641 (Verkehr)</td></tr>
+    <tr><td>DSGVO</td><td>Datenschutz-Grundverordnung</td><td>EU-Verordnung; CH: nDSG</td></tr>
+    <tr><td>WCAG</td><td>Web Content Accessibility Guidelines</td><td>W3C 2.1 / 2.2</td></tr>
+    <tr><td>WebXR</td><td>Web Extended Reality</td><td>Browser-API für VR/AR</td></tr>
+    <tr><td>PWA</td><td>Progressive Web App</td><td>Web-App mit App-Charakter, offline-fähig</td></tr>
+    <tr><td>CD</td><td>Corporate Design</td><td>CD Kanton Zürich</td></tr>
+    <tr><td>PIN</td><td>Personal Identification Number</td><td>4-stelliger Admin-Zugangscode</td></tr>
+    <tr><td>UI / UX</td><td>User Interface / User Experience</td><td>Benutzeroberfläche / Nutzererfahrung</td></tr>
+    <tr><td>RLS</td><td>Row Level Security</td><td>Supabase-Tabellen-Zugriffsrechte</td></tr>
+    <tr><td>SHA-256</td><td>Secure Hash Algorithm 256 bit</td><td>Einwegfunktion zur Pseudonymisierung</td></tr>
+    <tr><td>HDRI</td><td>High Dynamic Range Imaging</td><td>Panorama-Format 32-bit Farbtiefe</td></tr>
+    <tr><td>UV</td><td>UV-Mapping</td><td>2D-Textur-Koordinaten auf 3D-Oberflächen</td></tr>
+  </tbody>
+</table>
+
+<h2>Fachbegriffe</h2>
+<dl>
+  <dt>9-Schritt-Methodik RSI</dt>
+  <dd>Normatives Verfahren pro Sicherheitsdefizit: Wichtigkeit (1) → Einzeichnen (2) → Abweichung (3) → Einzeichnen (4) → Relevanz SD (5) → Einzeichnen (6) → NACA (7) → Einzeichnen (8) → Unfallrisiko (9). Schritte 1, 3, 7 sind Benutzereingaben, die anderen Automatiken.</dd>
+
+  <dt>Wichtigkeit</dt>
+  <dd>Kategorie: gross / mittel / klein. Wie relevant ein Kriterium für Verkehrsablauf und Sicherheit ist. Kontextabhängig (io/ao). Quelle: WICHTIGKEIT_TABLE, 58 Kriterien.</dd>
+
+  <dt>Abweichung</dt>
+  <dd>Kategorie: gross / mittel / klein. Wie stark der Ist-Zustand von der Norm (VSS/SN) abweicht.</dd>
+
+  <dt>Relevanz SD</dt>
+  <dd>Kombiniertes Ergebnis Wichtigkeit × Abweichung. Wertebereich: gering / mittel / hoch.</dd>
+
+  <dt>Unfallschwere</dt>
+  <dd>Übersetzung NACA-Skala: 0–1 → leicht, 2–3 → mittel, 4–7 → schwer.</dd>
+
+  <dt>Unfallrisiko</dt>
+  <dd>Endbewertung Relevanz SD × Unfallschwere. Wertebereich: gering / mittel / hoch. Farbe: grün / orange / rot.</dd>
+
+  <dt>Verortung</dt>
+  <dd>Geometrische Defizit-Definition im 360°-Panorama. Typen: Punkt (mit Toleranz), Polygon (Eckpunkte), Gruppe (kombiniert).</dd>
+
+  <dt>Perspektive</dt>
+  <dd>Zusätzlicher 360°-Standort innerhalb einer Szene. Eigenes Panoramabild, eigener Startblick, eigene Verortungen (kein Fallback auf Haupt).</dd>
+
+  <dt>Standort-Navigation</dt>
+  <dd>Bidirektionale Verknüpfung zwischen Haupt-Panorama und Perspektiven via klickbare 3D-Marker.</dd>
+
+  <dt>Startblick</dt>
+  <dd>Anfangs-Blickrichtung beim Laden einer Szene/Perspektive (θ, φ).</dd>
+
+  <dt>Best-of-Punktesystem</dt>
+  <dd>Mehrfach-Durchgänge zulässig — bester Score zählt. Sterne: &lt; 60 % (1), 60–89 % (2), 90–100 % (3).</dd>
+
+  <dt>Penalty / Strafabzüge</dt>
+  <dd>Kategorie falsch: −10 % auf Defizit. Hinweise (Lupe) aktiviert: −25 Pkt. pro Szene.</dd>
+
+  <dt>Kriterium</dt>
+  <dd>Einer von 58 Einträgen in WICHTIGKEIT_TABLE, bindet Kontext (io/ao) an Wichtigkeits-Wert.</dd>
+
+  <dt>Szene</dt>
+  <dd>Verkehrssituation mit Haupt-Panorama, optional Perspektiven, Defizit-Liste, Einstiegs-Text.</dd>
+
+  <dt>Thema / Unterthema</dt>
+  <dd>Thematische Szenen-Gruppierung (Oberthema → Unterthema → Szenen).</dd>
+
+  <dt>Kurs</dt>
+  <dd>Zeitlich begrenzter Zugang für Teilnehmergruppe: Zugangscode, optional Passwort, Gültigkeit, Themen-Auswahl.</dd>
+
+  <dt>Pseudonymisierung</dt>
+  <dd>Ersetzen eines identifizierenden Merkmals (Name) durch einen nicht direkt rückrechenbaren Wert (SHA-256-Hash). Nicht gleichbedeutend mit Anonymisierung (Art. 4(5) DSGVO).</dd>
+</dl>
+
+<h2>Weitere Dokumente</h2>
+<ul>
+  <li><a href="/impressum.html">Impressum</a></li>
+  <li><a href="/datenschutz.html">Datenschutzerklärung</a></li>
+  <li><a href="/">Zurück zur Anwendung</a></li>
+</ul>
+
+<footer>
+  © <span id="yr">2026</span> Tiefbauamt Kanton Zürich · RSI VR Tool v0.3.0
+</footer>
+
+<script>document.getElementById('yr').textContent = new Date().getFullYear();</script>
+
+</body>
+</html>

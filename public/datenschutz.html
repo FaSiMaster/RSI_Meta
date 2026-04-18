@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="de-CH">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Datenschutzerklärung — RSI VR Tool</title>
+  <style>
+    :root {
+      --text: #222;
+      --muted: #666;
+      --border: #e5e5e5;
+      --bg: #fff;
+      --accent: #00407C;
+      --accent2: #0076BD;
+    }
+    * { box-sizing: border-box; }
+    body {
+      font-family: "Inter", "Helvetica Now", "Helvetica", "Arial", sans-serif;
+      max-width: 760px;
+      margin: 0 auto;
+      padding: 32px 24px 64px;
+      color: var(--text);
+      background: var(--bg);
+      line-height: 1.55;
+    }
+    header {
+      border-bottom: 2px solid var(--accent);
+      padding-bottom: 12px;
+      margin-bottom: 24px;
+    }
+    h1 {
+      font-size: 26px;
+      margin: 0 0 4px;
+      color: var(--accent);
+    }
+    .subtitle {
+      color: var(--muted);
+      font-size: 13px;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      font-weight: 700;
+    }
+    h2 {
+      font-size: 18px;
+      color: var(--accent);
+      margin-top: 32px;
+      border-left: 3px solid var(--accent2);
+      padding-left: 10px;
+    }
+    p, li { font-size: 14px; }
+    a { color: var(--accent2); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    table {
+      border-collapse: collapse;
+      width: 100%;
+      margin: 16px 0;
+      font-size: 13px;
+    }
+    th, td {
+      border: 1px solid var(--border);
+      padding: 8px 10px;
+      text-align: left;
+      vertical-align: top;
+    }
+    th {
+      background: #f5f8fb;
+      font-weight: 700;
+      color: var(--accent);
+    }
+    .kontakt {
+      background: #f5f8fb;
+      border-left: 4px solid var(--accent2);
+      padding: 14px 18px;
+      margin: 20px 0;
+      font-size: 14px;
+    }
+    footer {
+      margin-top: 48px;
+      padding-top: 16px;
+      border-top: 1px solid var(--border);
+      font-size: 11px;
+      color: var(--muted);
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="subtitle">Datenschutzinformation nach nDSG / DSGVO</div>
+  <h1>Datenschutzerklärung</h1>
+</header>
+
+<p>Stand: 2026-04-19</p>
+
+<p>Diese Datenschutzerklärung informiert über die Verarbeitung personenbezogener Daten im Rahmen der Nutzung des <strong>RSI VR Tools</strong> der Fachstelle Verkehrssicherheit, Tiefbauamt Kanton Zürich.</p>
+
+<h2>1. Verantwortlicher</h2>
+<div class="kontakt">
+  <strong>Kanton Zürich, Baudirektion, Tiefbauamt</strong><br>
+  Fachstelle Verkehrssicherheit (FaSi)<br>
+  Ansprechperson: Stevan Skeledzic<br>
+  Walcheplatz 2, 8090 Zürich<br>
+  E-Mail: <a href="mailto:stevan.skeledzic@bd.zh.ch">stevan.skeledzic@bd.zh.ch</a><br>
+  Telefon: +41 43 259 31 20
+</div>
+
+<p>Für Anliegen im Zusammenhang mit der Verarbeitung personenbezogener Daten durch den Kanton Zürich steht zudem der kantonale Datenschutzbeauftragte zur Verfügung: <a href="https://www.datenschutz.ch" target="_blank" rel="noopener noreferrer">datenschutz.ch</a>.</p>
+
+<h2>2. Zweck der Datenverarbeitung</h2>
+<p>Die Daten werden ausschliesslich für folgende Zwecke verarbeitet:</p>
+<ul>
+  <li>Durchführung der RSI-Schulung im Rahmen des Fachkurses FK RSI</li>
+  <li>Erstellung einer pseudonymen Rangliste zur Motivation und zum Fortschrittsvergleich</li>
+  <li>Qualitätssicherung und Weiterentwicklung des Schulungswerkzeugs</li>
+</ul>
+
+<h2>3. Welche Daten werden erhoben?</h2>
+<table>
+  <thead>
+    <tr><th>Datum</th><th>Zweck</th><th>Speicherort</th><th>Form</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Eingegebener Name</td>
+      <td>Identifikation am Gerät</td>
+      <td>Lokaler Browser-Speicher (<code>localStorage</code>)</td>
+      <td>Klartext (verlässt das Gerät nicht)</td>
+    </tr>
+    <tr>
+      <td>Pseudonym (SHA-256, 8 Zeichen)</td>
+      <td>Zuordnung in der Rangliste</td>
+      <td>Supabase EU-Region</td>
+      <td>Hash, nicht rückrechenbar zu Klartext ohne Namensliste</td>
+    </tr>
+    <tr>
+      <td>Kursname, Zugangscode</td>
+      <td>Kurszuordnung</td>
+      <td>Lokal &amp; Supabase</td>
+      <td>Klartext</td>
+    </tr>
+    <tr>
+      <td>Szenen-Ergebnisse (Punkte, Prozent, Dauer, Zeitstempel)</td>
+      <td>Ranking, Fortschritt</td>
+      <td>Lokal &amp; Supabase</td>
+      <td>Numerisch</td>
+    </tr>
+    <tr>
+      <td>Spracheinstellung, Theme</td>
+      <td>Benutzerkomfort</td>
+      <td>Lokaler Browser-Speicher</td>
+      <td>Klartext</td>
+    </tr>
+  </tbody>
+</table>
+
+<p><strong>Wichtig:</strong> Der Name wird als SHA-256-Hash pseudonymisiert (erste 8 Hexadezimalzeichen) in der zentralen Datenbank gespeichert. Dies ist <strong>Pseudonymisierung, nicht Anonymisierung</strong> im Sinne von Art. 4(5) DSGVO — eine Re-Identifikation durch Vergleich mit einer Kursteilnehmerliste ist technisch möglich. Der Klartext-Name verbleibt ausschliesslich auf Ihrem Gerät.</p>
+
+<p>Es werden <strong>keine</strong> erhoben:</p>
+<ul>
+  <li>IP-Adressen (ausser über Standard-Server-Logs bei Vercel/Supabase, ohne eigenes Tracking)</li>
+  <li>Tracking-Cookies oder Analyse-Skripte</li>
+  <li>Standortdaten</li>
+  <li>Gerätefingerabdrücke</li>
+  <li>E-Mail-Adressen</li>
+</ul>
+
+<h2>4. Rechtsgrundlage</h2>
+<p>Die Verarbeitung erfolgt auf Grundlage:</p>
+<ul>
+  <li><strong>Schweiz:</strong> Art. 31 Abs. 2 lit. a revDSG (berechtigtes Interesse an der Schulung) sowie auf Grundlage der öffentlichen Aufgabe gemäss Strassengesetz Kanton Zürich</li>
+  <li><strong>EU-Betroffene:</strong> Art. 6 Abs. 1 lit. e DSGVO (Wahrnehmung einer Aufgabe im öffentlichen Interesse)</li>
+  <li>Bei expliziter Namenseingabe zusätzlich: Einwilligung (Art. 6 Abs. 1 lit. a DSGVO)</li>
+</ul>
+
+<h2>5. Empfänger der Daten</h2>
+<ul>
+  <li><strong>Vercel Inc.</strong> (USA, mit EU-Edge-Nodes) — Hosting der Web-Anwendung. <a href="https://vercel.com/legal/privacy-policy" target="_blank" rel="noopener noreferrer">Datenschutzerklärung Vercel</a>.</li>
+  <li><strong>Supabase Pte. Ltd.</strong> — Datenbank für Rangliste und Schulungsinhalte, gehostet in der EU-Region. <a href="https://supabase.com/privacy" target="_blank" rel="noopener noreferrer">Datenschutzerklärung Supabase</a>.</li>
+  <li>Innerhalb des Kantons Zürich: Kursleitung, um Fortschritt der Kurse auszuwerten (ausschliesslich auf Pseudonym-Basis).</li>
+</ul>
+<p>Eine Übermittlung in Drittländer ausserhalb EU/EWR findet ausschliesslich über Vercel statt (Edge-Routing). Vercel unterzeichnet Standardvertragsklauseln (SCC).</p>
+
+<h2>6. Speicherdauer</h2>
+<ul>
+  <li><strong>Lokale Daten:</strong> verbleiben bis zur manuellen Löschung (Funktion "App zurücksetzen" im Footer) oder bis zum Löschen des Browser-Caches.</li>
+  <li><strong>Supabase-Daten:</strong> Die Ranking-Einträge werden bis zum Abschluss des jeweiligen Kurses plus 12 Monate aufbewahrt, danach durch die Kursleitung gelöscht.</li>
+  <li>Auf Antrag: sofortige Löschung (siehe Abschnitt 7).</li>
+</ul>
+
+<h2>7. Ihre Rechte</h2>
+<p>Sie haben das Recht auf:</p>
+<ul>
+  <li><strong>Auskunft</strong> über die zu Ihrer Person gespeicherten Daten</li>
+  <li><strong>Berichtigung</strong> unrichtiger Daten</li>
+  <li><strong>Löschung</strong> Ihrer Daten ("Recht auf Vergessenwerden") — über die Funktion "App zurücksetzen" (lokal) oder per E-Mail an die Fachstelle (zentrale Rangliste)</li>
+  <li><strong>Einschränkung</strong> der Verarbeitung</li>
+  <li><strong>Widerspruch</strong> gegen die Verarbeitung</li>
+  <li><strong>Datenübertragbarkeit</strong> in einem gängigen Format</li>
+  <li><strong>Widerruf</strong> der Einwilligung jederzeit mit Wirkung für die Zukunft</li>
+  <li><strong>Beschwerde</strong> beim kantonalen Datenschutzbeauftragten bzw. beim Eidgenössischen Datenschutz- und Öffentlichkeitsbeauftragten (EDÖB)</li>
+</ul>
+
+<h2>8. Technische und organisatorische Massnahmen</h2>
+<ul>
+  <li>Verschlüsselte Übertragung via HTTPS/TLS 1.3</li>
+  <li>Pseudonymisierung des Namens (SHA-256)</li>
+  <li>Supabase Row Level Security (RLS) für Datenbankzugriffe</li>
+  <li>Admin-Bereich durch PIN geschützt (zusätzlich Zugangscode pro Kurs möglich)</li>
+  <li>Kein Third-Party-Tracking, keine Analytics-Skripte</li>
+</ul>
+
+<h2>9. Cookies und lokale Speicherung</h2>
+<p>Die App setzt <strong>keine Cookies</strong>. Sie nutzt ausschliesslich <code>localStorage</code> und <code>sessionStorage</code> im Browser — technisch notwendige Speicherung für Benutzerkomfort (Spracheinstellung, Login-State). Diese Daten verlassen Ihr Gerät nicht, ausser den oben genannten Ranking-Einträgen.</p>
+
+<h2>10. Service Worker / PWA</h2>
+<p>Die App ist eine Progressive Web App mit Service Worker. Dieser cacht statische Ressourcen für Offline-Nutzung. Es werden keine personenbezogenen Daten vom Service Worker verarbeitet.</p>
+
+<h2>11. Änderungen dieser Erklärung</h2>
+<p>Diese Datenschutzerklärung kann angepasst werden, sobald sich technische oder rechtliche Rahmenbedingungen ändern. Die jeweils aktuelle Fassung ist über den Datenschutz-Link im Footer der Anwendung erreichbar.</p>
+
+<h2>12. Weitere Dokumente</h2>
+<ul>
+  <li><a href="/impressum.html">Impressum</a></li>
+  <li><a href="/glossar.html">Glossar &amp; Abkürzungen</a></li>
+  <li><a href="/">Zurück zur Anwendung</a></li>
+</ul>
+
+<footer>
+  © <span id="yr">2026</span> Tiefbauamt Kanton Zürich · RSI VR Tool v0.3.0 · Stand Datenschutz: 2026-04-19
+</footer>
+
+<script>document.getElementById('yr').textContent = new Date().getFullYear();</script>
+
+</body>
+</html>

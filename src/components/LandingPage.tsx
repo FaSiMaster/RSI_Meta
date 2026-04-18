@@ -117,7 +117,7 @@ export default function LandingPage({ onStart, onAdmin }: Props) {
     <div className="flex flex-col" style={{ minHeight: '100dvh', background: 'var(--zh-color-bg)', fontFamily: 'var(--zh-font)' }}>
 
       {/* ── Top-Bar ── */}
-      <div className="flex items-center justify-between px-5 sm:px-8 py-3" style={{ borderBottom: '1px solid var(--zh-color-border)' }}>
+      <div className="flex items-center justify-between px-5 sm:px-8" style={{ minHeight: 'var(--zh-navbar-h)', borderBottom: '1px solid var(--zh-color-border)' }}>
         <div className="flex items-center gap-2.5">
           <div className="w-7 h-7 rounded-full flex items-center justify-center flex-shrink-0" style={{ background: 'var(--zh-dunkelblau)' }}>
             <Shield size={14} color="white" />
@@ -295,12 +295,24 @@ export default function LandingPage({ onStart, onAdmin }: Props) {
       </div>
 
       {/* ── Footer ── */}
-      <div className="flex items-center justify-between gap-2 px-5 sm:px-8 py-3" style={{ borderTop: '1px solid var(--zh-color-border)' }}>
+      <div className="flex items-center justify-between gap-3 px-5 sm:px-8 flex-wrap" style={{ minHeight: 'var(--zh-footer-h)', borderTop: '1px solid var(--zh-color-border)' }}>
         <div className="flex items-center gap-2 text-xs" style={{ color: 'var(--zh-color-text-disabled)' }}>
           <span style={{ color: '#1A7F1F', fontWeight: 800 }}>●</span>
-          {t('landing.systemOnline')} · V3.1
+          {t('landing.systemOnline')} · v0.3.0
         </div>
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-3 flex-wrap">
+          <a href="/impressum.html" target="_blank" rel="noopener noreferrer" className="text-[10px] font-semibold hover:underline" style={{ color: 'var(--zh-color-text-disabled)' }}>
+            Impressum
+          </a>
+          <span className="text-[10px]" style={{ color: 'var(--zh-color-border)' }}>|</span>
+          <a href="/datenschutz.html" target="_blank" rel="noopener noreferrer" className="text-[10px] font-semibold hover:underline" style={{ color: 'var(--zh-color-text-disabled)' }}>
+            Datenschutz
+          </a>
+          <span className="text-[10px]" style={{ color: 'var(--zh-color-border)' }}>|</span>
+          <a href="/glossar.html" target="_blank" rel="noopener noreferrer" className="text-[10px] font-semibold hover:underline" style={{ color: 'var(--zh-color-text-disabled)' }}>
+            Glossar
+          </a>
+          <span className="text-[10px]" style={{ color: 'var(--zh-color-border)' }}>|</span>
           <button
             onClick={handleResetApp}
             disabled={resetting}
