@@ -2,6 +2,7 @@
 // Kein Backend nötig; öffnet den Standard-Mailclient mit vorausgefülltem Body.
 
 import { useState, useEffect } from 'react'
+import { useTranslation } from 'react-i18next'
 import { X, Send, MessageSquare } from 'lucide-react'
 
 const SUPPORT_EMAIL = 'sicherheit.tba@bd.zh.ch'
@@ -13,6 +14,7 @@ interface Props {
 }
 
 export default function FeedbackModal({ open, onClose, context }: Props) {
+  const { t } = useTranslation()
   const [kategorie, setKategorie] = useState<'bug' | 'idee' | 'frage'>('bug')
   const [betreff, setBetreff] = useState('')
   const [beschreibung, setBeschreibung] = useState('')
@@ -35,25 +37,30 @@ export default function FeedbackModal({ open, onClose, context }: Props) {
     const time = new Date().toISOString()
     const version = import.meta.env.VITE_APP_VERSION ?? '0.4.0'
 
-    const katLabel = kategorie === 'bug' ? 'Fehler' : kategorie === 'idee' ? 'Idee' : 'Frage'
+    const subjLabel = kategorie === 'bug'
+      ? t('feedback.subjBug')
+      : kategorie === 'idee'
+        ? t('feedback.subjIdee')
+        : t('feedback.subjFrage')
+
     // Defensive Hygiene: CR/LF im Betreff entfernen (Header-Injection-Schutz
     // fuer Mailclients, die mailto-Parameter ohne Re-Encoding verarbeiten)
     const cleanBetreff = betreff.replace(/[\r\n]+/g, ' ').slice(0, 160)
-    const subject = `[RSI] ${katLabel}${cleanBetreff ? ': ' + cleanBetreff : ''}`
+    const subject = `[RSI] ${subjLabel}${cleanBetreff ? ': ' + cleanBetreff : ''}`
 
     const body = [
-      '--- Bitte oberhalb dieser Zeile schreiben ---',
+      `--- ${t('feedback.mailAuf')} ---`,
       '',
-      beschreibung || '(bitte Ihr Anliegen beschreiben)',
+      beschreibung || t('feedback.mailDefault'),
       '',
       '',
-      '--- Technische Angaben (bitte nicht entfernen) ---',
-      `Kategorie: ${katLabel}`,
-      `Zeit: ${time}`,
-      `URL: ${url}`,
-      `App-Version: ${version}`,
-      `Browser: ${ua}`,
-      context ? `Kontext: ${context}` : '',
+      `--- ${t('feedback.mailTech')} ---`,
+      `${t('feedback.mailKategorie')}: ${subjLabel}`,
+      `${t('feedback.mailZeit')}: ${time}`,
+      `${t('feedback.mailUrl')}: ${url}`,
+      `${t('feedback.mailVersion')}: ${version}`,
+      `${t('feedback.mailBrowser')}: ${ua}`,
+      context ? `${t('feedback.mailKontext')}: ${context}` : '',
     ].filter(Boolean).join('\n')
 
     const mailto = `mailto:${SUPPORT_EMAIL}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`
@@ -93,13 +100,13 @@ export default function FeedbackModal({ open, onClose, context }: Props) {
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
             <MessageSquare size={16} style={{ color: 'var(--zh-blau)' }} />
             <h2 style={{ margin: 0, fontSize: '15px', fontWeight: 800, color: 'var(--zh-color-text)' }}>
-              Feedback senden
+              {t('feedback.title')}
             </h2>
           </div>
           <button
             onClick={onClose}
             style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--zh-color-text-muted)', padding: '4px' }}
-            aria-label="Schliessen"
+            aria-label={t('feedback.closeAria')}
           >
             <X size={18} />
           </button>
@@ -108,18 +115,18 @@ export default function FeedbackModal({ open, onClose, context }: Props) {
         {/* Body */}
         <div style={{ padding: '18px' }}>
           <p style={{ fontSize: '12px', color: 'var(--zh-color-text-muted)', marginTop: 0, marginBottom: '14px' }}>
-            Ihre Nachricht geht als E-Mail an die Fachstelle Verkehrssicherheit. Technische Angaben werden automatisch angehängt.
+            {t('feedback.intro')}
           </p>
 
           {/* Kategorie */}
           <label style={{ display: 'block', fontSize: '11px', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.08em', color: 'var(--zh-color-text-muted)', marginBottom: '6px' }}>
-            Art des Anliegens
+            {t('feedback.katLabel')}
           </label>
           <div style={{ display: 'flex', gap: '6px', marginBottom: '14px' }}>
             {([
-              { key: 'bug',   label: 'Fehler / Bug' },
-              { key: 'idee',  label: 'Verbesserung' },
-              { key: 'frage', label: 'Frage' },
+              { key: 'bug',   label: t('feedback.katBug') },
+              { key: 'idee',  label: t('feedback.katIdee') },
+              { key: 'frage', label: t('feedback.katFrage') },
             ] as const).map(({ key, label }) => (
               <button
                 key={key}
@@ -140,12 +147,12 @@ export default function FeedbackModal({ open, onClose, context }: Props) {
 
           {/* Betreff */}
           <label style={{ display: 'block', fontSize: '11px', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.08em', color: 'var(--zh-color-text-muted)', marginBottom: '6px' }}>
-            Betreff (optional)
+            {t('feedback.betreffLabel')}
           </label>
           <input
             value={betreff}
             onChange={e => setBetreff(e.target.value)}
-            placeholder="Kurzbeschreibung"
+            placeholder={t('feedback.betreffPlaceholder')}
             style={{
               width: '100%', padding: '9px 11px', marginBottom: '14px',
               borderRadius: '8px',
@@ -159,12 +166,12 @@ export default function FeedbackModal({ open, onClose, context }: Props) {
 
           {/* Beschreibung */}
           <label style={{ display: 'block', fontSize: '11px', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.08em', color: 'var(--zh-color-text-muted)', marginBottom: '6px' }}>
-            Beschreibung
+            {t('feedback.beschreibungLabel')}
           </label>
           <textarea
             value={beschreibung}
             onChange={e => setBeschreibung(e.target.value)}
-            placeholder="Was ist passiert? Wie liesse es sich verbessern?"
+            placeholder={t('feedback.beschreibungPlaceholder')}
             rows={6}
             style={{
               width: '100%', padding: '9px 11px',
@@ -179,7 +186,7 @@ export default function FeedbackModal({ open, onClose, context }: Props) {
 
           {context && (
             <p style={{ fontSize: '11px', color: 'var(--zh-color-text-disabled)', marginTop: '10px', marginBottom: 0 }}>
-              Kontext wird mitgesendet: <em>{context}</em>
+              {t('feedback.kontextLabel')} <em>{context}</em>
             </p>
           )}
         </div>
@@ -201,7 +208,7 @@ export default function FeedbackModal({ open, onClose, context }: Props) {
               fontFamily: 'var(--zh-font)',
             }}
           >
-            Abbrechen
+            {t('feedback.abbrechen')}
           </button>
           <button
             onClick={handleSenden}
@@ -216,7 +223,7 @@ export default function FeedbackModal({ open, onClose, context }: Props) {
               fontFamily: 'var(--zh-font)',
             }}
           >
-            <Send size={13} /> Senden
+            <Send size={13} /> {t('feedback.senden')}
           </button>
         </div>
       </div>

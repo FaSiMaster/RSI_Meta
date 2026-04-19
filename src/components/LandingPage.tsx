@@ -16,7 +16,7 @@ interface Props {
 }
 
 export default function LandingPage({ onStart, onAdmin }: Props) {
-  const { t } = useTranslation()
+  const { t, i18n } = useTranslation()
   const saved = getSession()
 
   const [name, setName] = useState(saved.username ?? '')
@@ -177,17 +177,22 @@ export default function LandingPage({ onStart, onAdmin }: Props) {
               ))}
             </div>
 
-            {/* Untertitel */}
-            <p className="text-sm leading-relaxed" style={{ color: 'var(--zh-color-text-muted)', maxWidth: '400px' }}>
-              {t('landing.subtitle', 'Entwickeln Sie den geschulten Blick für das Wesentliche. Road Safety Inspection — immersiv.')}
+            {/* Untertitel (Lead) */}
+            <p className="text-sm leading-relaxed" style={{ color: 'var(--zh-color-text-muted)', maxWidth: '420px' }}>
+              {t('landing.subtitle')}
             </p>
 
-            {/* Feature-Liste */}
+            {/* Intro — fachlicher Kontext (ISSI / TBA / bfu) */}
+            <p className="text-[13px] leading-relaxed" style={{ color: 'var(--zh-color-text-muted)', maxWidth: '460px' }}>
+              {t('landing.intro')}
+            </p>
+
+            {/* Feature-Liste — Methodik */}
             <div className="flex flex-col gap-4">
               {([
-                { icon: <BookOpen size={16} />, text: '9-Schritt FaSi/bfu-Bewertungsflow nach TBA-Fachkurs FK RSI' },
-                { icon: <Eye size={16} />,      text: 'Bewertungsmatrizen — Wichtigkeit × Abweichung × NACA' },
-                { icon: <BarChart3 size={16} />, text: 'Live-Ranking und persönlicher Fortschritt' },
+                { icon: <BookOpen size={16} />,  text: t('landing.feature1') },
+                { icon: <Eye size={16} />,       text: t('landing.feature2') },
+                { icon: <BarChart3 size={16} />, text: t('landing.feature3') },
               ] as const).map(({ icon, text }) => (
                 <div key={text} className="flex items-start gap-3">
                   <div className="mt-0.5 flex-shrink-0" style={{ color: 'var(--zh-blau)' }}>{icon}</div>
@@ -200,7 +205,7 @@ export default function LandingPage({ onStart, onAdmin }: Props) {
             <div className="flex items-center gap-2 pt-2">
               <div className="h-px flex-1" style={{ background: 'var(--zh-color-border)' }} />
               <span className="text-[10px] font-bold uppercase tracking-[0.16em]" style={{ color: 'var(--zh-color-text-disabled)' }}>
-                Fachstelle Verkehrssicherheit · Kanton Zürich
+                {t('landing.absender')}
               </span>
               <div className="h-px flex-1" style={{ background: 'var(--zh-color-border)' }} />
             </div>
@@ -233,7 +238,7 @@ export default function LandingPage({ onStart, onAdmin }: Props) {
               value={name}
               onChange={e => { setName(e.target.value); if (e.target.value.trim()) setNameFehlend(false) }}
               onKeyDown={e => { if (e.key === 'Enter') handleStart() }}
-              placeholder="z.B. Max Muster"
+              placeholder={t('landing.namePlaceholder')}
               autoFocus
               className={inputClass}
               style={{ padding: '11px 14px', border: nameFehlend ? '1px solid #D40053' : '1px solid var(--zh-color-border)', background: 'var(--zh-color-bg-secondary)', color: 'var(--zh-color-text)', fontFamily: 'var(--zh-font)', marginBottom: nameFehlend ? '4px' : '16px', boxSizing: 'border-box' }}
@@ -322,19 +327,19 @@ export default function LandingPage({ onStart, onAdmin }: Props) {
       <div className="flex items-center justify-between gap-3 px-5 sm:px-8 flex-wrap" style={{ minHeight: 'var(--zh-footer-h)', borderTop: '1px solid var(--zh-color-border)' }}>
         <div className="flex items-center gap-2 text-xs" style={{ color: 'var(--zh-color-text-disabled)' }}>
           <span style={{ color: '#1A7F1F', fontWeight: 800 }}>●</span>
-          {t('landing.systemOnline')} · v0.4.0
+          {t('landing.systemOnline')} · v{import.meta.env.VITE_APP_VERSION ?? '0.4.0'}
         </div>
         <div className="flex items-center gap-3 flex-wrap">
-          <a href="/impressum.html" target="_blank" rel="noopener noreferrer" className="text-[10px] font-semibold hover:underline" style={{ color: 'var(--zh-color-text-disabled)' }}>
-            Impressum
+          <a href={`/impressum.html?lang=${i18n.language}`} target="_blank" rel="noopener noreferrer" className="text-[10px] font-semibold hover:underline" style={{ color: 'var(--zh-color-text-disabled)' }}>
+            {t('landing.linkImpressum')}
           </a>
           <span className="text-[10px]" style={{ color: 'var(--zh-color-border)' }}>|</span>
-          <a href="/datenschutz.html" target="_blank" rel="noopener noreferrer" className="text-[10px] font-semibold hover:underline" style={{ color: 'var(--zh-color-text-disabled)' }}>
-            Datenschutz
+          <a href={`/datenschutz.html?lang=${i18n.language}`} target="_blank" rel="noopener noreferrer" className="text-[10px] font-semibold hover:underline" style={{ color: 'var(--zh-color-text-disabled)' }}>
+            {t('landing.linkDatenschutz')}
           </a>
           <span className="text-[10px]" style={{ color: 'var(--zh-color-border)' }}>|</span>
-          <a href="/glossar.html" target="_blank" rel="noopener noreferrer" className="text-[10px] font-semibold hover:underline" style={{ color: 'var(--zh-color-text-disabled)' }}>
-            Glossar
+          <a href={`/glossar.html?lang=${i18n.language}`} target="_blank" rel="noopener noreferrer" className="text-[10px] font-semibold hover:underline" style={{ color: 'var(--zh-color-text-disabled)' }}>
+            {t('landing.linkGlossar')}
           </a>
           <span className="text-[10px]" style={{ color: 'var(--zh-color-border)' }}>|</span>
           <button
@@ -342,7 +347,7 @@ export default function LandingPage({ onStart, onAdmin }: Props) {
             className="flex items-center gap-1 text-[10px] font-semibold transition-colors"
             style={{ color: 'var(--zh-color-text-disabled)', background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}
           >
-            <MessageSquare size={10} /> Feedback
+            <MessageSquare size={10} /> {t('landing.linkFeedback')}
           </button>
           <span className="text-[10px]" style={{ color: 'var(--zh-color-border)' }}>|</span>
           <button
@@ -364,7 +369,7 @@ export default function LandingPage({ onStart, onAdmin }: Props) {
           </button>
           <span className="text-[10px]" style={{ color: 'var(--zh-color-border)' }}>|</span>
           <span className="text-[10px] font-semibold" style={{ color: 'var(--zh-color-text-disabled)' }}>
-            Fachstelle Verkehrssicherheit (FaSi) · Kanton Zürich · v{import.meta.env.VITE_APP_VERSION ?? '0.4.0'}
+            {t('landing.footerInfo')} · v{import.meta.env.VITE_APP_VERSION ?? '0.4.0'}
           </span>
         </div>
       </div>

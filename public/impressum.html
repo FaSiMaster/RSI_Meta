@@ -23,48 +23,46 @@
       background: var(--bg);
       line-height: 1.55;
     }
-    header {
-      border-bottom: 2px solid var(--accent);
-      padding-bottom: 12px;
-      margin-bottom: 24px;
+    .topbar {
+      display: flex; align-items: center; justify-content: space-between;
+      gap: 16px; flex-wrap: wrap; margin-bottom: 12px;
     }
-    h1 {
-      font-size: 26px;
-      margin: 0 0 4px;
-      color: var(--accent);
+    .lang-switch {
+      display: flex; gap: 4px;
+      border: 1px solid var(--border); border-radius: 8px;
+      padding: 3px; background: #fafafa;
     }
+    .lang-switch button {
+      border: none; background: transparent; cursor: pointer;
+      padding: 4px 10px; border-radius: 5px;
+      font-size: 12px; font-weight: 700; color: var(--muted);
+      text-transform: uppercase; letter-spacing: 0.06em;
+    }
+    .lang-switch button.active {
+      background: var(--accent); color: white;
+    }
+    header { border-bottom: 2px solid var(--accent); padding-bottom: 12px; margin-bottom: 24px; }
+    h1 { font-size: 26px; margin: 0 0 4px; color: var(--accent); }
     .subtitle {
-      color: var(--muted);
-      font-size: 13px;
-      text-transform: uppercase;
-      letter-spacing: 0.12em;
-      font-weight: 700;
+      color: var(--muted); font-size: 13px;
+      text-transform: uppercase; letter-spacing: 0.12em; font-weight: 700;
     }
     h2 {
-      font-size: 18px;
-      color: var(--accent);
-      margin-top: 32px;
-      border-left: 3px solid var(--accent2);
-      padding-left: 10px;
+      font-size: 18px; color: var(--accent);
+      margin-top: 32px; border-left: 3px solid var(--accent2); padding-left: 10px;
     }
     h3 { font-size: 14px; color: var(--accent); margin-top: 20px; }
     p, li { font-size: 14px; }
     a { color: var(--accent2); text-decoration: none; }
     a:hover { text-decoration: underline; }
     .kontakt {
-      background: #f5f8fb;
-      border-left: 4px solid var(--accent2);
-      padding: 14px 18px;
-      margin: 20px 0;
-      font-size: 14px;
+      background: #f5f8fb; border-left: 4px solid var(--accent2);
+      padding: 14px 18px; margin: 20px 0; font-size: 14px;
     }
     footer {
-      margin-top: 48px;
-      padding-top: 16px;
+      margin-top: 48px; padding-top: 16px;
       border-top: 1px solid var(--border);
-      font-size: 11px;
-      color: var(--muted);
-      text-align: center;
+      font-size: 11px; color: var(--muted); text-align: center;
     }
     dl { margin: 12px 0; }
     dt { font-weight: 700; margin-top: 10px; }
@@ -73,74 +71,266 @@
 </head>
 <body>
 
-<header>
-  <div class="subtitle">Rechtliche Information</div>
-  <h1>Impressum</h1>
-</header>
-
-<p>Diese Angaben gelten für das <strong>RSI VR Tool</strong> — ein Schulungswerkzeug der Fachstelle Verkehrssicherheit des Kantons Zürich zur Ausbildung im Verfahren Road Safety Inspection (RSI).</p>
-
-<h2>Herausgeber</h2>
-<p>
-  <strong>Kanton Zürich</strong><br>
-  Baudirektion<br>
-  Tiefbauamt<br>
-  Fachstelle Verkehrssicherheit (FaSi)<br>
-  Walcheplatz 2, 8090 Zürich, Schweiz
-</p>
-
-<h2>Inhaltliche Verantwortung</h2>
-<div class="kontakt">
-  <strong>Stevan Skeledzic</strong><br>
-  Leiter Verkehrssicherheit / Sicherheitsbeauftragter<br>
-  Tiefbauamt, Baudirektion, Kanton Zürich<br>
-  E-Mail: <a href="mailto:sicherheit.tba@bd.zh.ch">sicherheit.tba@bd.zh.ch</a><br>
-  Telefon: <a href="tel:+41432593120">+41 43 259 31 20</a>
+<div class="topbar">
+  <div class="subtitle" data-i18n="subtitle">Rechtliche Information</div>
+  <div class="lang-switch" role="group" aria-label="Sprache">
+    <button data-lang="de">DE</button>
+    <button data-lang="fr">FR</button>
+    <button data-lang="it">IT</button>
+    <button data-lang="en">EN</button>
+  </div>
 </div>
 
-<h2>Zweck</h2>
-<p>Das Tool dient ausschliesslich der fachlichen Schulung von Inspektionspersonal im Rahmen des TBA-Fachkurses FK RSI (V 16.09.2020) und der Vorbereitung auf die Vor-Ort-Beurteilung von Strasseninfrastruktur. Methodische Grundlage bildet die Norm <strong>SN 641 723</strong> «In-Service Safety Inspection (ISSI) / Road Safety Inspection (RSI)» sowie die weiteren für die RSI relevanten VSS-Normen (insbesondere <strong>VSS 41 722</strong>) und der Werkzeugkasten der Beratungsstelle für Unfallverhütung (bfu).</p>
+<header>
+  <h1 data-i18n="title">Impressum</h1>
+</header>
 
-<h2>Nutzungsbereich</h2>
-<p>Das Werkzeug richtet sich an ausgebildetes Inspektionspersonal sowie an Teilnehmende des FK RSI. Die Nutzung durch Dritte ist nicht vorgesehen. Die im Tool dargestellten Szenen und Bewertungen haben rein didaktischen Charakter und ersetzen keine verbindliche Inspektion.</p>
+<p data-i18n="intro">Diese Angaben gelten für das RSI VR Tool — ein Schulungswerkzeug der Fachstelle Verkehrssicherheit des Kantons Zürich zur Ausbildung im Verfahren Road Safety Inspection (RSI).</p>
 
-<h2>Zugänglichkeitshinweis</h2>
-<p>Das Tool bildet den Vor-Ort-Einsatz der Strasseninspektion ab. Die Tätigkeit der Road Safety Inspection erfordert die Fähigkeit zur selbstständigen Begehung von Verkehrsanlagen, zur visuellen Beurteilung der räumlichen Situation und zum Einsatz immersiver Darstellungstechniken (VR-Headset, 360°-Panoramen). Das Werkzeug ist daher primär auf diese beruflichen Anforderungen ausgelegt und erfüllt die Kriterien der WCAG 2.1 Stufe AA nur so weit, wie es mit diesen Fachanforderungen vereinbar ist.</p>
-<p>Bei Fragen zur Zugänglichkeit oder bei Bedarf an angepassten Materialien wenden Sie sich bitte direkt an die oben genannte Fachstelle.</p>
+<h2 data-i18n="h_herausgeber">Herausgeber</h2>
+<p data-i18n-html="herausgeber"></p>
 
-<h2>Technik und Hosting</h2>
-<dl>
-  <dt>Anwendung</dt>
-  <dd>Progressive Web App (PWA) auf Basis von React, Vite und WebXR.</dd>
-  <dt>Hosting Frontend</dt>
-  <dd>Vercel Inc., San Francisco (USA) — mit europäischen Edge-Nodes.</dd>
-  <dt>Hosting Datenbank</dt>
-  <dd>Supabase Pte. Ltd. (EU-Region für diese Anwendung).</dd>
-  <dt>Quellcode</dt>
-  <dd>Eigenentwicklung FaSi Kanton Zürich. Lizenz intern.</dd>
-</dl>
+<h2 data-i18n="h_verantwortung">Inhaltliche Verantwortung</h2>
+<div class="kontakt" data-i18n-html="verantwortung"></div>
 
-<h2>Urheberrecht</h2>
-<p>Sämtliche Inhalte (Texte, Bilder, Panorama-Aufnahmen, Bewertungsmatrizen) sind urheberrechtlich geschützt. Die Wichtigkeits-Tabelle und die Bewertungsmatrizen basieren auf dem TBA-Fachkurs FK RSI (V 16.09.2020). Eine Nutzung ausserhalb des Schulungskontexts oder eine Weiterverbreitung bedarf der vorherigen schriftlichen Zustimmung des Tiefbauamts Kanton Zürich.</p>
+<h2 data-i18n="h_zweck">Zweck</h2>
+<p data-i18n-html="zweck"></p>
 
-<h2>Haftungsausschluss</h2>
-<p>Die Inhalte dieser Anwendung werden mit grösstmöglicher Sorgfalt erstellt. Trotzdem kann für die Richtigkeit, Vollständigkeit und Aktualität der Inhalte keine Gewähr übernommen werden. Die Nutzung des Werkzeugs erfolgt auf eigene Verantwortung. Eine Haftung für Schäden, die durch die Nutzung oder Nichtnutzung entstehen, ist ausgeschlossen, soweit gesetzlich zulässig.</p>
+<h2 data-i18n="h_nutzung">Nutzungsbereich</h2>
+<p data-i18n="nutzung"></p>
 
-<h2>Anwendbares Recht</h2>
-<p>Schweizerisches Recht. Gerichtsstand Zürich.</p>
+<h2 data-i18n="h_a11y">Zugänglichkeitshinweis</h2>
+<p data-i18n="a11y_1"></p>
+<p data-i18n="a11y_2"></p>
 
-<h2>Weitere Dokumente</h2>
+<h2 data-i18n="h_technik">Technik und Hosting</h2>
+<dl id="dl-technik"></dl>
+
+<h2 data-i18n="h_urheber">Urheberrecht</h2>
+<p data-i18n="urheber"></p>
+
+<h2 data-i18n="h_haftung">Haftungsausschluss</h2>
+<p data-i18n="haftung"></p>
+
+<h2 data-i18n="h_recht">Anwendbares Recht</h2>
+<p data-i18n="recht"></p>
+
+<h2 data-i18n="h_dok">Weitere Dokumente</h2>
 <ul>
-  <li><a href="/datenschutz.html">Datenschutzerklärung</a></li>
-  <li><a href="/glossar.html">Glossar &amp; Abkürzungen</a></li>
-  <li><a href="/">Zurück zur Anwendung</a></li>
+  <li><a href="/datenschutz.html" data-i18n="link_datenschutz">Datenschutzerklärung</a></li>
+  <li><a href="/glossar.html" data-i18n="link_glossar">Glossar &amp; Abkürzungen</a></li>
+  <li><a href="/" data-i18n="link_zurueck">Zurück zur Anwendung</a></li>
 </ul>
 
 <footer>
-  Fachstelle Verkehrssicherheit (FaSi) · Kanton Zürich · RSI VR Tool v0.4.0 · <span id="yr">2026</span>
+  <span data-i18n="footer">Fachstelle Verkehrssicherheit (FaSi) · Kanton Zürich · RSI VR Tool v0.4.0</span> · <span id="yr">2026</span>
 </footer>
 
-<script>document.getElementById('yr').textContent = new Date().getFullYear();</script>
+<script type="application/json" id="i18n-data">
+{
+  "de": {
+    "_html": "de-CH",
+    "_title": "Impressum — RSI VR Tool",
+    "subtitle": "Rechtliche Information",
+    "title": "Impressum",
+    "intro": "Diese Angaben gelten für das RSI VR Tool — ein Schulungswerkzeug der Fachstelle Verkehrssicherheit des Kantons Zürich zur Ausbildung im Verfahren Road Safety Inspection (RSI).",
+    "h_herausgeber": "Herausgeber",
+    "herausgeber": "<strong>Kanton Zürich</strong><br>Baudirektion<br>Tiefbauamt<br>Fachstelle Verkehrssicherheit (FaSi)<br>Walcheplatz 2, 8090 Zürich, Schweiz",
+    "h_verantwortung": "Inhaltliche Verantwortung",
+    "verantwortung": "<strong>Stevan Skeledzic</strong><br>Leiter Verkehrssicherheit / Sicherheitsbeauftragter<br>Tiefbauamt, Baudirektion, Kanton Zürich<br>E-Mail: <a href=\"mailto:sicherheit.tba@bd.zh.ch\">sicherheit.tba@bd.zh.ch</a><br>Telefon: <a href=\"tel:+41432593120\">+41 43 259 31 20</a>",
+    "h_zweck": "Zweck",
+    "zweck": "Das Tool dient ausschliesslich der fachlichen Schulung von Inspektionspersonal im Rahmen des TBA-Fachkurses FK RSI (V 16.09.2020) und der Vorbereitung auf die Vor-Ort-Beurteilung von Strasseninfrastruktur. Methodische Grundlage bildet die Norm <strong>SN 641 723</strong> «In-Service Safety Inspection (ISSI) / Road Safety Inspection (RSI)» sowie die weiteren für die RSI relevanten VSS-Normen (insbesondere <strong>VSS 41 722</strong>) und der Werkzeugkasten der Beratungsstelle für Unfallverhütung (bfu).",
+    "h_nutzung": "Nutzungsbereich",
+    "nutzung": "Das Werkzeug richtet sich an ausgebildetes Inspektionspersonal sowie an Teilnehmende des FK RSI. Die Nutzung durch Dritte ist nicht vorgesehen. Die im Tool dargestellten Szenen und Bewertungen haben rein didaktischen Charakter und ersetzen keine verbindliche Inspektion.",
+    "h_a11y": "Zugänglichkeitshinweis",
+    "a11y_1": "Das Tool bildet den Vor-Ort-Einsatz der Strasseninspektion ab. Die Tätigkeit der Road Safety Inspection erfordert die Fähigkeit zur selbstständigen Begehung von Verkehrsanlagen, zur visuellen Beurteilung der räumlichen Situation und zum Einsatz immersiver Darstellungstechniken (VR-Headset, 360°-Panoramen). Das Werkzeug ist daher primär auf diese beruflichen Anforderungen ausgelegt und erfüllt die Kriterien der WCAG 2.1 Stufe AA nur so weit, wie es mit diesen Fachanforderungen vereinbar ist.",
+    "a11y_2": "Bei Fragen zur Zugänglichkeit oder bei Bedarf an angepassten Materialien wenden Sie sich bitte direkt an die oben genannte Fachstelle.",
+    "h_technik": "Technik und Hosting",
+    "technik": [
+      ["Anwendung", "Progressive Web App (PWA) auf Basis von React, Vite und WebXR."],
+      ["Hosting Frontend", "Vercel Inc., San Francisco (USA) — mit europäischen Edge-Nodes."],
+      ["Hosting Datenbank", "Supabase Pte. Ltd. (EU-Region für diese Anwendung)."],
+      ["Quellcode", "Eigenentwicklung FaSi Kanton Zürich. Lizenz intern."]
+    ],
+    "h_urheber": "Urheberrecht",
+    "urheber": "Sämtliche Inhalte (Texte, Bilder, Panorama-Aufnahmen, Bewertungsmatrizen) sind urheberrechtlich geschützt. Die Wichtigkeits-Tabelle und die Bewertungsmatrizen basieren auf dem TBA-Fachkurs FK RSI (V 16.09.2020). Eine Nutzung ausserhalb des Schulungskontexts oder eine Weiterverbreitung bedarf der vorherigen schriftlichen Zustimmung der Fachstelle Verkehrssicherheit, Tiefbauamt Kanton Zürich.",
+    "h_haftung": "Haftungsausschluss",
+    "haftung": "Die Inhalte dieser Anwendung werden mit grösstmöglicher Sorgfalt erstellt. Trotzdem kann für die Richtigkeit, Vollständigkeit und Aktualität der Inhalte keine Gewähr übernommen werden. Die Nutzung des Werkzeugs erfolgt auf eigene Verantwortung. Eine Haftung für Schäden, die durch die Nutzung oder Nichtnutzung entstehen, ist ausgeschlossen, soweit gesetzlich zulässig.",
+    "h_recht": "Anwendbares Recht",
+    "recht": "Schweizerisches Recht. Gerichtsstand Zürich.",
+    "h_dok": "Weitere Dokumente",
+    "link_datenschutz": "Datenschutzerklärung",
+    "link_glossar": "Glossar & Abkürzungen",
+    "link_zurueck": "Zurück zur Anwendung",
+    "footer": "Fachstelle Verkehrssicherheit (FaSi) · Kanton Zürich · RSI VR Tool v0.4.0"
+  },
+  "fr": {
+    "_html": "fr-CH",
+    "_title": "Mentions légales — Outil RSI VR",
+    "subtitle": "Information juridique",
+    "title": "Mentions légales",
+    "intro": "Ces informations s'appliquent à l'outil RSI VR — un instrument de formation du Service de la sécurité routière du canton de Zurich pour la formation à la procédure Road Safety Inspection (RSI).",
+    "h_herausgeber": "Éditeur",
+    "herausgeber": "<strong>Canton de Zurich</strong><br>Direction des travaux publics<br>Office des ponts et chaussées<br>Service de la sécurité routière (FaSi)<br>Walcheplatz 2, 8090 Zurich, Suisse",
+    "h_verantwortung": "Responsable du contenu",
+    "verantwortung": "<strong>Stevan Skeledzic</strong><br>Chef de la sécurité routière / Responsable de la sécurité<br>Office des ponts et chaussées, Direction des travaux publics, Canton de Zurich<br>E-mail : <a href=\"mailto:sicherheit.tba@bd.zh.ch\">sicherheit.tba@bd.zh.ch</a><br>Téléphone : <a href=\"tel:+41432593120\">+41 43 259 31 20</a>",
+    "h_zweck": "But",
+    "zweck": "L'outil sert exclusivement à la formation technique du personnel d'inspection dans le cadre du cours TBA FK RSI (V 16.09.2020) et à la préparation de l'évaluation sur place de l'infrastructure routière. La base méthodologique est constituée par la norme <strong>SN 641 723</strong> « In-Service Safety Inspection (ISSI) / Road Safety Inspection (RSI) » ainsi que par les autres normes VSS pertinentes pour la RSI (notamment <strong>VSS 41 722</strong>) et la boîte à outils du Bureau de prévention des accidents (bpa).",
+    "h_nutzung": "Champ d'utilisation",
+    "nutzung": "L'outil s'adresse au personnel d'inspection formé ainsi qu'aux participants du FK RSI. L'utilisation par des tiers n'est pas prévue. Les scènes et évaluations présentées ont un caractère purement didactique et ne remplacent aucune inspection officielle.",
+    "h_a11y": "Note d'accessibilité",
+    "a11y_1": "L'outil reproduit l'intervention sur place de l'inspection routière. L'activité de la Road Safety Inspection exige la capacité de parcourir de manière autonome les installations de circulation, d'évaluer visuellement la situation spatiale et de recourir à des techniques de représentation immersives (casque VR, panoramas 360°). L'outil est donc conçu en priorité pour ces exigences professionnelles et satisfait aux critères WCAG 2.1 niveau AA dans la mesure où cela est compatible avec ces exigences techniques.",
+    "a11y_2": "Pour toute question relative à l'accessibilité ou en cas de besoin de matériel adapté, veuillez vous adresser directement au service mentionné ci-dessus.",
+    "h_technik": "Technique et hébergement",
+    "technik": [
+      ["Application", "Progressive Web App (PWA) basée sur React, Vite et WebXR."],
+      ["Hébergement frontend", "Vercel Inc., San Francisco (USA) — avec nœuds Edge européens."],
+      ["Hébergement base de données", "Supabase Pte. Ltd. (région UE pour cette application)."],
+      ["Code source", "Développement propre FaSi Canton de Zurich. Licence interne."]
+    ],
+    "h_urheber": "Droits d'auteur",
+    "urheber": "Tous les contenus (textes, images, prises de vue panoramiques, matrices d'évaluation) sont protégés par le droit d'auteur. Le tableau d'importance et les matrices d'évaluation sont basés sur le cours TBA FK RSI (V 16.09.2020). Toute utilisation hors du contexte de formation ou toute redistribution nécessite l'accord écrit préalable du Service de la sécurité routière, Office des ponts et chaussées du canton de Zurich.",
+    "h_haftung": "Clause de non-responsabilité",
+    "haftung": "Les contenus de cette application sont élaborés avec le plus grand soin. Toutefois, aucune garantie ne peut être donnée quant à l'exactitude, l'exhaustivité et l'actualité des contenus. L'utilisation de l'outil se fait sous la responsabilité de l'utilisateur. Toute responsabilité pour des dommages résultant de l'utilisation ou de la non-utilisation est exclue dans la mesure permise par la loi.",
+    "h_recht": "Droit applicable",
+    "recht": "Droit suisse. Tribunal compétent : Zurich.",
+    "h_dok": "Autres documents",
+    "link_datenschutz": "Politique de confidentialité",
+    "link_glossar": "Glossaire & abréviations",
+    "link_zurueck": "Retour à l'application",
+    "footer": "Service de la sécurité routière (FaSi) · Canton de Zurich · Outil RSI VR v0.4.0"
+  },
+  "it": {
+    "_html": "it-CH",
+    "_title": "Impressum — Strumento RSI VR",
+    "subtitle": "Informazioni legali",
+    "title": "Impressum",
+    "intro": "Queste informazioni si riferiscono allo strumento RSI VR — uno strumento di formazione del Servizio della sicurezza stradale del Canton Zurigo per la formazione nella procedura Road Safety Inspection (RSI).",
+    "h_herausgeber": "Editore",
+    "herausgeber": "<strong>Cantone Zurigo</strong><br>Direzione delle costruzioni<br>Ufficio del genio civile<br>Servizio della sicurezza stradale (FaSi)<br>Walcheplatz 2, 8090 Zurigo, Svizzera",
+    "h_verantwortung": "Responsabilità dei contenuti",
+    "verantwortung": "<strong>Stevan Skeledzic</strong><br>Capo della sicurezza stradale / Responsabile della sicurezza<br>Ufficio del genio civile, Direzione delle costruzioni, Cantone Zurigo<br>E-mail: <a href=\"mailto:sicherheit.tba@bd.zh.ch\">sicherheit.tba@bd.zh.ch</a><br>Telefono: <a href=\"tel:+41432593120\">+41 43 259 31 20</a>",
+    "h_zweck": "Scopo",
+    "zweck": "Lo strumento serve esclusivamente alla formazione tecnica del personale di ispezione nel quadro del corso TBA FK RSI (V 16.09.2020) e alla preparazione della valutazione sul posto dell'infrastruttura stradale. La base metodologica è costituita dalla norma <strong>SN 641 723</strong> «In-Service Safety Inspection (ISSI) / Road Safety Inspection (RSI)» nonché dalle ulteriori norme VSS rilevanti per la RSI (in particolare <strong>VSS 41 722</strong>) e dalla cassetta degli attrezzi dell'Ufficio prevenzione infortuni (upi).",
+    "h_nutzung": "Ambito di utilizzo",
+    "nutzung": "Lo strumento si rivolge al personale di ispezione formato e ai partecipanti al FK RSI. L'utilizzo da parte di terzi non è previsto. Le scene e le valutazioni presentate hanno carattere puramente didattico e non sostituiscono alcuna ispezione ufficiale.",
+    "h_a11y": "Nota sull'accessibilità",
+    "a11y_1": "Lo strumento riproduce l'intervento sul posto dell'ispezione stradale. L'attività della Road Safety Inspection richiede la capacità di percorrere autonomamente gli impianti di circolazione, di valutare visivamente la situazione spaziale e di utilizzare tecniche di rappresentazione immersive (visore VR, panorami 360°). Lo strumento è quindi concepito principalmente per questi requisiti professionali e soddisfa i criteri WCAG 2.1 livello AA nella misura in cui ciò è compatibile con tali requisiti tecnici.",
+    "a11y_2": "Per qualsiasi domanda relativa all'accessibilità o in caso di necessità di materiali adattati, vi preghiamo di rivolgervi direttamente al servizio sopra menzionato.",
+    "h_technik": "Tecnica e hosting",
+    "technik": [
+      ["Applicazione", "Progressive Web App (PWA) basata su React, Vite e WebXR."],
+      ["Hosting frontend", "Vercel Inc., San Francisco (USA) — con nodi Edge europei."],
+      ["Hosting database", "Supabase Pte. Ltd. (regione UE per questa applicazione)."],
+      ["Codice sorgente", "Sviluppo proprio FaSi Cantone Zurigo. Licenza interna."]
+    ],
+    "h_urheber": "Diritti d'autore",
+    "urheber": "Tutti i contenuti (testi, immagini, riprese panoramiche, matrici di valutazione) sono protetti dal diritto d'autore. La tabella d'importanza e le matrici di valutazione si basano sul corso TBA FK RSI (V 16.09.2020). Qualsiasi utilizzo al di fuori del contesto formativo o qualsiasi ridistribuzione richiede il previo consenso scritto del Servizio della sicurezza stradale, Ufficio del genio civile del Canton Zurigo.",
+    "h_haftung": "Esclusione di responsabilità",
+    "haftung": "I contenuti di questa applicazione sono elaborati con la massima cura. Tuttavia, non può essere fornita alcuna garanzia in merito all'esattezza, completezza e attualità dei contenuti. L'utilizzo dello strumento avviene sotto la responsabilità dell'utente. Ogni responsabilità per danni derivanti dall'uso o dal mancato uso è esclusa nella misura consentita dalla legge.",
+    "h_recht": "Diritto applicabile",
+    "recht": "Diritto svizzero. Foro competente: Zurigo.",
+    "h_dok": "Altri documenti",
+    "link_datenschutz": "Informativa sulla privacy",
+    "link_glossar": "Glossario e abbreviazioni",
+    "link_zurueck": "Torna all'applicazione",
+    "footer": "Servizio della sicurezza stradale (FaSi) · Cantone Zurigo · Strumento RSI VR v0.4.0"
+  },
+  "en": {
+    "_html": "en",
+    "_title": "Imprint — RSI VR Tool",
+    "subtitle": "Legal information",
+    "title": "Imprint",
+    "intro": "This information applies to the RSI VR Tool — a training instrument of the Road Safety Office of the Canton of Zurich for training in the Road Safety Inspection (RSI) procedure.",
+    "h_herausgeber": "Publisher",
+    "herausgeber": "<strong>Canton of Zurich</strong><br>Department of Public Works<br>Department of Civil Engineering<br>Road Safety Office (FaSi)<br>Walcheplatz 2, 8090 Zurich, Switzerland",
+    "h_verantwortung": "Content responsibility",
+    "verantwortung": "<strong>Stevan Skeledzic</strong><br>Head of Road Safety / Safety Officer<br>Department of Civil Engineering, Department of Public Works, Canton of Zurich<br>Email: <a href=\"mailto:sicherheit.tba@bd.zh.ch\">sicherheit.tba@bd.zh.ch</a><br>Phone: <a href=\"tel:+41432593120\">+41 43 259 31 20</a>",
+    "h_zweck": "Purpose",
+    "zweck": "The tool serves exclusively for the technical training of inspection personnel in the framework of the TBA training course FK RSI (V 16.09.2020) and for the preparation of on-site assessment of road infrastructure. The methodological basis is the standard <strong>SN 641 723</strong> «In-Service Safety Inspection (ISSI) / Road Safety Inspection (RSI)» as well as the other VSS standards relevant to RSI (in particular <strong>VSS 41 722</strong>) and the toolbox of the Swiss Council for Accident Prevention (bfu).",
+    "h_nutzung": "Scope of use",
+    "nutzung": "The tool is intended for trained inspection personnel and participants of the FK RSI. Use by third parties is not intended. The scenes and assessments shown in the tool have a purely didactic character and do not replace any binding inspection.",
+    "h_a11y": "Accessibility note",
+    "a11y_1": "The tool reproduces the on-site work of road inspection. The activity of Road Safety Inspection requires the ability to independently inspect traffic facilities, to visually assess the spatial situation, and to use immersive presentation techniques (VR headset, 360° panoramas). The tool is therefore primarily designed for these professional requirements and meets the criteria of WCAG 2.1 Level AA only insofar as this is compatible with these technical requirements.",
+    "a11y_2": "For any questions about accessibility or if you need adapted materials, please contact the office mentioned above directly.",
+    "h_technik": "Technology and hosting",
+    "technik": [
+      ["Application", "Progressive Web App (PWA) based on React, Vite and WebXR."],
+      ["Frontend hosting", "Vercel Inc., San Francisco (USA) — with European Edge nodes."],
+      ["Database hosting", "Supabase Pte. Ltd. (EU region for this application)."],
+      ["Source code", "In-house development FaSi Canton of Zurich. Internal licence."]
+    ],
+    "h_urheber": "Copyright",
+    "urheber": "All content (texts, images, panorama recordings, assessment matrices) is protected by copyright. The importance table and assessment matrices are based on the TBA training course FK RSI (V 16.09.2020). Any use outside the training context or any redistribution requires the prior written consent of the Road Safety Office, Department of Civil Engineering, Canton of Zurich.",
+    "h_haftung": "Disclaimer",
+    "haftung": "The content of this application is prepared with the greatest possible care. Nevertheless, no guarantee can be given for the accuracy, completeness and timeliness of the content. Use of the tool is at the user's own risk. Liability for damages resulting from use or non-use is excluded to the extent permitted by law.",
+    "h_recht": "Applicable law",
+    "recht": "Swiss law. Place of jurisdiction: Zurich.",
+    "h_dok": "Further documents",
+    "link_datenschutz": "Privacy policy",
+    "link_glossar": "Glossary & abbreviations",
+    "link_zurueck": "Back to the application",
+    "footer": "Road Safety Office (FaSi) · Canton of Zurich · RSI VR Tool v0.4.0"
+  }
+}
+</script>
+
+<script>
+(function () {
+  var data = JSON.parse(document.getElementById('i18n-data').textContent);
+
+  function pickLang() {
+    var url = new URLSearchParams(window.location.search).get('lang');
+    if (url && data[url]) return url;
+    var stored = (localStorage.getItem('i18nextLng') || '').slice(0, 2).toLowerCase();
+    if (stored && data[stored]) return stored;
+    var nav = (navigator.language || 'de').slice(0, 2).toLowerCase();
+    if (data[nav]) return nav;
+    return 'de';
+  }
+
+  function render(lang) {
+    var t = data[lang];
+    if (!t) return;
+
+    document.documentElement.setAttribute('lang', t._html);
+    document.title = t._title;
+
+    document.querySelectorAll('[data-i18n]').forEach(function (el) {
+      var key = el.getAttribute('data-i18n');
+      if (t[key] != null) el.textContent = t[key];
+    });
+    document.querySelectorAll('[data-i18n-html]').forEach(function (el) {
+      var key = el.getAttribute('data-i18n-html');
+      if (t[key] != null) el.innerHTML = t[key];
+    });
+
+    var dl = document.getElementById('dl-technik');
+    dl.innerHTML = (t.technik || []).map(function (pair) {
+      return '<dt>' + pair[0] + '</dt><dd>' + pair[1] + '</dd>';
+    }).join('');
+
+    document.querySelectorAll('.lang-switch button').forEach(function (b) {
+      b.classList.toggle('active', b.getAttribute('data-lang') === lang);
+    });
+
+    var url = new URL(window.location.href);
+    url.searchParams.set('lang', lang);
+    history.replaceState(null, '', url.toString());
+
+    try { localStorage.setItem('i18nextLng', lang); } catch (e) {}
+  }
+
+  document.querySelectorAll('.lang-switch button').forEach(function (b) {
+    b.addEventListener('click', function () { render(b.getAttribute('data-lang')); });
+  });
+
+  var yr = document.getElementById('yr');
+  if (yr) yr.textContent = new Date().getFullYear();
+
+  render(pickLang());
+})();
+</script>
 
 </body>
 </html>
