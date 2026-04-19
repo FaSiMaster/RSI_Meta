@@ -321,7 +321,7 @@ const DEFAULT_SCENES: AppScene[] = [
     "vorschauBilder": [],
     "vorschauBild1": null,
     "vorschauBild2": null,
-    "panoramaBildUrl": "/textures/street-360.jpg"
+    "panoramaBildUrl": null
   },
   {
     "id": "sc2",
@@ -338,7 +338,7 @@ const DEFAULT_SCENES: AppScene[] = [
     "vorschauBilder": [],
     "vorschauBild1": null,
     "vorschauBild2": null,
-    "panoramaBildUrl": "/textures/sc2.webp"
+    "panoramaBildUrl": null
   },
   {
     "id": "sc3",
@@ -355,7 +355,7 @@ const DEFAULT_SCENES: AppScene[] = [
     "vorschauBilder": [],
     "vorschauBild1": null,
     "vorschauBild2": null,
-    "panoramaBildUrl": "/textures/sc3.webp"
+    "panoramaBildUrl": null
   },
   {
     "id": "sc4",
@@ -372,7 +372,7 @@ const DEFAULT_SCENES: AppScene[] = [
     "vorschauBilder": [],
     "vorschauBild1": null,
     "vorschauBild2": null,
-    "panoramaBildUrl": "/textures/sc4.webp"
+    "panoramaBildUrl": null
   },
   {
     "id": "sc-1774784383797",
@@ -384,7 +384,7 @@ const DEFAULT_SCENES: AppScene[] = [
     "vorschauBilder": [],
     "vorschauBild1": null,
     "vorschauBild2": null,
-    "panoramaBildUrl": "/textures/test-voreinbau.webp",
+    "panoramaBildUrl": null,
     "startblick": null,
     "isActive": true
   }

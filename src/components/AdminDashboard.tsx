@@ -3,7 +3,7 @@
 // Themen: Hierarchie-Ansicht + Thema-Modal
 // Kurse: Kurs-Tabelle + Kurs-Modal
 
-import { Plus, Pencil, Trash2, X, Save, ChevronDown, ChevronRight, ChevronUp, Download, Upload, Eye, EyeOff, Wrench } from 'lucide-react'
+import { Plus, Pencil, Trash2, X, Save, ChevronDown, ChevronRight, ChevronUp, Download, Upload, Eye, EyeOff } from 'lucide-react'
 import { useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import {
@@ -22,7 +22,6 @@ import BildEditor from './admin/BildEditor'
 import { STRASSENMERKMALE_KATALOG } from '../data/strassenmerkmale'
 import BildUpload from './admin/BildUpload'
 import AdminRanking from './admin/AdminRanking'
-import { repairDefaultScenePanoramas } from '../data/supabaseSync'
 
 // ── Badge-Farben ──
 function riskBg(w: RSIDimension): { bg: string; color: string; label: string } {
@@ -635,21 +634,6 @@ export default function AdminDashboard() {
               style={{ display: 'none' }}
               onChange={e => { if (e.target.files?.[0]) { handleImport(e.target.files[0]); e.target.value = '' } }}
             />
-            <button
-              onClick={async () => {
-                const r = await repairDefaultScenePanoramas()
-                const txt = r.repaired.length > 0
-                  ? `Bilder repariert: ${r.repaired.join(', ')}`
-                  : 'Keine Reparatur nötig — alle Default-Szenen haben bereits ein Bild.'
-                setImportFeedback(txt)
-                setTimeout(() => setImportFeedback(null), 5000)
-                setScenes(getScenes(selectedTopic?.id ?? ''))
-              }}
-              title="Setzt für sc1–sc4 die passenden Panorama-Bilder, falls leer"
-              style={{ display: 'flex', alignItems: 'center', gap: '5px', padding: '7px 14px', borderRadius: '20px', fontSize: '12px', fontWeight: 600, border: '1px solid var(--zh-color-border)', background: 'var(--zh-color-surface)', color: 'var(--zh-color-text-muted)', cursor: 'pointer' }}
-            >
-              <Wrench size={12} /> Bilder reparieren
-            </button>
             <button
               onClick={() => importInputRef.current?.click()}
               style={{ display: 'flex', alignItems: 'center', gap: '5px', padding: '7px 14px', borderRadius: '20px', fontSize: '12px', fontWeight: 600, border: '1px solid var(--zh-color-border)', background: 'var(--zh-color-surface)', color: 'var(--zh-color-text-muted)', cursor: 'pointer' }}
@@ -1669,7 +1653,6 @@ function VorschaubildEditor({
             szeneId={`${szeneId}-vorschau`}
             aktuelleUrl={value && value !== 'panorama' ? value : null}
             onBildGeladen={(url) => onBildGeladen(url)}
-            maxBreite={400}
           />
         </div>
       )}

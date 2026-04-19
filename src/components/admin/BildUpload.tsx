@@ -1,66 +1,49 @@
-// BildUpload.tsx – Panoramabild-Upload-Komponente
-// Empfohlener Weg: /textures/dateiname.webp (Vercel CDN)
-// Alternativ: lokale Datei als base64 (nur für kleine Test-Bilder)
+// BildUpload.tsx — Panorama-Bild-Auswahl gegen Supabase Storage
+//
+// Zwei Modi:
+//   1. Bibliothek — listet alle Bilder im rsi-textures-Bucket auf, klicken
+//      uebernimmt die Public-URL.
+//   2. Hochladen — Drag&Drop oder File-Picker laedt direkt in den Bucket
+//      und gibt die neue Public-URL zurueck.
+//
+// Es wird kein base64 mehr im localStorage gespeichert. Single Source ist
+// Supabase Storage.
 
 import { useEffect, useRef, useState, useCallback } from 'react'
-import { Upload, FolderOpen, Link } from 'lucide-react'
+import { Upload, FolderOpen, Library, Trash2, RefreshCw } from 'lucide-react'
+import {
+  uploadPanorama,
+  listPanoramas,
+  deletePanorama,
+  extractStorageName,
+  isStorageUrl,
+  formatStorageDate,
+  formatStorageSize,
+  type StorageImage,
+} from '../../lib/supabaseStorage'
 
 interface Props {
   szeneId:       string
   aktuelleUrl?:  string | null
-  onBildGeladen: (bildData: string, breite: number, hoehe: number) => void
-  // Maximale Breite für base64-Bilder (wird automatisch runterskaliert)
-  // Default: 0 = keine Komprimierung (Panorama). Für Vorschaubilder z.B. 400
-  maxBreite?:    number
+  onBildGeladen: (bildUrl: string, breite: number, hoehe: number) => void
 }
 
 type Phase = 'auswahl' | 'laden' | 'vorschau' | 'fehler'
-type Modus = 'pfad' | 'datei'
+type Modus = 'bibliothek' | 'hochladen'
 
-// Bekannte Texturen in public/textures/
-const VERFUEGBARE_TEXTUREN = [
-  'street-360.jpg',
-  'sc1.webp',
-  'sc2.webp',
-  'sc3.webp',
-  'sc4.webp',
-  '5.webp',
-]
-
-// Bild auf Canvas verkleinern und als JPEG base64 zurückgeben
-function komprimiereBild(dataUrl: string, maxBreite: number): Promise<{ url: string; breite: number; hoehe: number }> {
-  return new Promise((resolve, reject) => {
-    const img = new Image()
-    img.onload = () => {
-      let w = img.naturalWidth
-      let h = img.naturalHeight
-      if (w > maxBreite) {
-        h = Math.round(h * (maxBreite / w))
-        w = maxBreite
-      }
-      const canvas = document.createElement('canvas')
-      canvas.width = w
-      canvas.height = h
-      const ctx = canvas.getContext('2d')
-      if (!ctx) { reject(new Error('Canvas nicht verfügbar')); return }
-      ctx.drawImage(img, 0, 0, w, h)
-      const url = canvas.toDataURL('image/jpeg', 0.7)
-      resolve({ url, breite: w, hoehe: h })
-    }
-    img.onerror = () => reject(new Error('Bild konnte nicht geladen werden'))
-    img.src = dataUrl
-  })
-}
-
-export default function BildUpload({ aktuelleUrl, onBildGeladen, maxBreite = 0 }: Props) {
-  const [phase, setPhase]               = useState<Phase>('auswahl')
-  const [fehlerText, setFehlerText]     = useState<string | null>(null)
-  const [vorschauUrl, setVorschauUrl]   = useState<string | null>(null)
+export default function BildUpload({ aktuelleUrl, onBildGeladen }: Props) {
+  const [phase, setPhase]                   = useState<Phase>('auswahl')
+  const [modus, setModus]                   = useState<Modus>('bibliothek')
+  const [fehlerText, setFehlerText]         = useState<string | null>(null)
+  const [vorschauUrl, setVorschauUrl]       = useState<string | null>(null)
+  const [vorschauName, setVorschauName]     = useState<string | null>(null)
   const [vorschauBreite, setVorschauBreite] = useState<number>(0)
   const [vorschauHoehe, setVorschauHoehe]   = useState<number>(0)
-  const [urlInput, setUrlInput]         = useState<string>('')
-  const [isDragOver, setIsDragOver]     = useState<boolean>(false)
-  const [modus, setModus]               = useState<Modus>('pfad')
+  const [isDragOver, setIsDragOver]         = useState<boolean>(false)
+  const [bibliothek, setBibliothek]         = useState<StorageImage[]>([])
+  const [bibLaedt, setBibLaedt]             = useState<boolean>(false)
+  const [statusText, setStatusText]         = useState<string | null>(null)
+  const [eigenerName, setEigenerName]       = useState<string>('')
 
   const fileInputRef = useRef<HTMLInputElement>(null)
 
@@ -69,70 +52,79 @@ export default function BildUpload({ aktuelleUrl, onBildGeladen, maxBreite = 0 }
     setPhase('fehler')
   }
 
-  const ladeVorschau = useCallback((src: string) => {
+  // Bibliothek laden
+  const ladeBibliothek = useCallback(async () => {
+    setBibLaedt(true)
+    const list = await listPanoramas()
+    setBibliothek(list)
+    setBibLaedt(false)
+  }, [])
+
+  useEffect(() => {
+    if (modus === 'bibliothek') ladeBibliothek()
+  }, [modus, ladeBibliothek])
+
+  // Vorschau laden (URL → Image-Maße ermitteln, dann Phase = vorschau)
+  const ladeVorschau = useCallback((src: string, name?: string) => {
     setPhase('laden')
     const img = new Image()
     img.onload = () => {
       setVorschauUrl(src)
+      setVorschauName(name ?? extractStorageName(src) ?? null)
       setVorschauBreite(img.naturalWidth)
       setVorschauHoehe(img.naturalHeight)
       setPhase('vorschau')
     }
     img.onerror = () => {
-      setFehlerText('Das Bild konnte nicht geladen werden.')
+      setFehlerText('Bild konnte nicht geladen werden. URL pruefen oder neu hochladen.')
       setPhase('fehler')
     }
     img.src = src
   }, [])
 
+  // Aktuelle URL beim Mount in Vorschau
   useEffect(() => {
     if (aktuelleUrl) ladeVorschau(aktuelleUrl)
   }, [aktuelleUrl, ladeVorschau])
 
-  function handleDatei(datei: File) {
-    const erlaubteTypen = ['image/jpeg', 'image/png', 'image/webp']
-    if (!erlaubteTypen.includes(datei.type)) {
-      zeigeError('Dieses Dateiformat wird nicht unterstützt. Erlaubt sind JPG, PNG und WEBP.')
+  // Datei hochladen
+  async function handleDatei(datei: File) {
+    setPhase('laden')
+    setStatusText(`Hochladen: ${datei.name} (${(datei.size / 1024 / 1024).toFixed(1)} MB) ...`)
+
+    const result = await uploadPanorama(datei, eigenerName.trim() || undefined)
+    setStatusText(null)
+
+    if (!result.ok) {
+      zeigeError(result.reason)
       return
     }
-    if (datei.size > 20 * 1024 * 1024) {
-      zeigeError('Das Bild ist zu gross. Maximale Dateigrösse: 20 MB.')
+
+    setEigenerName('')
+    // Bibliothek aktualisieren, dann in Vorschau
+    await ladeBibliothek()
+    ladeVorschau(result.image.url, result.image.name)
+  }
+
+  // Aus Bibliothek waehlen
+  function handleBibliothekWahl(img: StorageImage) {
+    ladeVorschau(img.url, img.name)
+  }
+
+  // Aus Bibliothek loeschen (mit Bestaetigung)
+  async function handleBibliothekDelete(img: StorageImage) {
+    if (!window.confirm(`Bild «${img.name}» dauerhaft aus dem Bucket loeschen?\n\nHinweis: Szenen die auf dieses Bild verweisen werden bilder­los.`)) return
+    const r = await deletePanorama(img.name)
+    if (!r.ok) {
+      zeigeError(`Loeschen fehlgeschlagen: ${r.reason ?? 'unbekannt'}`)
       return
     }
-    const reader = new FileReader()
-    reader.onload = async e => {
-      const dataUrl = e.target?.result as string
-      if (maxBreite > 0) {
-        // Automatisch verkleinern für localStorage
-        try {
-          const { url } = await komprimiereBild(dataUrl, maxBreite)
-          ladeVorschau(url)
-        } catch {
-          zeigeError('Bild konnte nicht komprimiert werden.')
-        }
-      } else {
-        ladeVorschau(dataUrl)
-      }
-    }
-    reader.readAsDataURL(datei)
+    await ladeBibliothek()
   }
 
-  function handleUrlLaden() {
-    const val = urlInput.trim()
-    if (!val) return
-    ladeVorschau(val)
-  }
-
-  function handleTexturWählen(name: string) {
-    const pfad = `/textures/${name}`
-    setUrlInput(pfad)
-    ladeVorschau(pfad)
-  }
-
-  // Seitenverhältnis-Warnung (mehr als 10% Abweichung von 2:1)
+  // Seitenverhältnis-Warnung
   const seitenverhältnis = vorschauBreite > 0 && vorschauHoehe > 0
-    ? vorschauBreite / vorschauHoehe
-    : null
+    ? vorschauBreite / vorschauHoehe : null
   const zeigeVerhältnisWarnung = seitenverhältnis !== null
     && Math.abs(seitenverhältnis - 2.0) / 2.0 > 0.1
 
@@ -196,7 +188,7 @@ export default function BildUpload({ aktuelleUrl, onBildGeladen, maxBreite = 0 }
   if (phase === 'laden') {
     return (
       <div style={{ padding: '32px', textAlign: 'center', color: 'var(--zh-color-text-disabled)', fontSize: '13px', border: '1px dashed var(--zh-color-border)', borderRadius: '8px' }}>
-        Panoramabild wird geladen...
+        {statusText ?? 'Panorama-Bild wird geladen...'}
       </div>
     )
   }
@@ -205,11 +197,11 @@ export default function BildUpload({ aktuelleUrl, onBildGeladen, maxBreite = 0 }
   if (phase === 'fehler') {
     return (
       <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-        <div style={{ padding: '14px 16px', background: 'rgba(212,0,83,0.07)', border: '1px solid rgba(212,0,83,0.25)', borderRadius: '8px', color: '#D40053', fontSize: '13px' }}>
+        <div role="alert" aria-live="polite" style={{ padding: '14px 16px', background: 'rgba(212,0,83,0.07)', border: '1px solid rgba(212,0,83,0.25)', borderRadius: '8px', color: '#D40053', fontSize: '13px' }}>
           {fehlerText}
         </div>
         <button onClick={() => { setPhase('auswahl'); setFehlerText(null) }} style={btnSekundaerStyle}>
-          Anderes Bild wählen
+          Anderes Bild waehlen
         </button>
       </div>
     )
@@ -217,40 +209,44 @@ export default function BildUpload({ aktuelleUrl, onBildGeladen, maxBreite = 0 }
 
   // ── Phase: Vorschau ──
   if (phase === 'vorschau' && vorschauUrl) {
+    const istStorage = isStorageUrl(vorschauUrl)
     return (
       <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
         <div style={{ border: '1px solid var(--zh-color-border)', borderRadius: '8px', overflow: 'hidden', background: '#111', display: 'flex', alignItems: 'center', justifyContent: 'center', maxHeight: '200px' }}>
           <img src={vorschauUrl} alt="Vorschau" style={{ maxHeight: '200px', width: '100%', objectFit: 'contain' }} />
         </div>
+
         {pixelText && (
           <p style={{ fontSize: '12px', color: 'var(--zh-color-text-muted)', margin: 0 }}>{pixelText}</p>
         )}
-        {/* Pfad-Anzeige wenn kein base64 */}
-        {!vorschauUrl.startsWith('data:') && (
-          <p style={{ fontSize: '12px', color: 'var(--zh-blau)', margin: 0, fontFamily: 'monospace' }}>
-            {vorschauUrl}
+
+        {vorschauName && (
+          <p style={{ fontSize: '12px', color: istStorage ? '#1A7F1F' : '#B87300', margin: 0, fontFamily: 'monospace' }}>
+            {istStorage ? 'Supabase' : 'Extern'}: {vorschauName}
           </p>
         )}
-        {/* base64-Info */}
-        {vorschauUrl.startsWith('data:') && (
-          <div style={{ padding: '10px 14px', background: maxBreite > 0 ? 'rgba(26,127,31,0.07)' : 'rgba(184,115,0,0.08)', border: `1px solid ${maxBreite > 0 ? 'rgba(26,127,31,0.3)' : 'rgba(184,115,0,0.3)'}`, borderRadius: '6px', fontSize: '12px', color: maxBreite > 0 ? '#1A7F1F' : '#B87300', lineHeight: 1.5 }}>
-            {maxBreite > 0
-              ? `Bild wird automatisch auf max. ${maxBreite}px Breite komprimiert (JPEG 70%).`
-              : <>Lokale Datei: Nur für Tests geeignet. Für Produktion Bild in <code style={{ margin: '0 4px', fontFamily: 'monospace' }}>public/textures/</code> ablegen.</>
-            }
+
+        {!istStorage && vorschauUrl && (
+          <div style={{ padding: '10px 14px', background: 'rgba(184,115,0,0.08)', border: '1px solid rgba(184,115,0,0.3)', borderRadius: '6px', fontSize: '12px', color: '#B87300', lineHeight: 1.5 }}>
+            Hinweis: Diese URL liegt nicht im Supabase-Bucket. Empfehlung: ueber «Hochladen» in die Bibliothek bringen, damit alle Bilder zentral verwaltet sind.
           </div>
         )}
+
         {zeigeVerhältnisWarnung && (
           <div style={{ padding: '10px 14px', background: 'rgba(184,115,0,0.08)', border: '1px solid rgba(184,115,0,0.3)', borderRadius: '6px', fontSize: '12px', color: '#B87300', lineHeight: 1.5 }}>
-            Hinweis: Panoramabilder haben üblicherweise das Seitenverhältnis 2:1. Dieses Bild weicht davon ab.
+            Hinweis: Panorama-Bilder haben ueblicherweise das Seitenverhaeltnis 2:1. Dieses Bild weicht davon ab.
           </div>
         )}
+
         <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
           <button onClick={() => onBildGeladen(vorschauUrl, vorschauBreite, vorschauHoehe)} style={btnPrimaerStyle}>
             Bild verwenden
           </button>
-          <button onClick={() => { setPhase('auswahl'); setVorschauUrl(null); setVorschauBreite(0); setVorschauHoehe(0) }} style={btnSekundaerStyle}>
-            Anderes Bild wählen
+          <button
+            onClick={() => { setPhase('auswahl'); setVorschauUrl(null); setVorschauName(null); setVorschauBreite(0); setVorschauHoehe(0) }}
+            style={btnSekundaerStyle}
+          >
+            Anderes Bild waehlen
           </button>
         </div>
       </div>
@@ -263,68 +259,113 @@ export default function BildUpload({ aktuelleUrl, onBildGeladen, maxBreite = 0 }
 
       {/* Modus-Tabs */}
       <div style={{ display: 'flex', gap: '6px' }}>
-        <button style={tabStyle(modus === 'pfad')} onClick={() => setModus('pfad')}>
-          <Link size={11} /> Vercel-Pfad
+        <button style={tabStyle(modus === 'bibliothek')} onClick={() => setModus('bibliothek')}>
+          <Library size={11} /> Bibliothek
         </button>
-        <button style={tabStyle(modus === 'datei')} onClick={() => setModus('datei')}>
-          <FolderOpen size={11} /> Lokale Datei
+        <button style={tabStyle(modus === 'hochladen')} onClick={() => setModus('hochladen')}>
+          <Upload size={11} /> Hochladen
         </button>
       </div>
 
-      {/* ── Modus: Pfad (empfohlen) ── */}
-      {modus === 'pfad' && (
+      {/* ── Modus: Bibliothek ── */}
+      {modus === 'bibliothek' && (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
 
-          {/* Info-Banner */}
-          <div style={{ padding: '10px 14px', background: 'rgba(0,118,189,0.07)', border: '1px solid rgba(0,118,189,0.2)', borderRadius: '6px', fontSize: '12px', color: 'var(--zh-color-text-muted)', lineHeight: 1.6 }}>
-            Bild in <code style={{ color: 'var(--zh-blau)', fontFamily: 'monospace' }}>public/textures/</code> ablegen
-            → committen → Pfad hier eingeben. Bilder sind dann auf allen Geräten verfügbar.
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '8px' }}>
+            <p style={{ fontSize: '11px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.1em', color: 'var(--zh-color-text-disabled)', margin: 0 }}>
+              Bilder im Supabase-Bucket {bibliothek.length > 0 && `(${bibliothek.length})`}
+            </p>
+            <button
+              onClick={ladeBibliothek}
+              disabled={bibLaedt}
+              title="Bibliothek neu laden"
+              style={{ display: 'flex', alignItems: 'center', gap: '4px', padding: '4px 8px', borderRadius: '6px', border: '1px solid var(--zh-color-border)', background: 'var(--zh-color-bg-secondary)', fontSize: '11px', color: 'var(--zh-color-text-muted)', cursor: bibLaedt ? 'wait' : 'pointer', opacity: bibLaedt ? 0.5 : 1 }}
+            >
+              <RefreshCw size={10} /> Aktualisieren
+            </button>
           </div>
 
-          {/* Verfuegbare Texturen */}
-          {VERFUEGBARE_TEXTUREN.length > 0 && (
-            <div>
-              <p style={{ fontSize: '11px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.1em', color: 'var(--zh-color-text-disabled)', marginBottom: '6px' }}>
-                Verfügbar in /textures/
-              </p>
-              <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
-                {VERFUEGBARE_TEXTUREN.map(name => (
-                  <button
-                    key={name}
-                    onClick={() => handleTexturWählen(name)}
-                    style={{ padding: '4px 10px', borderRadius: '5px', border: '1px solid var(--zh-color-border)', background: 'var(--zh-color-bg-secondary)', fontSize: '12px', color: 'var(--zh-blau)', cursor: 'pointer', fontFamily: 'monospace' }}
-                  >
-                    {name}
-                  </button>
-                ))}
-              </div>
+          {bibLaedt && (
+            <div style={{ padding: '24px', textAlign: 'center', color: 'var(--zh-color-text-disabled)', fontSize: '13px', border: '1px dashed var(--zh-color-border)', borderRadius: '8px' }}>
+              Bibliothek wird geladen...
             </div>
           )}
 
-          {/* URL-Eingabe */}
-          <div style={{ display: 'flex', gap: '8px' }}>
-            <input
-              value={urlInput}
-              onChange={e => setUrlInput(e.target.value)}
-              placeholder="/textures/mein-panorama.webp"
-              onKeyDown={e => { if (e.key === 'Enter') handleUrlLaden() }}
-              style={{ ...inputStyle, flex: 1 }}
-            />
-            <button onClick={handleUrlLaden} style={{ ...btnPrimaerStyle }}>
-              Laden
-            </button>
-          </div>
+          {!bibLaedt && bibliothek.length === 0 && (
+            <div style={{ padding: '24px', textAlign: 'center', color: 'var(--zh-color-text-muted)', fontSize: '13px', border: '1px dashed var(--zh-color-border)', borderRadius: '8px', lineHeight: 1.6 }}>
+              Noch keine Bilder im Bucket.<br />
+              Wechsle zu <strong>Hochladen</strong>, um das erste Panorama zu speichern.
+            </div>
+          )}
+
+          {!bibLaedt && bibliothek.length > 0 && (
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(140px, 1fr))', gap: '8px', maxHeight: '320px', overflowY: 'auto', padding: '4px' }}>
+              {bibliothek.map(img => (
+                <div
+                  key={img.name}
+                  style={{
+                    border: '1px solid var(--zh-color-border)',
+                    borderRadius: '8px',
+                    overflow: 'hidden',
+                    background: 'var(--zh-color-bg-secondary)',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    cursor: 'pointer',
+                    transition: 'border-color 0.15s, transform 0.15s',
+                  }}
+                  onMouseEnter={e => { e.currentTarget.style.borderColor = 'var(--zh-blau)'; e.currentTarget.style.transform = 'translateY(-1px)' }}
+                  onMouseLeave={e => { e.currentTarget.style.borderColor = 'var(--zh-color-border)'; e.currentTarget.style.transform = 'translateY(0)' }}
+                  onClick={() => handleBibliothekWahl(img)}
+                  title={`${img.name}\n${formatStorageDate(img.createdAt)}\n${formatStorageSize(img.size)}`}
+                >
+                  <div style={{ aspectRatio: '2 / 1', background: '#111', display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden' }}>
+                    <img src={img.url} alt={img.name} loading="lazy" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                  </div>
+                  <div style={{ padding: '6px 8px', display: 'flex', flexDirection: 'column', gap: '2px' }}>
+                    <span style={{ fontSize: '11px', fontWeight: 600, color: 'var(--zh-color-text)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                      {img.name}
+                    </span>
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '4px' }}>
+                      <span style={{ fontSize: '10px', color: 'var(--zh-color-text-disabled)' }}>
+                        {formatStorageSize(img.size)}
+                      </span>
+                      <button
+                        onClick={e => { e.stopPropagation(); handleBibliothekDelete(img) }}
+                        title="Aus Bucket loeschen"
+                        aria-label={`Bild ${img.name} loeschen`}
+                        style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#D40053', padding: '2px', display: 'flex', alignItems: 'center' }}
+                      >
+                        <Trash2 size={11} />
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
       )}
 
-      {/* ── Modus: Lokale Datei ── */}
-      {modus === 'datei' && (
+      {/* ── Modus: Hochladen ── */}
+      {modus === 'hochladen' && (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
 
-          {/* Warnung */}
-          <div style={{ padding: '10px 14px', background: 'rgba(184,115,0,0.07)', border: '1px solid rgba(184,115,0,0.25)', borderRadius: '6px', fontSize: '12px', color: '#B87300', lineHeight: 1.6 }}>
-            Lokale Dateien werden als base64 in localStorage gespeichert — nur für Tests geeignet.
-            Für Produktion Pfad-Modus verwenden.
+          <div style={{ padding: '10px 14px', background: 'rgba(0,118,189,0.07)', border: '1px solid rgba(0,118,189,0.2)', borderRadius: '6px', fontSize: '12px', color: 'var(--zh-color-text-muted)', lineHeight: 1.6 }}>
+            Datei wird direkt in den Supabase-Bucket <code style={{ color: 'var(--zh-blau)', fontFamily: 'monospace' }}>rsi-textures</code> geladen.
+            Sie ist anschliessend in der <strong>Bibliothek</strong> fuer alle Szenen verfuegbar.
+          </div>
+
+          {/* Optionaler eigener Name */}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+            <label style={{ fontSize: '11px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.1em', color: 'var(--zh-color-text-disabled)' }}>
+              Eigener Datei-Name (optional)
+            </label>
+            <input
+              value={eigenerName}
+              onChange={e => setEigenerName(e.target.value)}
+              placeholder="z.B. SZ_001_Hauptperspektive  (Endung wird automatisch ergaenzt)"
+              style={inputStyle}
+            />
           </div>
 
           {/* Verstecktes File-Input */}
@@ -341,7 +382,7 @@ export default function BildUpload({ aktuelleUrl, onBildGeladen, maxBreite = 0 }
             onDragOver={e => { e.preventDefault(); setIsDragOver(true) }}
             onDragLeave={() => setIsDragOver(false)}
             onDrop={e => { e.preventDefault(); setIsDragOver(false); const d = e.dataTransfer.files[0]; if (d) handleDatei(d) }}
-            style={{ height: '140px', border: `2px dashed ${isDragOver ? '#0076BD' : 'var(--zh-color-border)'}`, borderRadius: '8px', background: isDragOver ? 'rgba(0,118,189,0.06)' : 'var(--zh-color-bg-secondary)', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '8px', cursor: 'pointer', transition: 'border-color 0.15s, background 0.15s' }}
+            style={{ height: '160px', border: `2px dashed ${isDragOver ? '#0076BD' : 'var(--zh-color-border)'}`, borderRadius: '8px', background: isDragOver ? 'rgba(0,118,189,0.06)' : 'var(--zh-color-bg-secondary)', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '8px', cursor: 'pointer', transition: 'border-color 0.15s, background 0.15s' }}
             onClick={() => fileInputRef.current?.click()}
           >
             <Upload size={28} color={isDragOver ? '#0076BD' : 'var(--zh-color-text-disabled)'} />
@@ -349,12 +390,12 @@ export default function BildUpload({ aktuelleUrl, onBildGeladen, maxBreite = 0 }
               Datei hierher ziehen oder klicken
             </span>
             <span style={{ fontSize: '11px', color: 'var(--zh-color-text-disabled)' }}>
-              JPG, PNG, WEBP · max. 20 MB
+              JPG, PNG, WEBP · max. 25 MB · Empfohlen: 4096×2048 (2:1)
             </span>
           </div>
 
           <button onClick={() => fileInputRef.current?.click()} style={btnSekundaerStyle}>
-            Datei auswählen
+            <FolderOpen size={12} style={{ display: 'inline', marginRight: '6px' }} /> Datei auswaehlen
           </button>
         </div>
       )}
