@@ -23,573 +23,214 @@
       background: var(--bg);
       line-height: 1.55;
     }
-    .topbar {
-      display: flex; align-items: center; justify-content: space-between;
-      gap: 16px; flex-wrap: wrap; margin-bottom: 12px;
+    header {
+      border-bottom: 2px solid var(--accent);
+      padding-bottom: 12px;
+      margin-bottom: 24px;
     }
-    .lang-switch {
-      display: flex; gap: 4px;
-      border: 1px solid var(--border); border-radius: 8px;
-      padding: 3px; background: #fafafa;
+    h1 {
+      font-size: 26px;
+      margin: 0 0 4px;
+      color: var(--accent);
     }
-    .lang-switch button {
-      border: none; background: transparent; cursor: pointer;
-      padding: 4px 10px; border-radius: 5px;
-      font-size: 12px; font-weight: 700; color: var(--muted);
-      text-transform: uppercase; letter-spacing: 0.06em;
-    }
-    .lang-switch button.active { background: var(--accent); color: white; }
-    header { border-bottom: 2px solid var(--accent); padding-bottom: 12px; margin-bottom: 24px; }
-    h1 { font-size: 26px; margin: 0 0 4px; color: var(--accent); }
     .subtitle {
-      color: var(--muted); font-size: 13px;
-      text-transform: uppercase; letter-spacing: 0.12em; font-weight: 700;
+      color: var(--muted);
+      font-size: 13px;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      font-weight: 700;
     }
     h2 {
-      font-size: 18px; color: var(--accent);
-      margin-top: 32px; border-left: 3px solid var(--accent2); padding-left: 10px;
+      font-size: 18px;
+      color: var(--accent);
+      margin-top: 32px;
+      border-left: 3px solid var(--accent2);
+      padding-left: 10px;
     }
     p, li { font-size: 14px; }
     a { color: var(--accent2); text-decoration: none; }
     a:hover { text-decoration: underline; }
-    table { border-collapse: collapse; width: 100%; margin: 16px 0; font-size: 13px; }
-    th, td { border: 1px solid var(--border); padding: 8px 10px; text-align: left; vertical-align: top; }
-    th { background: #f5f8fb; font-weight: 700; color: var(--accent); }
+    table {
+      border-collapse: collapse;
+      width: 100%;
+      margin: 16px 0;
+      font-size: 13px;
+    }
+    th, td {
+      border: 1px solid var(--border);
+      padding: 8px 10px;
+      text-align: left;
+      vertical-align: top;
+    }
+    th {
+      background: #f5f8fb;
+      font-weight: 700;
+      color: var(--accent);
+    }
     .kontakt {
-      background: #f5f8fb; border-left: 4px solid var(--accent2);
-      padding: 14px 18px; margin: 20px 0; font-size: 14px;
+      background: #f5f8fb;
+      border-left: 4px solid var(--accent2);
+      padding: 14px 18px;
+      margin: 20px 0;
+      font-size: 14px;
     }
     footer {
-      margin-top: 48px; padding-top: 16px;
+      margin-top: 48px;
+      padding-top: 16px;
       border-top: 1px solid var(--border);
-      font-size: 11px; color: var(--muted); text-align: center;
+      font-size: 11px;
+      color: var(--muted);
+      text-align: center;
     }
   </style>
 </head>
 <body>
 
-<div class="topbar">
-  <div class="subtitle" data-i18n="subtitle">Datenschutzinformation nach nDSG / DSGVO</div>
-  <div class="lang-switch" role="group" aria-label="Sprache">
-    <button data-lang="de">DE</button>
-    <button data-lang="fr">FR</button>
-    <button data-lang="it">IT</button>
-    <button data-lang="en">EN</button>
-  </div>
-</div>
-
 <header>
-  <h1 data-i18n="title">Datenschutzerklärung</h1>
+  <div class="subtitle">Datenschutzinformation nach nDSG / DSGVO</div>
+  <h1>Datenschutzerklärung</h1>
 </header>
 
-<p><span data-i18n="stand_label">Stand:</span> 2026-04-19</p>
+<p>Stand: 2026-04-19</p>
 
-<p data-i18n-html="intro"></p>
+<p>Diese Datenschutzerklärung informiert über die Verarbeitung personenbezogener Daten im Rahmen der Nutzung des <strong>RSI VR Tools</strong> der Fachstelle Verkehrssicherheit, Tiefbauamt Kanton Zürich.</p>
 
-<h2 data-i18n="h1_verantwortlicher">1. Verantwortlicher</h2>
-<div class="kontakt" data-i18n-html="verantwortlicher"></div>
-<p data-i18n-html="datenschutz_kantonal"></p>
+<h2>1. Verantwortlicher</h2>
+<div class="kontakt">
+  <strong>Kanton Zürich, Baudirektion, Tiefbauamt</strong><br>
+  Fachstelle Verkehrssicherheit (FaSi)<br>
+  Ansprechperson: Stevan Skeledzic<br>
+  Walcheplatz 2, 8090 Zürich<br>
+  E-Mail: <a href="mailto:sicherheit.tba@bd.zh.ch">sicherheit.tba@bd.zh.ch</a><br>
+  Telefon: +41 43 259 31 20
+</div>
 
-<h2 data-i18n="h2_zweck">2. Zweck der Datenverarbeitung</h2>
-<p data-i18n="zweck_intro"></p>
-<ul id="ul-zweck"></ul>
+<p>Für Anliegen im Zusammenhang mit der Verarbeitung personenbezogener Daten durch den Kanton Zürich steht zudem der kantonale Datenschutzbeauftragte zur Verfügung: <a href="https://www.datenschutz.ch" target="_blank" rel="noopener noreferrer">datenschutz.ch</a>.</p>
 
-<h2 data-i18n="h3_daten">3. Welche Daten werden erhoben?</h2>
+<h2>2. Zweck der Datenverarbeitung</h2>
+<p>Die Daten werden ausschliesslich für folgende Zwecke verarbeitet:</p>
+<ul>
+  <li>Durchführung der RSI-Schulung im Rahmen des Fachkurses FK RSI</li>
+  <li>Erstellung einer pseudonymen Rangliste zur Motivation und zum Fortschrittsvergleich</li>
+  <li>Qualitätssicherung und Weiterentwicklung des Schulungswerkzeugs</li>
+</ul>
+
+<h2>3. Welche Daten werden erhoben?</h2>
 <table>
-  <thead><tr>
-    <th data-i18n="th_datum">Datum</th>
-    <th data-i18n="th_zweck">Zweck</th>
-    <th data-i18n="th_speicher">Speicherort</th>
-    <th data-i18n="th_form">Form</th>
-  </tr></thead>
-  <tbody id="tab-daten"></tbody>
+  <thead>
+    <tr><th>Datum</th><th>Zweck</th><th>Speicherort</th><th>Form</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Eingegebener Name</td>
+      <td>Identifikation am Gerät</td>
+      <td>Lokaler Browser-Speicher (<code>localStorage</code>)</td>
+      <td>Klartext (verlässt das Gerät nicht)</td>
+    </tr>
+    <tr>
+      <td>Pseudonym (SHA-256, 8 Zeichen)</td>
+      <td>Zuordnung in der Rangliste</td>
+      <td>Supabase EU-Region</td>
+      <td>Hash, nicht rückrechenbar zu Klartext ohne Namensliste</td>
+    </tr>
+    <tr>
+      <td>Kursname, Zugangscode</td>
+      <td>Kurszuordnung</td>
+      <td>Lokal &amp; Supabase</td>
+      <td>Klartext</td>
+    </tr>
+    <tr>
+      <td>Szenen-Ergebnisse (Punkte, Prozent, Dauer, Zeitstempel)</td>
+      <td>Ranking, Fortschritt</td>
+      <td>Lokal &amp; Supabase</td>
+      <td>Numerisch</td>
+    </tr>
+    <tr>
+      <td>Spracheinstellung, Theme</td>
+      <td>Benutzerkomfort</td>
+      <td>Lokaler Browser-Speicher</td>
+      <td>Klartext</td>
+    </tr>
+  </tbody>
 </table>
 
-<p data-i18n-html="pseudonym_hinweis"></p>
+<p><strong>Wichtig:</strong> Der Name wird als SHA-256-Hash pseudonymisiert (erste 8 Hexadezimalzeichen) in der zentralen Datenbank gespeichert. Dies ist <strong>Pseudonymisierung, nicht Anonymisierung</strong> im Sinne von Art. 4(5) DSGVO — eine Re-Identifikation durch Vergleich mit einer Kursteilnehmerliste ist technisch möglich. Der Klartext-Name verbleibt ausschliesslich auf Ihrem Gerät.</p>
 
-<p data-i18n="keine_intro"></p>
-<ul id="ul-keine"></ul>
-
-<h2 data-i18n="h4_rechtsgrundlage">4. Rechtsgrundlage</h2>
-<p data-i18n="rechtsgrundlage_intro"></p>
-<ul id="ul-rechtsgrundlage"></ul>
-
-<h2 data-i18n="h5_empfaenger">5. Empfänger der Daten</h2>
-<ul id="ul-empfaenger"></ul>
-<p data-i18n="drittland"></p>
-
-<h2 data-i18n="h6_speicherdauer">6. Speicherdauer</h2>
-<ul id="ul-speicherdauer"></ul>
-
-<h2 data-i18n="h7_rechte">7. Ihre Rechte</h2>
-<p data-i18n="rechte_intro"></p>
-<ul id="ul-rechte"></ul>
-
-<h2 data-i18n="h8_massnahmen">8. Technische und organisatorische Massnahmen</h2>
-<ul id="ul-massnahmen"></ul>
-
-<h2 data-i18n="h9_cookies">9. Cookies und lokale Speicherung</h2>
-<p data-i18n-html="cookies"></p>
-
-<h2 data-i18n="h10_sw">10. Service Worker / PWA</h2>
-<p data-i18n="sw"></p>
-
-<h2 data-i18n="h11_aenderungen">11. Änderungen dieser Erklärung</h2>
-<p data-i18n="aenderungen"></p>
-
-<h2 data-i18n="h12_dok">12. Weitere Dokumente</h2>
+<p>Es werden <strong>keine</strong> erhoben:</p>
 <ul>
-  <li><a href="/impressum.html" data-i18n="link_impressum">Impressum</a></li>
-  <li><a href="/glossar.html" data-i18n="link_glossar">Glossar &amp; Abkürzungen</a></li>
-  <li><a href="/" data-i18n="link_zurueck">Zurück zur Anwendung</a></li>
+  <li>IP-Adressen (ausser über Standard-Server-Logs bei Vercel/Supabase, ohne eigenes Tracking)</li>
+  <li>Tracking-Cookies oder Analyse-Skripte</li>
+  <li>Standortdaten</li>
+  <li>Gerätefingerabdrücke</li>
+  <li>E-Mail-Adressen</li>
+</ul>
+
+<h2>4. Rechtsgrundlage</h2>
+<p>Die Verarbeitung erfolgt auf Grundlage:</p>
+<ul>
+  <li><strong>Schweiz:</strong> Art. 31 Abs. 2 lit. a revDSG (berechtigtes Interesse an der Schulung) sowie auf Grundlage der öffentlichen Aufgabe gemäss Strassengesetz Kanton Zürich</li>
+  <li><strong>EU-Betroffene:</strong> Art. 6 Abs. 1 lit. e DSGVO (Wahrnehmung einer Aufgabe im öffentlichen Interesse)</li>
+  <li>Bei expliziter Namenseingabe zusätzlich: Einwilligung (Art. 6 Abs. 1 lit. a DSGVO)</li>
+</ul>
+
+<h2>5. Empfänger der Daten</h2>
+<ul>
+  <li><strong>Vercel Inc.</strong> (USA, mit EU-Edge-Nodes) — Hosting der Web-Anwendung. <a href="https://vercel.com/legal/privacy-policy" target="_blank" rel="noopener noreferrer">Datenschutzerklärung Vercel</a>.</li>
+  <li><strong>Supabase Pte. Ltd.</strong> — Datenbank für Rangliste und Schulungsinhalte, gehostet in der EU-Region. <a href="https://supabase.com/privacy" target="_blank" rel="noopener noreferrer">Datenschutzerklärung Supabase</a>.</li>
+  <li>Innerhalb des Kantons Zürich: Kursleitung, um Fortschritt der Kurse auszuwerten (ausschliesslich auf Pseudonym-Basis).</li>
+</ul>
+<p>Eine Übermittlung in Drittländer ausserhalb EU/EWR findet ausschliesslich über Vercel statt (Edge-Routing). Vercel unterzeichnet Standardvertragsklauseln (SCC).</p>
+
+<h2>6. Speicherdauer</h2>
+<ul>
+  <li><strong>Lokale Daten:</strong> verbleiben bis zur manuellen Löschung (Funktion "App zurücksetzen" im Footer) oder bis zum Löschen des Browser-Caches.</li>
+  <li><strong>Supabase-Daten:</strong> Die Ranking-Einträge werden bis zum Abschluss des jeweiligen Kurses plus 12 Monate aufbewahrt, danach durch die Kursleitung gelöscht.</li>
+  <li>Auf Antrag: sofortige Löschung (siehe Abschnitt 7).</li>
+</ul>
+
+<h2>7. Ihre Rechte</h2>
+<p>Sie haben das Recht auf:</p>
+<ul>
+  <li><strong>Auskunft</strong> über die zu Ihrer Person gespeicherten Daten</li>
+  <li><strong>Berichtigung</strong> unrichtiger Daten</li>
+  <li><strong>Löschung</strong> Ihrer Daten ("Recht auf Vergessenwerden") — über die Funktion "App zurücksetzen" (lokal) oder per E-Mail an die Fachstelle (zentrale Rangliste)</li>
+  <li><strong>Einschränkung</strong> der Verarbeitung</li>
+  <li><strong>Widerspruch</strong> gegen die Verarbeitung</li>
+  <li><strong>Datenübertragbarkeit</strong> in einem gängigen Format</li>
+  <li><strong>Widerruf</strong> der Einwilligung jederzeit mit Wirkung für die Zukunft</li>
+  <li><strong>Beschwerde</strong> beim kantonalen Datenschutzbeauftragten bzw. beim Eidgenössischen Datenschutz- und Öffentlichkeitsbeauftragten (EDÖB)</li>
+</ul>
+
+<h2>8. Technische und organisatorische Massnahmen</h2>
+<ul>
+  <li>Verschlüsselte Übertragung via HTTPS/TLS 1.3</li>
+  <li>Pseudonymisierung des Namens (SHA-256)</li>
+  <li>Supabase Row Level Security (RLS) für Datenbankzugriffe</li>
+  <li>Admin-Bereich durch PIN geschützt (zusätzlich Zugangscode pro Kurs möglich)</li>
+  <li>Kein Third-Party-Tracking, keine Analytics-Skripte</li>
+</ul>
+
+<h2>9. Cookies und lokale Speicherung</h2>
+<p>Die App setzt <strong>keine Cookies</strong>. Sie nutzt ausschliesslich <code>localStorage</code> und <code>sessionStorage</code> im Browser — technisch notwendige Speicherung für Benutzerkomfort (Spracheinstellung, Login-State). Diese Daten verlassen Ihr Gerät nicht, ausser den oben genannten Ranking-Einträgen.</p>
+
+<h2>10. Service Worker / PWA</h2>
+<p>Die App ist eine Progressive Web App mit Service Worker. Dieser cacht statische Ressourcen für Offline-Nutzung. Es werden keine personenbezogenen Daten vom Service Worker verarbeitet.</p>
+
+<h2>11. Änderungen dieser Erklärung</h2>
+<p>Diese Datenschutzerklärung kann angepasst werden, sobald sich technische oder rechtliche Rahmenbedingungen ändern. Die jeweils aktuelle Fassung ist über den Datenschutz-Link im Footer der Anwendung erreichbar.</p>
+
+<h2>12. Weitere Dokumente</h2>
+<ul>
+  <li><a href="/impressum.html">Impressum</a></li>
+  <li><a href="/glossar.html">Glossar &amp; Abkürzungen</a></li>
+  <li><a href="/">Zurück zur Anwendung</a></li>
 </ul>
 
 <footer>
-  <span data-i18n="footer">Fachstelle Verkehrssicherheit (FaSi) · Kanton Zürich · RSI VR Tool v0.4.0 · Stand Datenschutz: 2026-04-19</span> · <span id="yr">2026</span>
+  Fachstelle Verkehrssicherheit (FaSi) · Kanton Zürich · RSI VR Tool v0.4.0 · Stand Datenschutz: 2026-04-19 · <span id="yr">2026</span>
 </footer>
 
-<script type="application/json" id="i18n-data">
-{
-  "de": {
-    "_html": "de-CH",
-    "_title": "Datenschutzerklärung — RSI VR Tool",
-    "subtitle": "Datenschutzinformation nach nDSG / DSGVO",
-    "title": "Datenschutzerklärung",
-    "stand_label": "Stand:",
-    "intro": "Diese Datenschutzerklärung informiert über die Verarbeitung personenbezogener Daten im Rahmen der Nutzung des <strong>RSI VR Tools</strong> der Fachstelle Verkehrssicherheit, Tiefbauamt Kanton Zürich.",
-    "h1_verantwortlicher": "1. Verantwortlicher",
-    "verantwortlicher": "<strong>Kanton Zürich, Baudirektion, Tiefbauamt</strong><br>Fachstelle Verkehrssicherheit (FaSi)<br>Ansprechperson: Stevan Skeledzic<br>Walcheplatz 2, 8090 Zürich<br>E-Mail: <a href=\"mailto:sicherheit.tba@bd.zh.ch\">sicherheit.tba@bd.zh.ch</a><br>Telefon: +41 43 259 31 20",
-    "datenschutz_kantonal": "Für Anliegen im Zusammenhang mit der Verarbeitung personenbezogener Daten durch den Kanton Zürich steht zudem der kantonale Datenschutzbeauftragte zur Verfügung: <a href=\"https://www.datenschutz.ch\" target=\"_blank\" rel=\"noopener noreferrer\">datenschutz.ch</a>.",
-    "h2_zweck": "2. Zweck der Datenverarbeitung",
-    "zweck_intro": "Die Daten werden ausschliesslich für folgende Zwecke verarbeitet:",
-    "zweck_items": [
-      "Durchführung der RSI-Schulung im Rahmen des Fachkurses FK RSI",
-      "Erstellung einer pseudonymen Rangliste zur Motivation und zum Fortschrittsvergleich",
-      "Qualitätssicherung und Weiterentwicklung des Schulungswerkzeugs"
-    ],
-    "h3_daten": "3. Welche Daten werden erhoben?",
-    "th_datum": "Datum",
-    "th_zweck": "Zweck",
-    "th_speicher": "Speicherort",
-    "th_form": "Form",
-    "daten": [
-      ["Eingegebener Name", "Identifikation am Gerät", "Lokaler Browser-Speicher (localStorage)", "Klartext (verlässt das Gerät nicht)"],
-      ["Pseudonym (SHA-256, 8 Zeichen)", "Zuordnung in der Rangliste", "Supabase EU-Region", "Hash, nicht rückrechenbar zu Klartext ohne Namensliste"],
-      ["Kursname, Zugangscode", "Kurszuordnung", "Lokal & Supabase", "Klartext"],
-      ["Szenen-Ergebnisse (Punkte, Prozent, Dauer, Zeitstempel)", "Ranking, Fortschritt", "Lokal & Supabase", "Numerisch"],
-      ["Spracheinstellung, Theme", "Benutzerkomfort", "Lokaler Browser-Speicher", "Klartext"]
-    ],
-    "pseudonym_hinweis": "<strong>Wichtig:</strong> Der Name wird als SHA-256-Hash pseudonymisiert (erste 8 Hexadezimalzeichen) in der zentralen Datenbank gespeichert. Dies ist <strong>Pseudonymisierung, nicht Anonymisierung</strong> im Sinne von Art. 4(5) DSGVO — eine Re-Identifikation durch Vergleich mit einer Kursteilnehmerliste ist technisch möglich. Der Klartext-Name verbleibt ausschliesslich auf Ihrem Gerät.",
-    "keine_intro": "Es werden keine erhoben:",
-    "keine_items": [
-      "IP-Adressen (ausser über Standard-Server-Logs bei Vercel/Supabase, ohne eigenes Tracking)",
-      "Tracking-Cookies oder Analyse-Skripte",
-      "Standortdaten",
-      "Gerätefingerabdrücke",
-      "E-Mail-Adressen"
-    ],
-    "h4_rechtsgrundlage": "4. Rechtsgrundlage",
-    "rechtsgrundlage_intro": "Die Verarbeitung erfolgt auf Grundlage:",
-    "rechtsgrundlage_items": [
-      "<strong>Schweiz:</strong> Art. 31 Abs. 2 lit. a revDSG (berechtigtes Interesse an der Schulung) sowie auf Grundlage der öffentlichen Aufgabe gemäss Strassengesetz Kanton Zürich",
-      "<strong>EU-Betroffene:</strong> Art. 6 Abs. 1 lit. e DSGVO (Wahrnehmung einer Aufgabe im öffentlichen Interesse)",
-      "Bei expliziter Namenseingabe zusätzlich: Einwilligung (Art. 6 Abs. 1 lit. a DSGVO)"
-    ],
-    "h5_empfaenger": "5. Empfänger der Daten",
-    "empfaenger_items": [
-      "<strong>Vercel Inc.</strong> (USA, mit EU-Edge-Nodes) — Hosting der Web-Anwendung. <a href=\"https://vercel.com/legal/privacy-policy\" target=\"_blank\" rel=\"noopener noreferrer\">Datenschutzerklärung Vercel</a>.",
-      "<strong>Supabase Pte. Ltd.</strong> — Datenbank für Rangliste und Schulungsinhalte, gehostet in der EU-Region. <a href=\"https://supabase.com/privacy\" target=\"_blank\" rel=\"noopener noreferrer\">Datenschutzerklärung Supabase</a>.",
-      "Innerhalb des Kantons Zürich: Kursleitung, um Fortschritt der Kurse auszuwerten (ausschliesslich auf Pseudonym-Basis)."
-    ],
-    "drittland": "Eine Übermittlung in Drittländer ausserhalb EU/EWR findet ausschliesslich über Vercel statt (Edge-Routing). Vercel unterzeichnet Standardvertragsklauseln (SCC).",
-    "h6_speicherdauer": "6. Speicherdauer",
-    "speicherdauer_items": [
-      "<strong>Lokale Daten:</strong> verbleiben bis zur manuellen Löschung (Funktion «App zurücksetzen» im Footer) oder bis zum Löschen des Browser-Caches.",
-      "<strong>Supabase-Daten:</strong> Die Ranking-Einträge werden bis zum Abschluss des jeweiligen Kurses plus 12 Monate aufbewahrt, danach durch die Kursleitung gelöscht.",
-      "Auf Antrag: sofortige Löschung (siehe Abschnitt 7)."
-    ],
-    "h7_rechte": "7. Ihre Rechte",
-    "rechte_intro": "Sie haben das Recht auf:",
-    "rechte_items": [
-      "<strong>Auskunft</strong> über die zu Ihrer Person gespeicherten Daten",
-      "<strong>Berichtigung</strong> unrichtiger Daten",
-      "<strong>Löschung</strong> Ihrer Daten («Recht auf Vergessenwerden») — über die Funktion «App zurücksetzen» (lokal) oder per E-Mail an die Fachstelle (zentrale Rangliste)",
-      "<strong>Einschränkung</strong> der Verarbeitung",
-      "<strong>Widerspruch</strong> gegen die Verarbeitung",
-      "<strong>Datenübertragbarkeit</strong> in einem gängigen Format",
-      "<strong>Widerruf</strong> der Einwilligung jederzeit mit Wirkung für die Zukunft",
-      "<strong>Beschwerde</strong> beim kantonalen Datenschutzbeauftragten bzw. beim Eidgenössischen Datenschutz- und Öffentlichkeitsbeauftragten (EDÖB)"
-    ],
-    "h8_massnahmen": "8. Technische und organisatorische Massnahmen",
-    "massnahmen_items": [
-      "Verschlüsselte Übertragung via HTTPS/TLS 1.3",
-      "Pseudonymisierung des Namens (SHA-256)",
-      "Supabase Row Level Security (RLS) für Datenbankzugriffe",
-      "Admin-Bereich durch PIN geschützt (zusätzlich Zugangscode pro Kurs möglich)",
-      "Kein Third-Party-Tracking, keine Analytics-Skripte"
-    ],
-    "h9_cookies": "9. Cookies und lokale Speicherung",
-    "cookies": "Die App setzt <strong>keine Cookies</strong>. Sie nutzt ausschliesslich <code>localStorage</code> und <code>sessionStorage</code> im Browser — technisch notwendige Speicherung für Benutzerkomfort (Spracheinstellung, Login-State). Diese Daten verlassen Ihr Gerät nicht, ausser den oben genannten Ranking-Einträgen.",
-    "h10_sw": "10. Service Worker / PWA",
-    "sw": "Die App ist eine Progressive Web App mit Service Worker. Dieser cacht statische Ressourcen für Offline-Nutzung. Es werden keine personenbezogenen Daten vom Service Worker verarbeitet.",
-    "h11_aenderungen": "11. Änderungen dieser Erklärung",
-    "aenderungen": "Diese Datenschutzerklärung kann angepasst werden, sobald sich technische oder rechtliche Rahmenbedingungen ändern. Die jeweils aktuelle Fassung ist über den Datenschutz-Link im Footer der Anwendung erreichbar.",
-    "h12_dok": "12. Weitere Dokumente",
-    "link_impressum": "Impressum",
-    "link_glossar": "Glossar & Abkürzungen",
-    "link_zurueck": "Zurück zur Anwendung",
-    "footer": "Fachstelle Verkehrssicherheit (FaSi) · Kanton Zürich · RSI VR Tool v0.4.0 · Stand Datenschutz: 2026-04-19"
-  },
-  "fr": {
-    "_html": "fr-CH",
-    "_title": "Politique de confidentialité — Outil RSI VR",
-    "subtitle": "Information sur la protection des données selon nLPD / RGPD",
-    "title": "Politique de confidentialité",
-    "stand_label": "État :",
-    "intro": "Cette politique de confidentialité informe sur le traitement des données personnelles dans le cadre de l'utilisation de l'<strong>outil RSI VR</strong> du Service de la sécurité routière, Office des ponts et chaussées du canton de Zurich.",
-    "h1_verantwortlicher": "1. Responsable du traitement",
-    "verantwortlicher": "<strong>Canton de Zurich, Direction des travaux publics, Office des ponts et chaussées</strong><br>Service de la sécurité routière (FaSi)<br>Personne de contact : Stevan Skeledzic<br>Walcheplatz 2, 8090 Zurich<br>E-mail : <a href=\"mailto:sicherheit.tba@bd.zh.ch\">sicherheit.tba@bd.zh.ch</a><br>Téléphone : +41 43 259 31 20",
-    "datenschutz_kantonal": "Pour les questions liées au traitement des données personnelles par le canton de Zurich, le préposé cantonal à la protection des données est également à disposition : <a href=\"https://www.datenschutz.ch\" target=\"_blank\" rel=\"noopener noreferrer\">datenschutz.ch</a>.",
-    "h2_zweck": "2. Finalité du traitement",
-    "zweck_intro": "Les données sont traitées exclusivement aux fins suivantes :",
-    "zweck_items": [
-      "Réalisation de la formation RSI dans le cadre du cours FK RSI",
-      "Création d'un classement pseudonymisé pour la motivation et la comparaison des progrès",
-      "Assurance qualité et développement de l'outil de formation"
-    ],
-    "h3_daten": "3. Quelles données sont collectées ?",
-    "th_datum": "Donnée",
-    "th_zweck": "Finalité",
-    "th_speicher": "Lieu de stockage",
-    "th_form": "Forme",
-    "daten": [
-      ["Nom saisi", "Identification sur l'appareil", "Stockage local du navigateur (localStorage)", "Texte clair (ne quitte pas l'appareil)"],
-      ["Pseudonyme (SHA-256, 8 caractères)", "Attribution dans le classement", "Supabase région UE", "Hachage, non réversible en texte clair sans liste de noms"],
-      ["Nom du cours, code d'accès", "Attribution au cours", "Local & Supabase", "Texte clair"],
-      ["Résultats des scènes (points, pourcentage, durée, horodatage)", "Classement, progression", "Local & Supabase", "Numérique"],
-      ["Préférence de langue, thème", "Confort utilisateur", "Stockage local du navigateur", "Texte clair"]
-    ],
-    "pseudonym_hinweis": "<strong>Important :</strong> Le nom est pseudonymisé sous forme de hachage SHA-256 (8 premiers caractères hexadécimaux) et stocké dans la base de données centrale. Il s'agit d'une <strong>pseudonymisation, et non d'une anonymisation</strong> au sens de l'art. 4(5) RGPD — une ré-identification par comparaison avec une liste de participants au cours est techniquement possible. Le nom en clair reste exclusivement sur votre appareil.",
-    "keine_intro": "Aucune des données suivantes n'est collectée :",
-    "keine_items": [
-      "Adresses IP (sauf via les journaux serveur standard de Vercel/Supabase, sans suivi propre)",
-      "Cookies de suivi ou scripts d'analyse",
-      "Données de localisation",
-      "Empreintes d'appareil",
-      "Adresses e-mail"
-    ],
-    "h4_rechtsgrundlage": "4. Base légale",
-    "rechtsgrundlage_intro": "Le traitement repose sur :",
-    "rechtsgrundlage_items": [
-      "<strong>Suisse :</strong> art. 31 al. 2 let. a nLPD (intérêt légitime à la formation) ainsi que sur la mission publique selon la loi sur les routes du canton de Zurich",
-      "<strong>Personnes concernées dans l'UE :</strong> art. 6 al. 1 let. e RGPD (exécution d'une mission d'intérêt public)",
-      "Lors de la saisie explicite du nom, en plus : consentement (art. 6 al. 1 let. a RGPD)"
-    ],
-    "h5_empfaenger": "5. Destinataires des données",
-    "empfaenger_items": [
-      "<strong>Vercel Inc.</strong> (USA, avec nœuds Edge UE) — hébergement de l'application web. <a href=\"https://vercel.com/legal/privacy-policy\" target=\"_blank\" rel=\"noopener noreferrer\">Politique de confidentialité Vercel</a>.",
-      "<strong>Supabase Pte. Ltd.</strong> — base de données pour le classement et les contenus de formation, hébergée dans la région UE. <a href=\"https://supabase.com/privacy\" target=\"_blank\" rel=\"noopener noreferrer\">Politique de confidentialité Supabase</a>.",
-      "Au sein du canton de Zurich : direction de cours, pour évaluer la progression des cours (exclusivement sur la base du pseudonyme)."
-    ],
-    "drittland": "Une transmission vers des pays tiers hors UE/EEE n'a lieu que via Vercel (routage Edge). Vercel signe les clauses contractuelles types (CCT).",
-    "h6_speicherdauer": "6. Durée de conservation",
-    "speicherdauer_items": [
-      "<strong>Données locales :</strong> conservées jusqu'à suppression manuelle (fonction «Réinitialiser l'app» dans le pied de page) ou jusqu'à la suppression du cache du navigateur.",
-      "<strong>Données Supabase :</strong> les entrées du classement sont conservées jusqu'à la fin du cours concerné plus 12 mois, puis supprimées par la direction du cours.",
-      "Sur demande : suppression immédiate (voir section 7)."
-    ],
-    "h7_rechte": "7. Vos droits",
-    "rechte_intro": "Vous avez le droit :",
-    "rechte_items": [
-      "<strong>d'accès</strong> aux données vous concernant",
-      "<strong>de rectification</strong> des données inexactes",
-      "<strong>de suppression</strong> de vos données («droit à l'oubli») — via la fonction «Réinitialiser l'app» (local) ou par e-mail au service (classement central)",
-      "<strong>de limitation</strong> du traitement",
-      "<strong>d'opposition</strong> au traitement",
-      "<strong>de portabilité</strong> des données dans un format courant",
-      "<strong>de retrait</strong> du consentement à tout moment avec effet pour l'avenir",
-      "<strong>de plainte</strong> auprès du préposé cantonal à la protection des données ou du Préposé fédéral à la protection des données et à la transparence (PFPDT)"
-    ],
-    "h8_massnahmen": "8. Mesures techniques et organisationnelles",
-    "massnahmen_items": [
-      "Transmission chiffrée via HTTPS/TLS 1.3",
-      "Pseudonymisation du nom (SHA-256)",
-      "Supabase Row Level Security (RLS) pour les accès à la base de données",
-      "Zone admin protégée par PIN (en plus, code d'accès par cours possible)",
-      "Pas de suivi tiers, pas de scripts d'analyse"
-    ],
-    "h9_cookies": "9. Cookies et stockage local",
-    "cookies": "L'app n'utilise <strong>aucun cookie</strong>. Elle utilise exclusivement <code>localStorage</code> et <code>sessionStorage</code> dans le navigateur — stockage techniquement nécessaire pour le confort utilisateur (préférence de langue, état de connexion). Ces données ne quittent pas votre appareil, à l'exception des entrées de classement mentionnées ci-dessus.",
-    "h10_sw": "10. Service Worker / PWA",
-    "sw": "L'app est une Progressive Web App avec Service Worker. Celui-ci met en cache des ressources statiques pour une utilisation hors ligne. Aucune donnée personnelle n'est traitée par le Service Worker.",
-    "h11_aenderungen": "11. Modifications de cette déclaration",
-    "aenderungen": "Cette politique de confidentialité peut être adaptée dès que les conditions techniques ou juridiques changent. La version actuelle est accessible via le lien Confidentialité dans le pied de page de l'application.",
-    "h12_dok": "12. Autres documents",
-    "link_impressum": "Mentions légales",
-    "link_glossar": "Glossaire & abréviations",
-    "link_zurueck": "Retour à l'application",
-    "footer": "Service de la sécurité routière (FaSi) · Canton de Zurich · Outil RSI VR v0.4.0 · État de la confidentialité : 2026-04-19"
-  },
-  "it": {
-    "_html": "it-CH",
-    "_title": "Informativa sulla privacy — Strumento RSI VR",
-    "subtitle": "Informazione sulla protezione dei dati secondo nLPD / GDPR",
-    "title": "Informativa sulla privacy",
-    "stand_label": "Stato:",
-    "intro": "Questa informativa sulla privacy informa sul trattamento dei dati personali nell'ambito dell'utilizzo dello <strong>strumento RSI VR</strong> del Servizio della sicurezza stradale, Ufficio del genio civile del Canton Zurigo.",
-    "h1_verantwortlicher": "1. Titolare del trattamento",
-    "verantwortlicher": "<strong>Canton Zurigo, Direzione delle costruzioni, Ufficio del genio civile</strong><br>Servizio della sicurezza stradale (FaSi)<br>Persona di contatto: Stevan Skeledzic<br>Walcheplatz 2, 8090 Zurigo<br>E-mail: <a href=\"mailto:sicherheit.tba@bd.zh.ch\">sicherheit.tba@bd.zh.ch</a><br>Telefono: +41 43 259 31 20",
-    "datenschutz_kantonal": "Per questioni relative al trattamento dei dati personali da parte del Canton Zurigo è inoltre disponibile l'Incaricato cantonale per la protezione dei dati: <a href=\"https://www.datenschutz.ch\" target=\"_blank\" rel=\"noopener noreferrer\">datenschutz.ch</a>.",
-    "h2_zweck": "2. Finalità del trattamento",
-    "zweck_intro": "I dati vengono trattati esclusivamente per le seguenti finalità:",
-    "zweck_items": [
-      "Esecuzione della formazione RSI nell'ambito del corso FK RSI",
-      "Creazione di una classifica pseudonimizzata per la motivazione e il confronto dei progressi",
-      "Garanzia della qualità e sviluppo dello strumento di formazione"
-    ],
-    "h3_daten": "3. Quali dati vengono raccolti?",
-    "th_datum": "Dato",
-    "th_zweck": "Finalità",
-    "th_speicher": "Luogo di archiviazione",
-    "th_form": "Forma",
-    "daten": [
-      ["Nome inserito", "Identificazione sul dispositivo", "Memoria locale del browser (localStorage)", "Testo in chiaro (non lascia il dispositivo)"],
-      ["Pseudonimo (SHA-256, 8 caratteri)", "Attribuzione nella classifica", "Supabase regione UE", "Hash, non reversibile in chiaro senza lista nomi"],
-      ["Nome del corso, codice d'accesso", "Attribuzione al corso", "Locale & Supabase", "Testo in chiaro"],
-      ["Risultati delle scene (punti, percentuale, durata, timestamp)", "Classifica, progresso", "Locale & Supabase", "Numerico"],
-      ["Preferenza di lingua, tema", "Comfort dell'utente", "Memoria locale del browser", "Testo in chiaro"]
-    ],
-    "pseudonym_hinweis": "<strong>Importante:</strong> Il nome viene pseudonimizzato come hash SHA-256 (primi 8 caratteri esadecimali) e memorizzato nella banca dati centrale. Si tratta di <strong>pseudonimizzazione, non anonimizzazione</strong> ai sensi dell'art. 4(5) GDPR — una re-identificazione tramite confronto con una lista di partecipanti al corso è tecnicamente possibile. Il nome in chiaro rimane esclusivamente sul vostro dispositivo.",
-    "keine_intro": "Non vengono raccolti:",
-    "keine_items": [
-      "Indirizzi IP (eccetto tramite log server standard di Vercel/Supabase, senza tracking proprio)",
-      "Cookie di tracciamento o script di analisi",
-      "Dati di posizione",
-      "Impronte del dispositivo",
-      "Indirizzi e-mail"
-    ],
-    "h4_rechtsgrundlage": "4. Base giuridica",
-    "rechtsgrundlage_intro": "Il trattamento avviene sulla base di:",
-    "rechtsgrundlage_items": [
-      "<strong>Svizzera:</strong> art. 31 cpv. 2 lett. a nLPD (interesse legittimo alla formazione) nonché sulla base del compito pubblico secondo la legge sulle strade del Canton Zurigo",
-      "<strong>Persone interessate UE:</strong> art. 6 par. 1 lett. e GDPR (esecuzione di un compito di interesse pubblico)",
-      "In caso di inserimento esplicito del nome, in aggiunta: consenso (art. 6 par. 1 lett. a GDPR)"
-    ],
-    "h5_empfaenger": "5. Destinatari dei dati",
-    "empfaenger_items": [
-      "<strong>Vercel Inc.</strong> (USA, con nodi Edge UE) — hosting dell'applicazione web. <a href=\"https://vercel.com/legal/privacy-policy\" target=\"_blank\" rel=\"noopener noreferrer\">Informativa sulla privacy Vercel</a>.",
-      "<strong>Supabase Pte. Ltd.</strong> — banca dati per classifica e contenuti formativi, ospitata nella regione UE. <a href=\"https://supabase.com/privacy\" target=\"_blank\" rel=\"noopener noreferrer\">Informativa sulla privacy Supabase</a>.",
-      "All'interno del Canton Zurigo: direzione del corso, per valutare il progresso dei corsi (esclusivamente su base pseudonima)."
-    ],
-    "drittland": "Una trasmissione verso paesi terzi al di fuori di UE/SEE avviene esclusivamente tramite Vercel (instradamento Edge). Vercel sottoscrive le clausole contrattuali tipo (CCT).",
-    "h6_speicherdauer": "6. Durata di conservazione",
-    "speicherdauer_items": [
-      "<strong>Dati locali:</strong> rimangono fino alla cancellazione manuale (funzione «Reimposta app» nel piè di pagina) o fino alla cancellazione della cache del browser.",
-      "<strong>Dati Supabase:</strong> le voci della classifica vengono conservate fino al termine del rispettivo corso più 12 mesi, poi cancellate dalla direzione del corso.",
-      "Su richiesta: cancellazione immediata (vedi sezione 7)."
-    ],
-    "h7_rechte": "7. I vostri diritti",
-    "rechte_intro": "Avete il diritto a:",
-    "rechte_items": [
-      "<strong>Accesso</strong> ai dati che vi riguardano",
-      "<strong>Rettifica</strong> di dati inesatti",
-      "<strong>Cancellazione</strong> dei vostri dati («diritto all'oblio») — tramite la funzione «Reimposta app» (locale) o per e-mail al servizio (classifica centrale)",
-      "<strong>Limitazione</strong> del trattamento",
-      "<strong>Opposizione</strong> al trattamento",
-      "<strong>Portabilità</strong> dei dati in un formato comune",
-      "<strong>Revoca</strong> del consenso in qualsiasi momento con effetto per il futuro",
-      "<strong>Reclamo</strong> presso l'Incaricato cantonale per la protezione dei dati o l'Incaricato federale della protezione dei dati e della trasparenza (IFPDT)"
-    ],
-    "h8_massnahmen": "8. Misure tecniche e organizzative",
-    "massnahmen_items": [
-      "Trasmissione cifrata tramite HTTPS/TLS 1.3",
-      "Pseudonimizzazione del nome (SHA-256)",
-      "Supabase Row Level Security (RLS) per gli accessi alla banca dati",
-      "Area admin protetta da PIN (inoltre, codice d'accesso per corso possibile)",
-      "Nessun tracking di terzi, nessuno script di analisi"
-    ],
-    "h9_cookies": "9. Cookie e archiviazione locale",
-    "cookies": "L'app non utilizza <strong>alcun cookie</strong>. Utilizza esclusivamente <code>localStorage</code> e <code>sessionStorage</code> nel browser — archiviazione tecnicamente necessaria per il comfort dell'utente (preferenza di lingua, stato di login). Questi dati non lasciano il vostro dispositivo, ad eccezione delle voci di classifica menzionate sopra.",
-    "h10_sw": "10. Service Worker / PWA",
-    "sw": "L'app è una Progressive Web App con Service Worker. Questo memorizza nella cache risorse statiche per l'uso offline. Nessun dato personale viene trattato dal Service Worker.",
-    "h11_aenderungen": "11. Modifiche a questa informativa",
-    "aenderungen": "Questa informativa sulla privacy può essere adattata non appena le condizioni tecniche o giuridiche cambiano. La versione attuale è accessibile tramite il link Privacy nel piè di pagina dell'applicazione.",
-    "h12_dok": "12. Altri documenti",
-    "link_impressum": "Impressum",
-    "link_glossar": "Glossario e abbreviazioni",
-    "link_zurueck": "Torna all'applicazione",
-    "footer": "Servizio della sicurezza stradale (FaSi) · Cantone Zurigo · Strumento RSI VR v0.4.0 · Stato della privacy: 2026-04-19"
-  },
-  "en": {
-    "_html": "en",
-    "_title": "Privacy Policy — RSI VR Tool",
-    "subtitle": "Data protection information under nFADP / GDPR",
-    "title": "Privacy Policy",
-    "stand_label": "Status:",
-    "intro": "This privacy policy informs about the processing of personal data in the context of the use of the <strong>RSI VR Tool</strong> of the Road Safety Office, Department of Civil Engineering of the Canton of Zurich.",
-    "h1_verantwortlicher": "1. Controller",
-    "verantwortlicher": "<strong>Canton of Zurich, Department of Public Works, Department of Civil Engineering</strong><br>Road Safety Office (FaSi)<br>Contact person: Stevan Skeledzic<br>Walcheplatz 2, 8090 Zurich<br>Email: <a href=\"mailto:sicherheit.tba@bd.zh.ch\">sicherheit.tba@bd.zh.ch</a><br>Phone: +41 43 259 31 20",
-    "datenschutz_kantonal": "For matters relating to the processing of personal data by the Canton of Zurich, the cantonal data protection officer is also available: <a href=\"https://www.datenschutz.ch\" target=\"_blank\" rel=\"noopener noreferrer\">datenschutz.ch</a>.",
-    "h2_zweck": "2. Purpose of processing",
-    "zweck_intro": "The data is processed exclusively for the following purposes:",
-    "zweck_items": [
-      "Conducting RSI training within the FK RSI course",
-      "Creating a pseudonymous ranking for motivation and progress comparison",
-      "Quality assurance and further development of the training tool"
-    ],
-    "h3_daten": "3. What data is collected?",
-    "th_datum": "Data",
-    "th_zweck": "Purpose",
-    "th_speicher": "Storage location",
-    "th_form": "Form",
-    "daten": [
-      ["Entered name", "Identification on device", "Local browser storage (localStorage)", "Plain text (does not leave the device)"],
-      ["Pseudonym (SHA-256, 8 characters)", "Assignment in the ranking", "Supabase EU region", "Hash, not reversible to plain text without name list"],
-      ["Course name, access code", "Course assignment", "Local & Supabase", "Plain text"],
-      ["Scene results (points, percentage, duration, timestamp)", "Ranking, progress", "Local & Supabase", "Numeric"],
-      ["Language preference, theme", "User comfort", "Local browser storage", "Plain text"]
-    ],
-    "pseudonym_hinweis": "<strong>Important:</strong> The name is pseudonymised as a SHA-256 hash (first 8 hexadecimal characters) and stored in the central database. This is <strong>pseudonymisation, not anonymisation</strong> in the sense of Art. 4(5) GDPR — re-identification by comparison with a course participant list is technically possible. The plain text name remains exclusively on your device.",
-    "keine_intro": "The following are not collected:",
-    "keine_items": [
-      "IP addresses (except via standard server logs at Vercel/Supabase, without our own tracking)",
-      "Tracking cookies or analytics scripts",
-      "Location data",
-      "Device fingerprints",
-      "Email addresses"
-    ],
-    "h4_rechtsgrundlage": "4. Legal basis",
-    "rechtsgrundlage_intro": "The processing is based on:",
-    "rechtsgrundlage_items": [
-      "<strong>Switzerland:</strong> Art. 31 para. 2 lit. a nFADP (legitimate interest in training) as well as the public task pursuant to the Road Act of the Canton of Zurich",
-      "<strong>EU data subjects:</strong> Art. 6 para. 1 lit. e GDPR (performance of a task in the public interest)",
-      "When the name is explicitly entered, additionally: consent (Art. 6 para. 1 lit. a GDPR)"
-    ],
-    "h5_empfaenger": "5. Recipients of the data",
-    "empfaenger_items": [
-      "<strong>Vercel Inc.</strong> (USA, with EU Edge nodes) — hosting the web application. <a href=\"https://vercel.com/legal/privacy-policy\" target=\"_blank\" rel=\"noopener noreferrer\">Vercel privacy policy</a>.",
-      "<strong>Supabase Pte. Ltd.</strong> — database for ranking and training content, hosted in the EU region. <a href=\"https://supabase.com/privacy\" target=\"_blank\" rel=\"noopener noreferrer\">Supabase privacy policy</a>.",
-      "Within the Canton of Zurich: course leadership, to evaluate course progress (exclusively on a pseudonym basis)."
-    ],
-    "drittland": "Transmission to third countries outside the EU/EEA only takes place via Vercel (Edge routing). Vercel signs Standard Contractual Clauses (SCC).",
-    "h6_speicherdauer": "6. Storage period",
-    "speicherdauer_items": [
-      "<strong>Local data:</strong> remains until manual deletion (function «Reset app» in the footer) or until the browser cache is cleared.",
-      "<strong>Supabase data:</strong> the ranking entries are kept until the end of the respective course plus 12 months, then deleted by the course leadership.",
-      "On request: immediate deletion (see section 7)."
-    ],
-    "h7_rechte": "7. Your rights",
-    "rechte_intro": "You have the right to:",
-    "rechte_items": [
-      "<strong>access</strong> to the data stored about you",
-      "<strong>rectification</strong> of inaccurate data",
-      "<strong>erasure</strong> of your data («right to be forgotten») — via the «Reset app» function (local) or by email to the office (central ranking)",
-      "<strong>restriction</strong> of processing",
-      "<strong>objection</strong> to processing",
-      "<strong>data portability</strong> in a common format",
-      "<strong>withdrawal</strong> of consent at any time with effect for the future",
-      "<strong>complaint</strong> to the cantonal data protection officer or the Federal Data Protection and Information Commissioner (FDPIC)"
-    ],
-    "h8_massnahmen": "8. Technical and organisational measures",
-    "massnahmen_items": [
-      "Encrypted transmission via HTTPS/TLS 1.3",
-      "Pseudonymisation of the name (SHA-256)",
-      "Supabase Row Level Security (RLS) for database access",
-      "Admin area protected by PIN (additional access code per course possible)",
-      "No third-party tracking, no analytics scripts"
-    ],
-    "h9_cookies": "9. Cookies and local storage",
-    "cookies": "The app sets <strong>no cookies</strong>. It uses exclusively <code>localStorage</code> and <code>sessionStorage</code> in the browser — technically necessary storage for user comfort (language preference, login state). This data does not leave your device, except for the ranking entries mentioned above.",
-    "h10_sw": "10. Service Worker / PWA",
-    "sw": "The app is a Progressive Web App with Service Worker. This caches static resources for offline use. No personal data is processed by the Service Worker.",
-    "h11_aenderungen": "11. Changes to this declaration",
-    "aenderungen": "This privacy policy may be adapted as soon as technical or legal conditions change. The current version is accessible via the privacy link in the footer of the application.",
-    "h12_dok": "12. Further documents",
-    "link_impressum": "Imprint",
-    "link_glossar": "Glossary & abbreviations",
-    "link_zurueck": "Back to the application",
-    "footer": "Road Safety Office (FaSi) · Canton of Zurich · RSI VR Tool v0.4.0 · Privacy status: 2026-04-19"
-  }
-}
-</script>
-
-<script>
-(function () {
-  var data = JSON.parse(document.getElementById('i18n-data').textContent);
-
-  function pickLang() {
-    var url = new URLSearchParams(window.location.search).get('lang');
-    if (url && data[url]) return url;
-    var stored = (localStorage.getItem('i18nextLng') || '').slice(0, 2).toLowerCase();
-    if (stored && data[stored]) return stored;
-    var nav = (navigator.language || 'de').slice(0, 2).toLowerCase();
-    if (data[nav]) return nav;
-    return 'de';
-  }
-
-  function renderList(id, items, html) {
-    var el = document.getElementById(id);
-    if (!el) return;
-    el.innerHTML = (items || []).map(function (item) {
-      return '<li>' + item + '</li>';
-    }).join('');
-  }
-
-  function render(lang) {
-    var t = data[lang];
-    if (!t) return;
-
-    document.documentElement.setAttribute('lang', t._html);
-    document.title = t._title;
-
-    document.querySelectorAll('[data-i18n]').forEach(function (el) {
-      var key = el.getAttribute('data-i18n');
-      if (t[key] != null) el.textContent = t[key];
-    });
-    document.querySelectorAll('[data-i18n-html]').forEach(function (el) {
-      var key = el.getAttribute('data-i18n-html');
-      if (t[key] != null) el.innerHTML = t[key];
-    });
-
-    renderList('ul-zweck',          t.zweck_items);
-    renderList('ul-keine',          t.keine_items);
-    renderList('ul-rechtsgrundlage', t.rechtsgrundlage_items);
-    renderList('ul-empfaenger',     t.empfaenger_items);
-    renderList('ul-speicherdauer',  t.speicherdauer_items);
-    renderList('ul-rechte',         t.rechte_items);
-    renderList('ul-massnahmen',     t.massnahmen_items);
-
-    var tab = document.getElementById('tab-daten');
-    tab.innerHTML = (t.daten || []).map(function (row) {
-      return '<tr>'
-        + '<td>' + row[0] + '</td>'
-        + '<td>' + row[1] + '</td>'
-        + '<td>' + row[2] + '</td>'
-        + '<td>' + row[3] + '</td>'
-        + '</tr>';
-    }).join('');
-
-    document.querySelectorAll('.lang-switch button').forEach(function (b) {
-      b.classList.toggle('active', b.getAttribute('data-lang') === lang);
-    });
-
-    var url = new URL(window.location.href);
-    url.searchParams.set('lang', lang);
-    history.replaceState(null, '', url.toString());
-
-    try { localStorage.setItem('i18nextLng', lang); } catch (e) {}
-  }
-
-  document.querySelectorAll('.lang-switch button').forEach(function (b) {
-    b.addEventListener('click', function () { render(b.getAttribute('data-lang')); });
-  });
-
-  var yr = document.getElementById('yr');
-  if (yr) yr.textContent = new Date().getFullYear();
-
-  render(pickLang());
-})();
-</script>
+<script>document.getElementById('yr').textContent = new Date().getFullYear();</script>
 
 </body>
 </html>

@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Glossar — RSI VR Tool</title>
+  <title>Glossar &amp; Abkürzungen — RSI VR Tool</title>
   <style>
     :root {
       --text: #222;
@@ -23,27 +23,10 @@
       background: var(--bg);
       line-height: 1.55;
     }
-    .topbar {
-      display: flex; align-items: center; justify-content: space-between;
-      gap: 16px; flex-wrap: wrap; margin-bottom: 12px;
-    }
-    .lang-switch {
-      display: flex; gap: 4px;
-      border: 1px solid var(--border); border-radius: 8px;
-      padding: 3px; background: #fafafa;
-    }
-    .lang-switch button {
-      border: none; background: transparent; cursor: pointer;
-      padding: 4px 10px; border-radius: 5px;
-      font-size: 12px; font-weight: 700; color: var(--muted);
-      text-transform: uppercase; letter-spacing: 0.06em;
-    }
-    .lang-switch button.active {
-      background: var(--accent); color: white;
-    }
     header {
       border-bottom: 2px solid var(--accent);
-      padding-bottom: 12px; margin-bottom: 24px;
+      padding-bottom: 12px;
+      margin-bottom: 24px;
     }
     h1 { font-size: 26px; margin: 0 0 4px; color: var(--accent); }
     .subtitle {
@@ -57,8 +40,14 @@
     p, li, td, th { font-size: 14px; }
     a { color: var(--accent2); text-decoration: none; }
     a:hover { text-decoration: underline; }
-    table { border-collapse: collapse; width: 100%; margin: 12px 0; font-size: 13px; }
-    th, td { border: 1px solid var(--border); padding: 8px 10px; text-align: left; vertical-align: top; }
+    table {
+      border-collapse: collapse; width: 100%;
+      margin: 12px 0; font-size: 13px;
+    }
+    th, td {
+      border: 1px solid var(--border); padding: 8px 10px;
+      text-align: left; vertical-align: top;
+    }
     th { background: #f5f8fb; font-weight: 700; color: var(--accent); }
     td:first-child { font-family: "SF Mono", Consolas, monospace; font-weight: 700; white-space: nowrap; }
     dl { margin: 12px 0; }
@@ -73,358 +62,109 @@
 </head>
 <body>
 
-<div class="topbar">
-  <div class="subtitle" data-i18n="subtitle">Fachbegriffe und Abkürzungen</div>
-  <div class="lang-switch" role="group" aria-label="Sprache">
-    <button data-lang="de">DE</button>
-    <button data-lang="fr">FR</button>
-    <button data-lang="it">IT</button>
-    <button data-lang="en">EN</button>
-  </div>
-</div>
-
 <header>
-  <h1 data-i18n="title">Glossar</h1>
+  <div class="subtitle">Fachbegriffe und Abkürzungen</div>
+  <h1>Glossar</h1>
 </header>
 
-<p data-i18n="lead">Referenz zu den im RSI VR Tool verwendeten Begriffen. Gültig für den Anwendungskontext der Road Safety Inspection im Kanton Zürich nach TBA-Fachkurs FK RSI (V 16.09.2020).</p>
+<p>Referenz zu den im RSI VR Tool verwendeten Begriffen. Gültig für den Anwendungskontext der Road Safety Inspection im Kanton Zürich nach TBA-Fachkurs FK RSI (V 16.09.2020).</p>
 
-<h2 data-i18n="h_abk">Abkürzungen</h2>
+<h2>Abkürzungen</h2>
 <table>
-  <thead><tr>
-    <th data-i18n="th_kuerzel">Kürzel</th>
-    <th data-i18n="th_bedeutung">Bedeutung</th>
-    <th data-i18n="th_kontext">Kontext</th>
-  </tr></thead>
-  <tbody id="tab-abk"></tbody>
+  <thead><tr><th>Kürzel</th><th>Bedeutung</th><th>Kontext</th></tr></thead>
+  <tbody>
+    <tr><td>RSI</td><td>Road Safety Inspection</td><td>Strasseninspektion nach 9-Schritte-Verfahren</td></tr>
+    <tr><td>FaSi</td><td>Fachstelle Verkehrssicherheit</td><td>Tiefbauamt Kanton Zürich</td></tr>
+    <tr><td>KZH / KTZH</td><td>Kanton Zürich</td><td>Auftraggeber und Herausgeber</td></tr>
+    <tr><td>TBA</td><td>Tiefbauamt</td><td>Baudirektion Kanton Zürich</td></tr>
+    <tr><td>FK RSI</td><td>Fachkurs RSI</td><td>Schulungsreferenz V 16.09.2020</td></tr>
+    <tr><td>bfu</td><td>Beratungsstelle für Unfallverhütung</td><td>Schweizer Kompetenzstelle</td></tr>
+    <tr><td>ASTRA</td><td>Bundesamt für Strassen</td><td>Oberbehörde Nationalstrassen</td></tr>
+    <tr><td>NACA</td><td>National Advisory Committee for Aeronautics</td><td>Skala 0–7 für Unfallschwere (bfu-Bericht 73)</td></tr>
+    <tr><td>SD</td><td>Sicherheitsdefizit</td><td>Einzelne Abweichung von normativer Anforderung</td></tr>
+    <tr><td>io / ao</td><td>innerorts / ausserorts</td><td>Kontext der Wichtigkeits-Bewertung</td></tr>
+    <tr><td>VSS</td><td>Verband der Strassen- und Verkehrsfachleute</td><td>Schweizer Normenherausgeber (VSS 40 xxx)</td></tr>
+    <tr><td>SN</td><td>Schweizer Norm</td><td>SN 640 (Strassenbau), SN 641 (Verkehr)</td></tr>
+    <tr><td>DSGVO</td><td>Datenschutz-Grundverordnung</td><td>EU-Verordnung; CH: nDSG</td></tr>
+    <tr><td>WCAG</td><td>Web Content Accessibility Guidelines</td><td>W3C 2.1 / 2.2</td></tr>
+    <tr><td>WebXR</td><td>Web Extended Reality</td><td>Browser-API für VR/AR</td></tr>
+    <tr><td>PWA</td><td>Progressive Web App</td><td>Web-App mit App-Charakter, offline-fähig</td></tr>
+    <tr><td>CD</td><td>Corporate Design</td><td>CD Kanton Zürich</td></tr>
+    <tr><td>PIN</td><td>Personal Identification Number</td><td>4-stelliger Admin-Zugangscode</td></tr>
+    <tr><td>UI / UX</td><td>User Interface / User Experience</td><td>Benutzeroberfläche / Nutzererfahrung</td></tr>
+    <tr><td>RLS</td><td>Row Level Security</td><td>Supabase-Tabellen-Zugriffsrechte</td></tr>
+    <tr><td>SHA-256</td><td>Secure Hash Algorithm 256 bit</td><td>Einwegfunktion zur Pseudonymisierung</td></tr>
+    <tr><td>HDRI</td><td>High Dynamic Range Imaging</td><td>Panorama-Format 32-bit Farbtiefe</td></tr>
+    <tr><td>UV</td><td>UV-Mapping</td><td>2D-Textur-Koordinaten auf 3D-Oberflächen</td></tr>
+  </tbody>
 </table>
 
-<h2 data-i18n="h_begriffe">Fachbegriffe</h2>
-<dl id="tab-begriffe"></dl>
+<h2>Fachbegriffe</h2>
+<dl>
+  <dt>9-Schritt-Methodik RSI</dt>
+  <dd>Normatives Verfahren pro Sicherheitsdefizit: Wichtigkeit (1) → Einzeichnen (2) → Abweichung (3) → Einzeichnen (4) → Relevanz SD (5) → Einzeichnen (6) → NACA (7) → Einzeichnen (8) → Unfallrisiko (9). Schritte 1, 3, 7 sind Benutzereingaben, die anderen Automatiken.</dd>
 
-<h2 data-i18n="h_dok">Weitere Dokumente</h2>
+  <dt>Wichtigkeit</dt>
+  <dd>Kategorie: gross / mittel / klein. Wie relevant ein Kriterium für Verkehrsablauf und Sicherheit ist. Kontextabhängig (io/ao). Quelle: WICHTIGKEIT_TABLE, 58 Kriterien.</dd>
+
+  <dt>Abweichung</dt>
+  <dd>Kategorie: gross / mittel / klein. Wie stark der Ist-Zustand von der Norm (VSS/SN) abweicht.</dd>
+
+  <dt>Relevanz SD</dt>
+  <dd>Kombiniertes Ergebnis Wichtigkeit × Abweichung. Wertebereich: gering / mittel / hoch.</dd>
+
+  <dt>Unfallschwere</dt>
+  <dd>Übersetzung NACA-Skala: 0–1 → leicht, 2–3 → mittel, 4–7 → schwer.</dd>
+
+  <dt>Unfallrisiko</dt>
+  <dd>Endbewertung Relevanz SD × Unfallschwere. Wertebereich: gering / mittel / hoch. Farbe: grün / orange / rot.</dd>
+
+  <dt>Verortung</dt>
+  <dd>Geometrische Defizit-Definition im 360°-Panorama. Typen: Punkt (mit Toleranz), Polygon (Eckpunkte), Gruppe (kombiniert).</dd>
+
+  <dt>Perspektive</dt>
+  <dd>Zusätzlicher 360°-Standort innerhalb einer Szene. Eigenes Panoramabild, eigener Startblick, eigene Verortungen (kein Fallback auf Haupt).</dd>
+
+  <dt>Standort-Navigation</dt>
+  <dd>Bidirektionale Verknüpfung zwischen Haupt-Panorama und Perspektiven via klickbare 3D-Marker.</dd>
+
+  <dt>Startblick</dt>
+  <dd>Anfangs-Blickrichtung beim Laden einer Szene/Perspektive (θ, φ).</dd>
+
+  <dt>Best-of-Punktesystem</dt>
+  <dd>Mehrfach-Durchgänge zulässig — bester Score zählt. Sterne: &lt; 60 % (1), 60–89 % (2), 90–100 % (3).</dd>
+
+  <dt>Penalty / Strafabzüge</dt>
+  <dd>Kategorie falsch: −10 % auf Defizit. Hinweise (Lupe) aktiviert: −25 Pkt. pro Szene.</dd>
+
+  <dt>Kriterium</dt>
+  <dd>Einer von 58 Einträgen in WICHTIGKEIT_TABLE, bindet Kontext (io/ao) an Wichtigkeits-Wert.</dd>
+
+  <dt>Szene</dt>
+  <dd>Verkehrssituation mit Haupt-Panorama, optional Perspektiven, Defizit-Liste, Einstiegs-Text.</dd>
+
+  <dt>Thema / Unterthema</dt>
+  <dd>Thematische Szenen-Gruppierung (Oberthema → Unterthema → Szenen).</dd>
+
+  <dt>Kurs</dt>
+  <dd>Zeitlich begrenzter Zugang für Teilnehmergruppe: Zugangscode, optional Passwort, Gültigkeit, Themen-Auswahl.</dd>
+
+  <dt>Pseudonymisierung</dt>
+  <dd>Ersetzen eines identifizierenden Merkmals (Name) durch einen nicht direkt rückrechenbaren Wert (SHA-256-Hash). Nicht gleichbedeutend mit Anonymisierung (Art. 4(5) DSGVO).</dd>
+</dl>
+
+<h2>Weitere Dokumente</h2>
 <ul>
-  <li><a href="/impressum.html" data-i18n="link_impressum">Impressum</a></li>
-  <li><a href="/datenschutz.html" data-i18n="link_datenschutz">Datenschutzerklärung</a></li>
-  <li><a href="/" data-i18n="link_zurueck">Zurück zur Anwendung</a></li>
+  <li><a href="/impressum.html">Impressum</a></li>
+  <li><a href="/datenschutz.html">Datenschutzerklärung</a></li>
+  <li><a href="/">Zurück zur Anwendung</a></li>
 </ul>
 
 <footer>
-  <span data-i18n="footer">Fachstelle Verkehrssicherheit (FaSi) · Kanton Zürich · RSI VR Tool v0.4.0</span> · <span id="yr">2026</span>
+  Fachstelle Verkehrssicherheit (FaSi) · Kanton Zürich · RSI VR Tool v0.4.0 · <span id="yr">2026</span>
 </footer>
 
-<script type="application/json" id="i18n-data">
-{
-  "de": {
-    "_html": "de-CH",
-    "_title": "Glossar — RSI VR Tool",
-    "subtitle": "Fachbegriffe und Abkürzungen",
-    "title": "Glossar",
-    "lead": "Referenz zu den im RSI VR Tool verwendeten Begriffen. Gültig für den Anwendungskontext der Road Safety Inspection im Kanton Zürich nach TBA-Fachkurs FK RSI (V 16.09.2020).",
-    "h_abk": "Abkürzungen",
-    "h_begriffe": "Fachbegriffe",
-    "h_dok": "Weitere Dokumente",
-    "th_kuerzel": "Kürzel",
-    "th_bedeutung": "Bedeutung",
-    "th_kontext": "Kontext",
-    "link_impressum": "Impressum",
-    "link_datenschutz": "Datenschutzerklärung",
-    "link_zurueck": "Zurück zur Anwendung",
-    "footer": "Fachstelle Verkehrssicherheit (FaSi) · Kanton Zürich · RSI VR Tool v0.4.0",
-    "abk": [
-      ["RSI", "Road Safety Inspection", "Strasseninspektion nach 9-Schritte-Verfahren"],
-      ["ISSI", "In-Service Safety Inspection", "Periodische Sicherheitsinspektion bestehender Strassen"],
-      ["FaSi", "Fachstelle Verkehrssicherheit", "Tiefbauamt Kanton Zürich"],
-      ["KZH / KTZH", "Kanton Zürich", "Auftraggeber und Herausgeber"],
-      ["TBA", "Tiefbauamt", "Baudirektion Kanton Zürich"],
-      ["FK RSI", "Fachkurs RSI", "Schulungsreferenz V 16.09.2020"],
-      ["bfu", "Beratungsstelle für Unfallverhütung", "Schweizer Kompetenzstelle"],
-      ["ASTRA", "Bundesamt für Strassen", "Oberbehörde Nationalstrassen"],
-      ["NACA", "National Advisory Committee for Aeronautics", "Skala 0–7 für Unfallschwere (bfu-Bericht 73)"],
-      ["SD", "Sicherheitsdefizit", "Einzelne Abweichung von normativer Anforderung"],
-      ["io / ao", "innerorts / ausserorts", "Kontext der Wichtigkeits-Bewertung"],
-      ["VSS", "Verband der Strassen- und Verkehrsfachleute", "Schweizer Normenherausgeber"],
-      ["SN", "Schweizer Norm", "SN 640 (Strassenbau), SN 641 (Verkehr)"],
-      ["nDSG / DSGVO", "neues Datenschutzgesetz / EU-DSGVO", "CH/EU-Datenschutzrecht"],
-      ["WCAG", "Web Content Accessibility Guidelines", "W3C 2.1 / 2.2"],
-      ["WebXR", "Web Extended Reality", "Browser-API für VR/AR"],
-      ["PWA", "Progressive Web App", "Web-App mit App-Charakter, offline-fähig"],
-      ["CD", "Corporate Design", "CD Kanton Zürich"],
-      ["PIN", "Personal Identification Number", "4-stelliger Admin-Zugangscode"],
-      ["UI / UX", "User Interface / User Experience", "Benutzeroberfläche / Nutzererfahrung"],
-      ["RLS", "Row Level Security", "Supabase-Tabellen-Zugriffsrechte"],
-      ["SHA-256", "Secure Hash Algorithm 256 bit", "Einwegfunktion zur Pseudonymisierung"],
-      ["HDRI", "High Dynamic Range Imaging", "Panorama-Format 32-bit Farbtiefe"],
-      ["UV", "UV-Mapping", "2D-Textur-Koordinaten auf 3D-Oberflächen"]
-    ],
-    "begriffe": [
-      ["9-Schritt-Methodik RSI", "Normatives Verfahren pro Sicherheitsdefizit: Wichtigkeit (1) → Einzeichnen (2) → Abweichung (3) → Einzeichnen (4) → Relevanz SD (5) → Einzeichnen (6) → NACA (7) → Einzeichnen (8) → Unfallrisiko (9). Schritte 1, 3, 7 sind Benutzereingaben."],
-      ["Wichtigkeit", "Kategorie: gross / mittel / klein. Wie relevant ein Kriterium für Verkehrsablauf und Sicherheit ist. Kontextabhängig (io/ao)."],
-      ["Abweichung", "Kategorie: gross / mittel / klein. Wie stark der Ist-Zustand von der Norm (VSS/SN) abweicht."],
-      ["Relevanz SD", "Kombiniertes Ergebnis Wichtigkeit × Abweichung. Wertebereich: gering / mittel / hoch."],
-      ["Unfallschwere", "Übersetzung NACA-Skala: 0–1 → leicht, 2–3 → mittel, 4–7 → schwer."],
-      ["Unfallrisiko", "Endbewertung Relevanz SD × Unfallschwere. Wertebereich: gering / mittel / hoch."],
-      ["Verortung", "Geometrische Defizit-Definition im 360°-Panorama. Typen: Punkt, Polygon, Gruppe."],
-      ["Perspektive", "Zusätzlicher 360°-Standort innerhalb einer Szene. Eigenes Panoramabild, eigener Startblick, eigene Verortungen."],
-      ["Standort-Navigation", "Bidirektionale Verknüpfung zwischen Haupt-Panorama und Perspektiven via klickbare 3D-Marker."],
-      ["Startblick", "Anfangs-Blickrichtung beim Laden einer Szene/Perspektive (θ, φ)."],
-      ["Best-of-Punktesystem", "Mehrfach-Durchgänge zulässig — bester Score zählt. Sterne: < 60 % (1), 60–89 % (2), 90–100 % (3)."],
-      ["Kriterium", "Einer von 58 Einträgen in WICHTIGKEIT_TABLE, bindet Kontext (io/ao) an Wichtigkeits-Wert."],
-      ["Szene", "Verkehrssituation mit Haupt-Panorama, optional Perspektiven, Defizit-Liste."],
-      ["Thema / Unterthema", "Thematische Szenen-Gruppierung (Oberthema → Unterthema → Szenen)."],
-      ["Kurs", "Zeitlich begrenzter Zugang für Teilnehmergruppe."],
-      ["Pseudonymisierung", "Ersetzen eines identifizierenden Merkmals (Name) durch einen nicht direkt rückrechenbaren Wert (SHA-256-Hash)."]
-    ]
-  },
-  "fr": {
-    "_html": "fr-CH",
-    "_title": "Glossaire — Outil RSI VR",
-    "subtitle": "Termes techniques et abréviations",
-    "title": "Glossaire",
-    "lead": "Référence aux termes utilisés dans l'outil RSI VR. Valable pour le contexte d'application de la Road Safety Inspection dans le canton de Zurich selon le cours TBA FK RSI (V 16.09.2020).",
-    "h_abk": "Abréviations",
-    "h_begriffe": "Termes techniques",
-    "h_dok": "Autres documents",
-    "th_kuerzel": "Sigle",
-    "th_bedeutung": "Signification",
-    "th_kontext": "Contexte",
-    "link_impressum": "Mentions légales",
-    "link_datenschutz": "Politique de confidentialité",
-    "link_zurueck": "Retour à l'application",
-    "footer": "Service de la sécurité routière (FaSi) · Canton de Zurich · Outil RSI VR v0.4.0",
-    "abk": [
-      ["RSI", "Road Safety Inspection", "Inspection routière selon procédure à 9 étapes"],
-      ["ISSI", "In-Service Safety Inspection", "Inspection périodique de sécurité des routes existantes"],
-      ["FaSi", "Service de la sécurité routière", "Office des ponts et chaussées du canton de Zurich"],
-      ["KZH / KTZH", "Canton de Zurich", "Mandant et éditeur"],
-      ["TBA", "Office des ponts et chaussées", "Direction des travaux publics du canton de Zurich"],
-      ["FK RSI", "Cours de formation RSI", "Référence didactique V 16.09.2020"],
-      ["bpa", "Bureau de prévention des accidents", "Centre de compétence suisse"],
-      ["OFROU", "Office fédéral des routes", "Autorité supérieure des routes nationales"],
-      ["NACA", "National Advisory Committee for Aeronautics", "Échelle 0–7 pour la gravité des accidents (rapport bpa 73)"],
-      ["SD", "Déficit de sécurité", "Écart individuel par rapport aux exigences normatives"],
-      ["io / ao", "en localité / hors localité", "Contexte de l'évaluation de l'importance"],
-      ["VSS", "Association suisse des professionnels de la route et des transports", "Éditeur de normes suisses"],
-      ["SN", "Norme suisse", "SN 640 (construction), SN 641 (circulation)"],
-      ["nLPD / RGPD", "nouvelle loi sur la protection des données / RGPD UE", "Droit de la protection des données CH/UE"],
-      ["WCAG", "Web Content Accessibility Guidelines", "W3C 2.1 / 2.2"],
-      ["WebXR", "Web Extended Reality", "API navigateur pour VR/AR"],
-      ["PWA", "Progressive Web App", "App web avec caractère application, capable hors ligne"],
-      ["CD", "Identité visuelle (Corporate Design)", "CD du canton de Zurich"],
-      ["PIN", "Personal Identification Number", "Code d'accès admin à 4 chiffres"],
-      ["UI / UX", "Interface utilisateur / Expérience utilisateur", "Surface utilisateur / vécu utilisateur"],
-      ["RLS", "Row Level Security", "Droits d'accès aux tables Supabase"],
-      ["SHA-256", "Secure Hash Algorithm 256 bit", "Fonction à sens unique pour la pseudonymisation"],
-      ["HDRI", "High Dynamic Range Imaging", "Format panorama 32 bits par couleur"],
-      ["UV", "UV-Mapping", "Coordonnées de texture 2D sur surfaces 3D"]
-    ],
-    "begriffe": [
-      ["Méthode RSI à 9 étapes", "Procédure normative par déficit de sécurité : Importance (1) → Inscription (2) → Écart (3) → Inscription (4) → Pertinence SD (5) → Inscription (6) → NACA (7) → Inscription (8) → Risque d'accident (9). Les étapes 1, 3, 7 sont des saisies utilisateur."],
-      ["Importance", "Catégorie : grande / moyenne / petite. Pertinence d'un critère pour le trafic et la sécurité. Dépendant du contexte (io/ao)."],
-      ["Écart", "Catégorie : grand / moyen / petit. Mesure de l'écart entre l'état réel et la norme (VSS/SN)."],
-      ["Pertinence SD", "Résultat combiné Importance × Écart. Valeurs : faible / moyen / élevé."],
-      ["Gravité de l'accident", "Traduction de l'échelle NACA : 0–1 → léger, 2–3 → moyen, 4–7 → grave."],
-      ["Risque d'accident", "Évaluation finale Pertinence SD × Gravité. Valeurs : faible / moyen / élevé."],
-      ["Localisation", "Définition géométrique du déficit dans le panorama 360°. Types : point, polygone, groupe."],
-      ["Perspective", "Position 360° supplémentaire dans une scène. Panorama propre, regard initial propre, localisations propres."],
-      ["Navigation entre positions", "Liens bidirectionnels entre panorama principal et perspectives via marqueurs 3D cliquables."],
-      ["Regard initial", "Direction initiale au chargement d'une scène ou perspective (θ, φ)."],
-      ["Système de points Best-of", "Plusieurs essais autorisés — le meilleur score compte. Étoiles : < 60 % (1), 60–89 % (2), 90–100 % (3)."],
-      ["Critère", "Une des 58 entrées de WICHTIGKEIT_TABLE, lie le contexte (io/ao) à une valeur d'importance."],
-      ["Scène", "Situation routière avec panorama principal, éventuellement perspectives, liste de déficits."],
-      ["Thème / sous-thème", "Regroupement thématique des scènes (thème principal → sous-thème → scènes)."],
-      ["Cours", "Accès limité dans le temps pour un groupe de participants."],
-      ["Pseudonymisation", "Remplacement d'une caractéristique identifiante (nom) par une valeur non directement réversible (hachage SHA-256)."]
-    ]
-  },
-  "it": {
-    "_html": "it-CH",
-    "_title": "Glossario — Strumento RSI VR",
-    "subtitle": "Termini tecnici e abbreviazioni",
-    "title": "Glossario",
-    "lead": "Riferimento ai termini utilizzati nello strumento RSI VR. Valido per il contesto applicativo della Road Safety Inspection nel Canton Zurigo secondo il corso TBA FK RSI (V 16.09.2020).",
-    "h_abk": "Abbreviazioni",
-    "h_begriffe": "Termini tecnici",
-    "h_dok": "Altri documenti",
-    "th_kuerzel": "Sigla",
-    "th_bedeutung": "Significato",
-    "th_kontext": "Contesto",
-    "link_impressum": "Impressum",
-    "link_datenschutz": "Informativa sulla privacy",
-    "link_zurueck": "Torna all'applicazione",
-    "footer": "Servizio della sicurezza stradale (FaSi) · Cantone Zurigo · Strumento RSI VR v0.4.0",
-    "abk": [
-      ["RSI", "Road Safety Inspection", "Ispezione stradale secondo procedura a 9 fasi"],
-      ["ISSI", "In-Service Safety Inspection", "Ispezione periodica di sicurezza su strade esistenti"],
-      ["FaSi", "Servizio della sicurezza stradale", "Ufficio del genio civile del Canton Zurigo"],
-      ["KZH / KTZH", "Cantone Zurigo", "Committente ed editore"],
-      ["TBA", "Ufficio del genio civile", "Direzione delle costruzioni del Canton Zurigo"],
-      ["FK RSI", "Corso di formazione RSI", "Riferimento didattico V 16.09.2020"],
-      ["upi", "Ufficio prevenzione infortuni", "Centro di competenza svizzero"],
-      ["USTRA", "Ufficio federale delle strade", "Autorità superiore strade nazionali"],
-      ["NACA", "National Advisory Committee for Aeronautics", "Scala 0–7 per la gravità degli incidenti (rapporto upi 73)"],
-      ["SD", "Difetto di sicurezza", "Singolo scostamento rispetto a un requisito normativo"],
-      ["io / ao", "in zona abitata / fuori zona", "Contesto della valutazione dell'importanza"],
-      ["VSS", "Associazione svizzera dei professionisti della strada e dei trasporti", "Editore svizzero di norme"],
-      ["SN", "Norma svizzera", "SN 640 (costruzione), SN 641 (circolazione)"],
-      ["nLPD / GDPR", "nuova legge sulla protezione dei dati / GDPR UE", "Diritto della protezione dei dati CH/UE"],
-      ["WCAG", "Web Content Accessibility Guidelines", "W3C 2.1 / 2.2"],
-      ["WebXR", "Web Extended Reality", "API browser per VR/AR"],
-      ["PWA", "Progressive Web App", "App web con carattere applicativo, capace offline"],
-      ["CD", "Identità visiva (Corporate Design)", "CD del Canton Zurigo"],
-      ["PIN", "Personal Identification Number", "Codice d'accesso admin a 4 cifre"],
-      ["UI / UX", "Interfaccia utente / Esperienza utente", "Superficie utente / esperienza d'uso"],
-      ["RLS", "Row Level Security", "Diritti d'accesso alle tabelle Supabase"],
-      ["SHA-256", "Secure Hash Algorithm 256 bit", "Funzione unidirezionale per la pseudonimizzazione"],
-      ["HDRI", "High Dynamic Range Imaging", "Formato panorama 32 bit per colore"],
-      ["UV", "UV-Mapping", "Coordinate di texture 2D su superfici 3D"]
-    ],
-    "begriffe": [
-      ["Metodologia RSI a 9 fasi", "Procedura normativa per ogni difetto di sicurezza: Importanza (1) → Inserimento (2) → Scostamento (3) → Inserimento (4) → Pertinenza SD (5) → Inserimento (6) → NACA (7) → Inserimento (8) → Rischio d'incidente (9). Le fasi 1, 3, 7 sono inserimenti dell'utente."],
-      ["Importanza", "Categoria: grande / media / piccola. Quanto un criterio è rilevante per il flusso del traffico e la sicurezza. Dipende dal contesto (io/ao)."],
-      ["Scostamento", "Categoria: grande / medio / piccolo. Quanto lo stato reale si discosta dalla norma (VSS/SN)."],
-      ["Pertinenza SD", "Risultato combinato Importanza × Scostamento. Valori: bassa / media / alta."],
-      ["Gravità dell'incidente", "Traduzione della scala NACA: 0–1 → lieve, 2–3 → media, 4–7 → grave."],
-      ["Rischio d'incidente", "Valutazione finale Pertinenza SD × Gravità. Valori: basso / medio / alto."],
-      ["Localizzazione", "Definizione geometrica del difetto nel panorama 360°. Tipi: punto, poligono, gruppo."],
-      ["Prospettiva", "Posizione 360° aggiuntiva all'interno di una scena. Panorama proprio, sguardo iniziale proprio, localizzazioni proprie."],
-      ["Navigazione tra posizioni", "Collegamento bidirezionale tra panorama principale e prospettive tramite marker 3D cliccabili."],
-      ["Sguardo iniziale", "Direzione di sguardo iniziale al caricamento di una scena o prospettiva (θ, φ)."],
-      ["Sistema di punteggio Best-of", "Più tentativi consentiti — conta il punteggio migliore. Stelle: < 60 % (1), 60–89 % (2), 90–100 % (3)."],
-      ["Criterio", "Una delle 58 voci in WICHTIGKEIT_TABLE, lega il contesto (io/ao) a un valore d'importanza."],
-      ["Scena", "Situazione stradale con panorama principale, eventuali prospettive, lista di difetti."],
-      ["Tema / sottotema", "Raggruppamento tematico delle scene (tema principale → sottotema → scene)."],
-      ["Corso", "Accesso limitato nel tempo per un gruppo di partecipanti."],
-      ["Pseudonimizzazione", "Sostituzione di una caratteristica identificativa (nome) con un valore non direttamente reversibile (hash SHA-256)."]
-    ]
-  },
-  "en": {
-    "_html": "en",
-    "_title": "Glossary — RSI VR Tool",
-    "subtitle": "Technical terms and abbreviations",
-    "title": "Glossary",
-    "lead": "Reference for terms used in the RSI VR Tool. Valid for the application context of Road Safety Inspection in the Canton of Zurich according to the TBA training course FK RSI (V 16.09.2020).",
-    "h_abk": "Abbreviations",
-    "h_begriffe": "Technical terms",
-    "h_dok": "Further documents",
-    "th_kuerzel": "Acronym",
-    "th_bedeutung": "Meaning",
-    "th_kontext": "Context",
-    "link_impressum": "Imprint",
-    "link_datenschutz": "Privacy policy",
-    "link_zurueck": "Back to the application",
-    "footer": "Road Safety Office (FaSi) · Canton of Zurich · RSI VR Tool v0.4.0",
-    "abk": [
-      ["RSI", "Road Safety Inspection", "Road inspection following 9-step procedure"],
-      ["ISSI", "In-Service Safety Inspection", "Periodic safety inspection of existing roads"],
-      ["FaSi", "Road Safety Office", "Department of Civil Engineering, Canton of Zurich"],
-      ["KZH / KTZH", "Canton of Zurich", "Commissioning authority and publisher"],
-      ["TBA", "Department of Civil Engineering", "Department of Public Works, Canton of Zurich"],
-      ["FK RSI", "RSI training course", "Educational reference V 16.09.2020"],
-      ["bfu", "Swiss Council for Accident Prevention", "Swiss expertise centre"],
-      ["FEDRO", "Swiss Federal Roads Office", "Supervisory authority for national roads"],
-      ["NACA", "National Advisory Committee for Aeronautics", "Scale 0–7 for accident severity (bfu report 73)"],
-      ["SD", "Safety deficit", "Individual deviation from a normative requirement"],
-      ["io / ao", "built-up / rural", "Context of the importance assessment"],
-      ["VSS", "Swiss Association of Road and Transport Professionals", "Swiss standards publisher"],
-      ["SN", "Swiss Standard", "SN 640 (construction), SN 641 (traffic)"],
-      ["nFADP / GDPR", "new Federal Act on Data Protection / EU GDPR", "Data protection law CH/EU"],
-      ["WCAG", "Web Content Accessibility Guidelines", "W3C 2.1 / 2.2"],
-      ["WebXR", "Web Extended Reality", "Browser API for VR/AR"],
-      ["PWA", "Progressive Web App", "Web app with app character, offline-capable"],
-      ["CD", "Corporate Design", "CD of the Canton of Zurich"],
-      ["PIN", "Personal Identification Number", "4-digit admin access code"],
-      ["UI / UX", "User Interface / User Experience", "User surface / user experience"],
-      ["RLS", "Row Level Security", "Supabase table access rights"],
-      ["SHA-256", "Secure Hash Algorithm 256 bit", "One-way function for pseudonymisation"],
-      ["HDRI", "High Dynamic Range Imaging", "Panorama format with 32-bit colour depth"],
-      ["UV", "UV mapping", "2D texture coordinates on 3D surfaces"]
-    ],
-    "begriffe": [
-      ["9-step RSI methodology", "Normative procedure per safety deficit: Importance (1) → Plot (2) → Deviation (3) → Plot (4) → Relevance SD (5) → Plot (6) → NACA (7) → Plot (8) → Accident risk (9). Steps 1, 3, 7 are user inputs."],
-      ["Importance", "Category: large / medium / small. How relevant a criterion is for traffic flow and safety. Context-dependent (io/ao)."],
-      ["Deviation", "Category: large / medium / small. How much the actual state deviates from the standard (VSS/SN)."],
-      ["Relevance SD", "Combined result Importance × Deviation. Values: low / medium / high."],
-      ["Accident severity", "Translation of the NACA scale: 0–1 → light, 2–3 → medium, 4–7 → severe."],
-      ["Accident risk", "Final assessment Relevance SD × Severity. Values: low / medium / high."],
-      ["Location", "Geometric deficit definition in the 360° panorama. Types: point, polygon, group."],
-      ["Perspective", "Additional 360° position within a scene. Own panorama, own initial view, own locations."],
-      ["Position navigation", "Bidirectional link between main panorama and perspectives via clickable 3D markers."],
-      ["Initial view", "Initial viewing direction when loading a scene or perspective (θ, φ)."],
-      ["Best-of point system", "Multiple attempts allowed — best score counts. Stars: < 60 % (1), 60–89 % (2), 90–100 % (3)."],
-      ["Criterion", "One of 58 entries in WICHTIGKEIT_TABLE, binds context (io/ao) to an importance value."],
-      ["Scene", "Traffic situation with main panorama, optional perspectives, deficit list."],
-      ["Topic / subtopic", "Thematic scene grouping (parent topic → subtopic → scenes)."],
-      ["Course", "Time-limited access for a participant group."],
-      ["Pseudonymisation", "Replacement of an identifying feature (name) with a value that is not directly reversible (SHA-256 hash)."]
-    ]
-  }
-}
-</script>
-
-<script>
-(function () {
-  var data = JSON.parse(document.getElementById('i18n-data').textContent);
-
-  function pickLang() {
-    var url = new URLSearchParams(window.location.search).get('lang');
-    if (url && data[url]) return url;
-    var stored = (localStorage.getItem('i18nextLng') || '').slice(0, 2).toLowerCase();
-    if (stored && data[stored]) return stored;
-    var nav = (navigator.language || 'de').slice(0, 2).toLowerCase();
-    if (data[nav]) return nav;
-    return 'de';
-  }
-
-  function render(lang) {
-    var t = data[lang];
-    if (!t) return;
-
-    document.documentElement.setAttribute('lang', t._html);
-    document.title = t._title;
-
-    document.querySelectorAll('[data-i18n]').forEach(function (el) {
-      var key = el.getAttribute('data-i18n');
-      if (t[key]) el.textContent = t[key];
-    });
-
-    // Tabelle Abkürzungen
-    var tbody = document.getElementById('tab-abk');
-    tbody.innerHTML = t.abk.map(function (row) {
-      return '<tr><td>' + row[0] + '</td><td>' + row[1] + '</td><td>' + row[2] + '</td></tr>';
-    }).join('');
-
-    // DL Fachbegriffe
-    var dl = document.getElementById('tab-begriffe');
-    dl.innerHTML = t.begriffe.map(function (pair) {
-      return '<dt>' + pair[0] + '</dt><dd>' + pair[1] + '</dd>';
-    }).join('');
-
-    // Sprachumschalter aktualisieren
-    document.querySelectorAll('.lang-switch button').forEach(function (b) {
-      b.classList.toggle('active', b.getAttribute('data-lang') === lang);
-    });
-
-    // URL-Param aktualisieren ohne Reload
-    var url = new URL(window.location.href);
-    url.searchParams.set('lang', lang);
-    history.replaceState(null, '', url.toString());
-
-    // Persistieren (gleicher Key wie i18next)
-    try { localStorage.setItem('i18nextLng', lang); } catch (e) {}
-  }
-
-  document.querySelectorAll('.lang-switch button').forEach(function (b) {
-    b.addEventListener('click', function () { render(b.getAttribute('data-lang')); });
-  });
-
-  // Jahr-Footer
-  var yr = document.getElementById('yr');
-  if (yr) yr.textContent = new Date().getFullYear();
-
-  render(pickLang());
-})();
-</script>
+<script>document.getElementById('yr').textContent = new Date().getFullYear();</script>
 
 </body>
 </html>
