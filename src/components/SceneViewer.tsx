@@ -856,7 +856,10 @@ export default function SceneViewer({
   const aktiveStartblick = aktivePerspektive?.startblick ?? scene.startblick
 
   // Standortwechsel: Perspektive wechseln + Pending-State aufräumen
+  // Wichtig: Auch den Auto-Ausblenden-Timer stoppen, sonst feuert er 5s später
+  // in der neuen Perspektive und setzt die Phase fälschlich zurück.
   const handleStandortWechsel = useCallback((id: string | null) => {
+    if (pendingTimerRef.current) clearTimeout(pendingTimerRef.current)
     setAktivePerspektiveId(id)
     setPendingClickPos(null)
     setPhase('exploring')

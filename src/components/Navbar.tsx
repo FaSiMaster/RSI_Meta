@@ -2,7 +2,7 @@
 // Links: Logo | Mitte: Nav-Links | Rechts: Score + Live + Sprache + Dark-Toggle + Avatar
 // Avatar-Klick öffnet User-Popover (Name, Kurs, Score, Abmelden, Reset)
 
-import { LayoutDashboard, BarChart3, Settings, Sun, Moon, Trophy, LogOut, RotateCcw, MessageSquare } from 'lucide-react'
+import { LayoutDashboard, BarChart3, Settings, Sun, Moon, Trophy, LogOut, RotateCcw, MessageSquare, FileText, ShieldCheck, BookOpen } from 'lucide-react'
 import { useState, useEffect, useRef } from 'react'
 import LanguageSwitcher from './LanguageSwitcher'
 import FeedbackModal from './FeedbackModal'
@@ -95,8 +95,12 @@ export default function Navbar({ view, username, score, theme, kursName, onNavig
       }}
     >
       {/* Logo */}
-      <button onClick={() => onNavigate('topics')} style={{ display: 'flex', alignItems: 'center', gap: '10px', background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}>
-        <div style={{ width: '28px', height: '28px', borderRadius: '50%', background: 'var(--zh-dunkelblau)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+      <button
+        onClick={() => onNavigate('topics')}
+        aria-label={t('nav.dashboard')}
+        style={{ display: 'flex', alignItems: 'center', gap: '10px', background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}
+      >
+        <div style={{ width: '28px', height: '28px', borderRadius: '50%', background: 'var(--zh-dunkelblau)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }} aria-hidden="true">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
             <path d="M12 3L4 7v5c0 5.55 3.84 10.74 8 12 4.16-1.26 8-6.45 8-12V7l-8-4z" fill="white" />
           </svg>
@@ -147,9 +151,10 @@ export default function Navbar({ view, username, score, theme, kursName, onNavig
         {/* Dark-Toggle */}
         <button
           onClick={onToggleTheme}
+          aria-label={isDark ? t('theme.light', 'Helles Design') : t('theme.dark', 'Dunkles Design')}
           style={{ width: '30px', height: '30px', borderRadius: '50%', border: '1px solid var(--zh-color-border)', background: 'var(--zh-color-bg-secondary)', color: 'var(--zh-color-text-muted)', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}
         >
-          {isDark ? <Sun size={13} /> : <Moon size={13} />}
+          {isDark ? <Sun size={13} aria-hidden="true" /> : <Moon size={13} aria-hidden="true" />}
         </button>
 
         {/* Avatar mit Popover */}
@@ -157,6 +162,9 @@ export default function Navbar({ view, username, score, theme, kursName, onNavig
           <div ref={popoverRef} style={{ position: 'relative' }}>
             <button
               onClick={() => setShowPopover(v => !v)}
+              aria-label={t('popover.ariaLabel', { name: username, defaultValue: `Menü für ${username}` })}
+              aria-expanded={showPopover}
+              aria-haspopup="menu"
               style={{
                 width: '30px', height: '30px', borderRadius: '50%',
                 background: 'var(--zh-dunkelblau)', color: 'white',
@@ -272,9 +280,62 @@ export default function Navbar({ view, username, score, theme, kursName, onNavig
                   onMouseEnter={e => { e.currentTarget.style.background = 'var(--zh-color-bg-secondary)' }}
                   onMouseLeave={e => { e.currentTarget.style.background = 'none' }}
                 >
-                  <RotateCcw size={14} />
+                  <RotateCcw size={14} aria-hidden="true" />
                   {t('landing.resetApp')}
                 </button>
+
+                {/* Trennlinie */}
+                <div style={{ height: '1px', background: 'var(--zh-color-border)', margin: '8px 0 4px' }} />
+
+                {/* Rechtliche Links (nDSG/DSGVO — auch nach Login erreichbar) */}
+                <a
+                  href="/impressum.html"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  style={{
+                    display: 'flex', alignItems: 'center', gap: '10px', width: '100%',
+                    padding: '8px', borderRadius: '6px',
+                    fontSize: '12px', fontWeight: 500, color: 'var(--zh-color-text-muted)',
+                    textDecoration: 'none',
+                  }}
+                  onMouseEnter={e => { e.currentTarget.style.background = 'var(--zh-color-bg-secondary)' }}
+                  onMouseLeave={e => { e.currentTarget.style.background = 'none' }}
+                >
+                  <FileText size={13} aria-hidden="true" />
+                  {t('footer.impressum', 'Impressum')}
+                </a>
+                <a
+                  href="/datenschutz.html"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  style={{
+                    display: 'flex', alignItems: 'center', gap: '10px', width: '100%',
+                    padding: '8px', borderRadius: '6px',
+                    fontSize: '12px', fontWeight: 500, color: 'var(--zh-color-text-muted)',
+                    textDecoration: 'none',
+                  }}
+                  onMouseEnter={e => { e.currentTarget.style.background = 'var(--zh-color-bg-secondary)' }}
+                  onMouseLeave={e => { e.currentTarget.style.background = 'none' }}
+                >
+                  <ShieldCheck size={13} aria-hidden="true" />
+                  {t('footer.datenschutz', 'Datenschutz')}
+                </a>
+                <a
+                  href="/glossar.html"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  style={{
+                    display: 'flex', alignItems: 'center', gap: '10px', width: '100%',
+                    padding: '8px', borderRadius: '6px',
+                    fontSize: '12px', fontWeight: 500, color: 'var(--zh-color-text-muted)',
+                    textDecoration: 'none',
+                  }}
+                  onMouseEnter={e => { e.currentTarget.style.background = 'var(--zh-color-bg-secondary)' }}
+                  onMouseLeave={e => { e.currentTarget.style.background = 'none' }}
+                >
+                  <BookOpen size={13} aria-hidden="true" />
+                  {t('footer.glossar', 'Glossar')}
+                </a>
               </div>
             )}
           </div>

@@ -1,6 +1,7 @@
 // KategoriePanel – Floating Panel nach Klick auf die Szene
 // User muss Kategorie wählen, bevor der Bewertungsflow startet
 
+import { useEffect } from 'react'
 import { X } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import type { DefizitKategorie } from '../data/appData'
@@ -22,6 +23,15 @@ const KATEGORIE_KEYS: { value: DefizitKategorie; key: string }[] = [
 
 export default function KategoriePanel({ onSelect, onCancel }: Props) {
   const { t } = useTranslation()
+
+  // ESC schliesst das Panel (WCAG 2.1.2)
+  useEffect(() => {
+    function handleKey(e: KeyboardEvent) {
+      if (e.key === 'Escape') onCancel()
+    }
+    window.addEventListener('keydown', handleKey)
+    return () => window.removeEventListener('keydown', handleKey)
+  }, [onCancel])
 
   return (
     <div
@@ -52,9 +62,10 @@ export default function KategoriePanel({ onSelect, onCancel }: Props) {
         </div>
         <button
           onClick={onCancel}
-          style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'rgba(255,255,255,0.45)', padding: '2px', flexShrink: 0 }}
+          aria-label={t('admin.cancelBtn')}
+          style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'rgba(255,255,255,0.85)', padding: '2px', flexShrink: 0 }}
         >
-          <X size={18} />
+          <X size={18} aria-hidden="true" />
         </button>
       </div>
 

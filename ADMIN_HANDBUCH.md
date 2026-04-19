@@ -13,6 +13,28 @@
 
 **Sicherheit:** Der PIN ist im Client-Bundle sichtbar (technische Einschränkung Vite). Der PIN schützt vor versehentlichem Zugriff, nicht vor gezielten Angriffen. Rotieren Sie ihn vor jedem Kurs-Einsatz über das Vercel-Dashboard und deployen Sie neu.
 
+### 1.1 Environment-Variablen
+
+Für den Produktivbetrieb müssen folgende Variablen in der Vercel-Projekt-Konfiguration gesetzt sein:
+
+| Variable | Zweck | Pflicht |
+|---|---|---|
+| `VITE_SUPABASE_URL` | Supabase-Endpoint für Sync | ja |
+| `VITE_SUPABASE_ANON_KEY` | Supabase-Anon-Key (öffentlich) | ja |
+| `VITE_ADMIN_PIN` | 4-stelliger Admin-PIN, pro Kurs rotieren | ja |
+| `VITE_USERNAME_SALT` | Geheimes Salt für Username-Hashing (DSGVO) — verhindert Rainbow-Table-Preimage auf dem Supabase-Dump. **Muss pro Deployment einmalig gesetzt werden und sollte nicht rotiert werden**, sonst werden Hashes bestehender Rankings unbrauchbar. | ja (sonst Konsolen-Warnung) |
+| `VITE_SENTRY_DSN` | Sentry-DSN für Error-Tracking | nein (leer = Sentry aus) |
+
+**Salt-Erzeugung** (einmalig beim Deployment-Aufbau):
+
+```bash
+# Zufälligen 32-Zeichen-Salt generieren:
+openssl rand -hex 16
+# Ergebnis z.B.: 2f8a9c1b7e4d3a06f9b8e7c6d5a4b3c2
+```
+
+Diesen Wert in Vercel → Settings → Environment Variables als `VITE_USERNAME_SALT` speichern und **dauerhaft** dort behalten. Backup in einem Passwort-Manager (nicht im Git-Repo!).
+
 ---
 
 ## 2. Tabs-Übersicht

@@ -21,7 +21,7 @@ export const KRITERIUM_LABELS: Record<string, string> = {
   velolaengsfuehrung_art:            'Velolängsführung (Art)',
   velolaengsfuehrung_geometrie:      'Velolängsführung (Geometrie)',
   anhaltesichtweite:                 'Anhaltesichtweite',
-  überholsichtweite:                'Überholsichtweite',
+  ueberholsichtweite:                'Überholsichtweite',
   knotensichtweite:                  'Knotensichtweite',
   sichtweite_allgemein:              'Sichtweite (allgemein)',
   fahrzeugrueckhaltesystem:          'Fahrzeugrückhaltesystem',

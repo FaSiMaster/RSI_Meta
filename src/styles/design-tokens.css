@@ -19,7 +19,11 @@
   --zh-grau-6:      #F7F7F7;
   --zh-weiss:       #FFFFFF;
 
-  /* Semantische Farben */
+  /* Semantische Farben
+     - text-muted:   normaler Lesetext zweiter Ordnung (Kontrast 5.7:1, WCAG-AA)
+     - text-disabled: subtil, aber WCAG-AA-konform (4.7:1) — wird in der Codebase
+                      breit für Metadata/Timestamps/Footer genutzt, daher KEIN
+                      2.85:1-Grau (#949494) mehr, sondern #737373. */
   --zh-color-bg:          var(--zh-weiss);
   --zh-color-bg-secondary: var(--zh-grau-6);
   --zh-color-bg-tertiary:  var(--zh-grau-5);
@@ -28,7 +32,7 @@
   --zh-color-text:         var(--zh-schwarz);
   --zh-color-text-secondary: var(--zh-grau-1);
   --zh-color-text-muted:   var(--zh-grau-2);
-  --zh-color-text-disabled: var(--zh-grau-3);
+  --zh-color-text-disabled: #737373;       /* 4.7:1 — WCAG-AA fuer kleinen Content-Text */
   --zh-color-accent:       var(--zh-blau);
   --zh-color-accent-dark:  var(--zh-dunkelblau);
 
@@ -70,8 +74,8 @@
   --zh-color-border:       #333333;
   --zh-color-text:         #F0F0F0;
   --zh-color-text-secondary: #CCCCCC;
-  --zh-color-text-muted:   #949494;
-  --zh-color-text-disabled: #666666;
+  --zh-color-text-muted:   #B5B5B5;  /* Dark-Mode: WCAG-AA auf #000 (Kontrast 10:1) */
+  --zh-color-text-disabled: #8E8E8E;  /* Dark-Mode: 5.4:1 auf #000 */
   --zh-color-accent:       #7AB6E2;
   --zh-color-accent-dark:  #5FA0D0;
 

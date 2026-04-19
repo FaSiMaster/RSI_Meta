@@ -2,8 +2,8 @@
 // Responsive: 1-spaltig auf Mobile (<640px), 2-spaltig ab sm
 // Enthält Datenschutzhinweis (DSGVO) und Admin-Zugang via PIN
 
-import { useState } from 'react'
-import { Shield, Eye, BarChart3, BookOpen, EyeOff, Lock, ChevronRight, RotateCcw, MessageSquare } from 'lucide-react'
+import { useState, useEffect } from 'react'
+import { Shield, Eye, BarChart3, BookOpen, EyeOff, Lock, ChevronRight, RotateCcw, MessageSquare, AlertCircle } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import LanguageSwitcher from './LanguageSwitcher'
 import FeedbackModal from './FeedbackModal'
@@ -88,6 +88,16 @@ export default function LandingPage({ onStart, onAdmin }: Props) {
     setAdminPinFehler(false)
   }
 
+  // ESC schliesst das Admin-PIN-Modal (WCAG 2.1.2 No-Keyboard-Trap)
+  useEffect(() => {
+    if (!showAdminModal) return
+    function handleKey(e: KeyboardEvent) {
+      if (e.key === 'Escape') setShowAdminModal(false)
+    }
+    window.addEventListener('keydown', handleKey)
+    return () => window.removeEventListener('keydown', handleKey)
+  }, [showAdminModal])
+
   // App komplett zurücksetzen: Service Worker + Caches + localStorage
   async function handleResetApp() {
     if (!window.confirm(t('landing.resetConfirm'))) return
@@ -136,10 +146,11 @@ export default function LandingPage({ onStart, onAdmin }: Props) {
           <LanguageSwitcher />
           <button
             onClick={handleAdminClick}
+            aria-label={t('admin.pin_titel')}
             className="flex items-center gap-1.5 rounded-md px-2.5 py-1.5 text-[11px] font-bold uppercase tracking-wider transition-colors"
             style={{ color: 'var(--zh-color-text-disabled)', background: 'transparent', border: '1px solid var(--zh-color-border)' }}
           >
-            <Lock size={11} /> Admin
+            <Lock size={11} aria-hidden="true" /> Admin
           </button>
         </div>
       </div>
@@ -228,7 +239,9 @@ export default function LandingPage({ onStart, onAdmin }: Props) {
               style={{ padding: '11px 14px', border: nameFehlend ? '1px solid #D40053' : '1px solid var(--zh-color-border)', background: 'var(--zh-color-bg-secondary)', color: 'var(--zh-color-text)', fontFamily: 'var(--zh-font)', marginBottom: nameFehlend ? '4px' : '16px', boxSizing: 'border-box' }}
             />
             {nameFehlend && (
-              <p className="text-xs mb-3" style={{ color: '#D40053' }}>{t('landing.nameRequired')}</p>
+              <p role="alert" aria-live="polite" className="flex items-center gap-1.5 text-xs mb-3" style={{ color: '#D40053' }}>
+                <AlertCircle size={12} aria-hidden="true" /> {t('landing.nameRequired')}
+              </p>
             )}
 
             {/* Kurs */}
@@ -266,17 +279,20 @@ export default function LandingPage({ onStart, onAdmin }: Props) {
                   <button
                     type="button"
                     onClick={() => setShowPasswort(v => !v)}
+                    aria-label={showPasswort ? t('kurs.passwort_ausblenden', 'Passwort ausblenden') : t('kurs.passwort_einblenden', 'Passwort einblenden')}
                     className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center"
                     style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--zh-color-text-muted)', padding: 0 }}
                   >
-                    {showPasswort ? <EyeOff size={16} /> : <Eye size={16} />}
+                    {showPasswort ? <EyeOff size={16} aria-hidden="true" /> : <Eye size={16} aria-hidden="true" />}
                   </button>
                 </div>
               </div>
             )}
 
             {passwortFehler && (
-              <p className="text-xs mb-3" style={{ color: '#D40053' }}>{t('kurs.passwort_falsch')}</p>
+              <p role="alert" aria-live="polite" className="flex items-center gap-1.5 text-xs mb-3" style={{ color: '#D40053' }}>
+                <AlertCircle size={12} aria-hidden="true" /> {t('kurs.passwort_falsch')}
+              </p>
             )}
 
             {/* Start-Button */}
@@ -306,7 +322,7 @@ export default function LandingPage({ onStart, onAdmin }: Props) {
       <div className="flex items-center justify-between gap-3 px-5 sm:px-8 flex-wrap" style={{ minHeight: 'var(--zh-footer-h)', borderTop: '1px solid var(--zh-color-border)' }}>
         <div className="flex items-center gap-2 text-xs" style={{ color: 'var(--zh-color-text-disabled)' }}>
           <span style={{ color: '#1A7F1F', fontWeight: 800 }}>●</span>
-          {t('landing.systemOnline')} · v0.3.1
+          {t('landing.systemOnline')} · v0.4.0
         </div>
         <div className="flex items-center gap-3 flex-wrap">
           <a href="/impressum.html" target="_blank" rel="noopener noreferrer" className="text-[10px] font-semibold hover:underline" style={{ color: 'var(--zh-color-text-disabled)' }}>
@@ -410,7 +426,9 @@ export default function LandingPage({ onStart, onAdmin }: Props) {
             />
 
             {adminPinFehler && (
-              <p className="text-xs mb-3 text-center" style={{ color: '#D40053' }}>{t('admin.pin_falsch')}</p>
+              <p role="alert" aria-live="polite" className="flex items-center justify-center gap-1.5 text-xs mb-3 text-center" style={{ color: '#D40053' }}>
+                <AlertCircle size={12} aria-hidden="true" /> {t('admin.pin_falsch')}
+              </p>
             )}
 
             <button

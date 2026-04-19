@@ -1,7 +1,7 @@
 // FeedbackModal — einfacher Bug-Report / Feedback-Kanal via mailto.
 // Kein Backend nötig; öffnet den Standard-Mailclient mit vorausgefülltem Body.
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { X, Send, MessageSquare } from 'lucide-react'
 
 const SUPPORT_EMAIL = 'sicherheit.tba@bd.zh.ch'
@@ -17,6 +17,16 @@ export default function FeedbackModal({ open, onClose, context }: Props) {
   const [betreff, setBetreff] = useState('')
   const [beschreibung, setBeschreibung] = useState('')
 
+  // ESC schliesst das Modal (WCAG 2.1.2 No-Keyboard-Trap)
+  useEffect(() => {
+    if (!open) return
+    function handleKey(e: KeyboardEvent) {
+      if (e.key === 'Escape') onClose()
+    }
+    window.addEventListener('keydown', handleKey)
+    return () => window.removeEventListener('keydown', handleKey)
+  }, [open, onClose])
+
   if (!open) return null
 
   function handleSenden() {
@@ -26,7 +36,10 @@ export default function FeedbackModal({ open, onClose, context }: Props) {
     const version = import.meta.env.VITE_APP_VERSION ?? '0.3.0'
 
     const katLabel = kategorie === 'bug' ? 'Fehler' : kategorie === 'idee' ? 'Idee' : 'Frage'
-    const subject = `[RSI] ${katLabel}${betreff ? ': ' + betreff : ''}`
+    // Defensive Hygiene: CR/LF im Betreff entfernen (Header-Injection-Schutz
+    // fuer Mailclients, die mailto-Parameter ohne Re-Encoding verarbeiten)
+    const cleanBetreff = betreff.replace(/[\r\n]+/g, ' ').slice(0, 160)
+    const subject = `[RSI] ${katLabel}${cleanBetreff ? ': ' + cleanBetreff : ''}`
 
     const body = [
       '--- Bitte oberhalb dieser Zeile schreiben ---',

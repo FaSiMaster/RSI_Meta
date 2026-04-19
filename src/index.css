@@ -26,3 +26,31 @@ body,
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
+
+/* WCAG 2.4.7 Focus Visible — globaler Fokus-Ring für Tastatur-Navigation.
+   Inline-Styles setzen oft outline:'none' auf Inputs; :focus-visible überschreibt
+   das und ist nur aktiv bei Tastatur-Fokus (nicht bei Maus-Klick). */
+button:focus-visible,
+a:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible,
+[role="button"]:focus-visible,
+[tabindex]:focus-visible {
+  outline: 2px solid var(--zh-blau);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* Screen-Reader-only Text — visuell versteckt, für Assistive-Tech lesbar */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}

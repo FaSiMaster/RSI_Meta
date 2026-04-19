@@ -635,10 +635,19 @@ function writeJSON<T>(key: string, data: T[]): void {
 }
 
 // SHA-256 Hash für Username (DSGVO: kein Klarname in Supabase)
-// Gibt die ersten 8 Hex-Zeichen zurück (z.B. "a3f2b8c1")
+// Gibt die ersten 8 Hex-Zeichen zurück (z.B. "a3f2b8c1").
+//
+// Salt (VITE_USERNAME_SALT): verhindert Rainbow-Table-Preimage bei Supabase-Dump.
+// Ohne Salt waere die Re-Identifikation durch Hashen bekannter Teilnehmerlisten
+// trivial. Salt MUSS pro Deployment gesetzt werden; fehlender Salt faellt auf
+// einen leeren String zurueck und erzeugt eine Konsolen-Warnung.
 async function hashUsername(name: string): Promise<string> {
+  const salt = (import.meta.env.VITE_USERNAME_SALT as string | undefined) ?? ''
+  if (!salt && typeof console !== 'undefined') {
+    console.warn('[RSI] VITE_USERNAME_SALT nicht gesetzt — Pseudonymisierung ist schwaecher als empfohlen.')
+  }
   const encoder = new TextEncoder()
-  const data = encoder.encode(name.toLowerCase().trim())
+  const data = encoder.encode(salt + ':' + name.toLowerCase().trim())
   const buffer = await crypto.subtle.digest('SHA-256', data)
   const arr = Array.from(new Uint8Array(buffer))
   return arr.map(b => b.toString(16).padStart(2, '0')).join('').slice(0, 8)

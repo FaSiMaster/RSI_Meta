@@ -13,6 +13,48 @@ Versionierung nach [Semantic Versioning](https://semver.org/lang/de/).
 
 ---
 
+## [0.4.0] — 2026-04-19
+
+### Hinzugefügt
+- Globaler Fokus-Ring (`:focus-visible`) für Tastatur-Navigation (WCAG 2.4.7)
+- Rechtliche Links (Impressum / Datenschutz / Glossar) auch **nach Login** im Avatar-Popover erreichbar (nDSG/DSGVO)
+- Fehler-Meldungen (Name, Passwort, Admin-PIN) mit `role="alert"` + `AlertCircle`-Icon + `aria-live="polite"` (WCAG 1.4.1)
+- ESC-Handler in allen Modalen: FeedbackModal, KategoriePanel, Admin-PIN-Modal (WCAG 2.1.2)
+- `aria-label` / `aria-hidden` auf Icon-only-Buttons (Avatar, Theme-Toggle, Navbar-Logo, Password-Eye, Admin-Lock)
+- `aria-expanded` / `aria-haspopup="menu"` am Avatar-Button
+- `.sr-only`-Utility-Klasse für Screen-Reader-Texte
+- **Username-Salt** (`VITE_USERNAME_SALT`) — verhindert Rainbow-Table-Preimage bei Supabase-Dump
+- CR/LF-Sanitize für mailto-Subject (Header-Injection-Hygiene)
+
+### Geändert
+- Panorama-Marker komplett überarbeitet (aus 67ad786):
+  - Pending-Klick-Marker jetzt **Fadenkreuz** (statt dominanter weisser Vollkreis) — beim Zoom natürlich grösser, präziser klickbar
+  - Standort-Wechsel-Marker jetzt **Diamant** (konsistent mit Admin-BildEditor)
+  - Hotspot bei aktivem Hint **orange** (`#F0A500`) statt blau — keine Verwechslung mit Standort-Marker
+  - Hotspot ohne FOV-Quadrat-Skalierung — wächst mit dem Zoom mit statt zu schrumpfen
+- `--zh-color-text-disabled` von `#949494` (Kontrast 2.85:1, WCAG-Fail) auf `#737373` (4.7:1) angehoben — WCAG-AA für kleine Content-Texte
+- Dark-Mode-Text-Token entsprechend angepasst für WCAG-AA auf `#000`
+- CSP `img-src` auf `'self' blob: data:` eingegrenzt (vorher `https:` erlaubt → Tracker-Pixel möglich)
+- KategoriePanel: X-Schliessen-Icon-Kontrast von 45% auf 85% Opacity angehoben
+
+### Behoben
+- **C-1** Timer-Leak in `handleStandortWechsel` (`SceneViewer.tsx`) — Perspektivenwechsel während pendingConfirm räumte den Auto-Ausblenden-Timer nicht auf
+- **N-3** `überholsichtweite`-Key in `kriteriumLabels.ts` hatte Umlaut, `WICHTIGKEIT_TABLE` aber `ueberholsichtweite` (ASCII) → Label-Lookup schlug fehl
+- **Bug 1** (v0.3.2-Fix): `getHotspotPosition` fiel bei aktiver Perspektive auf Legacy-`d.position` zurück → Phantom-Hotspot im falschen Bild
+- **Bug 2** (v0.3.2-Fix): BildEditor zeichnete Legacy-`d.position` auch in Perspektiven-Ansicht
+- **Bug 3** (v0.3.2-Fix): `hitTestPunkt` skaliert jetzt Greifzone mit Zoom
+
+### Dokumentation
+- `ADMIN_HANDBUCH.md` um Environment-Variablen-Tabelle erweitert (Salt-Setup)
+- Memory `project_klickflow_architektur.md` Penalty-Modell korrigiert (additiv +25/-25, **nicht** multiplikativ 0.9/0.5 wie alte Dokumentation behauptete)
+
+### Security-Stand
+- H-2 (RLS-Policies) bleibt offen → User-Aktion im Supabase-Dashboard
+- N-2 (Rate-Limits) bleibt offen → Supabase-Dashboard
+- Sentry optional → `VITE_SENTRY_DSN` in Vercel setzen
+
+---
+
 ## [0.3.1] — 2026-04-19
 
 ### Hinzugefügt
