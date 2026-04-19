@@ -287,8 +287,9 @@ export default function BildEditor({ scene, deficits, onSave, onClose, initialDe
 
       if (verortung) {
         drawVerortung(ctx, verortung, farbe, isSelected, cw, ch)
-      } else if (d.position) {
-        // Fallback: alte position
+      } else if (d.position && !aktivePerspektiveId) {
+        // Legacy-Fallback NUR im Haupt-Panorama — sonst würde die Haupt-
+        // Koordinate an einer unpassenden Stelle im Perspektiven-Bild landen.
         const { x, y } = sphericalToPixel(d.position, bildBreite, bildHoehe)
         const px = (x / bildBreite) * cw
         const py = (y / bildHoehe) * ch
@@ -442,8 +443,9 @@ export default function BildEditor({ scene, deficits, onSave, onClose, initialDe
     const py = (y / bildHoehe)  * canvas.height * zoom + pan.y
     const dx = cx - px
     const dy = cy - py
-    // Schwellwert auch skalieren damit Treffer gleich präzise bleibt
-    return Math.sqrt(dx * dx + dy * dy) <= schwelle
+    // Schwellwert mit Zoom skalieren: bei hohem Zoom wird der Marker gross
+    // gezeichnet, also soll auch die Greif-Zone entsprechend mitwachsen.
+    return Math.sqrt(dx * dx + dy * dy) <= schwelle * Math.max(1, zoom)
   }
 
   // ── Verortung speichern (perspektivenabhängig) ──

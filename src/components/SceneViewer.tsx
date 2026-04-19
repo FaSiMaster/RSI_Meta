@@ -84,37 +84,28 @@ function PanoramaTextureMaterial({ url }: { url: string }) {
 }
 
 // ── Hotspot (Billboard – immer zur Kamera gedreht) ───────────────────────────
+// Grün = gefundenes Defizit, Orange = Hinweis (ungefunden, Hint aktiv).
+// Keine FOV-Kompensation: beim Reinzoomen wächst der Ring natürlich mit dem
+// Bild, sodass präzises Klicken möglich ist.
 interface HotspotProps {
   position: THREE.Vector3
   found: boolean
 }
 
 function Hotspot({ position, found }: HotspotProps) {
-  const { camera } = useThree()
-  const groupRef   = useRef<THREE.Group>(null)
-  const ringColor  = found ? '#1A7F1F' : '#0076BD'
-  const fillOpacity = 0.25
-
-  // Quadratische FOV-Skalierung: beim Reinzoomen werden Ringe scheinbar kleiner
-  useFrame(() => {
-    if (groupRef.current && camera instanceof THREE.PerspectiveCamera) {
-      const ratio = camera.fov / 75
-      groupRef.current.scale.setScalar(ratio * ratio)
-    }
-  })
+  const ringColor   = found ? '#1A7F1F' : '#F0A500'
+  const fillOpacity = 0.20
 
   return (
     <Billboard position={position} follow lockX={false} lockY={false} lockZ={false}>
-      <group ref={groupRef}>
-        <mesh>
-          <ringGeometry args={[3.8, 4.6, 32]} />
-          <meshBasicMaterial color={ringColor} transparent opacity={0.85} side={THREE.DoubleSide} depthTest={false} />
-        </mesh>
-        <mesh>
-          <circleGeometry args={[3.8, 32]} />
-          <meshBasicMaterial color={ringColor} transparent opacity={fillOpacity} side={THREE.DoubleSide} depthTest={false} />
-        </mesh>
-      </group>
+      <mesh>
+        <ringGeometry args={[2.4, 2.9, 48]} />
+        <meshBasicMaterial color={ringColor} transparent opacity={0.90} side={THREE.DoubleSide} depthTest={false} />
+      </mesh>
+      <mesh>
+        <circleGeometry args={[2.4, 32]} />
+        <meshBasicMaterial color={ringColor} transparent opacity={fillOpacity} side={THREE.DoubleSide} depthTest={false} />
+      </mesh>
     </Billboard>
   )
 }
@@ -128,37 +119,37 @@ interface StandortNavMarkerProps {
 
 function StandortNavMarker({ position, label, onClick }: StandortNavMarkerProps) {
   const [hovered, setHovered] = useState(false)
+  // Diamant (Quadrat um 45° rotiert) — konsistent mit Admin-BildEditor
+  const size = hovered ? 3.2 : 2.6
   return (
     <Billboard
       position={position}
       follow lockX={false} lockY={false} lockZ={false}
     >
-      {/* Hintergrund-Kreis */}
-      <mesh
-        onClick={e => { e.stopPropagation(); onClick() }}
-        onPointerOver={() => setHovered(true)}
-        onPointerOut={() => setHovered(false)}
-      >
-        <circleGeometry args={[hovered ? 5 : 4, 32]} />
-        <meshBasicMaterial color="#0076BD" transparent opacity={hovered ? 0.95 : 0.7} side={THREE.DoubleSide} depthTest={false} />
+      {/* Weisser Rand-Diamant (leicht grösser, hinten) */}
+      <mesh rotation={[0, 0, Math.PI / 4]}>
+        <planeGeometry args={[size + 0.45, size + 0.45]} />
+        <meshBasicMaterial color="white" transparent opacity={0.92} side={THREE.DoubleSide} depthTest={false} />
       </mesh>
-      {/* Ring (auch klickbar) */}
+      {/* Füll-Diamant blau (klickbar, vorne) */}
       <mesh
+        rotation={[0, 0, Math.PI / 4]}
+        position={[0, 0, 0.01]}
         onClick={e => { e.stopPropagation(); onClick() }}
         onPointerOver={() => setHovered(true)}
         onPointerOut={() => setHovered(false)}
       >
-        <ringGeometry args={[hovered ? 5.5 : 4.6, hovered ? 6.2 : 5.2, 32]} />
-        <meshBasicMaterial color="white" transparent opacity={0.9} side={THREE.DoubleSide} depthTest={false} />
+        <planeGeometry args={[size, size]} />
+        <meshBasicMaterial color="#0076BD" transparent opacity={hovered ? 0.98 : 0.88} side={THREE.DoubleSide} depthTest={false} />
       </mesh>
       {/* Label */}
       <Text
-        position={[0, -8, 0]}
-        fontSize={3}
+        position={[0, -size - 1.4, 0]}
+        fontSize={1.6}
         color="white"
         anchorX="center"
         anchorY="top"
-        outlineWidth={0.3}
+        outlineWidth={0.18}
         outlineColor="#000000"
       >
         {label}
@@ -190,7 +181,9 @@ function getHotspotPosition(d: AppDeficit, perspektivenId: string | null = null)
       }
     }
   }
-  if (d.position) return sphericalToVector3(d.position, 60)
+  // Legacy-Fallback nur im Haupt-Panorama — in einer Perspektive würde die
+  // Haupt-Koordinate sonst eine irreführende Position im anderen Bild zeigen.
+  if (!perspektivenId && d.position) return sphericalToVector3(d.position, 60)
   return null
 }
 
@@ -648,16 +641,31 @@ function SceneContent({
         })
       })()}
 
-      {/* Pending-Klick-Marker (Browser: pulsierender Ring) */}
+      {/* Pending-Klick-Marker: Fadenkreuz + dezenter Zielring
+          Zeigt dem User PRÄZIS wo er hingeklickt hat. Klein genug, um beim
+          Reinzoomen natürlich grösser zu werden und präzises Verorten zu
+          ermöglichen (keine FOV-Kompensation). */}
       {pendingClickPos && (
         <Billboard position={sphericalToVector3(pendingClickPos, 60)} follow lockX={false} lockY={false} lockZ={false}>
+          {/* Horizontale Linie */}
           <mesh>
-            <ringGeometry args={[4, 6, 32]} />
-            <meshBasicMaterial color="#FFFFFF" transparent opacity={0.9} side={THREE.DoubleSide} depthTest={false} />
+            <planeGeometry args={[4.8, 0.22]} />
+            <meshBasicMaterial color="#FFFFFF" transparent opacity={0.95} side={THREE.DoubleSide} depthTest={false} />
           </mesh>
+          {/* Vertikale Linie */}
           <mesh>
-            <circleGeometry args={[4, 32]} />
-            <meshBasicMaterial color="#FFFFFF" transparent opacity={0.15} side={THREE.DoubleSide} depthTest={false} />
+            <planeGeometry args={[0.22, 4.8]} />
+            <meshBasicMaterial color="#FFFFFF" transparent opacity={0.95} side={THREE.DoubleSide} depthTest={false} />
+          </mesh>
+          {/* Zentrumspunkt (präziser Zielpunkt) */}
+          <mesh position={[0, 0, 0.01]}>
+            <circleGeometry args={[0.38, 16]} />
+            <meshBasicMaterial color="#FFFFFF" transparent opacity={1.0} side={THREE.DoubleSide} depthTest={false} />
+          </mesh>
+          {/* Dezenter Zielring aussen */}
+          <mesh>
+            <ringGeometry args={[1.9, 2.15, 48]} />
+            <meshBasicMaterial color="#FFFFFF" transparent opacity={0.55} side={THREE.DoubleSide} depthTest={false} />
           </mesh>
         </Billboard>
       )}
