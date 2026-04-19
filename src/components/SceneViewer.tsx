@@ -1049,8 +1049,51 @@ export default function SceneViewer({
   const sceneKontextLabel = scene.kontext === 'io' ? t('einstieg.kontext_io') : t('einstieg.kontext_ao')
   const htmlVisible       = !isVR
 
+  // Diagnose-Hinweis falls keiner der Pfade ein Panorama-Bild liefert.
+  // Vermeidet "stille schwarze Sphäre" wenn Supabase-Daten unvollständig sind.
+  const hatKeinBild = !aktiveBildUrl
+  if (hatKeinBild && import.meta.env.DEV) {
+    console.warn(`[RSI] Szene "${scene.id}" ohne panoramaBildUrl — bitte im Admin-Dashboard Panorama-Bild zuweisen.`)
+  }
+
   return (
     <div style={{ position: 'relative', flex: 1, background: '#1a1c22', overflow: 'hidden' }} onWheel={handleWheel}>
+
+      {/* Diagnose-Overlay: kein Panorama-Bild hinterlegt */}
+      {hatKeinBild && htmlVisible && (
+        <div style={{
+          position: 'absolute', inset: 0, zIndex: 60,
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+          pointerEvents: 'none', padding: '24px',
+        }}>
+          <div style={{
+            background: 'rgba(0,0,0,0.78)',
+            backdropFilter: 'blur(14px)',
+            border: '1px solid rgba(240,165,0,0.55)',
+            borderRadius: '12px',
+            padding: '20px 24px',
+            maxWidth: '460px',
+            color: 'white',
+            fontFamily: 'var(--zh-font)',
+            textAlign: 'center',
+            pointerEvents: 'auto',
+          }}>
+            <p style={{ fontSize: '11px', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.14em', color: '#F0A500', marginBottom: '8px' }}>
+              Kein Panorama-Bild
+            </p>
+            <p style={{ fontSize: '14px', fontWeight: 600, marginBottom: '6px' }}>
+              {sceneName}
+            </p>
+            <p style={{ fontSize: '12px', color: 'rgba(255,255,255,0.72)', lineHeight: 1.5 }}>
+              Für diese Szene ist noch kein 360°-Bild hinterlegt. Im Admin-Dashboard
+              unter «Szenen» ein Panorama-Bild zuweisen oder hochladen.
+            </p>
+            <p style={{ fontSize: '11px', color: 'rgba(255,255,255,0.45)', marginTop: '8px', fontFamily: 'monospace' }}>
+              Szene-ID: {scene.id}
+            </p>
+          </div>
+        </div>
+      )}
 
       {/* 3D Canvas */}
       <Canvas

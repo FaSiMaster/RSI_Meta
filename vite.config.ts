@@ -2,10 +2,18 @@ import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import tailwindcss from '@tailwindcss/vite'
 import { VitePWA } from 'vite-plugin-pwa'
+import { readFileSync } from 'node:fs'
+
+// Version aus package.json injizieren — Single Source of Truth.
+// Verfügbar im Code als import.meta.env.VITE_APP_VERSION.
+const pkg = JSON.parse(readFileSync('./package.json', 'utf-8')) as { version: string }
 
 // Fuer GitHub Pages: base: '/RSI_Meta/'
 // Fuer Vercel / lokaler Dev: base: '/'
 export default defineConfig({
+  define: {
+    'import.meta.env.VITE_APP_VERSION': JSON.stringify(pkg.version),
+  },
   plugins: [
     react(),
     tailwindcss(),

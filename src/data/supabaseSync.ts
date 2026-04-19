@@ -247,3 +247,40 @@ export function enableSeedConsent(): void {
 export function isInitialized(): boolean {
   return initialized
 }
+
+// ── Default-Bilder reparieren ──
+// Setzt für die Default-Szenen (sc1..sc4) und die Test-Szene das passende
+// Panorama-Bild aus /textures/, wenn panoramaBildUrl null oder leer ist.
+// Nützlich nach einem Migrations-/Sync-Vorfall, bei dem Supabase die Bild-
+// Referenzen verloren hat. Idempotent: belässt bereits gesetzte URLs unverändert.
+const DEFAULT_PANORAMA_MAP: Record<string, string> = {
+  'sc1': '/textures/street-360.jpg',
+  'sc2': '/textures/sc2.webp',
+  'sc3': '/textures/sc3.webp',
+  'sc4': '/textures/sc4.webp',
+  'sc-1774784383797': '/textures/test-voreinbau.webp',
+}
+
+export async function repairDefaultScenePanoramas(): Promise<{ repaired: string[]; skipped: string[] }> {
+  const list   = scenesCache ?? readLocal<AppScene>(K_SCENES)
+  const repaired: string[] = []
+  const skipped:  string[] = []
+
+  for (const scene of list) {
+    const target = DEFAULT_PANORAMA_MAP[scene.id]
+    if (!target) continue
+    if (scene.panoramaBildUrl && scene.panoramaBildUrl.trim() !== '') {
+      skipped.push(scene.id)
+      continue
+    }
+    scene.panoramaBildUrl = target
+    repaired.push(scene.id)
+    await saveSceneSupabase(scene)
+  }
+
+  // Cache und localStorage konsistent halten
+  scenesCache = [...list]
+  writeLocal(K_SCENES, scenesCache)
+
+  return { repaired, skipped }
+}

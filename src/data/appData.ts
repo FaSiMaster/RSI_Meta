@@ -338,7 +338,7 @@ const DEFAULT_SCENES: AppScene[] = [
     "vorschauBilder": [],
     "vorschauBild1": null,
     "vorschauBild2": null,
-    "panoramaBildUrl": null
+    "panoramaBildUrl": "/textures/sc2.webp"
   },
   {
     "id": "sc3",
@@ -355,7 +355,7 @@ const DEFAULT_SCENES: AppScene[] = [
     "vorschauBilder": [],
     "vorschauBild1": null,
     "vorschauBild2": null,
-    "panoramaBildUrl": null
+    "panoramaBildUrl": "/textures/sc3.webp"
   },
   {
     "id": "sc4",
@@ -372,7 +372,7 @@ const DEFAULT_SCENES: AppScene[] = [
     "vorschauBilder": [],
     "vorschauBild1": null,
     "vorschauBild2": null,
-    "panoramaBildUrl": null
+    "panoramaBildUrl": "/textures/sc4.webp"
   },
   {
     "id": "sc-1774784383797",

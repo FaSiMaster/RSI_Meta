@@ -9,7 +9,7 @@ export function initSentry() {
   Sentry.init({
     dsn,
     environment: import.meta.env.MODE,
-    release: `rsi-meta@${import.meta.env.VITE_APP_VERSION ?? '0.3.0'}`,
+    release: `rsi-meta@${import.meta.env.VITE_APP_VERSION ?? '0.4.0'}`,
     integrations: [
       Sentry.browserTracingIntegration(),
       Sentry.replayIntegration({

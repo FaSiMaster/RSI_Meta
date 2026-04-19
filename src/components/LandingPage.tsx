@@ -364,7 +364,7 @@ export default function LandingPage({ onStart, onAdmin }: Props) {
           </button>
           <span className="text-[10px]" style={{ color: 'var(--zh-color-border)' }}>|</span>
           <span className="text-[10px] font-semibold" style={{ color: 'var(--zh-color-text-disabled)' }}>
-            © {new Date().getFullYear()} Tiefbauamt Kanton Zürich
+            Fachstelle Verkehrssicherheit (FaSi) · Kanton Zürich · v{import.meta.env.VITE_APP_VERSION ?? '0.4.0'}
           </span>
         </div>
       </div>
