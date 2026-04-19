@@ -30,7 +30,18 @@
       "Bash(gh run:*)",
       "Bash(find node_modules/@pmndrs/xr -name *.d.ts)",
       "Bash(split -l 300 \"/c/ClaudeAI/RSI_Meta/src/components/AdminDashboard.tsx\" \"/tmp/admin_\")",
-      "Read(//c/tmp/**)"
+      "Read(//c/tmp/**)",
+      "Bash(npx vite:*)",
+      "Bash(netstat -ano)",
+      "Bash(wmic process:*)",
+      "Bash(curl -s http://localhost:5174)",
+      "Bash(curl -s http://127.0.0.1:5174)",
+      "Bash(curl -s http://[::1]:5174)",
+      "Bash(taskkill //F //PID 65416)",
+      "Bash(curl -s --max-time 5 http://127.0.0.1:5174)",
+      "Bash(gh pr:*)",
+      "Bash(gh api:*)",
+      "Bash(cat vercel.json)"
     ]
   }
 }
