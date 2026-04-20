@@ -42,3 +42,8 @@ Erwartet: `{"ok":true,"table":"rsi_topics","op":"upsert","count":1}`
 - Whitelist auf Tables + Operations (kein SQL-Injection möglich)
 - Row-Limit 200 pro Upsert gegen Flood
 - `verify_jwt=false` ist OK, weil der PIN als Shared Secret dient
+- **Brute-Force-Schutz** (seit N-2, Schritt 3a): In-Memory-Counter pro IP,
+  nach 10 fehlgeschlagenen PIN-Versuchen innerhalb 60 Sekunden → `429 Too
+  Many Requests` mit `Retry-After`-Header. Bei PIN-Erfolg wird die IP
+  zurückgesetzt. Der Schutz wirkt pro Deno-Instanz; bei massivem
+  verteiltem Angriff würde Supabase/Cloudflare-Gateway zusätzlich greifen.

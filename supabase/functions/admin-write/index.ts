@@ -31,8 +31,11 @@ const CORS_HEADERS = {
 }
 const JSON_HEADERS = { ...CORS_HEADERS, 'content-type': 'application/json' }
 
-function jsonResponse(body: unknown, status: number): Response {
-  return new Response(JSON.stringify(body), { status, headers: JSON_HEADERS })
+function jsonResponse(body: unknown, status: number, extraHeaders?: Record<string, string>): Response {
+  return new Response(JSON.stringify(body), {
+    status,
+    headers: { ...JSON_HEADERS, ...(extraHeaders ?? {}) },
+  })
 }
 
 function timingSafeEqual(a: string, b: string): boolean {
@@ -42,15 +45,83 @@ function timingSafeEqual(a: string, b: string): boolean {
   return diff === 0
 }
 
+// ── Brute-Force-Schutz (In-Memory pro Deno-Instanz) ──
+// Nach FAIL_THRESHOLD fehlgeschlagenen PIN-Versuchen aus derselben IP
+// innerhalb FAIL_WINDOW_MS -> 429 fuer den Rest des Fensters.
+// Beim PIN-Erfolg wird die IP aus dem Tracker entfernt.
+// Hinweis: Edge Functions skalieren auf mehrere Instanzen, der Schutz wirkt
+// pro Instanz — ein Angreifer koennte theoretisch parallel mehrere
+// Instanzen ansprechen. Fuer Pilot-Kontext trotzdem ausreichend, weil
+// Supabase/Cloudflare pro IP ohnehin ein globales Limit durchsetzen.
+const FAIL_WINDOW_MS = 60_000
+const FAIL_THRESHOLD = 10
+const failTracker = new Map<string, { fails: number; firstFailAt: number }>()
+
+function getClientIp(req: Request): string {
+  const fwd = req.headers.get('x-forwarded-for')
+  if (fwd) return fwd.split(',')[0].trim()
+  return req.headers.get('cf-connecting-ip') ?? req.headers.get('x-real-ip') ?? 'unknown'
+}
+
+function checkRateLimit(ip: string): { blocked: boolean; retryAfterSec: number } {
+  const now = Date.now()
+  const entry = failTracker.get(ip)
+  if (!entry) return { blocked: false, retryAfterSec: 0 }
+  if (now - entry.firstFailAt > FAIL_WINDOW_MS) {
+    failTracker.delete(ip)
+    return { blocked: false, retryAfterSec: 0 }
+  }
+  if (entry.fails >= FAIL_THRESHOLD) {
+    const retryMs = FAIL_WINDOW_MS - (now - entry.firstFailAt)
+    return { blocked: true, retryAfterSec: Math.max(1, Math.ceil(retryMs / 1000)) }
+  }
+  return { blocked: false, retryAfterSec: 0 }
+}
+
+function recordFail(ip: string): void {
+  const now = Date.now()
+  const entry = failTracker.get(ip)
+  if (!entry || now - entry.firstFailAt > FAIL_WINDOW_MS) {
+    failTracker.set(ip, { fails: 1, firstFailAt: now })
+  } else {
+    entry.fails++
+  }
+  // Gelegentlich alte Eintraege aufraeumen, damit Map nicht unbegrenzt waechst
+  if (failTracker.size > 1000 || Math.random() < 0.01) {
+    for (const [k, v] of failTracker.entries()) {
+      if (now - v.firstFailAt > FAIL_WINDOW_MS) failTracker.delete(k)
+    }
+  }
+}
+
+function recordSuccess(ip: string): void {
+  failTracker.delete(ip)
+}
+
 Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') return new Response(null, { headers: CORS_HEADERS })
   if (req.method !== 'POST') return jsonResponse({ error: 'Method not allowed' }, 405)
+
+  // Rate-Limit-Check (vor PIN, damit geblockte IPs keine weiteren Checks ausloesen)
+  const ip = getClientIp(req)
+  const rl = checkRateLimit(ip)
+  if (rl.blocked) {
+    return jsonResponse(
+      { error: 'Too many failed attempts', retry_after_sec: rl.retryAfterSec },
+      429,
+      { 'retry-after': String(rl.retryAfterSec) },
+    )
+  }
 
   // PIN-Gate
   const adminPin = Deno.env.get('ADMIN_PIN')
   if (!adminPin) return jsonResponse({ error: 'ADMIN_PIN secret not configured' }, 500)
   const pinHeader = req.headers.get('x-admin-pin') ?? ''
-  if (!timingSafeEqual(pinHeader, adminPin)) return jsonResponse({ error: 'Unauthorized' }, 401)
+  if (!timingSafeEqual(pinHeader, adminPin)) {
+    recordFail(ip)
+    return jsonResponse({ error: 'Unauthorized' }, 401)
+  }
+  recordSuccess(ip)
 
   // Payload-Parsing
   let body: { table?: string; op?: string; rows?: unknown[]; id?: string }
