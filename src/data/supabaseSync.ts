@@ -1,11 +1,13 @@
 // Supabase-Sync für Admin-Daten (Topics, Scenes, Deficits)
 // Strategie: Supabase = Source of Truth, localStorage = Offline-Cache
 //
-// Schreibzugriffe (ab v0.5.1, H-2 RLS-Verschärfung):
+// Schreibzugriffe (ab v0.6.0, Sprint-1 Security-Härtung):
 // Writes auf rsi_topics/scenes/deficits laufen über die Edge Function
-// `admin-write`, die den Admin-PIN prüft und mit service_role schreibt.
-// Der PIN wird nach erfolgreichem Login in sessionStorage['rsi-admin-pin']
-// abgelegt. Ohne PIN bleibt nur der lokale Cache aktuell.
+// `admin-write`, die ein HMAC-signiertes Admin-Token prüft und mit
+// service_role schreibt. Das Token wird von der Edge Function
+// `admin-auth` ausgestellt (PIN-Tausch) und im Client in
+// sessionStorage['rsi-admin-token'] abgelegt. Der PIN selbst ist nicht
+// mehr im Client-Bundle — nur im Supabase-Secret.
 // Lesezugriffe laufen weiterhin direkt als anon (SELECT).
 
 import { supabase, setSupabaseStatus } from '../lib/supabase'
@@ -28,9 +30,9 @@ const K_DEFICITS = 'rsi-v3-deficits'
 type EdgeTable = 'rsi_topics' | 'rsi_scenes' | 'rsi_deficits'
 type EdgeOp    = 'upsert' | 'delete'
 
-function getAdminPin(): string | null {
+function getAdminToken(): string | null {
   if (typeof sessionStorage === 'undefined') return null
-  return sessionStorage.getItem('rsi-admin-pin')
+  return sessionStorage.getItem('rsi-admin-token')
 }
 
 async function edgeWrite(
@@ -38,8 +40,8 @@ async function edgeWrite(
   op: EdgeOp,
   payload: { rows?: unknown[]; id?: string }
 ): Promise<{ ok: boolean; error?: string }> {
-  const pin = getAdminPin()
-  if (!pin) return { ok: false, error: 'no-admin-pin' }
+  const token = getAdminToken()
+  if (!token) return { ok: false, error: 'no-admin-token' }
   const url = import.meta.env.VITE_SUPABASE_URL as string | undefined
   const anonKey = import.meta.env.VITE_SUPABASE_ANON_KEY as string | undefined
   if (!url || !anonKey) return { ok: false, error: 'supabase-env-missing' }
@@ -48,17 +50,25 @@ async function edgeWrite(
       method: 'POST',
       headers: {
         'content-type': 'application/json',
-        'x-admin-pin': pin,
+        'x-admin-token': token,
         // Supabase-Gateway verlangt apikey + authorization, auch bei
-        // verify_jwt=false. Anon-Key reicht — der echte PIN-Check passiert
-        // in der Edge Function selbst.
+        // verify_jwt=false. Anon-Key reicht — die Token-Pruefung macht
+        // die Edge Function selbst.
         'apikey': anonKey,
         'authorization': `Bearer ${anonKey}`,
       },
       body: JSON.stringify({ table, op, ...payload }),
     })
     const json = await res.json().catch(() => ({} as Record<string, unknown>))
-    if (!res.ok) return { ok: false, error: String(json.error ?? `HTTP ${res.status}`) }
+    if (!res.ok) {
+      // Token abgelaufen oder ungueltig -> Session-Flag und Token raeumen,
+      // damit naechster Login den Tausch neu durchlaeuft
+      if (res.status === 401 && typeof sessionStorage !== 'undefined') {
+        sessionStorage.removeItem('rsi-admin-token')
+        sessionStorage.removeItem('rsi-admin-auth')
+      }
+      return { ok: false, error: String(json.error ?? `HTTP ${res.status}`) }
+    }
     return { ok: true }
   } catch (err) {
     return { ok: false, error: String(err instanceof Error ? err.message : err) }
@@ -147,8 +157,8 @@ export async function initSupabaseData(): Promise<void> {
 // Seed-Daten aus localStorage nach Supabase schreiben (als Admin via Edge Function)
 async function seedSupabaseFromLocal(): Promise<void> {
   if (!supabase) return
-  if (!getAdminPin()) {
-    console.warn('[RSI] Seed abgebrochen: kein Admin-PIN in Session. Als Admin einloggen und Seed erneut auslösen.')
+  if (!getAdminToken()) {
+    console.warn('[RSI] Seed abgebrochen: kein Admin-Token in Session. Als Admin einloggen und Seed erneut auslösen.')
     return
   }
 

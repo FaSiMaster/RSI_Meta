@@ -612,7 +612,7 @@ export default function ScoringFlow({ deficit, scene, kategorieRichtig = true, h
             })}
             {hintPenalty && (
               <div style={{ marginTop: '6px', paddingTop: '6px', borderTop: '1px solid var(--zh-color-border)', display: 'flex', justifyContent: 'space-between', fontSize: '11px' }}>
-                <span style={{ color: '#B87300' }}>Hinweis genutzt</span>
+                <span style={{ color: '#B87300' }}>{t('scoring.hinweis_genutzt')}</span>
                 <span style={{ fontWeight: 700, color: '#B87300' }}>−25 Pkt.</span>
               </div>
             )}
@@ -881,7 +881,7 @@ export default function ScoringFlow({ deficit, scene, kategorieRichtig = true, h
                 {/* bfu-Badge */}
                 <div style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', padding: '2px 8px', borderRadius: '4px', background: 'rgba(184,115,0,0.08)', border: '1px solid rgba(184,115,0,0.3)', marginBottom: '10px' }}>
                   <AlertTriangle size={11} style={{ color: '#B87300' }} />
-                  <span style={{ fontSize: '10px', fontWeight: 700, color: '#B87300' }}>Einstiegshilfe bfu</span>
+                  <span style={{ fontSize: '10px', fontWeight: 700, color: '#B87300' }}>{t('scoring.bfu_badge')}</span>
                 </div>
 
                 {/* Leitfrage */}

@@ -145,13 +145,13 @@ export default function Navbar({ view, username, score, theme, kursName, onNavig
 
         <LanguageSwitcher />
 
-        {/* Dark-Toggle */}
+        {/* Dark-Toggle — 44x44 fuer WCAG 2.5.5 AA Touch-Target */}
         <button
           onClick={onToggleTheme}
           aria-label={isDark ? t('theme.light', 'Helles Design') : t('theme.dark', 'Dunkles Design')}
-          style={{ width: '30px', height: '30px', borderRadius: '50%', border: '1px solid var(--zh-color-border)', background: 'var(--zh-color-bg-secondary)', color: 'var(--zh-color-text-muted)', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}
+          style={{ width: '44px', height: '44px', borderRadius: '50%', border: '1px solid var(--zh-color-border)', background: 'var(--zh-color-bg-secondary)', color: 'var(--zh-color-text-muted)', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', flexShrink: 0 }}
         >
-          {isDark ? <Sun size={13} aria-hidden="true" /> : <Moon size={13} aria-hidden="true" />}
+          {isDark ? <Sun size={16} aria-hidden="true" /> : <Moon size={16} aria-hidden="true" />}
         </button>
 
         {/* Avatar mit Popover */}
@@ -163,12 +163,12 @@ export default function Navbar({ view, username, score, theme, kursName, onNavig
               aria-expanded={showPopover}
               aria-haspopup="menu"
               style={{
-                width: '30px', height: '30px', borderRadius: '50%',
+                width: '44px', height: '44px', borderRadius: '50%',
                 background: 'var(--zh-dunkelblau)', color: 'white',
-                fontSize: '12px', fontWeight: 800,
+                fontSize: '15px', fontWeight: 800,
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
                 border: showPopover ? '2px solid var(--zh-blau)' : '2px solid transparent',
-                cursor: 'pointer', transition: 'border-color 0.15s',
+                cursor: 'pointer', transition: 'border-color 0.15s', flexShrink: 0,
               }}
             >
               {username.charAt(0).toUpperCase()}
@@ -246,7 +246,7 @@ export default function Navbar({ view, username, score, theme, kursName, onNavig
                   onMouseLeave={e => { e.currentTarget.style.background = 'none' }}
                 >
                   <MessageSquare size={14} />
-                  Feedback senden
+                  {t('popover.feedback')}
                 </button>
 
                 <button

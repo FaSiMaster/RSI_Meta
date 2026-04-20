@@ -9,31 +9,103 @@ Versionierung nach [Semantic Versioning](https://semver.org/lang/de/).
 
 ## [Unreleased]
 
-### Sicherheit
-- **H-2 RLS-Verschärfung**: Content-Tabellen `rsi_topics`, `rsi_scenes`,
-  `rsi_deficits` erlauben anon/authenticated ab sofort **nur SELECT**.
-  Schreibzugriffe (upsert + delete) laufen über neue Supabase Edge
-  Function `admin-write` (`supabase/functions/admin-write/`), die den
-  Admin-PIN gegen das Server-Secret `ADMIN_PIN` prüft und mit
-  `service_role` schreibt. Client (`supabaseSync.ts`) speichert den PIN
-  nach Login in `sessionStorage['rsi-admin-pin']` und schickt ihn als
-  `x-admin-pin`-Header. Doppelte Alt-Policies (`{public}` + `{anon,
-  authenticated}`) wurden aufgeräumt.
-- **H-1 PIN-Rotation**: Admin-PIN lokal + Vercel von `2847` auf `5004`
-  rotiert.
-- **N-2 Rate-Limit: akzeptiertes Pilot-Risiko.** Ein In-Memory-Counter
-  in der Edge Function wurde verworfen, weil Supabase Edge Functions
-  auf mehreren Deno-Instanzen laufen (Counter wäre wirkungslos). Ein
-  DB-basierter Limiter wäre machbar, ist aber für den Pilot-Kontext
-  überdimensioniert: die App enthält keine personenbezogenen,
-  finanziellen oder DSGVO-relevanten Daten, Worst-Case beim PIN-Leak
-  ist Content-Zerstörung, aus lokaler Kopie + Git rekonstruierbar.
-  Supabase/Cloudflare-Gateway enforct ein globales per-IP-Limit
-  (~1000 req/10 s), was Brute-Force praktisch verlangsamt.
+—
+
+---
+
+## [0.6.0] — 2026-04-20 (Sprint-1 Security-Härtung + Branding + a11y)
+
+Grosser Post-v0.5.0-Sprint nach 16-Rollen-Review mit Fokus auf echte
+Security-Härtung (PIN aus Bundle raus), Branding-Update, Accessibility
+und i18n-Konsistenz. Pilot-bereit nach dieser Version.
+
+### Hinzugefügt
+- **TBA ISSI-Ausbildungslogo + Wortmarke «RSI VR Tool»** in Navbar und
+  LandingPage-Top-Bar. Neue Komponente `IssiLogo.tsx` rendert beide
+  Varianten (hell/dunkel) und schaltet via `[data-theme="dark"]`-CSS.
+  KTZH-Konvention: `_hell.png` für helle Umgebung, `_dunkel.png` für
+  dunkle. Ersetzt den alten Shield-SVG + «RSI-Immersive»-Text.
+- **Theme-Toggle auf LandingPage** (Sun/Moon-Button neben Admin). Props
+  `theme` + `onToggleTheme` von App.tsx durchgereicht. Hell/Dunkel auch
+  vor Login wählbar.
+- **Löschen-Button für Oberthemen im Admin** (Trash2 neben Archivieren).
+  `handleDeleteThema` mit Confirm-Dialog, der Kaskaden-Umfang nennt
+  (X Untergruppen, Y Szenen inkl. aller Defizite).
+- **Edge Function `admin-auth`** (`supabase/functions/admin-auth/`):
+  neue Deno-Function, tauscht PIN gegen HMAC-signiertes Token
+  (`<expires>.<base64-hmac>`, 2 h TTL, signiert mit Secret
+  `ADMIN_TOKEN_SECRET`). Padding-Timing-Safe-Compare verhindert
+  Length-Leak. CORS-Whitelist (Vercel + localhost).
+
+### Geändert (Sicherheit)
+- **Admin-PIN aus dem Client-Bundle entfernt**: `VITE_ADMIN_PIN` wird
+  nicht mehr gelesen. LandingPage schickt PIN an Edge Function
+  `admin-auth`, erhält Token, speichert es in
+  `sessionStorage['rsi-admin-token']`. `supabaseSync.ts` schickt
+  `x-admin-token`-Header statt `x-admin-pin`. Bei 401 wird Token +
+  Auth-Flag automatisch gerkaeumt.
+- **`admin-write` härtet**: Token-Verifikation statt PIN-Check,
+  CORS-Whitelist statt `*`, Payload-Schema-Validation pro Tabelle
+  (Whitelist Felder, Typ-Checks, 256-KB-Row-Size-Limit, max 200 Rows
+  pro Upsert). 128er-Padding-Timing-Safe-Compare für Token.
+- **RLS-Verschärfung** (bereits eingeflossen in H-2): Content-Tabellen
+  `rsi_topics/scenes/deficits` sind anon **nur noch SELECT**. Doppelte
+  Alt-Policies (`{public}` + `{anon, authenticated}`) aufgeräumt.
+- **`rsi_results.DELETE`** für anon entfernt — nur noch admin-seitig
+  löschbar, Ranking ist nicht mehr frei manipulierbar.
+- **Dependency-Audit**: `npm audit fix --force` ausgeführt. Verbleiben
+  3 high in Dev-Toolchain (`serialize-javascript` via `workbox-build`),
+  kein Runtime-Impact, auf Backlog.
+
+### Geändert (Accessibility + i18n)
+- **Navbar-Touch-Targets auf 44×44 px** (WCAG 2.5.5 AA): Theme-Toggle
+  und Avatar-Button. Icon-Grössen proportional angepasst.
+- **i18n-Key-Konsistenz repariert**: 16 Keys in `fr/it/en.json` hatten
+  ASCII-Varianten (`kurs_loeschen`, `uebertrag_auto` etc.) während der
+  Code und `de.json` Umlaut-Varianten nutzen (`kurs_löschen`,
+  `übertrag_auto`). Nicht-DE-Sprachen fielen bei diesen Keys auf
+  Fallback-Text zurück. Alle 4 Sprachen jetzt synchron (je 473 Keys,
+  0 Diff).
+- **Hartcodierte User-Strings entfernt**: «Feedback senden» (Navbar),
+  «Neuer Bestwert!» (SzenenAbschluss), «Hinweis genutzt» +
+  «Einstiegshilfe bfu» (ScoringFlow) jetzt via `t()`. Neue Keys
+  `popover.feedback`, `scoring.hinweis_genutzt` in allen 4 Sprachen.
+
+### Behoben
+- **PWA-Routing**: `runtimeCaching` NetworkFirst für
+  `/impressum|datenschutz|glossar.html` als Belt-and-braces gegen
+  Alt-Service-Worker aus v0.4.x, die die App-Shell für diese Pfade
+  gecacht hatten.
+- **Logo-Doppelanzeige**: Inline-Style `display:block` überschrieb
+  die CSS-Regel `display:none` — korrigiert in `IssiLogo.tsx`, plus
+  `!important` in `index.css` gegen Tailwind-Preflight.
+- **Logo hell/dunkel invertiert** (Erst-Deploy): beim zweiten Deploy
+  korrekt auf KTZH-Konvention zugeordnet.
+
+### Infrastruktur
+- **H-1 PIN-Rotation**: Admin-PIN von `2847` auf `5004` rotiert (lokal,
+  Vercel, Supabase-Secret).
+- **N-2 Rate-Limit**: In-Memory-Counter verworfen (Multi-Instance-
+  Problem), als akzeptiertes Pilot-Risiko dokumentiert. DB-basierter
+  Limiter auf Backlog.
+
+### Noch offen (Sprint 2, geplant für heute/diese Woche)
+- AdminDashboard.tsx (1'926 LoC) in DefizitTab, ThemenTab, KurseTab,
+  ExportImportTab splitten
+- SceneViewer.tsx (1'556 LoC) und BildEditor.tsx (1'449 LoC)
+  entflechten
+- Admin-Modale mit `useFocusTrap` + ESC-Handler versehen
+- Handbücher (ADMIN_HANDBUCH, BENUTZERHANDBUCH, BACKUP.md, README)
+  auf Stand v0.6.0 bringen (bisher v0.3.1)
+- Minimale GitHub-Actions-CI (`npm ci && npm run build` auf PR + main)
+- SceneViewer VR-Feedback-Strings auf i18n umstellen (Refactor nötig,
+  `VR_FEEDBACK_CFG` muss in `useVRFeedbackCfg()`-Hook)
+- NACA-Subtexte in ScoringFlow bereits via i18n, aber an einzelnen
+  Stellen noch hartcodiert
 
 ### Sicherheit — Post-Pilot (Backlog)
 - PIN auf 6+ Stellen erweitern (10'000 → 1'000'000 Kombinationen)
-- DB-basierter Rate-Limiter in `admin-write` (Tabelle
+- DB-basierter Rate-Limiter in `admin-auth`/`admin-write` (Tabelle
   `admin_auth_fails(ip, ts)`, SELECT count WHERE ts > now()-60s,
   Schwelle 10/min → `429`)
 - Supabase Auth mit Admin-Rolle (Magic Link) ersetzt PIN-Shared-Secret
@@ -41,6 +113,9 @@ Versionierung nach [Semantic Versioning](https://semver.org/lang/de/).
   `storage.objects` entfernen
 - `VITE_SENTRY_DSN` setzen (Error-Tracking aktivieren — im Code seit
   v0.3.1 integriert, DSN für Pilot bewusst leer gelassen)
+- VITE_USERNAME_SALT zusätzlich serverseitig peppern (Bundle-Leak)
+- Admin-Audit-Tabelle (`admin_audit`) für Schreibvorgänge
+- Löschkonzept für `rsi_results` (90-Tage-TTL via Cron, revDSG)
 
 ---
 

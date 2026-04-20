@@ -99,17 +99,17 @@
     "kurs_teiln": "Partecipanti",
     "kurs_aktiv": "Attivo",
     "kurs_deaktivieren": "Disattivare",
-    "kurs_loeschen": "Elimina corso",
+    "kurs_löschen": "Elimina corso",
     "oberthema": "Tema principale",
     "unterthema": "Sottotema / Gruppo",
     "thema_neu": "Nuovo tema",
     "gruppe_neu": "Nuovo gruppo",
     "thema_typ": "Tipo",
-    "thema_oberthema_waehlen": "Seleziona tema principale",
+    "thema_oberthema_wählen": "Seleziona tema principale",
     "thema_archivieren": "Archiviare",
     "merkmale_label": "Caratteristica",
     "merkmale_wert": "Valore",
-    "merkmale_hinzufuegen": "+ Aggiungi caratteristica",
+    "merkmale_hinzufügen": "+ Aggiungi caratteristica",
     "panorama_phase3": "Immagine 360° (Fase 3)",
     "vorschau_phase3": "Immagini di anteprima",
     "szene_neu": "Nuova scena",
@@ -162,7 +162,7 @@
     "pin_titel": "Accesso admin",
     "pin_hinweis": "Inserire il PIN",
     "pin_falsch": "Il PIN non è corretto.",
-    "pin_bestaetigen": "Accedi"
+    "pin_bestätigen": "Accedi"
   },
   "score": {
     "points": "pt"
@@ -293,7 +293,7 @@
     "punkte_erhalten": "Punti ottenuti",
     "weiter_suchen": "Continua la ricerca",
     "bewertung_schritt": "Passo {{nr}} di 3",
-    "gemaess_tabelle": "Secondo la tabella: {{wert}}",
+    "gemäss_tabelle": "Secondo la tabella: {{wert}}",
     "methodik_titel": "Metodo RSI a 9 passi",
     "normhierarchie_label": "Gerarchia normativa (valutazione scostamento)",
     "relevanz_matrix_label": "Matrice di rilevanza (Importanza × Scostamento)",
@@ -302,7 +302,7 @@
     "abweichung_kategorien_label": "Categorie di scostamento",
     "quellen": "Fonti: Corso TBA FK RSI (V 16.09.2020), rapporto bfu 73 (NACA), SN 641 723 fig. 2",
     "schliessen": "Chiudi",
-    "uebertrag_auto": "Passi di trasferimento (auto)",
+    "übertrag_auto": "Passi di trasferimento (auto)",
     "relevanz_matrix_kurz": "Matrice di rilevanza",
     "unfallrisiko_matrix_kurz": "Matrice di rischio",
     "bfu_badge": "Aiuto introduttivo bfu",
@@ -322,7 +322,8 @@
     "matrix_abweichung": "Scostamento",
     "matrix_wichtigkeit": "Importanza",
     "matrix_unfallschwere": "Gravità",
-    "matrix_relevanz": "Rilevanza SD"
+    "matrix_relevanz": "Rilevanza SD",
+    "hinweis_genutzt": "Suggerimento usato"
   },
   "ranking": {
     "title": "Classifica",
@@ -333,9 +334,9 @@
     "ewig": "Classifica permanente",
     "kurs": "Classifica del corso",
     "tag": "Classifica giornaliera",
-    "kurs_waehlen": "Seleziona corso",
+    "kurs_wählen": "Seleziona corso",
     "kurs_code": "Inserisci il codice del corso",
-    "tag_waehlen": "Seleziona giorno",
+    "tag_wählen": "Seleziona giorno",
     "leer": "Nessuna voce",
     "gesamt": "Totale",
     "thema": "Tema",
@@ -345,9 +346,9 @@
     "zugangscode_eingeben": "Oppure inserisci il codice di accesso",
     "leer_kurs": "Nessun risultato per questo corso.",
     "kurs_hinweis": "Seleziona un corso o inserisci un codice di accesso.",
-    "thema_waehlen": "Scegli tema",
+    "thema_wählen": "Scegli tema",
     "leer_thema": "Nessun risultato per questo tema.",
-    "szene_waehlen": "Scegli scena",
+    "szene_wählen": "Scegli scena",
     "leer_szene": "Nessun risultato per questa scena.",
     "punkte": "Punti",
     "gefunden": "Trovati",
@@ -360,9 +361,9 @@
     "beenden": "Termina scena",
     "weiter_suchen": "Continua la ricerca",
     "abschluss_titel": "Scena completata",
-    "naechste": "Scena successiva",
+    "nächste": "Scena successiva",
     "hint_warnung": "Mostrare gli hotspot? Per ogni deficit trovato verrà dedotto il 50% dei punti.",
-    "hint_bestaetigen": "Mostra comunque",
+    "hint_bestätigen": "Mostra comunque",
     "gefunden_von": "{{found}} di {{total}} trovati",
     "pflicht_fehlt": "Deficit obbligatorio non trovato",
     "booster_gefunden": "Booster trovato",
@@ -375,7 +376,7 @@
     "weiter_bewertung": "Verso la valutazione RSI...",
     "alle_gefunden": "Tutti i deficit di sicurezza trovati!",
     "defizit_hier": "Deficit di sicurezza qui?",
-    "bestaetigen": "Conferma",
+    "bestätigen": "Conferma",
     "perspektive": "Prospettiva",
     "standort": "Posizione {{nr}}",
     "hinweis_btn": "Suggerimento",
@@ -402,7 +403,7 @@
     "merkmale": "Caratteristiche stradali",
     "hinweis": "Cerca autonomamente i deficit di sicurezza nel panorama 360°. I punti caldi non sono contrassegnati. Puoi mostrare suggerimenti — con deduzione di punti.",
     "starten": "Avvia la formazione",
-    "zurueck": "Indietro",
+    "zurück": "Indietro",
     "bild_phase3": "Immagine 360° disponibile nella fase 3",
     "kein_bild": "Nessuna immagine di anteprima registrata",
     "aus_panorama": "Riprendere dal panorama",
@@ -411,7 +412,7 @@
   },
   "kurs": {
     "kein": "Nessun corso — formazione libera",
-    "waehlen": "Selezionare un corso (opzionale)",
+    "wählen": "Selezionare un corso (opzionale)",
     "passwort": "Password del corso",
     "passwort_eingeben": "Inserire la password del corso",
     "passwort_falsch": "La password inserita non è corretta. Si prega di riprovare.",
@@ -428,7 +429,8 @@
     "kurs_ungueltig": "Codice corso non trovato"
   },
   "popover": {
-    "logout": "Disconnettersi"
+    "logout": "Disconnettersi",
+    "feedback": "Invia feedback"
   },
   "guide": {
     "title": "Come funziona la formazione",
@@ -512,7 +514,7 @@
     "titel": "Carica panorama",
     "drag": "Trascina qui l'immagine panoramica",
     "drag_sub": "Formati accettati: JPG, PNG, WEBP (max. 20 MB)",
-    "waehlen": "Seleziona file",
+    "wählen": "Seleziona file",
     "url": "Inserisci URL immagine (opzionale)",
     "url_laden": "Carica",
     "verwenden": "Usa questa immagine",
@@ -520,7 +522,7 @@
     "fehler_gross": "L'immagine è troppo grande. Dimensione massima: 20 MB.",
     "fehler_format": "Questo formato non è supportato. Sono accettati JPG, PNG e WEBP.",
     "fehler_laden": "Impossibile caricare l'immagine.",
-    "warnung_seitenverhaeltnis": "Nota: Le immagini panoramiche hanno di solito un rapporto 2:1. Questa immagine si discosta da tale proporzione.",
+    "warnung_seitenverhältnis": "Nota: Le immagini panoramiche hanno di solito un rapporto 2:1. Questa immagine si discosta da tale proporzione.",
     "abmessungen": "{{breite}} × {{hoehe}} pixel",
     "laden": "Caricamento immagine..."
   }

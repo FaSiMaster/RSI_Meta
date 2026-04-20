@@ -99,17 +99,17 @@
     "kurs_teiln": "Participants",
     "kurs_aktiv": "Active",
     "kurs_deaktivieren": "Deactivate",
-    "kurs_loeschen": "Delete course",
+    "kurs_löschen": "Delete course",
     "oberthema": "Main topic",
     "unterthema": "Sub-topic / Group",
     "thema_neu": "New topic",
     "gruppe_neu": "New group",
     "thema_typ": "Type",
-    "thema_oberthema_waehlen": "Select main topic",
+    "thema_oberthema_wählen": "Select main topic",
     "thema_archivieren": "Archive",
     "merkmale_label": "Characteristic",
     "merkmale_wert": "Value",
-    "merkmale_hinzufuegen": "+ Add characteristic",
+    "merkmale_hinzufügen": "+ Add characteristic",
     "panorama_phase3": "360° image (Phase 3)",
     "vorschau_phase3": "Preview images",
     "szene_neu": "New scene",
@@ -162,7 +162,7 @@
     "pin_titel": "Admin Access",
     "pin_hinweis": "Enter PIN",
     "pin_falsch": "PIN is incorrect.",
-    "pin_bestaetigen": "Sign in"
+    "pin_bestätigen": "Sign in"
   },
   "score": {
     "points": "pts"
@@ -293,7 +293,7 @@
     "punkte_erhalten": "Points earned",
     "weiter_suchen": "Keep searching",
     "bewertung_schritt": "Step {{nr}} of 3",
-    "gemaess_tabelle": "Per table: {{wert}}",
+    "gemäss_tabelle": "Per table: {{wert}}",
     "methodik_titel": "RSI 9-step methodology",
     "normhierarchie_label": "Norm hierarchy (deviation assessment)",
     "relevanz_matrix_label": "Relevance matrix (Importance × Deviation)",
@@ -302,7 +302,7 @@
     "abweichung_kategorien_label": "Deviation categories",
     "quellen": "Sources: TBA course FK RSI (V 16.09.2020), bfu report 73 (NACA), SN 641 723 fig. 2",
     "schliessen": "Close",
-    "uebertrag_auto": "Transfer steps (auto)",
+    "übertrag_auto": "Transfer steps (auto)",
     "relevanz_matrix_kurz": "Relevance matrix",
     "unfallrisiko_matrix_kurz": "Risk matrix",
     "bfu_badge": "bfu introduction aid",
@@ -322,7 +322,8 @@
     "matrix_abweichung": "Deviation",
     "matrix_wichtigkeit": "Importance",
     "matrix_unfallschwere": "Severity",
-    "matrix_relevanz": "Relevance SD"
+    "matrix_relevanz": "Relevance SD",
+    "hinweis_genutzt": "Hint used"
   },
   "ranking": {
     "title": "Ranking",
@@ -333,9 +334,9 @@
     "ewig": "All-time ranking",
     "kurs": "Course ranking",
     "tag": "Daily ranking",
-    "kurs_waehlen": "Select course",
+    "kurs_wählen": "Select course",
     "kurs_code": "Enter course code",
-    "tag_waehlen": "Select day",
+    "tag_wählen": "Select day",
     "leer": "No entries yet",
     "gesamt": "Total",
     "thema": "Topic",
@@ -345,9 +346,9 @@
     "zugangscode_eingeben": "Or enter access code",
     "leer_kurs": "No results for this course yet.",
     "kurs_hinweis": "Please select a course or enter an access code.",
-    "thema_waehlen": "Choose topic",
+    "thema_wählen": "Choose topic",
     "leer_thema": "No results for this topic.",
-    "szene_waehlen": "Choose scene",
+    "szene_wählen": "Choose scene",
     "leer_szene": "No results for this scene.",
     "punkte": "Points",
     "gefunden": "Found",
@@ -360,9 +361,9 @@
     "beenden": "End scene",
     "weiter_suchen": "Keep searching",
     "abschluss_titel": "Scene completed",
-    "naechste": "Next scene",
+    "nächste": "Next scene",
     "hint_warnung": "Show hotspots? 50% of points will be deducted per deficit found.",
-    "hint_bestaetigen": "Show anyway",
+    "hint_bestätigen": "Show anyway",
     "gefunden_von": "{{found}} of {{total}} found",
     "pflicht_fehlt": "Mandatory deficit not found",
     "booster_gefunden": "Booster found",
@@ -375,7 +376,7 @@
     "weiter_bewertung": "Proceed to RSI assessment...",
     "alle_gefunden": "All safety deficits found!",
     "defizit_hier": "Safety deficit here?",
-    "bestaetigen": "Confirm",
+    "bestätigen": "Confirm",
     "perspektive": "Perspective",
     "standort": "Location {{nr}}",
     "hinweis_btn": "Hint",
@@ -402,7 +403,7 @@
     "merkmale": "Road characteristics",
     "hinweis": "Independently search for safety deficits in the 360° panorama. Hotspots are not marked. You can reveal hints — with a point deduction.",
     "starten": "Start training",
-    "zurueck": "Back",
+    "zurück": "Back",
     "bild_phase3": "360° image coming in Phase 3",
     "kein_bild": "No preview image recorded",
     "aus_panorama": "Take from panorama",
@@ -411,7 +412,7 @@
   },
   "kurs": {
     "kein": "No course — free training",
-    "waehlen": "Select a course (optional)",
+    "wählen": "Select a course (optional)",
     "passwort": "Course password",
     "passwort_eingeben": "Enter course password",
     "passwort_falsch": "The password entered is incorrect. Please try again.",
@@ -428,7 +429,8 @@
     "kurs_ungueltig": "Course code not found"
   },
   "popover": {
-    "logout": "Sign out"
+    "logout": "Sign out",
+    "feedback": "Send feedback"
   },
   "guide": {
     "title": "How the training works",
@@ -512,7 +514,7 @@
     "titel": "Load panorama",
     "drag": "Drag panoramic image here",
     "drag_sub": "Supported formats: JPG, PNG, WEBP (max. 20 MB)",
-    "waehlen": "Select file",
+    "wählen": "Select file",
     "url": "Enter image URL (optional)",
     "url_laden": "Load",
     "verwenden": "Use this image",
@@ -520,7 +522,7 @@
     "fehler_gross": "The image is too large. Maximum file size: 20 MB.",
     "fehler_format": "This file format is not supported. JPG, PNG and WEBP are accepted.",
     "fehler_laden": "The image could not be loaded.",
-    "warnung_seitenverhaeltnis": "Note: Panoramic images usually have a 2:1 aspect ratio. This image deviates from that.",
+    "warnung_seitenverhältnis": "Note: Panoramic images usually have a 2:1 aspect ratio. This image deviates from that.",
     "abmessungen": "{{breite}} × {{hoehe}} pixels",
     "laden": "Loading image..."
   }

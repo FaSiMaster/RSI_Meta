@@ -264,7 +264,7 @@
     "nacaLeicht": "leicht (0–1)",
     "nacaMittel": "mittel (2–3)",
     "nacaSchwer": "schwer (4–7)",
-    "auto": "Automatisch",
+    "auto": "auto",
     "allSteps": "Auswertung aller 9 Schritte",
     "normRefs": "Normreferenzen",
     "allCorrect": "Alles korrekt!",
@@ -305,7 +305,6 @@
     "übertrag_auto": "Übertrag-Schritte (auto)",
     "relevanz_matrix_kurz": "Relevanz-Matrix",
     "unfallrisiko_matrix_kurz": "Unfallrisiko-Matrix",
-    "auto": "auto",
     "bfu_badge": "Einstiegshilfe bfu",
     "wie_wichtig": "Wie wichtig ist dieses Kriterium?",
     "wie_abweichung": "Wie stark weicht es von der Norm ab?",
@@ -323,7 +322,8 @@
     "matrix_abweichung": "Abweichung",
     "matrix_wichtigkeit": "Wichtigkeit",
     "matrix_unfallschwere": "Unfallschwere",
-    "matrix_relevanz": "Relevanz SD"
+    "matrix_relevanz": "Relevanz SD",
+    "hinweis_genutzt": "Hinweis genutzt"
   },
   "ranking": {
     "title": "Rangliste",
@@ -429,7 +429,8 @@
     "kurs_ungueltig": "Kurs-Code nicht gefunden"
   },
   "popover": {
-    "logout": "Abmelden"
+    "logout": "Abmelden",
+    "feedback": "Feedback senden"
   },
   "guide": {
     "title": "So funktioniert das Training",

@@ -85,7 +85,7 @@ export default function SzenenAbschluss({
           {istNeuerBestwert && versuche > 1 && (
             <div style={{ display: 'inline-flex', alignItems: 'center', gap: '5px', marginTop: '8px', padding: '4px 12px', borderRadius: '12px', background: 'rgba(26,127,31,0.1)', border: '1px solid rgba(26,127,31,0.3)' }}>
               <TrendingUp size={13} style={{ color: '#1A7F1F' }} />
-              <span style={{ fontSize: '12px', fontWeight: 700, color: '#1A7F1F' }}>Neuer Bestwert!</span>
+              <span style={{ fontSize: '12px', fontWeight: 700, color: '#1A7F1F' }}>{t('completion.neuer_bestwert')}</span>
             </div>
           )}
         </div>

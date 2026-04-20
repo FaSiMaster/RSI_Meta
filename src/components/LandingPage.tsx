@@ -34,11 +34,11 @@ export default function LandingPage({ theme, onToggleTheme, onStart, onAdmin }: 
   const [nameFehlend, setNameFehlend] = useState(false)
   const [showFeedback, setShowFeedback] = useState(false)
 
-  // Admin-PIN
+  // Admin-PIN (PIN selbst nicht mehr im Bundle — Server-Tausch via admin-auth)
   const [showAdminModal, setShowAdminModal] = useState(false)
   const [adminPin, setAdminPin] = useState('')
   const [adminPinFehler, setAdminPinFehler] = useState(false)
-  const configuredPin = import.meta.env.VITE_ADMIN_PIN as string | undefined
+  const [adminPruefung, setAdminPruefung] = useState(false)
 
   // Kurse
   const kurse: Kurs[] = getKurseZeitlichAktiv()
@@ -69,29 +69,55 @@ export default function LandingPage({ theme, onToggleTheme, onStart, onAdmin }: 
     setPasswortFehler(false)
   }
 
-  function handleAdminSubmit() {
-    if (!configuredPin) { onAdmin(); return }
-    if (adminPin === configuredPin) {
+  async function handleAdminSubmit() {
+    const url = import.meta.env.VITE_SUPABASE_URL as string | undefined
+    const anonKey = import.meta.env.VITE_SUPABASE_ANON_KEY as string | undefined
+    if (!url || !anonKey) {
+      // Entwicklungsfall ohne Supabase-Config: Login blockiert, da
+      // Server-Tausch nicht moeglich. Sichtbar im Admin-Pin-Fehler-Text.
+      setAdminPinFehler(true)
+      return
+    }
+    setAdminPruefung(true)
+    setAdminPinFehler(false)
+    try {
+      const res = await fetch(`${url}/functions/v1/admin-auth`, {
+        method: 'POST',
+        headers: {
+          'content-type': 'application/json',
+          'apikey': anonKey,
+          'authorization': `Bearer ${anonKey}`,
+        },
+        body: JSON.stringify({ pin: adminPin }),
+      })
+      if (!res.ok) {
+        setAdminPinFehler(true)
+        return
+      }
+      const { token } = await res.json() as { token?: string }
+      if (!token) {
+        setAdminPinFehler(true)
+        return
+      }
       sessionStorage.setItem('rsi-admin-auth', '1')
-      // PIN in Session halten fuer Edge-Function-Writes (H-2 Schritt 2c).
-      // Beim Tab-Close automatisch weg, Logout entfernt explizit.
-      sessionStorage.setItem('rsi-admin-pin', adminPin)
+      sessionStorage.setItem('rsi-admin-token', token)
       setShowAdminModal(false)
       setAdminPin('')
       onAdmin()
-    } else {
+    } catch {
       setAdminPinFehler(true)
+    } finally {
+      setAdminPruefung(false)
     }
   }
 
   function handleAdminClick() {
-    // Bereits authentifiziert in dieser Session?
-    if (sessionStorage.getItem('rsi-admin-auth') === '1') {
+    // Bereits authentifiziert in dieser Session und Token noch vorhanden?
+    if (sessionStorage.getItem('rsi-admin-auth') === '1'
+        && sessionStorage.getItem('rsi-admin-token')) {
       onAdmin()
       return
     }
-    // Keine PIN konfiguriert → direkt rein
-    if (!configuredPin) { onAdmin(); return }
     setShowAdminModal(true)
     setAdminPin('')
     setAdminPinFehler(false)
@@ -459,10 +485,19 @@ export default function LandingPage({ theme, onToggleTheme, onStart, onAdmin }: 
 
             <button
               onClick={handleAdminSubmit}
+              disabled={adminPruefung || adminPin.length === 0}
               className="w-full rounded-lg text-sm font-bold"
-              style={{ padding: '12px', background: 'var(--zh-dunkelblau)', color: 'white', border: 'none', cursor: 'pointer', fontFamily: 'var(--zh-font)' }}
+              style={{
+                padding: '12px',
+                background: 'var(--zh-dunkelblau)',
+                color: 'white',
+                border: 'none',
+                cursor: adminPruefung || adminPin.length === 0 ? 'not-allowed' : 'pointer',
+                opacity: adminPruefung || adminPin.length === 0 ? 0.6 : 1,
+                fontFamily: 'var(--zh-font)',
+              }}
             >
-              {t('admin.pin_bestätigen')}
+              {adminPruefung ? '…' : t('admin.pin_bestätigen')}
             </button>
           </div>
         </div>

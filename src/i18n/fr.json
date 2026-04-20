@@ -99,17 +99,17 @@
     "kurs_teiln": "Participants",
     "kurs_aktiv": "Actif",
     "kurs_deaktivieren": "Désactiver",
-    "kurs_loeschen": "Supprimer le cours",
+    "kurs_löschen": "Supprimer le cours",
     "oberthema": "Thème principal",
     "unterthema": "Sous-thème / Groupe",
     "thema_neu": "Nouveau thème",
     "gruppe_neu": "Nouveau groupe",
     "thema_typ": "Type",
-    "thema_oberthema_waehlen": "Sélectionner le thème principal",
+    "thema_oberthema_wählen": "Sélectionner le thème principal",
     "thema_archivieren": "Archiver",
     "merkmale_label": "Caractéristique",
     "merkmale_wert": "Valeur",
-    "merkmale_hinzufuegen": "+ Ajouter une caractéristique",
+    "merkmale_hinzufügen": "+ Ajouter une caractéristique",
     "panorama_phase3": "Image 360° (Phase 3)",
     "vorschau_phase3": "Images d'aperçu",
     "szene_neu": "Nouvelle scène",
@@ -162,7 +162,7 @@
     "pin_titel": "Accès admin",
     "pin_hinweis": "Saisir le PIN",
     "pin_falsch": "Le PIN est incorrect.",
-    "pin_bestaetigen": "Se connecter"
+    "pin_bestätigen": "Se connecter"
   },
   "score": {
     "points": "pts"
@@ -293,7 +293,7 @@
     "punkte_erhalten": "Points obtenus",
     "weiter_suchen": "Continuer la recherche",
     "bewertung_schritt": "Étape {{nr}} sur 3",
-    "gemaess_tabelle": "Selon le tableau: {{wert}}",
+    "gemäss_tabelle": "Selon le tableau: {{wert}}",
     "methodik_titel": "Méthode RSI en 9 étapes",
     "normhierarchie_label": "Hiérarchie normative (évaluation de l'écart)",
     "relevanz_matrix_label": "Matrice de pertinence (Importance × Écart)",
@@ -302,7 +302,7 @@
     "abweichung_kategorien_label": "Catégories d'écart",
     "quellen": "Sources: Cours TBA FK RSI (V 16.09.2020), rapport bfu 73 (NACA), SN 641 723 fig. 2",
     "schliessen": "Fermer",
-    "uebertrag_auto": "Étapes de report (auto)",
+    "übertrag_auto": "Étapes de report (auto)",
     "relevanz_matrix_kurz": "Matrice de pertinence",
     "unfallrisiko_matrix_kurz": "Matrice de risque",
     "bfu_badge": "Aide d'introduction bfu",
@@ -322,7 +322,8 @@
     "matrix_abweichung": "Écart",
     "matrix_wichtigkeit": "Importance",
     "matrix_unfallschwere": "Gravité",
-    "matrix_relevanz": "Pertinence SD"
+    "matrix_relevanz": "Pertinence SD",
+    "hinweis_genutzt": "Indice utilisé"
   },
   "ranking": {
     "title": "Classement",
@@ -333,9 +334,9 @@
     "ewig": "Classement permanent",
     "kurs": "Classement du cours",
     "tag": "Classement du jour",
-    "kurs_waehlen": "Sélectionner un cours",
+    "kurs_wählen": "Sélectionner un cours",
     "kurs_code": "Entrer le code du cours",
-    "tag_waehlen": "Sélectionner le jour",
+    "tag_wählen": "Sélectionner le jour",
     "leer": "Aucune entrée",
     "gesamt": "Total",
     "thema": "Thème",
@@ -345,9 +346,9 @@
     "zugangscode_eingeben": "Ou entrer le code d'accès",
     "leer_kurs": "Aucun résultat pour ce cours.",
     "kurs_hinweis": "Veuillez sélectionner un cours ou entrer un code d'accès.",
-    "thema_waehlen": "Choisir un thème",
+    "thema_wählen": "Choisir un thème",
     "leer_thema": "Aucun résultat pour ce thème.",
-    "szene_waehlen": "Choisir une scène",
+    "szene_wählen": "Choisir une scène",
     "leer_szene": "Aucun résultat pour cette scène.",
     "punkte": "Points",
     "gefunden": "Trouvés",
@@ -360,9 +361,9 @@
     "beenden": "Terminer la scène",
     "weiter_suchen": "Continuer la recherche",
     "abschluss_titel": "Scène terminée",
-    "naechste": "Scène suivante",
+    "nächste": "Scène suivante",
     "hint_warnung": "Afficher les points chauds? 50% des points seront déduits par déficit.",
-    "hint_bestaetigen": "Afficher quand même",
+    "hint_bestätigen": "Afficher quand même",
     "gefunden_von": "{{found}} sur {{total}} trouvés",
     "pflicht_fehlt": "Déficit obligatoire non trouvé",
     "booster_gefunden": "Booster trouvé",
@@ -375,7 +376,7 @@
     "weiter_bewertung": "Vers l'évaluation RSI...",
     "alle_gefunden": "Tous les déficits de sécurité trouvés!",
     "defizit_hier": "Déficit de sécurité ici?",
-    "bestaetigen": "Confirmer",
+    "bestätigen": "Confirmer",
     "perspektive": "Perspective",
     "standort": "Emplacement {{nr}}",
     "hinweis_btn": "Indice",
@@ -402,7 +403,7 @@
     "merkmale": "Caractéristiques routières",
     "hinweis": "Recherchez indépendamment les déficits de sécurité dans le panorama 360°. Les points chauds ne sont pas marqués. Vous pouvez afficher des indices — avec déduction de points.",
     "starten": "Démarrer la formation",
-    "zurueck": "Retour",
+    "zurück": "Retour",
     "bild_phase3": "Image 360° disponible en phase 3",
     "kein_bild": "Aucune image d'aperçu saisie",
     "aus_panorama": "Reprendre du panorama",
@@ -411,7 +412,7 @@
   },
   "kurs": {
     "kein": "Aucun cours — formation libre",
-    "waehlen": "Sélectionner un cours (optionnel)",
+    "wählen": "Sélectionner un cours (optionnel)",
     "passwort": "Mot de passe du cours",
     "passwort_eingeben": "Saisir le mot de passe du cours",
     "passwort_falsch": "Le mot de passe saisi est incorrect. Veuillez réessayer.",
@@ -428,7 +429,8 @@
     "kurs_ungueltig": "Code de cours introuvable"
   },
   "popover": {
-    "logout": "Se déconnecter"
+    "logout": "Se déconnecter",
+    "feedback": "Envoyer un commentaire"
   },
   "guide": {
     "title": "Comment fonctionne la formation",
@@ -512,7 +514,7 @@
     "titel": "Charger le panorama",
     "drag": "Déposez l'image panoramique ici",
     "drag_sub": "Formats acceptés: JPG, PNG, WEBP (max. 20 Mo)",
-    "waehlen": "Sélectionner un fichier",
+    "wählen": "Sélectionner un fichier",
     "url": "Entrer l'URL de l'image (facultatif)",
     "url_laden": "Charger",
     "verwenden": "Utiliser cette image",
@@ -520,7 +522,7 @@
     "fehler_gross": "L'image est trop grande. Taille maximale: 20 Mo.",
     "fehler_format": "Ce format de fichier n'est pas pris en charge. JPG, PNG et WEBP sont acceptés.",
     "fehler_laden": "L'image n'a pas pu être chargée.",
-    "warnung_seitenverhaeltnis": "Remarque: Les images panoramiques ont généralement un rapport 2:1. Cette image s'en écarte.",
+    "warnung_seitenverhältnis": "Remarque: Les images panoramiques ont généralement un rapport 2:1. Cette image s'en écarte.",
     "abmessungen": "{{breite}} × {{hoehe}} pixels",
     "laden": "Chargement de l'image..."
   }
