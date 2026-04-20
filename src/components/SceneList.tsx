@@ -269,7 +269,7 @@ function NeueSzeneModal({ topicId, onSave, onClose }: NeueSzeneModalProps) {
 
 // ── Haupt-Komponente ────────────────────────────────────────────────────────
 
-export default function SceneList({ topic, username, onBack, onSelectScene }: Props) {
+export default function SceneList({ topic, username, isAdmin = false, onBack, onSelectScene }: Props) {
   const { i18n, t } = useTranslation()
   const lang = i18n.language
   const [scenes, setScenes] = useState<AppScene[]>([])
@@ -326,12 +326,14 @@ export default function SceneList({ topic, username, onBack, onSelectScene }: Pr
               {ml(topic.beschreibungI18n, lang)}
             </p>
           </div>
-          <button
-            onClick={() => setShowNeueSzeneModal(true)}
-            style={{ display: 'flex', alignItems: 'center', gap: '6px', padding: '8px 16px', borderRadius: 'var(--zh-radius-btn)', background: 'var(--zh-dunkelblau)', color: 'white', fontWeight: 700, fontSize: '13px', border: 'none', cursor: 'pointer', fontFamily: 'var(--zh-font)', flexShrink: 0 }}
-          >
-            <Plus size={14} /> {t('admin.szene_neu')}
-          </button>
+          {isAdmin && (
+            <button
+              onClick={() => setShowNeueSzeneModal(true)}
+              style={{ display: 'flex', alignItems: 'center', gap: '6px', padding: '8px 16px', borderRadius: 'var(--zh-radius-btn)', background: 'var(--zh-dunkelblau)', color: 'white', fontWeight: 700, fontSize: '13px', border: 'none', cursor: 'pointer', fontFamily: 'var(--zh-font)', flexShrink: 0 }}
+            >
+              <Plus size={14} /> {t('admin.szene_neu')}
+            </button>
+          )}
         </div>
       </div>
 

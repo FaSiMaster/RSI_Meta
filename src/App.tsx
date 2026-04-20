@@ -318,7 +318,13 @@ export default function App() {
 
           {view === 'scenes' && currentTopic && (
             <motion.div key="scenes" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} transition={{ duration: 0.2 }} className="flex-1 flex flex-col">
-              <SceneList topic={currentTopic} username={username} onBack={() => setView('topics')} onSelectScene={handleSelectScene} />
+              <SceneList
+                topic={currentTopic}
+                username={username}
+                isAdmin={sessionStorage.getItem('rsi-admin-auth') === '1'}
+                onBack={() => setView('topics')}
+                onSelectScene={handleSelectScene}
+              />
             </motion.div>
           )}
 
