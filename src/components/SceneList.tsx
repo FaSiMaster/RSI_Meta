@@ -71,6 +71,7 @@ function NeueSzeneModal({ topicId, onSave, onClose }: NeueSzeneModalProps) {
       topicId,
       nameI18n: { de: nameDe.trim(), fr: '', it: '', en: '' },
       beschreibungI18n: { de: beschreibungDe.trim(), fr: '', it: '', en: '' },
+      bemerkungI18n: { de: '', fr: '', it: '', en: '' },
       kontext,
       strassenmerkmale: [],
       vorschauBilder: [],
@@ -79,6 +80,7 @@ function NeueSzeneModal({ topicId, onSave, onClose }: NeueSzeneModalProps) {
       panoramaBildUrl: null,
       startblick: null,
       isActive: true,
+      createdAt: Date.now(),
     }
     saveScene(newScene)
     onSave(newScene)

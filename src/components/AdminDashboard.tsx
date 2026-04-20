@@ -56,6 +56,7 @@ function emptyScene(topicId: string): AppScene {
     topicId,
     nameI18n: { de: '', fr: '', it: '', en: '' },
     beschreibungI18n: { de: '', fr: '', it: '', en: '' },
+    bemerkungI18n: { de: '', fr: '', it: '', en: '' },
     kontext: 'io',
     strassenmerkmale: [],
     vorschauBilder: [],
@@ -64,6 +65,7 @@ function emptyScene(topicId: string): AppScene {
     panoramaBildUrl: null,
     startblick: null,
     isActive: true,
+    createdAt: Date.now(),
   }
 }
 
@@ -308,7 +310,7 @@ export default function AdminDashboard() {
     setSzeneGespeichertFeedback(true)
     setTimeout(() => setSzeneGespeichertFeedback(false), 3000)
   }
-  function setSceneML(field: 'nameI18n' | 'beschreibungI18n', l: string, v: string) {
+  function setSceneML(field: 'nameI18n' | 'beschreibungI18n' | 'bemerkungI18n', l: string, v: string) {
     if (!editingScene) return
     setEditingScene(prev => prev ? { ...prev, [field]: { ...(prev[field] ?? { de:'', fr:'', it:'', en:'' }), [l]: v } } : prev)
   }
@@ -923,6 +925,22 @@ export default function AdminDashboard() {
               </div>
             </Section>
 
+            {/* D-7: Kategorie steht jetzt vor Kriterium & Kontext */}
+            <Section label="Kategorie">
+              <select value={editingDef.kategorie ?? ''}
+                onChange={e => setEditingDef(prev => prev ? { ...prev, kategorie: e.target.value as AppDeficit['kategorie'] || undefined } : prev)}
+                style={{ width: '100%', padding: '8px 12px', borderRadius: '6px', border: '1px solid var(--zh-color-border)', background: 'var(--zh-color-bg-secondary)', color: 'var(--zh-color-text)', fontSize: '13px', fontFamily: 'var(--zh-font)' }}>
+                <option value="">— keine —</option>
+                <option value="verkehrsfuehrung">Verkehrsführung</option>
+                <option value="sicht">Sicht</option>
+                <option value="ausruestung">Ausrüstung</option>
+                <option value="zustand">Zustand Verkehrsfläche</option>
+                <option value="strassenrand">Strassenrand</option>
+                <option value="verkehrsablauf">Verkehrsablauf</option>
+                <option value="baustelle">Baustelle</option>
+              </select>
+            </Section>
+
             <Section label="Kriterium & Kontext">
               <div style={{ display: 'grid', gridTemplateColumns: '1fr auto', gap: '12px' }}>
                 <div>
@@ -983,13 +1001,47 @@ export default function AdminDashboard() {
             </Section>
 
             <Section label="Eigenschaften">
-              <div style={{ display: 'flex', gap: '16px' }}>
-                {([['isPflicht','Pflichtdefizit'],['isBooster','Booster']] as const).map(([field, lbl]) => (
-                  <label key={field} style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '14px', color: 'var(--zh-color-text)', cursor: 'pointer' }}>
-                    <input type="checkbox" checked={editingDef[field]} onChange={e => setEditingDef(prev => prev ? { ...prev, [field]: e.target.checked } : prev)} />
-                    {lbl}
-                  </label>
-                ))}
+              <div style={{ display: 'flex', gap: '24px', flexWrap: 'wrap' }}>
+                <label style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '14px', color: 'var(--zh-color-text)', cursor: 'pointer' }}>
+                  <input
+                    type="checkbox"
+                    checked={editingDef.isPflicht}
+                    onChange={e => setEditingDef(prev => prev ? { ...prev, isPflicht: e.target.checked } : prev)}
+                  />
+                  Pflichtdefizit
+                </label>
+                <label style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '14px', color: 'var(--zh-color-text)', cursor: 'pointer' }}>
+                  <input
+                    type="checkbox"
+                    checked={editingDef.isBooster}
+                    onChange={e => setEditingDef(prev => prev ? {
+                      ...prev,
+                      isBooster: e.target.checked,
+                      // Default-Bonus 10 % wenn Booster neu aktiviert
+                      boosterBonusProzent: e.target.checked ? (prev.boosterBonusProzent ?? 10) : undefined,
+                    } : prev)}
+                  />
+                  Booster
+                </label>
+                {/* D-9: Bonus-%-Auswahl, nur sichtbar wenn Booster aktiv */}
+                {editingDef.isBooster && (
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                    <span style={{ fontSize: '12px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', color: 'var(--zh-color-text-muted)' }}>
+                      Bonus
+                    </span>
+                    {([10, 20] as const).map(pct => (
+                      <label key={pct} style={{ display: 'flex', alignItems: 'center', gap: '4px', fontSize: '13px', color: 'var(--zh-color-text)', cursor: 'pointer' }}>
+                        <input
+                          type="radio"
+                          name="boosterBonusProzent"
+                          checked={(editingDef.boosterBonusProzent ?? 10) === pct}
+                          onChange={() => setEditingDef(prev => prev ? { ...prev, boosterBonusProzent: pct } : prev)}
+                        />
+                        +{pct}%
+                      </label>
+                    ))}
+                  </div>
+                )}
               </div>
             </Section>
 
@@ -997,50 +1049,9 @@ export default function AdminDashboard() {
               <input value={editingDef.normRefs.join(', ')} onChange={e => setEditingDef(prev => prev ? { ...prev, normRefs: e.target.value.split(',').map(s => s.trim()).filter(Boolean) } : prev)}
                 style={{ width: '100%', padding: '8px 12px', borderRadius: '6px', border: '1px solid var(--zh-color-border)', background: 'var(--zh-color-bg-secondary)', color: 'var(--zh-color-text)', fontSize: '13px', fontFamily: 'var(--zh-font)', boxSizing: 'border-box' }} />
             </Section>
-
-            <Section label="360°-Position (θ 0–360° / φ 0–180°)">
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
-                {(['theta','phi'] as const).map(axis => (
-                  <div key={axis}>
-                    <div style={{ fontSize: '10px', fontWeight: 700, color: 'var(--zh-color-text-disabled)', marginBottom: '4px', textTransform: 'uppercase', letterSpacing: '0.1em' }}>{axis}</div>
-                    <input type="number" min={0} max={axis === 'theta' ? 360 : 180} step={1}
-                      value={editingDef.position?.[axis] ?? ''}
-                      onChange={e => {
-                        const val = parseFloat(e.target.value)
-                        setEditingDef(prev => prev ? {
-                          ...prev,
-                          position: { theta: prev.position?.theta ?? 0, phi: prev.position?.phi ?? 90, [axis]: isNaN(val) ? 0 : val },
-                        } : prev)
-                      }}
-                      style={{ width: '100%', padding: '8px 12px', borderRadius: '6px', border: '1px solid var(--zh-color-border)', background: 'var(--zh-color-bg-secondary)', color: 'var(--zh-color-text)', fontSize: '13px', fontFamily: 'var(--zh-font)', boxSizing: 'border-box' }} />
-                  </div>
-                ))}
-              </div>
-              <div style={{ marginTop: '10px' }}>
-                <div style={{ fontSize: '10px', fontWeight: 700, color: 'var(--zh-color-text-disabled)', marginBottom: '4px', textTransform: 'uppercase', letterSpacing: '0.1em' }}>
-                  Toleranzradius: {editingDef.tolerance ?? 15}°
-                </div>
-                <input type="range" min={5} max={30} step={1}
-                  value={editingDef.tolerance ?? 15}
-                  onChange={e => setEditingDef(prev => prev ? { ...prev, tolerance: parseInt(e.target.value) } : prev)}
-                  style={{ width: '100%' }} />
-              </div>
-            </Section>
-
-            <Section label="Kategorie">
-              <select value={editingDef.kategorie ?? ''}
-                onChange={e => setEditingDef(prev => prev ? { ...prev, kategorie: e.target.value as AppDeficit['kategorie'] || undefined } : prev)}
-                style={{ width: '100%', padding: '8px 12px', borderRadius: '6px', border: '1px solid var(--zh-color-border)', background: 'var(--zh-color-bg-secondary)', color: 'var(--zh-color-text)', fontSize: '13px', fontFamily: 'var(--zh-font)' }}>
-                <option value="">— keine —</option>
-                <option value="verkehrsfuehrung">Verkehrsführung</option>
-                <option value="sicht">Sicht</option>
-                <option value="ausruestung">Ausrüstung</option>
-                <option value="zustand">Zustand Verkehrsfläche</option>
-                <option value="strassenrand">Strassenrand</option>
-                <option value="verkehrsablauf">Verkehrsablauf</option>
-                <option value="baustelle">Baustelle</option>
-              </select>
-            </Section>
+            {/* D-6: 360°-Position-Section entfernt — Verortung erfolgt ueber den
+                Verortungs-Editor (Punkt/Polygon/Gruppe). Legacy-Felder
+                (position/tolerance) bleiben im Datenmodell als Backwards-Compat. */}
 
             {/* Verortung im Bild */}
             <Section label={t('admin.verortung')}>
@@ -1114,6 +1125,20 @@ export default function AdminDashboard() {
               <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
                 {(['de','fr','it','en'] as const).map(l => (
                   <MLTextarea key={l} label={l.toUpperCase()} value={(editingScene.beschreibungI18n as unknown as Record<string,string> | undefined)?.[l] ?? ''} onChange={v => setSceneML('beschreibungI18n', l, v)} />
+                ))}
+              </div>
+            </Section>
+
+            {/* D-3: Trainer-Bemerkung (optional) */}
+            <Section label="Trainer-Hinweis (optional, wird vor Szenenstart angezeigt)">
+              <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+                {(['de','fr','it','en'] as const).map(l => (
+                  <MLTextarea
+                    key={l}
+                    label={l.toUpperCase()}
+                    value={(editingScene.bemerkungI18n as unknown as Record<string,string> | undefined)?.[l] ?? ''}
+                    onChange={v => setSceneML('bemerkungI18n', l, v)}
+                  />
                 ))}
               </div>
             </Section>

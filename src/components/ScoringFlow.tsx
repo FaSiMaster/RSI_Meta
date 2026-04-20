@@ -481,7 +481,10 @@ export default function ScoringFlow({ deficit, scene, kategorieRichtig = true, h
     // Kategorie additiv + Hinweis-Abzug
     const katPts       = kategorieRichtig ? 25 : 0
     const hintAbzug    = hintPenalty ? 25 : 0
-    const pts          = Math.max(0, rawPts + katPts - hintAbzug)
+    const ptsVorBonus  = Math.max(0, rawPts + katPts - hintAbzug)
+    // D-9: Booster-Bonus (10 % oder 20 %) auf den finalen Score
+    const boosterPct   = deficit.isBooster ? (deficit.boosterBonusProzent ?? 10) : 0
+    const pts          = Math.round(ptsVorBonus * (1 + boosterPct / 100))
     const finalCorrect = unfallrisiko === ca.unfallrisiko
 
     const decisions: { label: string; user: string; correct: string; ok: boolean }[] = [

@@ -59,6 +59,9 @@ export interface AppScene {
   topicId: string
   nameI18n: MultiLang
   beschreibungI18n?: MultiLang
+  // Optionaler Trainer-Hinweis fuer diese Szene (D-3, v0.4.x).
+  // Wird im TrainingEinstieg ueber dem Start-Button angezeigt.
+  bemerkungI18n?: MultiLang
   kontext: 'io' | 'ao'
   bildUrl?: string
   strassenmerkmale?: StrassenMerkmal[]
@@ -72,6 +75,9 @@ export interface AppScene {
   // Perspektiven: mehrere Panorama-Bilder pro Szene (Standortwechsel)
   perspektiven?: Perspektive[]
   isActive: boolean
+  // Erstellungs-Zeitstempel (ms seit Epoch). Fuer Sortierung und Anzeige
+  // im Admin. Optional aus Backwards-Compat-Gruenden.
+  createdAt?: number
 }
 
 export interface AppDeficit {
@@ -92,8 +98,14 @@ export interface AppDeficit {
   }
   isPflicht:  boolean
   isBooster:  boolean
+  // Bonus-Prozentsatz wenn isBooster=true. 10 oder 20. Default 10
+  // wenn nicht gesetzt aber isBooster=true (Backwards-Compat).
+  // Wird in ScoringFlow auf den finalen Score eines Defizits angewendet.
+  boosterBonusProzent?: 10 | 20
   normRefs:   string[]
   // Sphärische Position im 360°-Bild (theta=0–360, phi=0–180)
+  // DEPRECATED seit v0.4.x — Verortung ueber Verortungs-Editor (verortung/
+  // verortungen). Felder bleiben fuer Backwards-Compat in localStorage.
   position?:  { theta: number; phi: number }
   tolerance?: number          // Trefferradius in Grad (default: 15)
   kategorie?: DefizitKategorie

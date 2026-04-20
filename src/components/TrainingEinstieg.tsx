@@ -47,6 +47,11 @@ export default function TrainingEinstieg({ scene, topic, onStart, onBack }: Prop
     ? ml(scene.beschreibungI18n, lang).trim()
     : ''
 
+  // D-3: Optionaler Trainer-Hinweis (Bemerkung)
+  const bemerkung = scene.bemerkungI18n
+    ? ml(scene.bemerkungI18n, lang).trim()
+    : ''
+
   // Strassenmerkmale nur wenn vorhanden
   const merkmale = (scene.strassenmerkmale ?? []).filter(
     m => m.labelI18n.de.trim().length > 0 || m.wertI18n.de.trim().length > 0,
@@ -155,6 +160,29 @@ export default function TrainingEinstieg({ scene, topic, onStart, onBack }: Prop
       }}>
         {beschreibung.length > 0 ? beschreibung : t('einstieg.kein_beschrieb')}
       </p>
+
+      {/* D-3: Trainer-Hinweis (optional) */}
+      {bemerkung.length > 0 && (
+        <div
+          role="note"
+          style={{
+            display: 'flex', gap: '12px',
+            padding: '14px 16px', marginBottom: '24px',
+            borderRadius: '10px',
+            background: 'rgba(184,115,0,0.08)',
+            border: '1px solid rgba(184,115,0,0.3)',
+            color: '#8B5500', fontSize: '14px', lineHeight: 1.55,
+          }}
+        >
+          <span aria-hidden="true" style={{ fontSize: '18px', lineHeight: 1, marginTop: '1px' }}>!</span>
+          <div>
+            <p style={{ fontSize: '11px', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.12em', margin: 0, marginBottom: '4px' }}>
+              Hinweis
+            </p>
+            {bemerkung}
+          </div>
+        </div>
+      )}
 
       {/* Strassenmerkmale-Tabelle – nur wenn Einträge vorhanden */}
       {zeigeMerkmale && (
