@@ -44,11 +44,11 @@ textarea:focus-visible,
 
 /* TBA ISSI-Logo: auto-switch hell/dunkel nach data-theme.
    Light-Theme: dunkle Variante (auf hellem Grund lesbar).
-   Dark-Theme: helle Variante (auf dunklem Grund lesbar). */
-.issi-logo--on-dark { display: none; }
-.issi-logo--on-light { display: block; }
-[data-theme="dark"] .issi-logo--on-dark { display: block; }
-[data-theme="dark"] .issi-logo--on-light { display: none; }
+   Dark-Theme: helle Variante (auf dunklem Grund lesbar).
+   !important nötig, weil Tailwind-Preflight img auf display:block setzt. */
+.issi-logo { display: none !important; }
+[data-theme="dark"] .issi-logo--on-dark { display: block !important; }
+html:not([data-theme="dark"]) .issi-logo--on-light { display: block !important; }
 
 /* Screen-Reader-only Text — visuell versteckt, für Assistive-Tech lesbar */
 .sr-only {

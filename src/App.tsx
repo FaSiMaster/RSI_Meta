@@ -306,7 +306,12 @@ export default function App() {
 
           {view === 'landing' && (
             <motion.div key="landing" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.2 }} className="flex-1">
-              <LandingPage onStart={(name, kursCode, kursName) => handleLogin(name, kursCode, kursName ?? null)} onAdmin={() => setView('admin')} />
+              <LandingPage
+                theme={theme}
+                onToggleTheme={handleToggleTheme}
+                onStart={(name, kursCode, kursName) => handleLogin(name, kursCode, kursName ?? null)}
+                onAdmin={() => setView('admin')}
+              />
             </motion.div>
           )}
 

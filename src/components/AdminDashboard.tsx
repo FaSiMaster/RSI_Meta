@@ -393,6 +393,22 @@ export default function AdminDashboard() {
     setTopics(getTopics())
     setTopicsTree(getTopicsTree())
   }
+  function handleDeleteThema(id: string) {
+    const all = getTopics()
+    const tp = all.find(x => x.id === id)
+    if (!tp) return
+    const children = all.filter(t => t.parentTopicId === id)
+    const scenes = getAllScenes().filter(s => s.topicId === id || children.some(c => c.id === s.topicId))
+    const kaskade = children.length > 0 || scenes.length > 0
+      ? `\n\nEs werden mitgeloescht:\n- ${children.length} Untergruppe(n)\n- ${scenes.length} Szene(n) inkl. aller Defizite`
+      : ''
+    const name = ml(tp.nameI18n, lang)
+    if (!window.confirm(`Themenbereich "${name}" wirklich loeschen?${kaskade}`)) return
+    deleteTopic(id)
+    setTopics(getTopics())
+    setTopicsTree(getTopicsTree())
+    if (selectedTopic?.id === id) setSelectedTopic(null)
+  }
   function moveThema(id: string, dir: 'up' | 'down') {
     const all = getTopics()
     const item = all.find(t => t.id === id)
@@ -800,6 +816,12 @@ export default function AdminDashboard() {
                       <button onClick={() => handleArchiveThema(node.topic.id)}
                         style={{ padding: '4px 10px', borderRadius: '6px', border: '1px solid var(--zh-color-border)', background: 'var(--zh-color-bg-secondary)', fontSize: '11px', fontWeight: 600, color: 'var(--zh-color-text-muted)', cursor: 'pointer' }}>
                         {t('admin.thema_archivieren')}
+                      </button>
+                      <button onClick={() => handleDeleteThema(node.topic.id)}
+                        aria-label={t('admin.thema_loeschen', 'Themenbereich löschen')}
+                        title={t('admin.thema_loeschen', 'Themenbereich löschen')}
+                        style={{ padding: '4px 8px', borderRadius: '6px', border: '1px solid rgba(212,0,83,0.2)', background: 'rgba(212,0,83,0.06)', fontSize: '11px', color: '#D40053', cursor: 'pointer', display: 'flex', alignItems: 'center' }}>
+                        <Trash2 size={12} />
                       </button>
                     </div>
                   </div>

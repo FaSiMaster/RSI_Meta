@@ -30,6 +30,20 @@ export default defineConfig({
           /^\/datenschutz\.html$/,
           /^\/glossar\.html$/,
         ],
+        // Belt-and-braces: die statischen Rechtstexte stets per Network zuerst
+        // laden. So kommt der User auch dann auf die richtige Seite, wenn ein
+        // Alt-Service-Worker aus v0.4.x die App-Shell noch im Cache hat.
+        runtimeCaching: [
+          {
+            urlPattern: /\/(impressum|datenschutz|glossar)\.html$/,
+            handler: 'NetworkFirst',
+            options: {
+              cacheName: 'rsi-static-pages',
+              networkTimeoutSeconds: 4,
+              expiration: { maxEntries: 6, maxAgeSeconds: 60 * 60 * 24 * 30 },
+            },
+          },
+        ],
       },
       manifest: {
         name: 'RSI VR Tool – FaSi Kanton Zürich',

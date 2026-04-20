@@ -3,7 +3,7 @@
 // Enthält Datenschutzhinweis (DSGVO) und Admin-Zugang via PIN
 
 import { useState, useEffect, useRef } from 'react'
-import { Eye, BarChart3, BookOpen, EyeOff, Lock, ChevronRight, RotateCcw, MessageSquare, AlertCircle } from 'lucide-react'
+import { Eye, BarChart3, BookOpen, EyeOff, Lock, ChevronRight, RotateCcw, MessageSquare, AlertCircle, Sun, Moon } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import LanguageSwitcher from './LanguageSwitcher'
 import FeedbackModal from './FeedbackModal'
@@ -13,11 +13,14 @@ import { resetCache as resetSupabaseCache } from '../data/supabaseSync'
 import { useFocusTrap } from '../lib/useFocusTrap'
 
 interface Props {
+  theme: 'light' | 'dark'
+  onToggleTheme: () => void
   onStart: (username: string, kursCode: string | null, kursName: string | null) => void
   onAdmin: () => void
 }
 
-export default function LandingPage({ onStart, onAdmin }: Props) {
+export default function LandingPage({ theme, onToggleTheme, onStart, onAdmin }: Props) {
+  const isDark = theme === 'dark'
   const { t, i18n } = useTranslation()
   const adminModalRef = useRef<HTMLDivElement>(null)
   const saved = getSession()
@@ -148,6 +151,13 @@ export default function LandingPage({ onStart, onAdmin }: Props) {
         </div>
         <div className="flex items-center gap-3">
           <LanguageSwitcher />
+          <button
+            onClick={onToggleTheme}
+            aria-label={isDark ? t('theme.light', 'Helles Design') : t('theme.dark', 'Dunkles Design')}
+            style={{ width: '30px', height: '30px', borderRadius: '50%', border: '1px solid var(--zh-color-border)', background: 'var(--zh-color-bg-secondary)', color: 'var(--zh-color-text-muted)', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', flexShrink: 0 }}
+          >
+            {isDark ? <Sun size={13} aria-hidden="true" /> : <Moon size={13} aria-hidden="true" />}
+          </button>
           <button
             onClick={handleAdminClick}
             aria-label={t('admin.pin_titel')}
