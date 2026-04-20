@@ -39,6 +39,8 @@ Versionierung nach [Semantic Versioning](https://semver.org/lang/de/).
 - Supabase Auth mit Admin-Rolle (Magic Link) ersetzt PIN-Shared-Secret
 - Storage-Listing via Edge Function → broad SELECT-Policy auf
   `storage.objects` entfernen
+- `VITE_SENTRY_DSN` setzen (Error-Tracking aktivieren — im Code seit
+  v0.3.1 integriert, DSN für Pilot bewusst leer gelassen)
 
 ---
 
