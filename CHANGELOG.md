@@ -9,7 +9,18 @@ Versionierung nach [Semantic Versioning](https://semver.org/lang/de/).
 
 ## [Unreleased]
 
-—
+### Sicherheit
+- **H-2 RLS-Verschärfung**: Content-Tabellen `rsi_topics`, `rsi_scenes`,
+  `rsi_deficits` erlauben anon/authenticated ab sofort **nur SELECT**.
+  Schreibzugriffe (upsert + delete) laufen über neue Supabase Edge
+  Function `admin-write` (`supabase/functions/admin-write/`), die den
+  Admin-PIN gegen das Server-Secret `ADMIN_PIN` prüft und mit
+  `service_role` schreibt. Client (`supabaseSync.ts`) speichert den PIN
+  nach Login in `sessionStorage['rsi-admin-pin']` und schickt ihn als
+  `x-admin-pin`-Header. Doppelte Alt-Policies (`{public}` + `{anon,
+  authenticated}`) wurden aufgeräumt.
+- **H-1 PIN-Rotation**: Admin-PIN lokal + Vercel von `2847` auf `5004`
+  rotiert.
 
 ---
 
