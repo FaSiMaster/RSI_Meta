@@ -16,14 +16,14 @@ export default function IssiLogo({ height = 28, ariaLabel = 'TBA ISSI Ausbildung
   return (
     <>
       <img
-        src="/logo/issi-logo_dunkel.png"
+        src="/logo/issi-logo_hell.png"
         alt={ariaLabel}
         className="issi-logo issi-logo--on-light"
         style={style}
         draggable={false}
       />
       <img
-        src="/logo/issi-logo_hell.png"
+        src="/logo/issi-logo_dunkel.png"
         alt=""
         aria-hidden="true"
         className="issi-logo issi-logo--on-dark"
