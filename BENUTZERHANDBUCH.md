@@ -1,6 +1,6 @@
 # Benutzerhandbuch — RSI VR Tool
 
-> Für Inspektorinnen und Inspektoren im Schulungseinsatz. Stand v0.3.1.
+> Für Inspektorinnen und Inspektoren im Schulungseinsatz. Stand v0.6.0.
 > Begleitend zum TBA-Fachkurs FK RSI (V 16.09.2020).
 
 ---
@@ -170,7 +170,24 @@ Sterne-Übersicht pro Thema, erreichte Szenen, Gesamt-Score.
 
 ---
 
-## 11. Support
+## 11. Barrierefreiheit
+
+Die App ist auf WCAG 2.1 AA ausgerichtet:
+
+- **Tastatur-Navigation:** Alle Funktionen (Login, Dashboard, Viewer, Bewertung) sind per Tab/Shift+Tab erreichbar. Ein gut sichtbarer Fokus-Ring markiert das aktive Element.
+- **Focus-Trap in Modalen:** Tab/Shift+Tab cycelt innerhalb des Modals, der Initial-Fokus liegt sinnvoll, nach dem Schliessen kehrt er zum Auslöser zurück.
+- **ESC schliesst alle Modale** (Feedback, Kategorie-Auswahl, Admin-Login).
+- **Touch-Targets ≥ 44 × 44 px** (WCAG 2.5.5): Theme-Toggle, Avatar, Sprachwahl, Admin-Button.
+- **Vier Sprachen** (de/fr/it/en) vollständig synchron — jede User-sichtbare Zeichenkette ist übersetzt.
+- **Kontraste** erfüllen 4.5 : 1 für Fliesstext und 3 : 1 für grössere UI-Elemente (KZH-Tokens seit v0.4.0 angepasst).
+- **Screen-Reader:** Icon-only-Buttons tragen `aria-label`, Toggles `aria-pressed`, Menüs `aria-expanded` + `aria-haspopup`.
+- **Dark/Light-Theme** für unterschiedliche Umgebungslichtverhältnisse.
+
+Rückmeldungen zu Barrieren: per E-Mail an die Fachstelle (siehe 12).
+
+---
+
+## 12. Support
 
 Bei Problemen, Feedback oder Bugs:
 - **E-Mail:** sicherheit.tba@bd.zh.ch
