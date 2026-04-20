@@ -1,6 +1,6 @@
 # Meta Horizon Store — Einreichungs-Checkliste
 
-> Vorbereitung für Phase 6. Stand v0.3.1 — noch keine Einreichung erfolgt.
+> Vorbereitung für Phase 6. Stand v0.6.0 — noch keine Einreichung erfolgt.
 
 ---
 
@@ -32,7 +32,7 @@
 ## 2. Store-Metadaten
 
 ### 2.1 Identität
-- [ ] **App-Name:** RSI Immersive (zu bestätigen)
+- [ ] **App-Name:** RSI VR Tool (aktuelle Wortmarke seit v0.6.0, zu bestätigen)
 - [ ] **Kurzbeschreibung (max. 80 Z.):** "Immersive Schulung für Strassensicherheit — Road Safety Inspection in VR."
 - [ ] **Lange Beschreibung (max. 4000 Z.):** vollständiger Text über Zweck, Zielgruppe, Fachkurs-Basis
 - [ ] **Kategorie:** Education / Productivity / Training
@@ -138,7 +138,7 @@
 
 | Punkt | Verantwortlich | Deadline |
 |---|---|---|
-| App-Name "RSI Immersive" vs. "RSI VR Tool" | FaSi / KZH-Kommunikation | vor Einreichung |
+| App-Name "RSI VR Tool" final bestätigen (seit v0.6.0 in Navbar aktiv) | FaSi / KZH-Kommunikation | vor Einreichung |
 | KZH-Wappen-Nutzung | Staatskanzlei | vor Einreichung |
 | Store-Sprache (nur DE oder alle 4) | FaSi | vor Einreichung |
 | Altersfreigabe-Ziel | FaSi | bei IARC-Fragebogen |

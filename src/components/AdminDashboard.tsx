@@ -26,6 +26,7 @@ import BildEditor from './admin/BildEditor'
 import { STRASSENMERKMALE_KATALOG } from '../data/strassenmerkmale'
 import BildUpload from './admin/BildUpload'
 import AdminRanking from './admin/AdminRanking'
+import { useFocusTrap } from '../lib/useFocusTrap'
 
 // ── Badge-Farben ──
 function riskBg(w: RSIDimension): { bg: string; color: string; label: string } {
@@ -199,6 +200,28 @@ export default function AdminDashboard() {
   const [kursModalOpen, setKursModalOpen] = useState(false)
   const [editingKurs, setEditingKurs] = useState<Kurs | null>(null)
   const [showKursPasswort, setShowKursPasswort] = useState(false)
+
+  // ── Modal-Refs + Focus-Trap + ESC-Handler (WCAG 2.1.2 + 2.4.3) ──
+  const defModalRef = useRef<HTMLDivElement>(null)
+  const szeneModalRef = useRef<HTMLDivElement>(null)
+  const themaModalRef = useRef<HTMLDivElement>(null)
+  const kursModalRef = useRef<HTMLDivElement>(null)
+  useFocusTrap(defModalRef, defModalOpen)
+  useFocusTrap(szeneModalRef, szeneModalOpen)
+  useFocusTrap(themaModalRef, themaModalOpen)
+  useFocusTrap(kursModalRef, kursModalOpen)
+  useEffect(() => {
+    function handleKey(e: KeyboardEvent) {
+      if (e.key !== 'Escape') return
+      if (defModalOpen)   { setDefModalOpen(false); return }
+      if (szeneModalOpen) { setSzeneModalOpen(false); return }
+      if (themaModalOpen) { setThemaModalOpen(false); return }
+      if (kursModalOpen)  { setKursModalOpen(false); return }
+    }
+    if (!defModalOpen && !szeneModalOpen && !themaModalOpen && !kursModalOpen) return
+    window.addEventListener('keydown', handleKey)
+    return () => window.removeEventListener('keydown', handleKey)
+  }, [defModalOpen, szeneModalOpen, themaModalOpen, kursModalOpen])
 
   // Daten laden
   useEffect(() => {
@@ -927,7 +950,7 @@ export default function AdminDashboard() {
       {defModalOpen && editingDef && (
         <div style={{ position: 'fixed', inset: 0, zIndex: 50, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'rgba(0,0,0,0.5)', backdropFilter: 'blur(4px)' }}
           onClick={e => { if (e.target === e.currentTarget) setDefModalOpen(false) }}>
-          <div style={{ width: '680px', maxHeight: '88vh', overflowY: 'auto', borderRadius: 'var(--zh-radius-card)', border: '1px solid var(--zh-color-border)', background: 'var(--zh-color-surface)', padding: '28px 32px', boxShadow: 'var(--zh-shadow-lg)' }}>
+          <div ref={defModalRef} role="dialog" aria-modal="true" style={{ width: '680px', maxHeight: '88vh', overflowY: 'auto', borderRadius: 'var(--zh-radius-card)', border: '1px solid var(--zh-color-border)', background: 'var(--zh-color-surface)', padding: '28px 32px', boxShadow: 'var(--zh-shadow-lg)' }}>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '24px' }}>
               <h3 style={{ fontSize: '18px', fontWeight: 700, color: 'var(--zh-color-text)' }}>
                 {editingDef.id.startsWith('d-') ? t('admin.modalTitleNew') : t('admin.modalTitleEdit')}
@@ -1135,7 +1158,7 @@ export default function AdminDashboard() {
       {szeneModalOpen && editingScene && (
         <div style={{ position: 'fixed', inset: 0, zIndex: 50, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'rgba(0,0,0,0.5)', backdropFilter: 'blur(4px)' }}
           onClick={e => { if (e.target === e.currentTarget) setSzeneModalOpen(false) }}>
-          <div style={{ width: '680px', maxHeight: '88vh', overflowY: 'auto', borderRadius: 'var(--zh-radius-card)', border: '1px solid var(--zh-color-border)', background: 'var(--zh-color-surface)', padding: '28px 32px', boxShadow: 'var(--zh-shadow-lg)' }}>
+          <div ref={szeneModalRef} role="dialog" aria-modal="true" style={{ width: '680px', maxHeight: '88vh', overflowY: 'auto', borderRadius: 'var(--zh-radius-card)', border: '1px solid var(--zh-color-border)', background: 'var(--zh-color-surface)', padding: '28px 32px', boxShadow: 'var(--zh-shadow-lg)' }}>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '24px' }}>
               <h3 style={{ fontSize: '18px', fontWeight: 700, color: 'var(--zh-color-text)' }}>{szeneIsNew ? t('admin.szene_neu') : t('admin.szene_bearbeiten')}</h3>
               <button onClick={() => setSzeneModalOpen(false)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--zh-color-text-muted)' }}><X size={18} /></button>
@@ -1413,7 +1436,7 @@ export default function AdminDashboard() {
       {themaModalOpen && editingThema && (
         <div style={{ position: 'fixed', inset: 0, zIndex: 50, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'rgba(0,0,0,0.5)', backdropFilter: 'blur(4px)' }}
           onClick={e => { if (e.target === e.currentTarget) setThemaModalOpen(false) }}>
-          <div style={{ width: '560px', maxHeight: '88vh', overflowY: 'auto', borderRadius: 'var(--zh-radius-card)', border: '1px solid var(--zh-color-border)', background: 'var(--zh-color-surface)', padding: '28px 32px', boxShadow: 'var(--zh-shadow-lg)' }}>
+          <div ref={themaModalRef} role="dialog" aria-modal="true" style={{ width: '560px', maxHeight: '88vh', overflowY: 'auto', borderRadius: 'var(--zh-radius-card)', border: '1px solid var(--zh-color-border)', background: 'var(--zh-color-surface)', padding: '28px 32px', boxShadow: 'var(--zh-shadow-lg)' }}>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '24px' }}>
               <h3 style={{ fontSize: '18px', fontWeight: 700, color: 'var(--zh-color-text)' }}>{editingThema.nameI18n.de ? t('admin.szene_bearbeiten') : t('admin.thema_neu')}</h3>
               <button onClick={() => setThemaModalOpen(false)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--zh-color-text-muted)' }}><X size={18} /></button>
@@ -1520,7 +1543,7 @@ export default function AdminDashboard() {
       {kursModalOpen && editingKurs && (
         <div style={{ position: 'fixed', inset: 0, zIndex: 50, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'rgba(0,0,0,0.5)', backdropFilter: 'blur(4px)' }}
           onClick={e => { if (e.target === e.currentTarget) setKursModalOpen(false) }}>
-          <div style={{ width: '520px', maxHeight: '88vh', overflowY: 'auto', borderRadius: 'var(--zh-radius-card)', border: '1px solid var(--zh-color-border)', background: 'var(--zh-color-surface)', padding: '28px 32px', boxShadow: 'var(--zh-shadow-lg)' }}>
+          <div ref={kursModalRef} role="dialog" aria-modal="true" style={{ width: '520px', maxHeight: '88vh', overflowY: 'auto', borderRadius: 'var(--zh-radius-card)', border: '1px solid var(--zh-color-border)', background: 'var(--zh-color-surface)', padding: '28px 32px', boxShadow: 'var(--zh-shadow-lg)' }}>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '24px' }}>
               <h3 style={{ fontSize: '18px', fontWeight: 700, color: 'var(--zh-color-text)' }}>{t('admin.kurs_neu')}</h3>
               <button onClick={() => setKursModalOpen(false)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--zh-color-text-muted)' }}><X size={18} /></button>

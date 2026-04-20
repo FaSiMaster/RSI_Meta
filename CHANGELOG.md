@@ -13,6 +13,45 @@ Versionierung nach [Semantic Versioning](https://semver.org/lang/de/).
 
 ---
 
+## [0.6.1] — 2026-04-20 (Sprint-2 a11y + CI + Doku)
+
+Patch-Release nach v0.6.0 mit Accessibility-Nachbesserungen, erster
+CI-Pipeline und Dokumentations-Synchronisation auf den aktuellen Stand.
+
+### Hinzugefügt
+- **GitHub Actions CI** (`.github/workflows/ci.yml`): `npm ci` → `tsc --noEmit`
+  → `vite build` → PWA-Artefakt-Verifikation. Läuft bei jedem Push und PR
+  auf `main`.
+- **Admin-Modale mit `useFocusTrap` + ESC-Handler**: alle 4 Modale
+  (Defizit, Szene, Thema, Kurs) haben jetzt Focus-Trap (WCAG 2.4.3) und
+  schliessen bei ESC (WCAG 2.1.2). `role="dialog"` + `aria-modal="true"`
+  auf den Content-Containern.
+
+### Geändert (Dokumentation)
+- **BACKUP.md** komplett neu: Supabase-DB-Backup (PITR/Manual),
+  Storage-Bucket-Sicherung, localStorage-Export via Admin-Dashboard.
+  Alte Annahme «Panorama-Texturen im Repo» korrigiert (seit v0.5.0 im
+  Supabase Storage Bucket).
+- **ADMIN_HANDBUCH.md** auf v0.6.0: Token-Flow-Erklärung, neue
+  Env-Tabelle (VITE_ADMIN_PIN raus, Server-Secrets ADMIN_PIN +
+  ADMIN_TOKEN_SECRET), Edge-Function-Deploy-Abschnitt,
+  PIN-Rotations-Prozess.
+- **README.md** auf v0.6.0: Projektstruktur komplett aktualisiert (neue
+  Files, Edge-Functions-Pfad, glossary.ts entfernt), Tech-Stack erweitert,
+  Supabase-Setup dokumentiert, CI-Pipeline erwähnt.
+- **META_STORE_CHECKLIST.md**, **BROWSER.md**, **OFFLINE.md**:
+  Versions-Label auf v0.6.0 gehoben (inhaltlich weitgehend unverändert).
+- Delegiert an einen Doku-Agent, plus direkte Ergänzungen für README und
+  ADMIN_HANDBUCH durch Haupt-Orchestrator.
+
+### Offen (Sprint 3)
+- BENUTZERHANDBUCH.md noch nicht aktualisiert
+- AdminDashboard.tsx Modal-Split (Komponenten-Grösse 1'949 LoC)
+- SceneViewer VR-Feedback-Strings auf i18n
+- SceneViewer/BildEditor/appData entflechten
+
+---
+
 ## [0.6.0] — 2026-04-20 (Sprint-1 Security-Härtung + Branding + a11y)
 
 Grosser Post-v0.5.0-Sprint nach 16-Rollen-Review mit Fokus auf echte
