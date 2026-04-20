@@ -4,7 +4,7 @@
 // Kurse: Kurs-Tabelle + Kurs-Modal
 
 import { Plus, Pencil, Trash2, X, Save, ChevronDown, ChevronRight, ChevronUp, Download, Upload, Eye, EyeOff } from 'lucide-react'
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import {
   getTopics, saveTopic, deleteTopic,
@@ -15,6 +15,9 @@ import {
   type AppTopic, type AppScene, type AppDeficit, type TopicNode, type Kurs, type StrassenMerkmal,
 } from '../data/appData'
 import { generateSceneId, generateDeficitId } from '../data/idGenerator'
+import { TOPIC_ICONS, suggestIconKey } from '../data/topicIcons'
+import { searchRegelwerk, formatRegelwerkString, type RegelwerkEintrag } from '../data/regelwerkKatalog'
+import { Search, Sparkles } from 'lucide-react'
 import { WICHTIGKEIT_TABLE, calcRelevanzSD, calcUnfallrisiko, nacaToSchwere } from '../data/scoringEngine'
 import { KRITERIUM_LABELS } from '../data/kriteriumLabels'
 import type { RSIDimension, NACADimension, ResultDimension } from '../types'
@@ -1045,9 +1048,12 @@ export default function AdminDashboard() {
               </div>
             </Section>
 
-            <Section label="Normreferenzen (kommagetrennt)">
-              <input value={editingDef.normRefs.join(', ')} onChange={e => setEditingDef(prev => prev ? { ...prev, normRefs: e.target.value.split(',').map(s => s.trim()).filter(Boolean) } : prev)}
-                style={{ width: '100%', padding: '8px 12px', borderRadius: '6px', border: '1px solid var(--zh-color-border)', background: 'var(--zh-color-bg-secondary)', color: 'var(--zh-color-text)', fontSize: '13px', fontFamily: 'var(--zh-font)', boxSizing: 'border-box' }} />
+            <Section label="Normreferenzen">
+              {/* D-8: Norm-Suchfeld mit Autocomplete aus Regelwerk-Katalog */}
+              <NormRefPicker
+                value={editingDef.normRefs}
+                onChange={refs => setEditingDef(prev => prev ? { ...prev, normRefs: refs } : prev)}
+              />
             </Section>
             {/* D-6: 360°-Position-Section entfernt — Verortung erfolgt ueber den
                 Verortungs-Editor (Punkt/Polygon/Gruppe). Legacy-Felder
@@ -1407,6 +1413,52 @@ export default function AdminDashboard() {
               </div>
             </Section>
 
+            {/* D-4: Pikogramm-Picker mit Auto-Vorschlag */}
+            <Section label="Pikogramm">
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
+                <p style={{ fontSize: '12px', color: 'var(--zh-color-text-muted)', margin: 0, flex: 1 }}>
+                  Aktuell: <strong style={{ color: 'var(--zh-blau)' }}>{editingThema.iconKey ?? 'kein Icon'}</strong>
+                </p>
+                <button
+                  onClick={() => {
+                    const suggestion = suggestIconKey(editingThema.nameI18n)
+                    if (suggestion) {
+                      setEditingThema(prev => prev ? { ...prev, iconKey: suggestion } : prev)
+                    }
+                  }}
+                  title="Icon aus Themenname vorschlagen"
+                  style={{ display: 'flex', alignItems: 'center', gap: '4px', padding: '5px 10px', borderRadius: '6px', border: '1px solid var(--zh-color-border)', background: 'var(--zh-color-bg-secondary)', fontSize: '11px', color: 'var(--zh-color-text-muted)', cursor: 'pointer' }}
+                >
+                  <Sparkles size={11} /> Vorschlag
+                </button>
+              </div>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(72px, 1fr))', gap: '6px', maxHeight: '220px', overflowY: 'auto', padding: '4px' }}>
+                {TOPIC_ICONS.map(({ key, label, Icon }) => {
+                  const aktiv = editingThema.iconKey === key
+                  return (
+                    <button
+                      key={key}
+                      onClick={() => setEditingThema(prev => prev ? { ...prev, iconKey: key } : prev)}
+                      title={label}
+                      style={{
+                        display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '4px',
+                        padding: '8px 4px', borderRadius: '8px',
+                        border: aktiv ? '2px solid var(--zh-blau)' : '1px solid var(--zh-color-border)',
+                        background: aktiv ? 'rgba(0,118,189,0.08)' : 'var(--zh-color-bg-secondary)',
+                        color: aktiv ? 'var(--zh-blau)' : 'var(--zh-color-text)',
+                        cursor: 'pointer', fontFamily: 'var(--zh-font)',
+                      }}
+                    >
+                      <Icon size={20} />
+                      <span style={{ fontSize: '9px', fontWeight: 600, lineHeight: 1.1, textAlign: 'center', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                        {label}
+                      </span>
+                    </button>
+                  )
+                })}
+              </div>
+            </Section>
+
             <Section label={t('admin.thema_typ')}>
               <div style={{ display: 'flex', gap: '12px' }}>
                 {(['ober','unter'] as const).map(typ => (
@@ -1600,6 +1652,141 @@ function AutoField({ label, value }: { label: string; value: string }) {
     <div>
       <div style={{ fontSize: '10px', fontWeight: 700, color: 'var(--zh-color-text-disabled)', marginBottom: '3px', textTransform: 'uppercase', letterSpacing: '0.1em' }}>{label}</div>
       <div style={{ padding: '7px 10px', borderRadius: '6px', background: 'var(--zh-color-bg-tertiary)', color: 'var(--zh-color-text)', fontSize: '13px', fontWeight: 700 }}>{value}</div>
+    </div>
+  )
+}
+
+// ── NormRefPicker (D-8) — Tag-System mit Autocomplete aus Regelwerk-Katalog ──
+interface NormRefPickerProps {
+  value: string[]
+  onChange: (refs: string[]) => void
+}
+
+function NormRefPicker({ value, onChange }: NormRefPickerProps) {
+  const [query, setQuery] = useState('')
+  const [showResults, setShowResults] = useState(false)
+  const [freeInput, setFreeInput] = useState('')
+
+  const results = useMemo(() => {
+    if (!query.trim()) return []
+    return searchRegelwerk(query, 8)
+      .filter(r => !value.some(v => v.startsWith(r.nummer)))
+  }, [query, value])
+
+  function addRef(ref: string) {
+    const trimmed = ref.trim()
+    if (!trimmed || value.includes(trimmed)) return
+    onChange([...value, trimmed])
+    setQuery('')
+    setShowResults(false)
+  }
+
+  function removeRef(ref: string) {
+    onChange(value.filter(v => v !== ref))
+  }
+
+  function handleAddCatalog(item: RegelwerkEintrag) {
+    addRef(formatRegelwerkString(item))
+  }
+
+  function handleAddFree() {
+    if (freeInput.trim()) {
+      addRef(freeInput)
+      setFreeInput('')
+    }
+  }
+
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+      {/* Bestehende Tags */}
+      {value.length > 0 && (
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
+          {value.map(ref => (
+            <span key={ref} style={{
+              display: 'inline-flex', alignItems: 'center', gap: '6px',
+              padding: '4px 10px', borderRadius: '14px',
+              background: 'rgba(0,118,189,0.10)', color: 'var(--zh-blau)',
+              border: '1px solid rgba(0,118,189,0.25)',
+              fontSize: '12px', fontWeight: 600, fontFamily: 'var(--zh-font)',
+            }}>
+              {ref}
+              <button
+                onClick={() => removeRef(ref)}
+                aria-label={`Norm ${ref} entfernen`}
+                style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--zh-blau)', padding: 0, display: 'flex', alignItems: 'center' }}
+              >
+                <X size={11} />
+              </button>
+            </span>
+          ))}
+        </div>
+      )}
+
+      {/* Suchfeld */}
+      <div style={{ position: 'relative' }}>
+        <div style={{ position: 'relative' }}>
+          <Search size={14} style={{ position: 'absolute', left: '10px', top: '50%', transform: 'translateY(-50%)', color: 'var(--zh-color-text-disabled)' }} />
+          <input
+            value={query}
+            onChange={e => { setQuery(e.target.value); setShowResults(true) }}
+            onFocus={() => setShowResults(true)}
+            onBlur={() => setTimeout(() => setShowResults(false), 200)}
+            placeholder="Suche nach Norm-Nummer oder Stichwort (z.B. VSS 40 201, Fussverkehr, Sicht)"
+            style={{ width: '100%', padding: '8px 12px 8px 32px', borderRadius: '6px', border: '1px solid var(--zh-color-border)', background: 'var(--zh-color-bg-secondary)', color: 'var(--zh-color-text)', fontSize: '13px', fontFamily: 'var(--zh-font)', boxSizing: 'border-box' }}
+          />
+        </div>
+        {showResults && results.length > 0 && (
+          <div style={{
+            position: 'absolute', top: 'calc(100% + 4px)', left: 0, right: 0, zIndex: 10,
+            background: 'var(--zh-color-surface)',
+            border: '1px solid var(--zh-color-border)',
+            borderRadius: '8px',
+            boxShadow: 'var(--zh-shadow-lg)',
+            maxHeight: '280px', overflowY: 'auto',
+          }}>
+            {results.map(r => (
+              <button
+                key={r.nummer}
+                onMouseDown={e => { e.preventDefault(); handleAddCatalog(r) }}
+                style={{
+                  display: 'block', width: '100%', textAlign: 'left',
+                  padding: '8px 12px',
+                  background: 'transparent', border: 'none',
+                  borderBottom: '1px solid var(--zh-color-border)',
+                  cursor: 'pointer', fontFamily: 'var(--zh-font)',
+                }}
+                onMouseEnter={e => (e.currentTarget.style.background = 'rgba(0,118,189,0.06)')}
+                onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
+              >
+                <div style={{ fontSize: '12px', fontWeight: 700, color: 'var(--zh-blau)', fontFamily: 'monospace' }}>
+                  {r.nummer}
+                </div>
+                <div style={{ fontSize: '11px', color: 'var(--zh-color-text-muted)', marginTop: '2px' }}>
+                  {r.titel}
+                </div>
+              </button>
+            ))}
+          </div>
+        )}
+      </div>
+
+      {/* Frei-Text fuer eigene Eintraege */}
+      <div style={{ display: 'flex', gap: '6px' }}>
+        <input
+          value={freeInput}
+          onChange={e => setFreeInput(e.target.value)}
+          onKeyDown={e => { if (e.key === 'Enter') { e.preventDefault(); handleAddFree() } }}
+          placeholder="Eigene Referenz hinzufuegen (Enter)"
+          style={{ flex: 1, padding: '7px 10px', borderRadius: '6px', border: '1px solid var(--zh-color-border)', background: 'var(--zh-color-bg-secondary)', color: 'var(--zh-color-text)', fontSize: '12px', fontFamily: 'var(--zh-font)', boxSizing: 'border-box' }}
+        />
+        <button
+          onClick={handleAddFree}
+          disabled={!freeInput.trim()}
+          style={{ padding: '7px 14px', borderRadius: '6px', border: 'none', background: freeInput.trim() ? 'var(--zh-dunkelblau)' : 'var(--zh-color-bg-tertiary)', color: freeInput.trim() ? 'white' : 'var(--zh-color-text-disabled)', fontSize: '12px', fontWeight: 700, cursor: freeInput.trim() ? 'pointer' : 'not-allowed' }}
+        >
+          Hinzufuegen
+        </button>
+      </div>
     </div>
   )
 }

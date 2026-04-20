@@ -33,7 +33,10 @@ export interface AppTopic {
   id: string
   nameI18n: MultiLang
   beschreibungI18n: MultiLang
-  iconKey?: 'walk' | 'bike' | 'junction' | 'construction'
+  // Pikogramm-Schluessel aus src/data/topicIcons.ts (D-4, v0.4.x).
+  // Free-String fuer Erweiterbarkeit. Bestehende Werte 'walk'/'bike'/
+  // 'junction'/'construction' bleiben gueltig (Backwards-Compat).
+  iconKey?: string
   sortOrder: number
   isActive: boolean
   parentTopicId?: string | null

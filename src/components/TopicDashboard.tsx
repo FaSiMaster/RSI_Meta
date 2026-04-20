@@ -4,35 +4,17 @@
 import { motion, AnimatePresence } from 'motion/react'
 import { Trophy, Eye, MousePointerClick, BarChart3, ChevronDown, ChevronUp, BookOpen } from 'lucide-react'
 import { getTopics, getScenes, ml, type AppTopic } from '../data/appData'
+import { getTopicIcon } from '../data/topicIcons'
 import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
-const TopicIcon = ({ iconKey, size = 22 }: { iconKey: AppTopic['iconKey']; size?: number }) => {
-  const s = size
-  switch (iconKey) {
-    case 'walk': return (
-      <svg width={s} height={s} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-        <circle cx="12" cy="5" r="1.5"/><path d="M9 11l1.5 1.5L12 9l1.5 3 1.5-1" /><path d="M9 16l1-3 2 2 1-2 1 3" /><path d="M10 20l2-1 2 1"/>
-      </svg>
-    )
-    case 'bike': return (
-      <svg width={s} height={s} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-        <circle cx="6" cy="16" r="3"/><circle cx="18" cy="16" r="3"/>
-        <path d="M6 16l3-7h6l2 4" /><path d="M9 9h4" />
-      </svg>
-    )
-    case 'junction': return (
-      <svg width={s} height={s} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-        <path d="M12 3v18M3 12h18" /><circle cx="12" cy="12" r="2" fill="currentColor"/>
-      </svg>
-    )
-    case 'construction': return (
-      <svg width={s} height={s} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-        <rect x="2" y="14" width="20" height="4" rx="1"/>
-        <path d="M4 14l3-7h10l3 7"/><path d="M8 14V9M16 14V9"/>
-      </svg>
-    )
-  }
+// D-4: Pikogramm aus zentralem Katalog (src/data/topicIcons.ts).
+// Backwards-Compat: alte iconKey-Werte 'walk'/'bike'/'junction'/'construction'
+// sind im Katalog enthalten und liefern dasselbe semantische Pikogramm.
+const TopicIcon = ({ iconKey, size = 22 }: { iconKey: string | undefined | null; size?: number }) => {
+  const def = getTopicIcon(iconKey)
+  const Icon = def.Icon
+  return <Icon size={size} />
 }
 
 interface Props {
