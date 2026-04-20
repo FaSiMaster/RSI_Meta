@@ -433,12 +433,16 @@
     "subtitle": "In quattro passi, dal panorama alla valutazione RSI.",
     "step1_title": "Scegliere una scena",
     "step1_desc": "Selezionate un tema e una scena stradale dal catalogo.",
+    "step1_detail": "I temi raggruppano le scene per tipo di traffico (pedoni, bici, incroci ...). Ogni scena ha un'anteprima e caratteristiche stradali che vi danno il contesto.",
     "step2_title": "Cercare i deficit",
     "step2_desc": "Cliccate sui punti del panorama 360° che vi sembrano pericolosi.",
+    "step2_detail": "Muovetevi liberamente nell'immagine 360°. In caso di hit, si apre la finestra di categoria, seguita dal flusso di valutazione a 9 passi.",
     "step3_title": "Valutazione RSI",
     "step3_desc": "Valutate l'importanza, lo scostamento e la gravità NACA secondo il metodo a 9 passi.",
+    "step3_detail": "Importanza e scostamento danno la pertinenza SD. Combinata con la gravità d'incidente basata su NACA, dà il rischio d'incidente (basso/medio/alto).",
     "step4_title": "Confrontare i risultati",
-    "step4_desc": "Consultate il vostro risultato e confrontatevi nella classifica del corso."
+    "step4_desc": "Consultate il vostro risultato e confrontatevi nella classifica del corso.",
+    "step4_detail": "Il sistema Best-of conta il vostro miglior tentativo per scena. Le stelle (1-3) si basano sulla percentuale: <60% (1), 60-89% (2), 90-100% (3)."
   },
   "methodik": {
     "title": "Metodo RSI a 9 passi",

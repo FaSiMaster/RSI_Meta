@@ -38,12 +38,12 @@ export default function TopicDashboard({ username, score, onSelectTopic }: Props
     setSceneCounts(counts)
   }, [])
 
-  // Schritt-für-Schritt Daten
+  // Schritt-für-Schritt Daten — mit erweitertem Tooltip-Text (E-2)
   const schritte = [
-    { nr: 1, icon: <Eye size={20} />,               title: t('guide.step1_title'), desc: t('guide.step1_desc') },
-    { nr: 2, icon: <MousePointerClick size={20} />,  title: t('guide.step2_title'), desc: t('guide.step2_desc') },
-    { nr: 3, icon: <BookOpen size={20} />,            title: t('guide.step3_title'), desc: t('guide.step3_desc') },
-    { nr: 4, icon: <BarChart3 size={20} />,           title: t('guide.step4_title'), desc: t('guide.step4_desc') },
+    { nr: 1, icon: <Eye size={20} />,                title: t('guide.step1_title'), desc: t('guide.step1_desc'), detail: t('guide.step1_detail', t('guide.step1_desc')) },
+    { nr: 2, icon: <MousePointerClick size={20} />,  title: t('guide.step2_title'), desc: t('guide.step2_desc'), detail: t('guide.step2_detail', t('guide.step2_desc')) },
+    { nr: 3, icon: <BookOpen size={20} />,           title: t('guide.step3_title'), desc: t('guide.step3_desc'), detail: t('guide.step3_detail', t('guide.step3_desc')) },
+    { nr: 4, icon: <BarChart3 size={20} />,          title: t('guide.step4_title'), desc: t('guide.step4_desc'), detail: t('guide.step4_detail', t('guide.step4_desc')) },
   ]
 
   return (
@@ -98,17 +98,36 @@ export default function TopicDashboard({ username, score, onSelectTopic }: Props
         })}
       </div>
 
+      {/* E-1: Visueller Trenner zwischen Themen-Bereich und «So funktioniert» */}
+      <div style={{
+        marginTop: '56px', marginBottom: '32px',
+        height: '1px', background: 'var(--zh-color-border)',
+      }} />
+
       {/* ── Schritt-für-Schritt Anleitung ── */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.35 }}
-        style={{ marginTop: '48px' }}
+        style={{
+          padding: '24px',
+          borderRadius: 'var(--zh-radius-card)',
+          background: 'var(--zh-color-bg-secondary)',
+          border: '1px solid var(--zh-color-border)',
+        }}
       >
-        <h2 style={{ fontSize: '20px', fontWeight: 700, color: 'var(--zh-color-text)', marginBottom: '4px' }}>
-          {t('guide.title')}
-        </h2>
-        <p style={{ fontSize: '13px', color: 'var(--zh-color-text-muted)', marginBottom: '20px' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '4px' }}>
+          <span style={{
+            display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+            width: '28px', height: '28px', borderRadius: '6px',
+            background: 'var(--zh-dunkelblau)', color: 'white',
+            fontSize: '13px', fontWeight: 800,
+          }}>?</span>
+          <h2 style={{ fontSize: '20px', fontWeight: 700, color: 'var(--zh-color-text)', margin: 0 }}>
+            {t('guide.title')}
+          </h2>
+        </div>
+        <p style={{ fontSize: '13px', color: 'var(--zh-color-text-muted)', marginBottom: '20px', marginLeft: '38px' }}>
           {t('guide.subtitle')}
         </p>
 
@@ -116,12 +135,32 @@ export default function TopicDashboard({ username, score, onSelectTopic }: Props
           {schritte.map((s, i) => (
             <div
               key={s.nr}
+              tabIndex={0}
+              role="article"
+              aria-label={`Schritt ${s.nr}: ${s.title}. ${s.detail}`}
+              title={s.detail}
               style={{
                 borderRadius: 'var(--zh-radius-card)',
                 border: '1px solid var(--zh-color-border)',
                 background: 'var(--zh-color-surface)',
                 padding: '20px',
                 position: 'relative',
+                cursor: 'help',
+                transition: 'transform 0.15s, box-shadow 0.15s, border-color 0.15s',
+              }}
+              onMouseEnter={e => {
+                e.currentTarget.style.transform = 'translateY(-2px)'
+                e.currentTarget.style.borderColor = 'var(--zh-blau)'
+                e.currentTarget.style.boxShadow = 'var(--zh-shadow-sm)'
+                const ext = e.currentTarget.querySelector<HTMLDivElement>('.step-detail')
+                if (ext) ext.style.opacity = '1'
+              }}
+              onMouseLeave={e => {
+                e.currentTarget.style.transform = 'translateY(0)'
+                e.currentTarget.style.borderColor = 'var(--zh-color-border)'
+                e.currentTarget.style.boxShadow = 'none'
+                const ext = e.currentTarget.querySelector<HTMLDivElement>('.step-detail')
+                if (ext) ext.style.opacity = '0'
               }}
             >
               {/* Schrittnummer */}
@@ -152,6 +191,19 @@ export default function TopicDashboard({ username, score, onSelectTopic }: Props
               <p style={{ fontSize: '12px', color: 'var(--zh-color-text-muted)', lineHeight: 1.5 }}>
                 {s.desc}
               </p>
+
+              {/* E-2: Detail-Erklaerung beim Hover (zusaetzlich zum native title-Tooltip) */}
+              {s.detail && s.detail !== s.desc && (
+                <div className="step-detail" style={{
+                  marginTop: '10px', padding: '8px 10px',
+                  borderTop: '1px dashed var(--zh-color-border)',
+                  fontSize: '11px', color: 'var(--zh-blau)', lineHeight: 1.5,
+                  opacity: 0, transition: 'opacity 0.2s',
+                  pointerEvents: 'none',
+                }}>
+                  {s.detail}
+                </div>
+              )}
 
               {/* Verbindungspfeil (nicht beim letzten) */}
               {i < schritte.length - 1 && (
@@ -330,18 +382,25 @@ export default function TopicDashboard({ username, score, onSelectTopic }: Props
                       <NacaBar label={t('scoring.schwere_mittel')} range="NACA 2–3" color="#B87300" width="50%" />
                       <NacaBar label={t('scoring.schwere_schwer')} range="NACA 4–7" color="#D40053" width="100%" />
                     </div>
+                  </div>
+                </div>
 
-                    {/* Quellen */}
-                    <div style={{
-                      marginTop: '16px', padding: '10px 12px', borderRadius: '8px',
-                      background: 'var(--zh-color-bg-secondary)',
-                      fontSize: '10px', color: 'var(--zh-color-text-disabled)', lineHeight: 1.6,
-                    }}>
-                      <div style={{ fontWeight: 700, marginBottom: '2px' }}>{t('methodik.quellen')}</div>
-                      <div>TBA-Fachkurs FK RSI (V 16.09.2020)</div>
-                      <div>bfu-Bericht 73 (NACA)</div>
-                      <div>SN 641 723 Abb. 2</div>
-                    </div>
+                {/* E-3: Quellen-Block als eigenstaendiger Absatz unter den 3 Spalten */}
+                <div style={{
+                  marginTop: '24px', paddingTop: '16px',
+                  borderTop: '1px solid var(--zh-color-border)',
+                  display: 'flex', alignItems: 'flex-start', gap: '12px',
+                  fontSize: '11px', color: 'var(--zh-color-text-muted)', lineHeight: 1.6,
+                }}>
+                  <div style={{ fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.1em', whiteSpace: 'nowrap', minWidth: '80px' }}>
+                    {t('methodik.quellen')}
+                  </div>
+                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: '4px 16px' }}>
+                    <span>TBA-Fachkurs FK RSI (V 16.09.2020)</span>
+                    <span>·</span>
+                    <span>bfu-Bericht 73 (NACA)</span>
+                    <span>·</span>
+                    <span>SN 641 723 Abb. 2</span>
                   </div>
                 </div>
               </div>

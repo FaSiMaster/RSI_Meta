@@ -433,12 +433,16 @@
     "subtitle": "En quatre étapes, du panorama à l'évaluation RSI.",
     "step1_title": "Choisir une scène",
     "step1_desc": "Sélectionnez un thème et une scène routière dans le catalogue.",
+    "step1_detail": "Les thèmes regroupent les scènes par type de trafic (piéton, vélo, carrefour ...). Chaque scène a une prévisualisation et des caractéristiques routières qui vous donnent le contexte.",
     "step2_title": "Chercher les déficits",
     "step2_desc": "Cliquez sur les endroits du panorama 360° qui vous semblent dangereux.",
+    "step2_detail": "Déplacez-vous librement dans l'image 360°. Lors d'un clic réussi, la fenêtre de catégorie s'ouvre, suivie du flux d'évaluation en 9 étapes.",
     "step3_title": "Évaluation RSI",
     "step3_desc": "Évaluez l'importance, l'écart et la gravité NACA selon la méthode en 9 étapes.",
+    "step3_detail": "Importance et écart donnent la pertinence SD. Combinée avec la gravité d'accident basée sur NACA, cela donne le risque d'accident (faible/moyen/élevé).",
     "step4_title": "Comparer les résultats",
-    "step4_desc": "Consultez votre résultat et comparez-vous dans le classement du cours."
+    "step4_desc": "Consultez votre résultat et comparez-vous dans le classement du cours.",
+    "step4_detail": "Le système Best-of compte votre meilleure tentative par scène. Les étoiles (1-3) sont basées sur le pourcentage : <60% (1), 60-89% (2), 90-100% (3)."
   },
   "methodik": {
     "title": "Méthode RSI en 9 étapes",

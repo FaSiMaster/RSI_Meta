@@ -433,12 +433,16 @@
     "subtitle": "In four steps, from panorama to RSI assessment.",
     "step1_title": "Choose a scene",
     "step1_desc": "Select a topic and a road scene from the catalogue.",
+    "step1_detail": "Topics group scenes by traffic type (pedestrian, bike, junction ...). Each scene has a preview and road characteristics that give you context.",
     "step2_title": "Find deficits",
     "step2_desc": "Click on spots in the 360° panorama that seem unsafe to you.",
+    "step2_detail": "Move freely in the 360° image. On a hit, the category dialogue opens, followed by the 9-step assessment flow.",
     "step3_title": "RSI assessment",
     "step3_desc": "Assess importance, deviation and NACA severity using the 9-step methodology.",
+    "step3_detail": "Importance and deviation give Relevance SD. Combined with NACA-based accident severity, this yields the accident risk (low/medium/high).",
     "step4_title": "Compare results",
-    "step4_desc": "View your result and compare yourself in the course ranking."
+    "step4_desc": "View your result and compare yourself in the course ranking.",
+    "step4_detail": "The best-of point system counts your best attempt per scene. Stars (1-3) are based on percentage: <60% (1), 60-89% (2), 90-100% (3)."
   },
   "methodik": {
     "title": "RSI 9-step methodology",

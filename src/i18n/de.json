@@ -434,12 +434,16 @@
     "subtitle": "In vier Schritten vom Panorama zur RSI-Bewertung.",
     "step1_title": "Szene wählen",
     "step1_desc": "Wählen Sie ein Thema und eine Strassenszene aus dem Katalog.",
+    "step1_detail": "Themen gruppieren Szenen nach Verkehrsart (Fuss, Velo, Knoten ...). Pro Szene gibt es eine Vorschau und Strassenmerkmale, die Ihnen den Kontext vermitteln.",
     "step2_title": "Defizite suchen",
     "step2_desc": "Klicken Sie auf Stellen im 360°-Panorama, die Ihnen unsicher erscheinen.",
+    "step2_detail": "Bewegen Sie sich frei im 360°-Bild. Bei einem Treffer öffnet sich der Kategorie-Dialog, anschliessend führt Sie der 9-Schritte-Bewertungsfluss.",
     "step3_title": "RSI-Bewertung",
     "step3_desc": "Bewerten Sie Wichtigkeit, Abweichung und NACA-Schwere nach der 9-Schritte-Methodik.",
+    "step3_detail": "Wichtigkeit und Abweichung ergeben die Relevanz SD. Diese kombiniert mit der NACA-basierten Unfallschwere ergibt das Unfallrisiko (gering/mittel/hoch).",
     "step4_title": "Ergebnis vergleichen",
-    "step4_desc": "Sehen Sie Ihr Ergebnis und vergleichen Sie sich im Kurs-Ranking."
+    "step4_desc": "Sehen Sie Ihr Ergebnis und vergleichen Sie sich im Kurs-Ranking.",
+    "step4_detail": "Das Best-of-Punktesystem zählt Ihren besten Versuch pro Szene. Sterne (1-3) basieren auf Prozent: <60% (1), 60-89% (2), 90-100% (3)."
   },
   "methodik": {
     "title": "RSI 9-Schritte-Methodik",
