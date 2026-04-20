@@ -229,6 +229,8 @@
     "pkt": "Pkt."
   },
   "scoring": {
+    "verwerfenConfirm": "Bereits eingegebene Bewertung wird verworfen. Wirklich zurück zum Viewer?",
+    "aendern": "Ändern",
     "stepOf": "Schritt {{step}} von 9",
     "step1Title": "Wichtigkeit einschätzen",
     "step2Title": "Relevanz SD – Matrix",

@@ -229,6 +229,8 @@
     "pkt": "pts"
   },
   "scoring": {
+    "verwerfenConfirm": "L'évaluation déjà saisie sera supprimée. Vraiment retour au visualiseur ?",
+    "aendern": "Modifier",
     "stepOf": "Étape {{step}} sur 9",
     "step1Title": "Évaluer l'importance",
     "step2Title": "Pertinence SD – Matrice",

@@ -2,13 +2,14 @@
 // Responsive: 1-spaltig auf Mobile (<640px), 2-spaltig ab sm
 // Enthält Datenschutzhinweis (DSGVO) und Admin-Zugang via PIN
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { Shield, Eye, BarChart3, BookOpen, EyeOff, Lock, ChevronRight, RotateCcw, MessageSquare, AlertCircle } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import LanguageSwitcher from './LanguageSwitcher'
 import FeedbackModal from './FeedbackModal'
 import { getSession, getKurseZeitlichAktiv, pruefeKursPasswort, type Kurs } from '../data/appData'
 import { resetCache as resetSupabaseCache } from '../data/supabaseSync'
+import { useFocusTrap } from '../lib/useFocusTrap'
 
 interface Props {
   onStart: (username: string, kursCode: string | null, kursName: string | null) => void
@@ -17,6 +18,7 @@ interface Props {
 
 export default function LandingPage({ onStart, onAdmin }: Props) {
   const { t, i18n } = useTranslation()
+  const adminModalRef = useRef<HTMLDivElement>(null)
   const saved = getSession()
 
   const [name, setName] = useState(saved.username ?? '')
@@ -97,6 +99,9 @@ export default function LandingPage({ onStart, onAdmin }: Props) {
     window.addEventListener('keydown', handleKey)
     return () => window.removeEventListener('keydown', handleKey)
   }, [showAdminModal])
+
+  // E-7: Focus-Trap im Admin-PIN-Modal
+  useFocusTrap(adminModalRef, showAdminModal)
 
   // App komplett zurücksetzen: Service Worker + Caches + localStorage
   async function handleResetApp() {
@@ -386,8 +391,12 @@ export default function LandingPage({ onStart, onAdmin }: Props) {
           onClick={() => setShowAdminModal(false)}
           className="fixed inset-0 flex items-center justify-center z-[1000]"
           style={{ background: 'rgba(0,0,0,0.5)', padding: '20px' }}
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="admin-pin-title"
         >
           <div
+            ref={adminModalRef}
             onClick={e => e.stopPropagation()}
             className="w-full max-w-[340px]"
             style={{
@@ -404,7 +413,7 @@ export default function LandingPage({ onStart, onAdmin }: Props) {
                 <Lock size={18} style={{ color: 'var(--zh-dunkelblau)' }} />
               </div>
               <div>
-                <h3 className="text-base font-bold" style={{ color: 'var(--zh-color-text)' }}>{t('admin.pin_titel')}</h3>
+                <h3 id="admin-pin-title" className="text-base font-bold" style={{ color: 'var(--zh-color-text)' }}>{t('admin.pin_titel')}</h3>
                 <p className="text-xs" style={{ color: 'var(--zh-color-text-muted)' }}>{t('admin.pin_hinweis')}</p>
               </div>
             </div>

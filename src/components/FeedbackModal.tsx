@@ -1,9 +1,10 @@
 // FeedbackModal — einfacher Bug-Report / Feedback-Kanal via mailto.
 // Kein Backend nötig; öffnet den Standard-Mailclient mit vorausgefülltem Body.
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useTranslation } from 'react-i18next'
 import { X, Send, MessageSquare } from 'lucide-react'
+import { useFocusTrap } from '../lib/useFocusTrap'
 
 const SUPPORT_EMAIL = 'sicherheit.tba@bd.zh.ch'
 
@@ -18,6 +19,7 @@ export default function FeedbackModal({ open, onClose, context }: Props) {
   const [kategorie, setKategorie] = useState<'bug' | 'idee' | 'frage'>('bug')
   const [betreff, setBetreff] = useState('')
   const [beschreibung, setBeschreibung] = useState('')
+  const dialogRef = useRef<HTMLDivElement>(null)
 
   // ESC schliesst das Modal (WCAG 2.1.2 No-Keyboard-Trap)
   useEffect(() => {
@@ -28,6 +30,9 @@ export default function FeedbackModal({ open, onClose, context }: Props) {
     window.addEventListener('keydown', handleKey)
     return () => window.removeEventListener('keydown', handleKey)
   }, [open, onClose])
+
+  // E-7: Focus-Trap
+  useFocusTrap(dialogRef, open)
 
   if (!open) return null
 
@@ -71,6 +76,9 @@ export default function FeedbackModal({ open, onClose, context }: Props) {
   return (
     <div
       onClick={onClose}
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="feedback-modal-title"
       style={{
         position: 'fixed', inset: 0, zIndex: 400,
         display: 'flex', alignItems: 'center', justifyContent: 'center',
@@ -79,6 +87,7 @@ export default function FeedbackModal({ open, onClose, context }: Props) {
       }}
     >
       <div
+        ref={dialogRef}
         onClick={e => e.stopPropagation()}
         style={{
           width: '100%', maxWidth: '520px',
@@ -99,7 +108,7 @@ export default function FeedbackModal({ open, onClose, context }: Props) {
         }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
             <MessageSquare size={16} style={{ color: 'var(--zh-blau)' }} />
-            <h2 style={{ margin: 0, fontSize: '15px', fontWeight: 800, color: 'var(--zh-color-text)' }}>
+            <h2 id="feedback-modal-title" style={{ margin: 0, fontSize: '15px', fontWeight: 800, color: 'var(--zh-color-text)' }}>
               {t('feedback.title')}
             </h2>
           </div>

@@ -246,10 +246,13 @@ interface StepCardProps {
   subtitle?: string
   isActive: boolean
   isCompleted: boolean
+  // E-5: Wenn gesetzt und isCompleted, erscheint ein «Aendern»-Link rechts
+  onChange?: () => void
+  changeLabel?: string
   children: React.ReactNode
 }
 
-function StepCard({ nr, title, subtitle, isActive, isCompleted, children }: StepCardProps) {
+function StepCard({ nr, title, subtitle, isActive, isCompleted, onChange, changeLabel, children }: StepCardProps) {
   return (
     <div style={{
       borderRadius: '10px',
@@ -283,6 +286,21 @@ function StepCard({ nr, title, subtitle, isActive, isCompleted, children }: Step
             <span style={{ fontSize: '11px', color: 'var(--zh-color-text-muted)', marginLeft: '8px' }}>{subtitle}</span>
           )}
         </div>
+        {/* E-5: Aendern-Link nach Auswahl */}
+        {isCompleted && onChange && (
+          <button
+            onClick={onChange}
+            style={{
+              background: 'none', border: 'none', cursor: 'pointer',
+              fontSize: '11px', fontWeight: 600,
+              color: 'var(--zh-blau)', textDecoration: 'underline',
+              padding: '4px 6px', minHeight: '28px',
+              fontFamily: 'var(--zh-font)',
+            }}
+          >
+            {changeLabel ?? 'Aendern'}
+          </button>
+        )}
       </div>
       {isActive && children}
     </div>
@@ -700,7 +718,7 @@ export default function ScoringFlow({ deficit, scene, kategorieRichtig = true, h
             // Warnung wenn bereits Eingaben gemacht und Ergebnis noch nicht angezeigt
             const hatEingaben = wichtigkeit != null || abweichung != null || nacaSchwere != null
             if (hatEingaben && !showResult) {
-              if (!window.confirm('Bereits eingegebene Bewertung wird verworfen. Wirklich zurück zum Viewer?')) return
+              if (!window.confirm(t('scoring.verwerfenConfirm'))) return
             }
             onBack()
           }}
@@ -738,6 +756,8 @@ export default function ScoringFlow({ deficit, scene, kategorieRichtig = true, h
               subtitle={`${KRITERIUM_LABELS[deficit.kriteriumId] ?? deficit.kriteriumId} · ${deficit.kontext === 'io' ? 'io' : 'ao'}`}
               isActive={activeStep === 1}
               isCompleted={!!wichtigkeit}
+              changeLabel={t('scoring.aendern')}
+              onChange={() => { setWichtigkeit(null); setAbweichung(null); setNacaSchwere(null) }}
             >
               <div>
                 {prefillWichtigkeit && (
@@ -787,6 +807,8 @@ export default function ScoringFlow({ deficit, scene, kategorieRichtig = true, h
               title={t('scoring.phase_b')}
               isActive={activeStep === 2}
               isCompleted={!!abweichung}
+              changeLabel={t('scoring.aendern')}
+              onChange={() => { setAbweichung(null); setNacaSchwere(null) }}
             >
               <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
                 {ABWEICHUNG_KATEGORIEN.map(k => {
@@ -852,6 +874,8 @@ export default function ScoringFlow({ deficit, scene, kategorieRichtig = true, h
               title={t('scoring.phase_d')}
               isActive={activeStep === 3}
               isCompleted={!!nacaSchwere}
+              changeLabel={t('scoring.aendern')}
+              onChange={() => { setNacaSchwere(null) }}
             >
               <div>
                 {/* bfu-Badge */}

@@ -229,6 +229,8 @@
     "pkt": "pts"
   },
   "scoring": {
+    "verwerfenConfirm": "Already entered assessment will be discarded. Really back to viewer?",
+    "aendern": "Change",
     "stepOf": "Step {{step}} of 9",
     "step1Title": "Assess importance",
     "step2Title": "Relevance SD – Matrix",

@@ -229,6 +229,8 @@
     "pkt": "pt"
   },
   "scoring": {
+    "verwerfenConfirm": "La valutazione gia inserita verra scartata. Tornare davvero al visualizzatore?",
+    "aendern": "Modifica",
     "stepOf": "Passo {{step}} di 9",
     "step1Title": "Valutare l'importanza",
     "step2Title": "Rilevanza SD – Matrice",
