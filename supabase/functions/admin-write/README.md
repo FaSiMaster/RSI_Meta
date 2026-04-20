@@ -42,8 +42,17 @@ Erwartet: `{"ok":true,"table":"rsi_topics","op":"upsert","count":1}`
 - Whitelist auf Tables + Operations (kein SQL-Injection möglich)
 - Row-Limit 200 pro Upsert gegen Flood
 - `verify_jwt=false` ist OK, weil der PIN als Shared Secret dient
-- **Brute-Force-Schutz** (seit N-2, Schritt 3a): In-Memory-Counter pro IP,
-  nach 10 fehlgeschlagenen PIN-Versuchen innerhalb 60 Sekunden → `429 Too
-  Many Requests` mit `Retry-After`-Header. Bei PIN-Erfolg wird die IP
-  zurückgesetzt. Der Schutz wirkt pro Deno-Instanz; bei massivem
-  verteiltem Angriff würde Supabase/Cloudflare-Gateway zusätzlich greifen.
+
+## Bekannte Grenzen (Pilot)
+
+- **Kein per-IP-Rate-Limit** in der Function selbst. Supabase Edge Functions
+  laufen auf mehreren Deno-Instanzen, ein In-Memory-Counter wäre wirkungslos.
+  Zuverlässiger Schutz erfordert DB-basierten Limiter (Backlog Post-Pilot).
+- Supabase/Cloudflare-Gateway enforct aber ein globales per-IP-Limit
+  (~1000 req/10 s) — Brute-Force ist damit langsam, aber nicht unmöglich.
+- 4-stelliger PIN = 10'000 Kombinationen. Akzeptiertes Pilot-Risiko, weil
+  die App keine sensiblen personenbezogenen, finanziellen oder DSGVO-
+  relevanten Daten enthält. Worst-Case = Inhalts-Zerstörung, aus lokalen
+  Kopien + Git rekonstruierbar.
+- Für Produktion: PIN auf 6+ Stellen, DB-Rate-Limit, ggf. Supabase-Auth mit
+  Rollen (Backlog, siehe CHANGELOG-Eintrag unter "Sicherheit — Post-Pilot").

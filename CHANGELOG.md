@@ -21,6 +21,24 @@ Versionierung nach [Semantic Versioning](https://semver.org/lang/de/).
   authenticated}`) wurden aufgeräumt.
 - **H-1 PIN-Rotation**: Admin-PIN lokal + Vercel von `2847` auf `5004`
   rotiert.
+- **N-2 Rate-Limit: akzeptiertes Pilot-Risiko.** Ein In-Memory-Counter
+  in der Edge Function wurde verworfen, weil Supabase Edge Functions
+  auf mehreren Deno-Instanzen laufen (Counter wäre wirkungslos). Ein
+  DB-basierter Limiter wäre machbar, ist aber für den Pilot-Kontext
+  überdimensioniert: die App enthält keine personenbezogenen,
+  finanziellen oder DSGVO-relevanten Daten, Worst-Case beim PIN-Leak
+  ist Content-Zerstörung, aus lokaler Kopie + Git rekonstruierbar.
+  Supabase/Cloudflare-Gateway enforct ein globales per-IP-Limit
+  (~1000 req/10 s), was Brute-Force praktisch verlangsamt.
+
+### Sicherheit — Post-Pilot (Backlog)
+- PIN auf 6+ Stellen erweitern (10'000 → 1'000'000 Kombinationen)
+- DB-basierter Rate-Limiter in `admin-write` (Tabelle
+  `admin_auth_fails(ip, ts)`, SELECT count WHERE ts > now()-60s,
+  Schwelle 10/min → `429`)
+- Supabase Auth mit Admin-Rolle (Magic Link) ersetzt PIN-Shared-Secret
+- Storage-Listing via Edge Function → broad SELECT-Policy auf
+  `storage.objects` entfernen
 
 ---
 
