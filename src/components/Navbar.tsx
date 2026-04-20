@@ -6,6 +6,7 @@ import { LayoutDashboard, BarChart3, Settings, Sun, Moon, Trophy, LogOut, Rotate
 import { useState, useEffect, useRef } from 'react'
 import LanguageSwitcher from './LanguageSwitcher'
 import FeedbackModal from './FeedbackModal'
+import IssiLogo from './IssiLogo'
 import { useTranslation } from 'react-i18next'
 import { getSupabaseStatus, onStatusChange } from '../lib/supabase'
 
@@ -94,19 +95,15 @@ export default function Navbar({ view, username, score, theme, kursName, onNavig
         fontFamily: 'var(--zh-font)',
       }}
     >
-      {/* Logo */}
+      {/* Logo: TBA ISSI-Ausbildungslogo + Wortmarke */}
       <button
         onClick={() => onNavigate('topics')}
         aria-label={t('nav.dashboard')}
-        style={{ display: 'flex', alignItems: 'center', gap: '10px', background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}
+        style={{ display: 'flex', alignItems: 'center', gap: '12px', background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}
       >
-        <div style={{ width: '28px', height: '28px', borderRadius: '50%', background: 'var(--zh-dunkelblau)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }} aria-hidden="true">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
-            <path d="M12 3L4 7v5c0 5.55 3.84 10.74 8 12 4.16-1.26 8-6.45 8-12V7l-8-4z" fill="white" />
-          </svg>
-        </div>
-        <div style={{ lineHeight: 1.2 }}>
-          <div style={{ fontSize: '14px', fontWeight: 800, color: 'var(--zh-color-text)' }}>RSI-Immersive</div>
+        <IssiLogo height={32} />
+        <div style={{ lineHeight: 1.2, textAlign: 'left' }}>
+          <div style={{ fontSize: '14px', fontWeight: 800, color: 'var(--zh-color-text)' }}>RSI VR Tool</div>
           <div style={{ fontSize: '9px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.16em', color: 'var(--zh-color-text-disabled)' }}>
             Fachstelle Verkehrssicherheit
           </div>

@@ -3,10 +3,11 @@
 // Enthält Datenschutzhinweis (DSGVO) und Admin-Zugang via PIN
 
 import { useState, useEffect, useRef } from 'react'
-import { Shield, Eye, BarChart3, BookOpen, EyeOff, Lock, ChevronRight, RotateCcw, MessageSquare, AlertCircle } from 'lucide-react'
+import { Eye, BarChart3, BookOpen, EyeOff, Lock, ChevronRight, RotateCcw, MessageSquare, AlertCircle } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import LanguageSwitcher from './LanguageSwitcher'
 import FeedbackModal from './FeedbackModal'
+import IssiLogo from './IssiLogo'
 import { getSession, getKurseZeitlichAktiv, pruefeKursPasswort, type Kurs } from '../data/appData'
 import { resetCache as resetSupabaseCache } from '../data/supabaseSync'
 import { useFocusTrap } from '../lib/useFocusTrap'
@@ -141,11 +142,9 @@ export default function LandingPage({ onStart, onAdmin }: Props) {
 
       {/* ── Top-Bar ── */}
       <div className="flex items-center justify-between px-5 sm:px-8" style={{ minHeight: 'var(--zh-navbar-h)', borderBottom: '1px solid var(--zh-color-border)' }}>
-        <div className="flex items-center gap-2.5">
-          <div className="w-7 h-7 rounded-full flex items-center justify-center flex-shrink-0" style={{ background: 'var(--zh-dunkelblau)' }}>
-            <Shield size={14} color="white" />
-          </div>
-          <span className="text-sm font-extrabold" style={{ color: 'var(--zh-color-text)' }}>RSI-Immersive</span>
+        <div className="flex items-center gap-3">
+          <IssiLogo height={32} />
+          <span className="text-sm font-extrabold" style={{ color: 'var(--zh-color-text)' }}>RSI VR Tool</span>
         </div>
         <div className="flex items-center gap-3">
           <LanguageSwitcher />
