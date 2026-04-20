@@ -23,6 +23,13 @@ export default defineConfig({
         skipWaiting: true,
         clientsClaim: true,
         cleanupOutdatedCaches: true,
+        // Statische Seiten vom SPA-Fallback ausnehmen — sonst routet der
+        // Service Worker /impressum.html etc. auf die index.html (App-Shell).
+        navigateFallbackDenylist: [
+          /^\/impressum\.html$/,
+          /^\/datenschutz\.html$/,
+          /^\/glossar\.html$/,
+        ],
       },
       manifest: {
         name: 'RSI VR Tool – FaSi Kanton Zürich',

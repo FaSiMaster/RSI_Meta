@@ -40,7 +40,7 @@ export default function FeedbackModal({ open, onClose, context }: Props) {
     const ua = navigator.userAgent
     const url = window.location.href
     const time = new Date().toISOString()
-    const version = import.meta.env.VITE_APP_VERSION ?? '0.4.0'
+    const version = import.meta.env.VITE_APP_VERSION ?? '0.5.0'
 
     const subjLabel = kategorie === 'bug'
       ? t('feedback.subjBug')

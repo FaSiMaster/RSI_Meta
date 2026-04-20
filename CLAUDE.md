@@ -15,6 +15,7 @@
 
 | Schicht | Technologie | Version |
 |---|---|---|
+| Version | **v0.5.0** (2026-04-20) | Beta-Polishing-Sprint, 16 Commits seit v0.4.0 |
 | Framework | React + Vite + TypeScript | React 18, Vite 5, TS strict |
 | Animation | Framer Motion (motion/react) | v12 |
 | i18n | react-i18next | — |
@@ -310,4 +311,4 @@ npm run preview -- --host  # Build lokal testen
 
 ---
 
-*Letzte Aktualisierung: 2026-04-16*
+*Letzte Aktualisierung: 2026-04-20 (v0.5.0)*

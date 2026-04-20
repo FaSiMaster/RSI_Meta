@@ -13,6 +13,106 @@ Versionierung nach [Semantic Versioning](https://semver.org/lang/de/).
 
 ---
 
+## [0.5.0] — 2026-04-20
+
+Grosser Beta-Polishing-Sprint mit 16 Commits: Bilder-Pipeline, Supabase
+Storage als Single Source, LandingPage Variante B, ID-Format SZ_2026_NNN,
+Defizit-Editor-UX, Pikto-Katalog, Norm-Suchfeld, a11y-Pack, Security-Fix.
+
+### Hinzugefügt
+- **Supabase Storage als Single Source of Truth** (`rsi-textures`-Bucket):
+  neuer Helper `src/lib/supabaseStorage.ts` mit upload/list/delete,
+  BildUpload mit Tabs «Bibliothek» (Akkordeon nach Szene) + «Hochladen»
+  (automatischer Pfad `panoramas/{szeneId}/{filename}`)
+- **Eindeutige IDs**: Szenen `SZ_2026_NNN` (mit Jahr), Defizite `SD_NNNN`
+  (`src/data/idGenerator.ts`). Bestandsdaten mit Legacy-IDs bleiben gültig.
+- **Trainer-Hinweis pro Szene**: `bemerkungI18n` (optional), wird im
+  TrainingEinstieg als gelber Hinweis-Block vor dem Start angezeigt
+- **Booster mit %-Bonus**: Radio-Auswahl +10 % / +20 % statt nur Boolean.
+  Bonus wirkt auf finalen Score (`pts * (1 + %/100)`).
+- **Pikogramm-Katalog**: 23 Lucide-Icons für Themenbereiche
+  (`src/data/topicIcons.ts`), Picker-UI im Admin + Auto-Vorschlag aus
+  Themennamen (`suggestIconKey`)
+- **Norm-Such-Feld**: 32 RSI-relevante VSS/SN-Normen
+  (`regelwerkKatalog.ts`), Autocomplete-Dropdown im Defizit-Editor mit
+  Tag-System
+- **Diagnose-Overlay im SceneViewer**: zeigt orangen Banner wenn kein
+  Panorama-Bild hinterlegt, statt stiller schwarzer Canvas
+- **LandingPage Variante B** (B-3 + C-3): neue Taglines «Erkennen.
+  Bewerten. Priorisieren.», ISSI/TBA-Fachkurs/bfu explizit genannt,
+  Feature-Liste konkretisiert
+- **FeedbackModal vollständig i18n**: Labels, Platzhalter, Buttons,
+  mailto-Body-Felder in DE/FR/IT/EN
+- **LanguageSwitcher 44×44 px Touch-Target** + `aria-pressed` +
+  `aria-label` mit vollem Sprachnamen (WCAG 2.5.5 + 4.1.2)
+- **Focus-Trap in Modalen** (`src/lib/useFocusTrap.ts`) — Tab/Shift+Tab
+  cycelt innerhalb Modal, Initial-Fokus, Restore beim Schliessen
+  (WCAG 2.4.3)
+- **«Ändern»-Link in ScoringFlow-StepCards**: nach Auswahl erscheint
+  blauer Link, resetet ab dieser Stufe
+- **Hover-Tooltips auf 9-Schritte-Karten**: native title + fadet
+  Detail-Block ein, mit aria-label für Screen-Reader
+
+### Geändert
+- **Panorama-Bilder liegen ab sofort in Supabase Storage**, nicht mehr
+  in Vercel `/public/textures/`. DEFAULT_SCENES `panoramaBildUrl: null`
+  (Admin lädt eigene Bilder hoch). Vercel-Texturen bleiben nur als Demo.
+- **Versions-Single-Source**: `vite.config.ts` injiziert
+  `VITE_APP_VERSION` aus `package.json`, alle Anzeige-Stellen dynamisch
+- **Absender überall FaSi**: «© 2026 Tiefbauamt…» → «Fachstelle
+  Verkehrssicherheit (FaSi) · Kanton Zürich» in Footer, Impressum,
+  Datenschutz, Glossar
+- **Impressum VSS-Norm korrigiert**: «VSS 40 xxx, SN 640/641» →
+  «SN 641 723 (ISSI/RSI), VSS 41 722, bfu-Werkzeugkasten»
+- **Defizit-Editor Reihenfolge**: Kategorie steht jetzt vor Kriterium
+  & Kontext (D-7); 360°-Position-Felder (theta/phi/Toleranz) entfernt
+  — Verortung erfolgt ausschliesslich über den Verortungs-Editor
+- **TopicDashboard Sektions-Trennung**: «So funktioniert das Training»
+  in eigener Karte mit ?-Badge, horizontale Trennlinie zum Themen-Grid;
+  Quellen-Block unter 3-Spalten-Grid statt in NACA-Spalte
+- **TopicIcon** nutzt jetzt zentrales Lucide-Mapping statt Custom-SVG,
+  AppTopic.iconKey als free-string (backward-compatible)
+
+### Behoben
+- **WebGL Context Lost** durch CSP-Verschärfung: troika-three-text
+  (Standort-Labels) lud Web-Worker-Sub-Scripts via `blob:` — gesperrt.
+  Fix: `script-src ... blob:` + `script-src-elem 'self' blob:`
+- **Supabase-Storage-Bilder blockiert**: `img-src` fehlte
+  `https://*.supabase.co`. Bilder lagen bereits im Bucket, CSP hat sie
+  ausgesperrt
+- **jsDelivr-Font-Loader blockiert**: troika lud Unicode-Glyph-Daten,
+  CSP fehlte `connect-src cdn.jsdelivr.net`
+- **Sicherheits-Lücke «Szene erstellen»**: `SceneList` zeigte Button
+  «Neue Szene» für alle User, nicht nur Admin. isAdmin-Prop existierte
+  aber wurde nicht übergeben. Fix: `sessionStorage.rsi-admin-auth` an
+  SceneList weitergereicht, Button conditional
+- **Default-Szenen ohne Bild**: sc2/sc3/sc4 hatten
+  `panoramaBildUrl: null` → schwarze Sphäre. Mit D-2-Refactor obsolet
+  geworden
+- **Versions-Inkonsistenz**: Footer/Impressum/Sentry zeigten v0.3.1
+  statt aktueller Version. Dynamisch aus package.json
+- **PWA-Footer-Links blockiert**: Service Worker routete
+  `/impressum.html`, `/datenschutz.html`, `/glossar.html` auf SPA-Shell.
+  Fix: `navigateFallbackDenylist` in vite.config.ts
+
+### Sicherheit
+- **RLS auf rsi_topics / rsi_scenes / rsi_deficits** aktiviert (Pilot-
+  Variante: anon SELECT/INSERT/UPDATE/DELETE, PIN-geschützt im Code)
+- **Storage-Policies** im Bucket `rsi-textures`: `rsi_public_read`,
+  `rsi_anon_upload`, `rsi_anon_delete` via Dashboard-UI
+- **VITE_USERNAME_SALT** in Vercel-Env gesetzt (einmalig, nie ändern)
+- **CSP verschärft** (Supabase-only für img-src, cdn.jsdelivr für Fonts)
+
+### Architektur-Entscheidungen (für späteren Ausbau dokumentiert)
+- Bucket-Struktur: `panoramas/{szeneId}/{haupt|persp_NNN_<label>}.webp`
+- ID-Konvention: SZ_YYYY_NNN + SD_NNNN
+- Backlog: Edge Function mit service_role-Key für Storage-Listing
+  (eliminiert SELECT-Policy-Warnung), Supabase Auth statt nur PIN
+- Statische Seiten (Impressum/Datenschutz/Glossar) mehrsprachig erst
+  bei Beta 1.0 (vorerst DE only)
+
+---
+
 ## [0.4.0] — 2026-04-19
 
 ### Hinzugefügt

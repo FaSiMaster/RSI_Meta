@@ -332,7 +332,7 @@ export default function LandingPage({ onStart, onAdmin }: Props) {
       <div className="flex items-center justify-between gap-3 px-5 sm:px-8 flex-wrap" style={{ minHeight: 'var(--zh-footer-h)', borderTop: '1px solid var(--zh-color-border)' }}>
         <div className="flex items-center gap-2 text-xs" style={{ color: 'var(--zh-color-text-disabled)' }}>
           <span style={{ color: '#1A7F1F', fontWeight: 800 }}>●</span>
-          {t('landing.systemOnline')} · v{import.meta.env.VITE_APP_VERSION ?? '0.4.0'}
+          {t('landing.systemOnline')} · v{import.meta.env.VITE_APP_VERSION ?? '0.5.0'}
         </div>
         <div className="flex items-center gap-3 flex-wrap">
           <a href={`/impressum.html?lang=${i18n.language}`} target="_blank" rel="noopener noreferrer" className="text-[10px] font-semibold hover:underline" style={{ color: 'var(--zh-color-text-disabled)' }}>
@@ -374,7 +374,7 @@ export default function LandingPage({ onStart, onAdmin }: Props) {
           </button>
           <span className="text-[10px]" style={{ color: 'var(--zh-color-border)' }}>|</span>
           <span className="text-[10px] font-semibold" style={{ color: 'var(--zh-color-text-disabled)' }}>
-            {t('landing.footerInfo')} · v{import.meta.env.VITE_APP_VERSION ?? '0.4.0'}
+            {t('landing.footerInfo')} · v{import.meta.env.VITE_APP_VERSION ?? '0.5.0'}
           </span>
         </div>
       </div>
