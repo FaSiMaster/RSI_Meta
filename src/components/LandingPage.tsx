@@ -73,6 +73,9 @@ export default function LandingPage({ theme, onToggleTheme, onStart, onAdmin }: 
     if (!configuredPin) { onAdmin(); return }
     if (adminPin === configuredPin) {
       sessionStorage.setItem('rsi-admin-auth', '1')
+      // PIN in Session halten fuer Edge-Function-Writes (H-2 Schritt 2c).
+      // Beim Tab-Close automatisch weg, Logout entfernt explizit.
+      sessionStorage.setItem('rsi-admin-pin', adminPin)
       setShowAdminModal(false)
       setAdminPin('')
       onAdmin()

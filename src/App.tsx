@@ -109,6 +109,7 @@ export default function App() {
     setCurrentScene(null)
     saveSession({ username: '', score: 0, completedScenes: [] })
     sessionStorage.removeItem('rsi-admin-auth')
+    sessionStorage.removeItem('rsi-admin-pin')
     // Supabase-Cache leeren, damit nächster Login frische Daten holt
     resetSupabaseCache()
     setView('landing')
