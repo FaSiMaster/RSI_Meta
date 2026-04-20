@@ -5,7 +5,8 @@
 import { useTranslation } from 'react-i18next'
 import { ArrowLeft, MapPin, Play, Plus, Star, X } from 'lucide-react'
 import { motion } from 'motion/react'
-import { getScenes, getDeficits, getBestResult, getVersuchAnzahl, berechneSterne, ml, saveScene, type AppTopic, type AppScene } from '../data/appData'
+import { getScenes, getAllScenes, getDeficits, getBestResult, getVersuchAnzahl, berechneSterne, ml, saveScene, type AppTopic, type AppScene } from '../data/appData'
+import { generateSceneId } from '../data/idGenerator'
 import { useEffect, useState, useCallback } from 'react'
 
 interface Props {
@@ -66,7 +67,7 @@ function NeueSzeneModal({ topicId, onSave, onClose }: NeueSzeneModalProps) {
       return
     }
     const newScene: AppScene = {
-      id: `sc-${Date.now()}`,
+      id: generateSceneId(getAllScenes()),
       topicId,
       nameI18n: { de: nameDe.trim(), fr: '', it: '', en: '' },
       beschreibungI18n: { de: beschreibungDe.trim(), fr: '', it: '', en: '' },

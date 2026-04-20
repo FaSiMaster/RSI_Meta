@@ -1,49 +1,64 @@
 // BildUpload.tsx — Panorama-Bild-Auswahl gegen Supabase Storage
+// Pfad-Konvention: panoramas/{szeneId}/{haupt|persp_NNN_label}.{ext}
 //
-// Zwei Modi:
-//   1. Bibliothek — listet alle Bilder im rsi-textures-Bucket auf, klicken
-//      uebernimmt die Public-URL.
-//   2. Hochladen — Drag&Drop oder File-Picker laedt direkt in den Bucket
-//      und gibt die neue Public-URL zurueck.
-//
-// Es wird kein base64 mehr im localStorage gespeichert. Single Source ist
-// Supabase Storage.
+// Tabs:
+//   1. Bibliothek — Bilder gruppiert nach Szene-Ordner (Akkordeon),
+//      Bilder der aktuellen Szene immer aufgeklappt
+//   2. Hochladen — automatischer Pfad mit szeneId + Rolle (haupt/perspektive)
 
-import { useEffect, useRef, useState, useCallback } from 'react'
-import { Upload, FolderOpen, Library, Trash2, RefreshCw } from 'lucide-react'
+import { useEffect, useRef, useState, useCallback, useMemo } from 'react'
+import { Upload, FolderOpen, Library, Trash2, RefreshCw, ChevronDown, ChevronRight } from 'lucide-react'
 import {
   uploadPanorama,
   listPanoramas,
   deletePanorama,
   extractStorageName,
+  szeneIdFromUrl,
+  fileNameFromUrl,
   isStorageUrl,
   formatStorageDate,
   formatStorageSize,
   type StorageImage,
+  type PanoramaRole,
 } from '../../lib/supabaseStorage'
 
 interface Props {
-  szeneId:       string
-  aktuelleUrl?:  string | null
-  onBildGeladen: (bildUrl: string, breite: number, hoehe: number) => void
+  szeneId:           string
+  aktuelleUrl?:      string | null
+  onBildGeladen:     (bildUrl: string, breite: number, hoehe: number) => void
+  // Standard-Rolle dieser Upload-Instanz: 'haupt' fuer Panorama,
+  // 'perspektive' fuer eine zusaetzliche Perspektive
+  defaultRole?:      PanoramaRole
+  perspektivenNr?:   number     // bei defaultRole='perspektive': Index 1, 2, ...
+  perspektivenLabel?: string    // optional: Label-Suffix fuer Datei
 }
 
 type Phase = 'auswahl' | 'laden' | 'vorschau' | 'fehler'
 type Modus = 'bibliothek' | 'hochladen'
 
-export default function BildUpload({ aktuelleUrl, onBildGeladen }: Props) {
+export default function BildUpload({
+  szeneId,
+  aktuelleUrl,
+  onBildGeladen,
+  defaultRole = 'haupt',
+  perspektivenNr,
+  perspektivenLabel,
+}: Props) {
   const [phase, setPhase]                   = useState<Phase>('auswahl')
   const [modus, setModus]                   = useState<Modus>('bibliothek')
   const [fehlerText, setFehlerText]         = useState<string | null>(null)
   const [vorschauUrl, setVorschauUrl]       = useState<string | null>(null)
-  const [vorschauName, setVorschauName]     = useState<string | null>(null)
+  const [vorschauPath, setVorschauPath]     = useState<string | null>(null)
+  const [vorschauSzene, setVorschauSzene]   = useState<string | null>(null)
   const [vorschauBreite, setVorschauBreite] = useState<number>(0)
   const [vorschauHoehe, setVorschauHoehe]   = useState<number>(0)
   const [isDragOver, setIsDragOver]         = useState<boolean>(false)
   const [bibliothek, setBibliothek]         = useState<StorageImage[]>([])
   const [bibLaedt, setBibLaedt]             = useState<boolean>(false)
   const [statusText, setStatusText]         = useState<string | null>(null)
-  const [eigenerName, setEigenerName]       = useState<string>('')
+  const [labelInput, setLabelInput]         = useState<string>(perspektivenLabel ?? '')
+  const [upsert, setUpsert]                 = useState<boolean>(false)
+  const [openFolders, setOpenFolders]       = useState<Set<string>>(new Set([szeneId]))
 
   const fileInputRef = useRef<HTMLInputElement>(null)
 
@@ -52,7 +67,6 @@ export default function BildUpload({ aktuelleUrl, onBildGeladen }: Props) {
     setPhase('fehler')
   }
 
-  // Bibliothek laden
   const ladeBibliothek = useCallback(async () => {
     setBibLaedt(true)
     const list = await listPanoramas()
@@ -64,13 +78,13 @@ export default function BildUpload({ aktuelleUrl, onBildGeladen }: Props) {
     if (modus === 'bibliothek') ladeBibliothek()
   }, [modus, ladeBibliothek])
 
-  // Vorschau laden (URL → Image-Maße ermitteln, dann Phase = vorschau)
-  const ladeVorschau = useCallback((src: string, name?: string) => {
+  const ladeVorschau = useCallback((src: string, fullPath?: string) => {
     setPhase('laden')
     const img = new Image()
     img.onload = () => {
       setVorschauUrl(src)
-      setVorschauName(name ?? extractStorageName(src) ?? null)
+      setVorschauPath(fullPath ?? extractStorageName(src) ?? null)
+      setVorschauSzene(szeneIdFromUrl(src))
       setVorschauBreite(img.naturalWidth)
       setVorschauHoehe(img.naturalHeight)
       setPhase('vorschau')
@@ -82,17 +96,21 @@ export default function BildUpload({ aktuelleUrl, onBildGeladen }: Props) {
     img.src = src
   }, [])
 
-  // Aktuelle URL beim Mount in Vorschau
   useEffect(() => {
     if (aktuelleUrl) ladeVorschau(aktuelleUrl)
   }, [aktuelleUrl, ladeVorschau])
 
-  // Datei hochladen
   async function handleDatei(datei: File) {
     setPhase('laden')
     setStatusText(`Hochladen: ${datei.name} (${(datei.size / 1024 / 1024).toFixed(1)} MB) ...`)
 
-    const result = await uploadPanorama(datei, eigenerName.trim() || undefined)
+    const result = await uploadPanorama(datei, {
+      szeneId,
+      role: defaultRole,
+      perspektivenNr,
+      perspektivenLabel: labelInput.trim() || perspektivenLabel,
+      upsert,
+    })
     setStatusText(null)
 
     if (!result.ok) {
@@ -100,20 +118,16 @@ export default function BildUpload({ aktuelleUrl, onBildGeladen }: Props) {
       return
     }
 
-    setEigenerName('')
-    // Bibliothek aktualisieren, dann in Vorschau
     await ladeBibliothek()
     ladeVorschau(result.image.url, result.image.name)
   }
 
-  // Aus Bibliothek waehlen
   function handleBibliothekWahl(img: StorageImage) {
     ladeVorschau(img.url, img.name)
   }
 
-  // Aus Bibliothek loeschen (mit Bestaetigung)
   async function handleBibliothekDelete(img: StorageImage) {
-    if (!window.confirm(`Bild «${img.name}» dauerhaft aus dem Bucket loeschen?\n\nHinweis: Szenen die auf dieses Bild verweisen werden bilder­los.`)) return
+    if (!window.confirm(`Bild «${img.fileName}» dauerhaft aus dem Bucket loeschen?\n\nPfad: ${img.name}\n\nHinweis: Szenen die auf dieses Bild verweisen werden bilder­los.`)) return
     const r = await deletePanorama(img.name)
     if (!r.ok) {
       zeigeError(`Loeschen fehlgeschlagen: ${r.reason ?? 'unbekannt'}`)
@@ -121,6 +135,35 @@ export default function BildUpload({ aktuelleUrl, onBildGeladen }: Props) {
     }
     await ladeBibliothek()
   }
+
+  function toggleFolder(key: string) {
+    setOpenFolders(prev => {
+      const next = new Set(prev)
+      if (next.has(key)) next.delete(key)
+      else next.add(key)
+      return next
+    })
+  }
+
+  // Bibliothek nach Szene gruppieren — aktuelle Szene zuerst
+  const grouped = useMemo(() => {
+    const map = new Map<string, StorageImage[]>()
+    for (const img of bibliothek) {
+      const key = img.szeneId ?? '_legacy'
+      const arr = map.get(key) ?? []
+      arr.push(img)
+      map.set(key, arr)
+    }
+    // Sortierung: aktuelle Szene zuerst, dann alphabetisch, _legacy ans Ende
+    const keys = Array.from(map.keys()).sort((a, b) => {
+      if (a === szeneId) return -1
+      if (b === szeneId) return 1
+      if (a === '_legacy') return 1
+      if (b === '_legacy') return -1
+      return a.localeCompare(b)
+    })
+    return keys.map(k => ({ szene: k, files: map.get(k)! }))
+  }, [bibliothek, szeneId])
 
   // Seitenverhältnis-Warnung
   const seitenverhältnis = vorschauBreite > 0 && vorschauHoehe > 0
@@ -132,56 +175,38 @@ export default function BildUpload({ aktuelleUrl, onBildGeladen }: Props) {
     ? `${vorschauBreite.toLocaleString('de-CH')} × ${vorschauHoehe.toLocaleString('de-CH')} Pixel`
     : ''
 
+  const istStorage = isStorageUrl(vorschauUrl ?? '')
+
   // ── Stile ──
   const inputStyle: React.CSSProperties = {
-    padding: '7px 10px',
-    borderRadius: '6px',
-    border: '1px solid var(--zh-color-border)',
-    background: 'var(--zh-color-bg-secondary)',
-    color: 'var(--zh-color-text)',
-    fontSize: '13px',
-    fontFamily: 'var(--zh-font)',
+    padding: '7px 10px', borderRadius: '6px',
+    border: '1px solid var(--zh-color-border)', background: 'var(--zh-color-bg-secondary)',
+    color: 'var(--zh-color-text)', fontSize: '13px', fontFamily: 'var(--zh-font)',
   }
 
   const btnPrimaerStyle: React.CSSProperties = {
-    padding: '8px 16px',
-    borderRadius: '6px',
-    background: 'var(--zh-dunkelblau)',
-    color: 'white',
-    fontSize: '13px',
-    fontWeight: 700,
-    border: 'none',
-    cursor: 'pointer',
-    fontFamily: 'var(--zh-font)',
-    whiteSpace: 'nowrap',
+    padding: '8px 16px', borderRadius: '6px',
+    background: 'var(--zh-dunkelblau)', color: 'white',
+    fontSize: '13px', fontWeight: 700, border: 'none', cursor: 'pointer',
+    fontFamily: 'var(--zh-font)', whiteSpace: 'nowrap',
   }
 
   const btnSekundaerStyle: React.CSSProperties = {
-    padding: '8px 16px',
-    borderRadius: '6px',
-    background: 'transparent',
-    color: 'var(--zh-color-text-muted)',
-    fontSize: '13px',
-    fontWeight: 600,
-    border: '1px solid var(--zh-color-border)',
-    cursor: 'pointer',
-    fontFamily: 'var(--zh-font)',
-    whiteSpace: 'nowrap',
+    padding: '8px 16px', borderRadius: '6px',
+    background: 'transparent', color: 'var(--zh-color-text-muted)',
+    fontSize: '13px', fontWeight: 600,
+    border: '1px solid var(--zh-color-border)', cursor: 'pointer',
+    fontFamily: 'var(--zh-font)', whiteSpace: 'nowrap',
   }
 
   const tabStyle = (aktiv: boolean): React.CSSProperties => ({
-    padding: '6px 14px',
-    borderRadius: '6px',
-    fontSize: '12px',
-    fontWeight: 600,
+    padding: '6px 14px', borderRadius: '6px',
+    fontSize: '12px', fontWeight: 600,
     border: aktiv ? 'none' : '1px solid var(--zh-color-border)',
     background: aktiv ? 'var(--zh-dunkelblau)' : 'transparent',
     color: aktiv ? 'white' : 'var(--zh-color-text-muted)',
-    cursor: 'pointer',
-    fontFamily: 'var(--zh-font)',
-    display: 'flex',
-    alignItems: 'center',
-    gap: '5px',
+    cursor: 'pointer', fontFamily: 'var(--zh-font)',
+    display: 'flex', alignItems: 'center', gap: '5px',
   })
 
   // ── Phase: Laden ──
@@ -209,7 +234,6 @@ export default function BildUpload({ aktuelleUrl, onBildGeladen }: Props) {
 
   // ── Phase: Vorschau ──
   if (phase === 'vorschau' && vorschauUrl) {
-    const istStorage = isStorageUrl(vorschauUrl)
     return (
       <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
         <div style={{ border: '1px solid var(--zh-color-border)', borderRadius: '8px', overflow: 'hidden', background: '#111', display: 'flex', alignItems: 'center', justifyContent: 'center', maxHeight: '200px' }}>
@@ -220,10 +244,17 @@ export default function BildUpload({ aktuelleUrl, onBildGeladen }: Props) {
           <p style={{ fontSize: '12px', color: 'var(--zh-color-text-muted)', margin: 0 }}>{pixelText}</p>
         )}
 
-        {vorschauName && (
-          <p style={{ fontSize: '12px', color: istStorage ? '#1A7F1F' : '#B87300', margin: 0, fontFamily: 'monospace' }}>
-            {istStorage ? 'Supabase' : 'Extern'}: {vorschauName}
-          </p>
+        {vorschauPath && (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '2px', fontFamily: 'monospace' }}>
+            <span style={{ fontSize: '12px', color: istStorage ? '#1A7F1F' : '#B87300' }}>
+              {istStorage ? 'Supabase' : 'Extern'}: {vorschauPath}
+            </span>
+            {vorschauSzene && vorschauSzene !== szeneId && (
+              <span style={{ fontSize: '11px', color: '#B87300' }}>
+                Hinweis: Bild gehoert zu Szene «{vorschauSzene}», nicht zur aktuellen ({szeneId}).
+              </span>
+            )}
+          </div>
         )}
 
         {!istStorage && vorschauUrl && (
@@ -243,7 +274,7 @@ export default function BildUpload({ aktuelleUrl, onBildGeladen }: Props) {
             Bild verwenden
           </button>
           <button
-            onClick={() => { setPhase('auswahl'); setVorschauUrl(null); setVorschauName(null); setVorschauBreite(0); setVorschauHoehe(0) }}
+            onClick={() => { setPhase('auswahl'); setVorschauUrl(null); setVorschauPath(null); setVorschauSzene(null); setVorschauBreite(0); setVorschauHoehe(0) }}
             style={btnSekundaerStyle}
           >
             Anderes Bild waehlen
@@ -273,7 +304,7 @@ export default function BildUpload({ aktuelleUrl, onBildGeladen }: Props) {
 
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '8px' }}>
             <p style={{ fontSize: '11px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.1em', color: 'var(--zh-color-text-disabled)', margin: 0 }}>
-              Bilder im Supabase-Bucket {bibliothek.length > 0 && `(${bibliothek.length})`}
+              Bilder im Bucket {bibliothek.length > 0 && `(${bibliothek.length})`}
             </p>
             <button
               onClick={ladeBibliothek}
@@ -294,53 +325,87 @@ export default function BildUpload({ aktuelleUrl, onBildGeladen }: Props) {
           {!bibLaedt && bibliothek.length === 0 && (
             <div style={{ padding: '24px', textAlign: 'center', color: 'var(--zh-color-text-muted)', fontSize: '13px', border: '1px dashed var(--zh-color-border)', borderRadius: '8px', lineHeight: 1.6 }}>
               Noch keine Bilder im Bucket.<br />
-              Wechsle zu <strong>Hochladen</strong>, um das erste Panorama zu speichern.
+              Wechsle zu <strong>Hochladen</strong>, um das erste Panorama fuer
+              Szene <code style={{ fontFamily: 'monospace' }}>{szeneId}</code> zu speichern.
             </div>
           )}
 
-          {!bibLaedt && bibliothek.length > 0 && (
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(140px, 1fr))', gap: '8px', maxHeight: '320px', overflowY: 'auto', padding: '4px' }}>
-              {bibliothek.map(img => (
-                <div
-                  key={img.name}
-                  style={{
-                    border: '1px solid var(--zh-color-border)',
-                    borderRadius: '8px',
-                    overflow: 'hidden',
-                    background: 'var(--zh-color-bg-secondary)',
-                    display: 'flex',
-                    flexDirection: 'column',
-                    cursor: 'pointer',
-                    transition: 'border-color 0.15s, transform 0.15s',
-                  }}
-                  onMouseEnter={e => { e.currentTarget.style.borderColor = 'var(--zh-blau)'; e.currentTarget.style.transform = 'translateY(-1px)' }}
-                  onMouseLeave={e => { e.currentTarget.style.borderColor = 'var(--zh-color-border)'; e.currentTarget.style.transform = 'translateY(0)' }}
-                  onClick={() => handleBibliothekWahl(img)}
-                  title={`${img.name}\n${formatStorageDate(img.createdAt)}\n${formatStorageSize(img.size)}`}
-                >
-                  <div style={{ aspectRatio: '2 / 1', background: '#111', display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden' }}>
-                    <img src={img.url} alt={img.name} loading="lazy" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                  </div>
-                  <div style={{ padding: '6px 8px', display: 'flex', flexDirection: 'column', gap: '2px' }}>
-                    <span style={{ fontSize: '11px', fontWeight: 600, color: 'var(--zh-color-text)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                      {img.name}
-                    </span>
-                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '4px' }}>
-                      <span style={{ fontSize: '10px', color: 'var(--zh-color-text-disabled)' }}>
-                        {formatStorageSize(img.size)}
+          {/* Akkordeon nach Szene */}
+          {!bibLaedt && grouped.length > 0 && (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', maxHeight: '420px', overflowY: 'auto' }}>
+              {grouped.map(({ szene, files }) => {
+                const isOpen = openFolders.has(szene)
+                const isCurrent = szene === szeneId
+                const label = szene === '_legacy' ? 'Bilder ohne Szenen-Zuordnung' : szene
+                return (
+                  <div key={szene} style={{ border: `1px solid ${isCurrent ? 'var(--zh-blau)' : 'var(--zh-color-border)'}`, borderRadius: '8px', overflow: 'hidden' }}>
+                    <button
+                      onClick={() => toggleFolder(szene)}
+                      style={{
+                        width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+                        padding: '8px 12px', background: isCurrent ? 'rgba(0,118,189,0.08)' : 'var(--zh-color-bg-secondary)',
+                        border: 'none', cursor: 'pointer', fontFamily: 'var(--zh-font)',
+                      }}
+                    >
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                        {isOpen ? <ChevronDown size={14} /> : <ChevronRight size={14} />}
+                        <span style={{ fontSize: '12px', fontWeight: 700, color: isCurrent ? 'var(--zh-blau)' : 'var(--zh-color-text)', fontFamily: 'monospace' }}>
+                          {label}
+                        </span>
+                        {isCurrent && (
+                          <span style={{ fontSize: '10px', fontWeight: 700, padding: '2px 6px', borderRadius: '4px', background: 'var(--zh-blau)', color: 'white', textTransform: 'uppercase', letterSpacing: '0.06em' }}>
+                            aktuell
+                          </span>
+                        )}
+                      </div>
+                      <span style={{ fontSize: '11px', color: 'var(--zh-color-text-disabled)' }}>
+                        {files.length} {files.length === 1 ? 'Bild' : 'Bilder'}
                       </span>
-                      <button
-                        onClick={e => { e.stopPropagation(); handleBibliothekDelete(img) }}
-                        title="Aus Bucket loeschen"
-                        aria-label={`Bild ${img.name} loeschen`}
-                        style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#D40053', padding: '2px', display: 'flex', alignItems: 'center' }}
-                      >
-                        <Trash2 size={11} />
-                      </button>
-                    </div>
+                    </button>
+                    {isOpen && (
+                      <div style={{ padding: '8px', display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(140px, 1fr))', gap: '8px', background: 'var(--zh-color-bg)' }}>
+                        {files.map(img => (
+                          <div
+                            key={img.name}
+                            style={{
+                              border: '1px solid var(--zh-color-border)', borderRadius: '6px', overflow: 'hidden',
+                              background: 'var(--zh-color-bg-secondary)',
+                              display: 'flex', flexDirection: 'column', cursor: 'pointer',
+                              transition: 'border-color 0.15s, transform 0.15s',
+                            }}
+                            onMouseEnter={e => { e.currentTarget.style.borderColor = 'var(--zh-blau)'; e.currentTarget.style.transform = 'translateY(-1px)' }}
+                            onMouseLeave={e => { e.currentTarget.style.borderColor = 'var(--zh-color-border)'; e.currentTarget.style.transform = 'translateY(0)' }}
+                            onClick={() => handleBibliothekWahl(img)}
+                            title={`${img.name}\n${formatStorageDate(img.createdAt)}\n${formatStorageSize(img.size)}`}
+                          >
+                            <div style={{ aspectRatio: '2 / 1', background: '#111', display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden' }}>
+                              <img src={img.url} alt={img.fileName} loading="lazy" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                            </div>
+                            <div style={{ padding: '6px 8px', display: 'flex', flexDirection: 'column', gap: '2px' }}>
+                              <span style={{ fontSize: '11px', fontWeight: 600, color: 'var(--zh-color-text)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                                {img.fileName}
+                              </span>
+                              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '4px' }}>
+                                <span style={{ fontSize: '10px', color: 'var(--zh-color-text-disabled)' }}>
+                                  {formatStorageSize(img.size)}
+                                </span>
+                                <button
+                                  onClick={e => { e.stopPropagation(); handleBibliothekDelete(img) }}
+                                  title="Aus Bucket loeschen"
+                                  aria-label={`Bild ${img.fileName} loeschen`}
+                                  style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#D40053', padding: '2px', display: 'flex', alignItems: 'center' }}
+                                >
+                                  <Trash2 size={11} />
+                                </button>
+                              </div>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    )}
                   </div>
-                </div>
-              ))}
+                )
+              })}
             </div>
           )}
         </div>
@@ -351,24 +416,36 @@ export default function BildUpload({ aktuelleUrl, onBildGeladen }: Props) {
         <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
 
           <div style={{ padding: '10px 14px', background: 'rgba(0,118,189,0.07)', border: '1px solid rgba(0,118,189,0.2)', borderRadius: '6px', fontSize: '12px', color: 'var(--zh-color-text-muted)', lineHeight: 1.6 }}>
-            Datei wird direkt in den Supabase-Bucket <code style={{ color: 'var(--zh-blau)', fontFamily: 'monospace' }}>rsi-textures</code> geladen.
-            Sie ist anschliessend in der <strong>Bibliothek</strong> fuer alle Szenen verfuegbar.
+            Pfad: <code style={{ color: 'var(--zh-blau)', fontFamily: 'monospace' }}>
+              panoramas/{szeneId}/{defaultRole === 'haupt'
+                ? 'haupt.<ext>'
+                : `persp_${String(perspektivenNr ?? 1).padStart(3, '0')}${labelInput.trim() ? '_' + labelInput.trim().replace(/[^a-zA-Z0-9_-]/g, '_') : ''}.<ext>`}
+            </code>
           </div>
 
-          {/* Optionaler eigener Name */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
-            <label style={{ fontSize: '11px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.1em', color: 'var(--zh-color-text-disabled)' }}>
-              Eigener Datei-Name (optional)
-            </label>
+          {defaultRole === 'perspektive' && (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+              <label style={{ fontSize: '11px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.1em', color: 'var(--zh-color-text-disabled)' }}>
+                Label-Suffix (optional, sprechend)
+              </label>
+              <input
+                value={labelInput}
+                onChange={e => setLabelInput(e.target.value)}
+                placeholder="z.B. nordseite, richtung_a, gegenrichtung"
+                style={inputStyle}
+              />
+            </div>
+          )}
+
+          <label style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '12px', color: 'var(--zh-color-text-muted)' }}>
             <input
-              value={eigenerName}
-              onChange={e => setEigenerName(e.target.value)}
-              placeholder="z.B. SZ_001_Hauptperspektive  (Endung wird automatisch ergaenzt)"
-              style={inputStyle}
+              type="checkbox"
+              checked={upsert}
+              onChange={e => setUpsert(e.target.checked)}
             />
-          </div>
+            Bestehende Datei mit gleichem Namen ueberschreiben
+          </label>
 
-          {/* Verstecktes File-Input */}
           <input
             ref={fileInputRef}
             type="file"
@@ -377,7 +454,6 @@ export default function BildUpload({ aktuelleUrl, onBildGeladen }: Props) {
             onChange={e => { if (e.target.files?.[0]) handleDatei(e.target.files[0]) }}
           />
 
-          {/* Dropzone */}
           <div
             onDragOver={e => { e.preventDefault(); setIsDragOver(true) }}
             onDragLeave={() => setIsDragOver(false)}
@@ -402,3 +478,6 @@ export default function BildUpload({ aktuelleUrl, onBildGeladen }: Props) {
     </div>
   )
 }
+
+// re-export fuer Legacy-Importe
+export { fileNameFromUrl }

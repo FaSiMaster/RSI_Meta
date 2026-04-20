@@ -14,6 +14,7 @@ import {
   getTopicsTree, getOberthemen, getNextSortOrder, ml,
   type AppTopic, type AppScene, type AppDeficit, type TopicNode, type Kurs, type StrassenMerkmal,
 } from '../data/appData'
+import { generateSceneId, generateDeficitId } from '../data/idGenerator'
 import { WICHTIGKEIT_TABLE, calcRelevanzSD, calcUnfallrisiko, nacaToSchwere } from '../data/scoringEngine'
 import { KRITERIUM_LABELS } from '../data/kriteriumLabels'
 import type { RSIDimension, NACADimension, ResultDimension } from '../types'
@@ -32,7 +33,7 @@ function riskBg(w: RSIDimension): { bg: string; color: string; label: string } {
 
 function emptyDeficit(sceneId: string, topicId: string): AppDeficit {
   return {
-    id: `d-${Date.now()}`,
+    id: generateDeficitId(getAllDeficits()),
     sceneId, topicId,
     nameI18n:        { de: '', fr: '', it: '', en: '' },
     beschreibungI18n:{ de: '', fr: '', it: '', en: '' },
@@ -51,7 +52,7 @@ function emptyDeficit(sceneId: string, topicId: string): AppDeficit {
 
 function emptyScene(topicId: string): AppScene {
   return {
-    id: `sc-${Date.now()}`,
+    id: generateSceneId(getAllScenes()),
     topicId,
     nameI18n: { de: '', fr: '', it: '', en: '' },
     beschreibungI18n: { de: '', fr: '', it: '', en: '' },
@@ -1185,6 +1186,7 @@ export default function AdminDashboard() {
               <BildUpload
                 szeneId={editingScene.id}
                 aktuelleUrl={editingScene.panoramaBildUrl}
+                defaultRole="haupt"
                 onBildGeladen={(url, breite, hoehe) => {
                   setEditingScene(prev => prev ? { ...prev, panoramaBildUrl: url } : prev)
                   setPanoramaVorschau({ url, breite, hoehe })
@@ -1256,8 +1258,11 @@ export default function AdminDashboard() {
                   </div>
                   {/* Panoramabild für Perspektive */}
                   <BildUpload
-                    szeneId={`${editingScene.id}-${p.id}`}
+                    szeneId={editingScene.id}
                     aktuelleUrl={p.bildUrl || null}
+                    defaultRole="perspektive"
+                    perspektivenNr={i + 1}
+                    perspektivenLabel={p.label}
                     onBildGeladen={(url) => {
                       const updated = [...(editingScene.perspektiven ?? [])]
                       updated[i] = { ...updated[i], bildUrl: url }
@@ -1650,8 +1655,11 @@ function VorschaubildEditor({
       {modus === 'upload' && (
         <div style={{ marginBottom: '10px' }}>
           <BildUpload
-            szeneId={`${szeneId}-vorschau`}
+            szeneId={szeneId}
             aktuelleUrl={value && value !== 'panorama' ? value : null}
+            defaultRole="perspektive"
+            perspektivenNr={99}
+            perspektivenLabel="vorschau"
             onBildGeladen={(url) => onBildGeladen(url)}
           />
         </div>
