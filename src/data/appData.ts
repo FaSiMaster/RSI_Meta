@@ -697,8 +697,15 @@ export async function pruefeKursPasswort(eingabe: string, gespeichert: string | 
   return eingabe === gespeichert
 }
 
-export function ml(text: MultiLang, lang: string): string {
-  return text[lang as keyof MultiLang] ?? text.de
+export function ml(text: MultiLang | undefined | null, lang: string): string {
+  // Defensiv: aus Supabase / altem localStorage koennen Objekte mit fehlenden
+  // Sprach-Keys oder sogar undefined zurueckkommen. Frueher warf das einen
+  // TypeError und der Sentry-ErrorBoundary fing die ganze View ab.
+  if (!text || typeof text !== 'object') {
+    if (typeof console !== 'undefined') console.warn('[ml] leerer MultiLang-Eintrag', { lang, text })
+    return ''
+  }
+  return text[lang as keyof MultiLang] ?? text.de ?? ''
 }
 
 // Verortung eines Defizits für eine bestimmte Perspektive ermitteln
