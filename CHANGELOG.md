@@ -13,6 +13,71 @@ Versionierung nach [Semantic Versioning](https://semver.org/lang/de/).
 
 ---
 
+## [0.6.2] — 2026-04-21 (Hotfix: Crash + Build + Recovery)
+
+Schneller Patch-Release nach Pilot-Feedback «Seite startet online nicht
+mehr». Drei voneinander unabhängige Ursachen gefunden und ausgeräumt.
+
+### Behoben
+- **`ml()`-Crash in TopicDashboard**: Ein Müll-Topic `__rl_test__` aus
+  dem N-2-Rate-Limit-Test (Commit 2b7877e) lag in `rsi_topics` mit
+  `nameI18n=undefined` und `beschreibungI18n=undefined`. Beim Login
+  warf `text[lang]` einen `TypeError`, der `<Sentry.ErrorBoundary>`
+  griff, der User sah nur «Es ist ein Fehler aufgetreten». `ml()`
+  fällt jetzt auf Leerstring zurück und loggt den defekten Eintrag,
+  die App rendert trotz kaputter Daten weiter.
+- **CI-Pipeline «Verify PWA artifacts» schlug seit v0.6.1 fehl**:
+  Vite 8 nutzt Rolldown by default, `vite-plugin-pwa` (weder 0.19.8
+  noch 1.2.0) unterstützt Rolldown offiziell. Folge:
+  `generateBundle`-Hook wurde von Rolldown ignoriert
+  («This plugin assigns to bundle variable... will be ignored»),
+  `dist/sw.js` wurde auf Ubuntu-CI nie erzeugt. Downgrade auf
+  Vite 7.3.2 (stabile Rollup-Version) + Upgrade auf
+  vite-plugin-pwa 1.2.0. Build produziert reproduzierbar `sw.js`,
+  `workbox-*.js`, `registerSW.js`. CI-Run 24704768797 grün in 57s.
+
+### Hinzugefügt
+- **Auto-SW-Recovery im ErrorBoundary**: `src/main.tsx` bekommt einen
+  zweiten Button «Zurücksetzen & neu laden», der alle Service Worker
+  deregistriert und die `CacheStorage` löscht — localStorage bleibt
+  erhalten (User-Daten, Kurs-Session). Dazu ein
+  `controllerchange`-Listener auf Top-Level: wenn nach einem Deploy
+  ein neuer SW via `skipWaiting+clientsClaim` die Kontrolle
+  übernimmt, lädt die Seite automatisch einmal neu. Verhindert die
+  wiederkehrende Klasse von «Seite hängt auf altem Precache»-Fehlern
+  nach zukünftigen Deploys.
+- **`scripts/scan_i18n.mjs`**: Diagnose-Script, das
+  `rsi_topics` / `rsi_scenes` / `rsi_deficits` auf fehlende oder
+  leere i18n-Felder scannt. Liest `.env.local`, nutzt den Anon-Key
+  per PostgREST-SELECT, listet betroffene Rows mit
+  ID / topic_id / scene_id + fehlende Keys.
+
+### Geändert (Tooling)
+- **GitHub-Actions-Deprecation behoben**: `actions/checkout@v4` →
+  `@v6` und `actions/setup-node@v4` → `@v6` (beide Node-24-Actions).
+  `node-version` auf CI von `"20"` auf `"22"` gehoben (aktuelle
+  LTS-Linie). Vermeidet die ab 2026-06-02 greifende
+  Node-20-Deprecation.
+- **Supabase-Cleanup** (manuell ausgeführt am 2026-04-21 im
+  Dashboard-SQL-Editor, nicht als Migration persistiert):
+  ```sql
+  DELETE FROM rsi_topics WHERE id = '__rl_test__';
+  UPDATE rsi_scenes
+  SET data = jsonb_set(
+    data::jsonb, '{kontextI18n}',
+    '{"de":"","en":"","fr":"","it":""}'::jsonb)
+  WHERE id = 'SZ_2026_001';
+  ```
+
+### Noch offen (Post-Pilot)
+- Defense-in-Depth in Edge Function `admin-write`: Test-Payloads mit
+  `id=__rl_test__` oder komplett leeren i18n-Feldern ablehnen.
+- Vite 8 wiederaufnehmen, sobald `vite-plugin-pwa` offiziell
+  Rolldown-kompatibel wird (voraussichtlich mit Workbox-Ersatz oder
+  eigenem SW-Plugin für die v8-Linie).
+
+---
+
 ## [0.6.1] — 2026-04-20 (Sprint-2 a11y + CI + Doku)
 
 Patch-Release nach v0.6.0 mit Accessibility-Nachbesserungen, erster
