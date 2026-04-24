@@ -1360,7 +1360,7 @@ export default function SceneViewer({
               {KRITERIUM_LABELS[d.kriteriumId] ?? d.kriteriumId} · {d.kontext === 'io' ? 'Innerorts' : 'Ausserorts'}
             </p>
             {prefill && (
-              <p style={{ fontSize: '11px', color: 'rgba(0,118,189,0.85)', marginBottom: '14px' }}>
+              <p style={{ fontSize: '11px', color: 'color-mix(in srgb, var(--zh-blau) 85%, transparent)', marginBottom: '14px' }}>
                 Gemäss Tabelle: <strong>{prefill === 'gross' ? 'Gross' : prefill === 'mittel' ? 'Mittel' : 'Klein'}</strong>
               </p>
             )}

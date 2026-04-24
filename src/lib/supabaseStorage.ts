@@ -14,6 +14,7 @@
 // (sessionStorage-Guard in App.tsx vor Admin-Render).
 
 import { supabase } from './supabase'
+import { logger } from './logger'
 import { sceneIdToBucketFolder } from '../data/idGenerator'
 
 const BUCKET = 'rsi-textures'
@@ -137,7 +138,7 @@ export async function listPanoramas(szeneId?: string): Promise<StorageImage[]> {
       .from(BUCKET)
       .list(prefix, { limit: 100, sortBy: { column: 'name', order: 'asc' } })
     if (error) {
-      console.warn('[RSI] Storage list (single scene) fehlgeschlagen:', error.message)
+      logger.warn('Storage list (single scene) fehlgeschlagen:', error.message)
       return []
     }
     for (const f of data ?? []) {
@@ -163,7 +164,7 @@ export async function listPanoramas(szeneId?: string): Promise<StorageImage[]> {
     .from(BUCKET)
     .list(ROOT_PANORAMAS, { limit: 500 })
   if (fErr) {
-    console.warn('[RSI] Storage list (root) fehlgeschlagen:', fErr.message)
+    logger.warn('Storage list (root) fehlgeschlagen:', fErr.message)
     return []
   }
 

@@ -259,7 +259,7 @@ function StepCard({ nr, title, subtitle, isActive, isCompleted, onChange, change
       border: isActive
         ? '2px solid var(--zh-blau)'
         : isCompleted
-          ? '1.5px solid #1A7F1F44'
+          ? '1.5px solid color-mix(in srgb, var(--zh-gruen) 27%, transparent)'
           : '1.5px solid var(--zh-color-border)',
       background: isActive
         ? 'var(--zh-color-surface)'
@@ -533,8 +533,10 @@ export default function ScoringFlow({ deficit, scene, kategorieRichtig = true, h
                 ? (finalCorrect ? 'rgba(26,127,31,0.08)' : 'rgba(212,0,83,0.06)')
                 : 'rgba(26,127,31,0.08)',
               border: isUser
-                ? (finalCorrect ? '1.5px solid #1A7F1F44' : '1.5px solid #D4005344')
-                : '1.5px solid #1A7F1F44',
+                ? (finalCorrect
+                    ? '1.5px solid color-mix(in srgb, var(--zh-gruen) 27%, transparent)'
+                    : '1.5px solid color-mix(in srgb, var(--zh-rot) 27%, transparent)')
+                : '1.5px solid color-mix(in srgb, var(--zh-gruen) 27%, transparent)',
             }}>
               <p style={{ fontSize: '10px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', color: 'var(--zh-color-text-muted)', marginBottom: '4px' }}>
                 {t(labelKey)}
@@ -575,7 +577,7 @@ export default function ScoringFlow({ deficit, scene, kategorieRichtig = true, h
         <div style={{
           padding: '12px 14px', borderRadius: '8px',
           background: allCorrect ? 'rgba(26,127,31,0.08)' : 'rgba(0,64,124,0.05)',
-          border: `1px solid ${allCorrect ? '#1A7F1F33' : 'var(--zh-color-border)'}`,
+          border: `1px solid ${allCorrect ? 'color-mix(in srgb, var(--zh-gruen) 20%, transparent)' : 'var(--zh-color-border)'}`,
           marginBottom: '12px',
         }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>

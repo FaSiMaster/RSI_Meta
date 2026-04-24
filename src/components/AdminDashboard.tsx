@@ -29,10 +29,12 @@ import AdminRanking from './admin/AdminRanking'
 import { useFocusTrap } from '../lib/useFocusTrap'
 
 // ── Badge-Farben ──
+// Alpha 0x22 = 13% Opazitaet. color-mix() bindet an das Token, damit der
+// Badge-Hintergrund im Dark-Mode automatisch mit der Token-Variante wechselt.
 function riskBg(w: RSIDimension): { bg: string; color: string; label: string } {
-  if (w === 'gross')  return { bg: '#D4005322', color: 'var(--zh-rot)', label: 'N' }
-  if (w === 'mittel') return { bg: '#B8730022', color: 'var(--zh-orange)', label: 'A' }
-  return { bg: '#1A7F1F22', color: 'var(--zh-gruen)', label: 'W' }
+  if (w === 'gross')  return { bg: 'color-mix(in srgb, var(--zh-rot) 13%, transparent)',    color: 'var(--zh-rot)',    label: 'N' }
+  if (w === 'mittel') return { bg: 'color-mix(in srgb, var(--zh-orange) 13%, transparent)', color: 'var(--zh-orange)', label: 'A' }
+  return { bg: 'color-mix(in srgb, var(--zh-gruen) 13%, transparent)', color: 'var(--zh-gruen)', label: 'W' }
 }
 
 function emptyDeficit(sceneId: string, topicId: string): AppDeficit {

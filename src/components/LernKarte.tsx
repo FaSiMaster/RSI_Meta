@@ -86,7 +86,7 @@ export default function LernKarte({ deficit, kategorieRichtig, wichtigkeitKorrek
         )}
         <span style={{
           padding: '3px 10px', borderRadius: '6px', fontSize: '10px', fontWeight: 700,
-          background: 'rgba(0,118,189,0.15)', color: 'rgba(0,118,189,0.85)',
+          background: 'rgba(0,118,189,0.15)', color: 'color-mix(in srgb, var(--zh-blau) 85%, transparent)',
           border: '1px solid rgba(0,118,189,0.3)',
         }}>
           {kriteriumLabel}
@@ -102,8 +102,8 @@ export default function LernKarte({ deficit, kategorieRichtig, wichtigkeitKorrek
           <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
             {deficit.normRefs.map(ref => (
               <div key={ref} style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                <ExternalLink size={11} style={{ color: 'rgba(0,118,189,0.7)', flexShrink: 0 }} />
-                <span style={{ fontSize: '12px', color: 'rgba(0,118,189,0.85)', fontWeight: 600 }}>
+                <ExternalLink size={11} style={{ color: 'color-mix(in srgb, var(--zh-blau) 70%, transparent)', flexShrink: 0 }} />
+                <span style={{ fontSize: '12px', color: 'color-mix(in srgb, var(--zh-blau) 85%, transparent)', fontWeight: 600 }}>
                   {ref}
                 </span>
               </div>
@@ -154,7 +154,7 @@ export default function LernKarte({ deficit, kategorieRichtig, wichtigkeitKorrek
           border: '1px solid rgba(0,118,189,0.2)',
           marginBottom: '16px',
         }}>
-          <p style={{ fontSize: '10px', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.12em', color: 'rgba(0,118,189,0.7)', marginBottom: '6px' }}>
+          <p style={{ fontSize: '10px', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.12em', color: 'color-mix(in srgb, var(--zh-blau) 70%, transparent)', marginBottom: '6px' }}>
             {t('lernkarte.erklaerung')}
           </p>
           <p style={{ fontSize: '13px', color: 'rgba(255,255,255,0.75)', lineHeight: 1.6, margin: 0 }}>

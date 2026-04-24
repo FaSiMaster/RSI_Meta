@@ -13,6 +13,58 @@ Versionierung nach [Semantic Versioning](https://semver.org/lang/de/).
 
 ---
 
+## [0.6.4] — 2026-04-24
+
+### Behoben — Bugs waehrend v0.6.3-Nutzung aufgetreten
+
+- **Avatar-Popover unerreichbar im reinen Admin-Modus.** Ohne vorherigen
+  User-Login war kein username gesetzt → Avatar ausgeblendet → neuer
+  "Admin-Rolle ablegen"-Eintrag nicht auffindbar. Avatar erscheint jetzt
+  auch bei `isAdminAuth` mit ShieldCheck-Icon statt Initiale.
+- **Admin-Flag leakte beim User-Login.** Wer sich als Admin angemeldet
+  hatte und dann ohne expliziten Logout einen neuen Usernamen setzte,
+  sah den Admin-Button weiter. `handleLogin()` raeumt die Flags jetzt.
+- **Admin-Logout** jetzt als eigener Popover-Menueintrag verfuegbar
+  (ShieldOff-Icon, akzentuiert). Raeumt nur Admin-Flags, User-Session
+  bleibt.
+- **Kurs-Save-Fehler wurden still geschluckt.** Supabase-Fehler bei
+  Edge-Function-Calls zeigen jetzt einen konkreten Alert mit
+  Ursachen-Checkliste (SQL-Migration? admin-write-Redeploy? Token?).
+- **Ranking-Zugangscode-Matching case-sensitive.** Normalisiert jetzt
+  mit `.trim().toLowerCase()`. Placeholder auf "z.B. FK-RSI-123456"
+  (statt irrefuehrendem Relikt "FaSi4safety"). autoCapitalize=off.
+- **Ranking/LandingPage laden Kurse asynchron nach Supabase-Fetch nach.**
+  `supabaseSync.initSupabaseData()` feuert ein `rsi-data-loaded`-Event,
+  Komponenten mit Kurs-Dropdowns lauschen darauf und aktualisieren ihre
+  Listen ohne Manual-Reload.
+
+### Qualitaet — Quick Wins aus Review v0.6.2
+
+- **Alpha-Suffix-Hex migriert** auf `color-mix(in srgb, var(--zh-X) N%, transparent)`
+  in `AdminDashboard` (Badge-BGs) + `ScoringFlow` (4 Stellen). Dark-Mode
+  folgt jetzt automatisch.
+- **Zentraler Logger** `src/lib/logger.ts` — info/debug nur in Dev,
+  warn/error zusaetzlich an Sentry (wenn DSN gesetzt). 30+ `console.*`-
+  Aufrufe in `appData`, `supabaseSync`, `supabaseStorage` umgestellt.
+  Kein User-Noise mehr in Production DevTools Console.
+- **Dark-Mode-Audit:** 5 textkritische Stellen in `LernKarte` und
+  `SceneViewer` mit hart kodiertem `rgba(0,118,189,...)` → jetzt
+  `color-mix(... var(--zh-blau) ...)`. rgba()-Weisstoene in
+  Overlay-Kontexten bleiben bewusst theme-unabhaengig.
+
+### Nicht in diesem Release (eigener Sprint noetig)
+
+- **Modal-Split AdminDashboard** (1949 LoC → ~1200 LoC durch 4 extrahierte
+  Modale). Abhaengigkeiten auf Parent-State + Shared-Helpers sind
+  substanziell; ohne dedizierte Browser-Verifikation (Focus-Trap, ESC,
+  i18n, Tab-Order) waere das Regression-Risiko hoch. Gestaffelt in
+  eigenem Sprint: ThemaModal → KursModal → SzeneModal → DefizitModal.
+- **Server-seitiges Salt-Pfeffern** fuer Username-Hash (Post-Pilot).
+- **PIN 4 → 6+ Stellen + DB-Rate-Limiter** (bewusst verschoben vom User).
+- **E2E-Tests (Playwright)** fuer Kern-Flow Login → Szene → Ranking.
+
+---
+
 ## [0.6.3] — 2026-04-24
 
 ### Behoben — kritisch

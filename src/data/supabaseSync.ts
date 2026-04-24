@@ -11,6 +11,7 @@
 // Lesezugriffe laufen weiterhin direkt als anon (SELECT).
 
 import { supabase, setSupabaseStatus } from '../lib/supabase'
+import { logger } from '../lib/logger'
 import type { AppTopic, AppScene, AppDeficit, Kurs } from './appData'
 
 // ── Cache-Status ──
@@ -117,7 +118,7 @@ export async function initSupabaseData(): Promise<void> {
     const { data: kurseRaw, error: kErr } = await supabase
       .from('rsi_kurse').select('id, data')
     if (kErr) {
-      console.warn('[RSI] rsi_kurse nicht verfuegbar — Kurse nur localStorage. SQL-Migration siehe supabase/migrations/2026_04_24_rsi_kurse.sql')
+      logger.warn('rsi_kurse nicht verfuegbar — Kurse nur localStorage. SQL-Migration siehe supabase/migrations/2026_04_24_rsi_kurse.sql')
     } else {
       kurseRows = kurseRaw ?? []
     }
@@ -130,7 +131,7 @@ export async function initSupabaseData(): Promise<void> {
       const consent = typeof localStorage !== 'undefined'
         && localStorage.getItem('rsi-v3-seed-consent') === '1'
       if (consent) {
-        console.info('[RSI] Supabase leer — Seed nach explizitem Consent')
+        logger.info('Supabase leer — Seed nach explizitem Consent')
         await seedSupabaseFromLocal()
         localStorage.removeItem('rsi-v3-seed-consent')
         const { data: t2 } = await supabase.from('rsi_topics').select('id, data')
@@ -142,7 +143,7 @@ export async function initSupabaseData(): Promise<void> {
         deficitsCache = (d2 ?? []).map(r => r.data as AppDeficit)
         kurseCache = (k2 ?? []).map(r => r.data as Kurs)
       } else {
-        console.info('[RSI] Supabase leer — kein Seed (Consent-Flag nicht gesetzt). Admin kann Daten via Import/Seed-Button initialisieren.')
+        logger.info('Supabase leer — kein Seed (Consent-Flag nicht gesetzt). Admin kann Daten via Import/Seed-Button initialisieren.')
         topicsCache = []
         scenesCache = []
         deficitsCache = []
@@ -165,7 +166,7 @@ export async function initSupabaseData(): Promise<void> {
 
     setSupabaseStatus('live')
     initialized = true
-    console.info(`[RSI] Supabase geladen: ${topicsCache.length} Topics, ${scenesCache.length} Scenes, ${deficitsCache.length} Deficits, ${(kurseCache ?? []).length} Kurse`)
+    logger.info(`Supabase geladen: ${topicsCache.length} Topics, ${scenesCache.length} Scenes, ${deficitsCache.length} Deficits, ${(kurseCache ?? []).length} Kurse`)
     // Consumer (RankingView, LandingPage-Kurs-Dropdown) koennen auf das Event
     // reagieren um ihre Listen neu aus localStorage zu lesen. Ohne das bleibt
     // eine Liste stale, wenn die Komponente vor dem Supabase-Load gemountet hat.
@@ -173,7 +174,7 @@ export async function initSupabaseData(): Promise<void> {
       window.dispatchEvent(new CustomEvent('rsi-data-loaded'))
     }
   } catch (err) {
-    console.warn('[RSI] Supabase-Init fehlgeschlagen, localStorage-Fallback:', err)
+    logger.warn('Supabase-Init fehlgeschlagen, localStorage-Fallback:', err)
     setSupabaseStatus('offline')
   }
 }
@@ -182,7 +183,7 @@ export async function initSupabaseData(): Promise<void> {
 async function seedSupabaseFromLocal(): Promise<void> {
   if (!supabase) return
   if (!getAdminToken()) {
-    console.warn('[RSI] Seed abgebrochen: kein Admin-Token in Session. Als Admin einloggen und Seed erneut auslösen.')
+    logger.warn('Seed abgebrochen: kein Admin-Token in Session. Als Admin einloggen und Seed erneut auslösen.')
     return
   }
 
@@ -194,28 +195,28 @@ async function seedSupabaseFromLocal(): Promise<void> {
     const r = await edgeWrite('rsi_topics', 'upsert', {
       rows: topics.map(t => ({ id: t.id, data: t, updated_at: new Date().toISOString() })),
     })
-    if (!r.ok) console.warn('[RSI] Seed Topics fehlgeschlagen:', r.error)
+    if (!r.ok) logger.warn('Seed Topics fehlgeschlagen:', r.error)
   }
   if (scenes.length > 0) {
     const r = await edgeWrite('rsi_scenes', 'upsert', {
       rows: scenes.map(s => ({ id: s.id, topic_id: s.topicId, data: s, updated_at: new Date().toISOString() })),
     })
-    if (!r.ok) console.warn('[RSI] Seed Scenes fehlgeschlagen:', r.error)
+    if (!r.ok) logger.warn('Seed Scenes fehlgeschlagen:', r.error)
   }
   if (deficits.length > 0) {
     const r = await edgeWrite('rsi_deficits', 'upsert', {
       rows: deficits.map(d => ({ id: d.id, scene_id: d.sceneId, data: d, updated_at: new Date().toISOString() })),
     })
-    if (!r.ok) console.warn('[RSI] Seed Deficits fehlgeschlagen:', r.error)
+    if (!r.ok) logger.warn('Seed Deficits fehlgeschlagen:', r.error)
   }
   const kurse = readLocal<Kurs>(K_KURSE)
   if (kurse.length > 0) {
     const r = await edgeWrite('rsi_kurse', 'upsert', {
       rows: kurse.map(k => ({ id: k.id, data: k, updated_at: new Date().toISOString() })),
     })
-    if (!r.ok) console.warn('[RSI] Seed Kurse fehlgeschlagen:', r.error)
+    if (!r.ok) logger.warn('Seed Kurse fehlgeschlagen:', r.error)
   }
-  console.info(`[RSI] Seed-Daten hochgeladen: ${topics.length} Topics, ${scenes.length} Scenes, ${deficits.length} Deficits, ${kurse.length} Kurse`)
+  logger.info(`Seed-Daten hochgeladen: ${topics.length} Topics, ${scenes.length} Scenes, ${deficits.length} Deficits, ${kurse.length} Kurse`)
 }
 
 // ── Topics ──
@@ -236,7 +237,7 @@ export async function saveTopicSupabase(topic: AppTopic): Promise<void> {
     rows: [{ id: topic.id, data: topic, updated_at: new Date().toISOString() }],
   })
   if (!result.ok) {
-    console.warn('[RSI] Topic-Save fehlgeschlagen:', result.error)
+    logger.warn('Topic-Save fehlgeschlagen:', result.error)
     setSupabaseStatus('offline')
   } else {
     setSupabaseStatus('live')
@@ -249,7 +250,7 @@ export async function deleteTopicSupabase(id: string): Promise<void> {
 
   if (!supabase) return
   const result = await edgeWrite('rsi_topics', 'delete', { id })
-  if (!result.ok) console.warn('[RSI] Topic-Delete fehlgeschlagen:', result.error)
+  if (!result.ok) logger.warn('Topic-Delete fehlgeschlagen:', result.error)
 }
 
 // ── Scenes ──
@@ -270,7 +271,7 @@ export async function saveSceneSupabase(scene: AppScene): Promise<void> {
     rows: [{ id: scene.id, topic_id: scene.topicId, data: scene, updated_at: new Date().toISOString() }],
   })
   if (!result.ok) {
-    console.warn('[RSI] Scene-Save fehlgeschlagen:', result.error)
+    logger.warn('Scene-Save fehlgeschlagen:', result.error)
     setSupabaseStatus('offline')
   } else {
     setSupabaseStatus('live')
@@ -283,7 +284,7 @@ export async function deleteSceneSupabase(id: string): Promise<void> {
 
   if (!supabase) return
   const result = await edgeWrite('rsi_scenes', 'delete', { id })
-  if (!result.ok) console.warn('[RSI] Scene-Delete fehlgeschlagen:', result.error)
+  if (!result.ok) logger.warn('Scene-Delete fehlgeschlagen:', result.error)
 }
 
 // ── Deficits ──
@@ -304,7 +305,7 @@ export async function saveDeficitSupabase(deficit: AppDeficit): Promise<void> {
     rows: [{ id: deficit.id, scene_id: deficit.sceneId, data: deficit, updated_at: new Date().toISOString() }],
   })
   if (!result.ok) {
-    console.warn('[RSI] Deficit-Save fehlgeschlagen:', result.error)
+    logger.warn('Deficit-Save fehlgeschlagen:', result.error)
     setSupabaseStatus('offline')
   } else {
     setSupabaseStatus('live')
@@ -317,7 +318,7 @@ export async function deleteDeficitSupabase(id: string): Promise<void> {
 
   if (!supabase) return
   const result = await edgeWrite('rsi_deficits', 'delete', { id })
-  if (!result.ok) console.warn('[RSI] Deficit-Delete fehlgeschlagen:', result.error)
+  if (!result.ok) logger.warn('Deficit-Delete fehlgeschlagen:', result.error)
 }
 
 // ── Kurse ──

@@ -4,6 +4,7 @@
 import type { RSIDimension, NACADimension, ResultDimension } from '../types'
 import type { NacaRaw } from './scoringEngine'
 import type { DefizitVerortung } from '../utils/sphereCoords'
+import { logger } from '../lib/logger'
 import {
   getTopicsSync, saveTopicSupabase, deleteTopicSupabase,
   getScenesSync, saveSceneSupabase, deleteSceneSupabase,
@@ -599,7 +600,7 @@ function initIfNeeded(): void {
   // Schema-Versionscheck: bei Mismatch Seed-Daten neu schreiben
   const storedVersion = parseInt(localStorage.getItem(K_SCHEMA) ?? '0', 10)
   if (storedVersion < SCHEMA_VERSION) {
-    console.info(`[RSI] Schema-Migration: v${storedVersion} → v${SCHEMA_VERSION}`)
+    logger.info(`Schema-Migration: v${storedVersion} → v${SCHEMA_VERSION}`)
     // Seed-Daten immer neu schreiben bei Schema-Upgrade
     // (neue Default-Szenen, korrigierte Texte etc. werden so übernommen)
     // User-Daten (SceneResults, Session) bleiben unangetastet
@@ -635,7 +636,7 @@ function writeJSON<T>(key: string, data: T[]): void {
   try {
     localStorage.setItem(key, JSON.stringify(data))
   } catch (e) {
-    console.error(`[RSI] localStorage-Fehler beim Speichern von "${key}":`, e)
+    logger.error(`localStorage-Fehler beim Speichern von "${key}":`, e)
     // Fehlermeldung als DOM-Toast statt alert() (Quest-kompatibel)
     const toast = document.createElement('div')
     toast.textContent = `Speichern fehlgeschlagen — localStorage ist voll. Bilder als URL statt Upload verwenden.`
@@ -660,7 +661,7 @@ function writeJSON<T>(key: string, data: T[]): void {
 async function hashUsername(name: string): Promise<string> {
   const salt = (import.meta.env.VITE_USERNAME_SALT as string | undefined) ?? ''
   if (!salt && typeof console !== 'undefined') {
-    console.warn('[RSI] VITE_USERNAME_SALT nicht gesetzt — Pseudonymisierung ist schwaecher als empfohlen.')
+    logger.warn('VITE_USERNAME_SALT nicht gesetzt — Pseudonymisierung ist schwaecher als empfohlen.')
   }
   const encoder = new TextEncoder()
   const data = encoder.encode(salt + ':' + name.toLowerCase().trim())
@@ -895,7 +896,7 @@ export async function saveKurs(kurs: Kurs): Promise<{ ok: boolean; supabaseError
     return { ok: true }
   } catch (err) {
     const msg = err instanceof Error ? err.message : String(err)
-    console.warn('[RSI] saveKurs: Supabase-Push fehlgeschlagen, nur lokal gespeichert:', msg)
+    logger.warn('saveKurs: Supabase-Push fehlgeschlagen, nur lokal gespeichert:', msg)
     return { ok: false, supabaseError: msg }
   }
 }
@@ -906,7 +907,7 @@ export async function deleteKurs(id: string): Promise<{ ok: boolean; supabaseErr
     return { ok: true }
   } catch (err) {
     const msg = err instanceof Error ? err.message : String(err)
-    console.warn('[RSI] deleteKurs: Supabase-Delete fehlgeschlagen, nur lokal entfernt:', msg)
+    logger.warn('deleteKurs: Supabase-Delete fehlgeschlagen, nur lokal entfernt:', msg)
     return { ok: false, supabaseError: msg }
   }
 }
@@ -984,7 +985,7 @@ export function saveSceneResult(result: SceneResult): void {
       dauer_sekunden:  result.dauerSekunden,
     }).then(({ error }) => {
       if (error) {
-        console.warn('[RSI] Supabase insert fehlgeschlagen:', error.message)
+        logger.warn('Supabase insert fehlgeschlagen:', error.message)
         setSupabaseStatus('offline')
       } else {
         setSupabaseStatus('live')
