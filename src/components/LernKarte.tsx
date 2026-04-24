@@ -78,7 +78,7 @@ export default function LernKarte({ deficit, kategorieRichtig, wichtigkeitKorrek
           <span style={{
             padding: '3px 10px', borderRadius: '6px', fontSize: '10px', fontWeight: 700,
             background: kategorieRichtig ? 'rgba(26,127,31,0.2)' : 'rgba(184,115,0,0.2)',
-            color: kategorieRichtig ? 'var(--zh-gruen)' : '#F0A500',
+            color: kategorieRichtig ? 'var(--zh-gruen)' : 'var(--zh-warnung)',
             border: `1px solid ${kategorieRichtig ? 'rgba(26,127,31,0.4)' : 'rgba(184,115,0,0.4)'}`,
           }}>
             {KATEGORIE_LABELS[deficit.kategorie] ?? deficit.kategorie}

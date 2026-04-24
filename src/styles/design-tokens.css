@@ -8,6 +8,10 @@
   --zh-gruen:       #1A7F1F;
   --zh-rot:         #D40053;
   --zh-orange:      #B87300;
+  /* Hint/Warnung: heller als --zh-orange — semantisch fuer Overlays, RSI-
+     Hotspots (Hint-Modus), Kategorie-Fehler (kein Match aber kein Hard-Fail).
+     Nicht im offiziellen KZH-CD-Set, aber seit v0.3.x in RSI_Meta etabliert. */
+  --zh-warnung:     #F0A500;
 
   /* Graustufen */
   --zh-schwarz:     #000000;
@@ -66,6 +70,7 @@
   --zh-gruen:       #6EBD72;
   --zh-rot:         #FF6B9D;
   --zh-orange:      #FFBA55;
+  --zh-warnung:     #FFC24D;
 
   --zh-color-bg:           #000000;
   --zh-color-bg-secondary: #1A1A1A;

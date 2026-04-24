@@ -13,6 +13,51 @@ Versionierung nach [Semantic Versioning](https://semver.org/lang/de/).
 
 ---
 
+## [0.6.3] — 2026-04-24
+
+### Behoben — kritisch
+
+- **Impressum/Datenschutz/Glossar-Links auf LandingPage gingen ins Leere.**
+  Ursache: `navigateFallbackDenylist` im Service Worker hatte `$`-Anchor
+  (`/^\/impressum\.html$/`), Landing-Page haengt aber `?lang=de` an die URL
+  an — damit matchte die Denylist nicht und der SW routete auf die App-Shell.
+  Fix in `vite.config.ts`: Anchor entfernt; `runtimeCaching` Pattern um
+  Query erweitert (`(\?.*)?$`).
+- **Kurse wurden nicht in Supabase gespeichert, nur in localStorage.**
+  Folge: Admin legte Kurs an → nur im Admin-Browser sichtbar, Teilnehmer-
+  Devices kannten den Kurs-Code nicht. Fix:
+  - Neue Supabase-Tabelle `rsi_kurse` (Migration:
+    `supabase/migrations/2026_04_24_rsi_kurse.sql` — muss im Dashboard
+    ausgefuehrt werden).
+  - Edge Function `admin-write`: `ALLOWED_TABLES` + `TABLE_SCHEMAS` um
+    `rsi_kurse` erweitert (Redeploy noetig).
+  - `supabaseSync.ts`: `saveKursSupabase()`, `deleteKursSupabase()`,
+    `getKurseSync()`, Init-Load, Seed.
+  - `appData.ts` `saveKurs()` + `deleteKurs()`: fire-and-forget Supabase-
+    Push analog zu Topics/Scenes/Deficits.
+
+### Qualitaet
+
+- **Vitest-Setup** (Must-Fix #1 aus 21-Rollen-Review): 26 Unit-Tests in
+  3 Files (`scoreCalc`, `sphereCoords`, `kursPasswort`). Scripts:
+  `npm test`, `npm run test:watch`, `npm run coverage`.
+- **Neuer Design-Token `--zh-warnung`** (`#F0A500` hell / `#FFC24D` dunkel):
+  dokumentiert die bisher als Roh-Hex verstreute Hint-Farbe. JSX-Stellen
+  in `LernKarte`, `SceneViewer` migriert. R3F-/Canvas-Stellen bleiben
+  roh-Hex (R3F-Material + Canvas-2D unterstuetzen keine CSS-Variablen).
+
+### User-Aktionen nach Update
+
+1. **SQL-Migration im Supabase-Dashboard ausfuehren:**
+   `supabase/migrations/2026_04_24_rsi_kurse.sql`
+2. **Edge Function `admin-write` redeployen** (Code aus
+   `supabase/functions/admin-write/index.ts`).
+3. **Einmaliger Kurs-Seed:** Als Admin anmelden, Seed-Button ausloesen
+   (oder `localStorage.setItem('rsi-v3-seed-consent','1') + Reload`) —
+   lokale Kurse werden in die neue Supabase-Tabelle geschrieben.
+
+---
+
 ## [0.6.2] — 2026-04-21 (Hotfix: Crash + Build + Recovery)
 
 Schneller Patch-Release nach Pilot-Feedback «Seite startet online nicht

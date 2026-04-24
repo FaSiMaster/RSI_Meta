@@ -8,6 +8,7 @@ import {
   getTopicsSync, saveTopicSupabase, deleteTopicSupabase,
   getScenesSync, saveSceneSupabase, deleteSceneSupabase,
   getDeficitsSync, saveDeficitSupabase, deleteDeficitSupabase,
+  saveKursSupabase, deleteKursSupabase,
 } from './supabaseSync'
 
 // ── Typen ──
@@ -850,6 +851,9 @@ export function clearSceneSession(): void {
 
 // ── Kurse ──
 export function getKurse(): Kurs[] {
+  // localStorage wird durch initSupabaseData() nach erfolgreicher Load synchron
+  // mit Supabase gehalten (writeLocal in supabaseSync.ts). Teilnehmer-Devices
+  // sehen damit nach erstem Load die vom Admin gespeicherten Kurse.
   return readJSON<Kurs>(K_KURSE, [])
 }
 
@@ -878,13 +882,17 @@ export async function saveKurs(kurs: Kurs): Promise<void> {
   }
   const toSave: Kurs = { ...kurs, passwort }
 
-  const list = getKurse()
+  // localStorage sofort (synchron für UI)
+  const list = readJSON<Kurs>(K_KURSE, [])
   const i = list.findIndex(x => x.id === toSave.id)
   if (i >= 0) list[i] = toSave; else list.push(toSave)
   writeJSON(K_KURSE, list)
+  // Supabase (fire-and-forget) — teilt Kurse mit anderen Devices/Teilnehmern
+  saveKursSupabase(toSave).catch(() => {})
 }
 export function deleteKurs(id: string): void {
-  writeJSON(K_KURSE, getKurse().filter(k => k.id !== id))
+  writeJSON(K_KURSE, readJSON<Kurs>(K_KURSE, []).filter(k => k.id !== id))
+  deleteKursSupabase(id).catch(() => {})
 }
 
 // ── Ranking ──

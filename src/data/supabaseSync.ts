@@ -11,23 +11,25 @@
 // Lesezugriffe laufen weiterhin direkt als anon (SELECT).
 
 import { supabase, setSupabaseStatus } from '../lib/supabase'
-import type { AppTopic, AppScene, AppDeficit } from './appData'
+import type { AppTopic, AppScene, AppDeficit, Kurs } from './appData'
 
 // ── Cache-Status ──
 // Nach dem ersten erfolgreichen Fetch werden Daten im Speicher gehalten
 let topicsCache: AppTopic[] | null = null
 let scenesCache: AppScene[] | null = null
 let deficitsCache: AppDeficit[] | null = null
+let kurseCache: Kurs[] | null = null
 let initialized = false
 
 // localStorage-Keys (gleich wie appData.ts)
 const K_TOPICS   = 'rsi-v3-topics'
 const K_SCENES   = 'rsi-v3-scenes'
 const K_DEFICITS = 'rsi-v3-deficits'
+const K_KURSE    = 'rsi-v3-kurse'
 
 // ── Edge-Function-Helper ──
 
-type EdgeTable = 'rsi_topics' | 'rsi_scenes' | 'rsi_deficits'
+type EdgeTable = 'rsi_topics' | 'rsi_scenes' | 'rsi_deficits' | 'rsi_kurse'
 type EdgeOp    = 'upsert' | 'delete'
 
 function getAdminToken(): string | null {
@@ -109,6 +111,17 @@ export async function initSupabaseData(): Promise<void> {
       .from('rsi_deficits').select('id, scene_id, data')
     if (dErr) throw dErr
 
+    // Kurse laden. Tabelle `rsi_kurse` existiert erst ab 2026-04-24 (v0.6.3).
+    // Fehlt sie (z.B. alte Supabase-Instanz), nicht crashen — nur loggen.
+    let kurseRows: { id: string; data: unknown }[] = []
+    const { data: kurseRaw, error: kErr } = await supabase
+      .from('rsi_kurse').select('id, data')
+    if (kErr) {
+      console.warn('[RSI] rsi_kurse nicht verfuegbar — Kurse nur localStorage. SQL-Migration siehe supabase/migrations/2026_04_24_rsi_kurse.sql')
+    } else {
+      kurseRows = kurseRaw ?? []
+    }
+
     // Wenn Supabase leer ist → nur seeden wenn localStorage gefüllt UND explizit
     // vom User angefordert (Flag `rsi-v3-seed-consent`). Standardverhalten: kein
     // automatisches Hochladen, damit ein Angreifer keine manipulierten Daten per
@@ -123,14 +136,17 @@ export async function initSupabaseData(): Promise<void> {
         const { data: t2 } = await supabase.from('rsi_topics').select('id, data')
         const { data: s2 } = await supabase.from('rsi_scenes').select('id, topic_id, data')
         const { data: d2 } = await supabase.from('rsi_deficits').select('id, scene_id, data')
+        const { data: k2 } = await supabase.from('rsi_kurse').select('id, data')
         topicsCache = (t2 ?? []).map(r => r.data as AppTopic)
         scenesCache = (s2 ?? []).map(r => r.data as AppScene)
         deficitsCache = (d2 ?? []).map(r => r.data as AppDeficit)
+        kurseCache = (k2 ?? []).map(r => r.data as Kurs)
       } else {
         console.info('[RSI] Supabase leer — kein Seed (Consent-Flag nicht gesetzt). Admin kann Daten via Import/Seed-Button initialisieren.')
         topicsCache = []
         scenesCache = []
         deficitsCache = []
+        kurseCache = []
       }
     } else {
       // NUR setzen wenn noch kein lokaler Save passiert ist (Cache leer)
@@ -138,16 +154,18 @@ export async function initSupabaseData(): Promise<void> {
       if (!topicsCache) topicsCache = topicRows.map(r => r.data as AppTopic)
       if (!scenesCache) scenesCache = sceneRows.map(r => r.data as AppScene)
       if (!deficitsCache) deficitsCache = deficitRows.map(r => r.data as AppDeficit)
+      if (!kurseCache) kurseCache = kurseRows.map(r => r.data as Kurs)
     }
 
     // localStorage als Cache aktualisieren
     writeLocal(K_TOPICS, topicsCache)
     writeLocal(K_SCENES, scenesCache)
     writeLocal(K_DEFICITS, deficitsCache)
+    writeLocal(K_KURSE, kurseCache ?? [])
 
     setSupabaseStatus('live')
     initialized = true
-    console.info(`[RSI] Supabase geladen: ${topicsCache.length} Topics, ${scenesCache.length} Scenes, ${deficitsCache.length} Deficits`)
+    console.info(`[RSI] Supabase geladen: ${topicsCache.length} Topics, ${scenesCache.length} Scenes, ${deficitsCache.length} Deficits, ${(kurseCache ?? []).length} Kurse`)
   } catch (err) {
     console.warn('[RSI] Supabase-Init fehlgeschlagen, localStorage-Fallback:', err)
     setSupabaseStatus('offline')
@@ -184,7 +202,14 @@ async function seedSupabaseFromLocal(): Promise<void> {
     })
     if (!r.ok) console.warn('[RSI] Seed Deficits fehlgeschlagen:', r.error)
   }
-  console.info(`[RSI] Seed-Daten hochgeladen: ${topics.length} Topics, ${scenes.length} Scenes, ${deficits.length} Deficits`)
+  const kurse = readLocal<Kurs>(K_KURSE)
+  if (kurse.length > 0) {
+    const r = await edgeWrite('rsi_kurse', 'upsert', {
+      rows: kurse.map(k => ({ id: k.id, data: k, updated_at: new Date().toISOString() })),
+    })
+    if (!r.ok) console.warn('[RSI] Seed Kurse fehlgeschlagen:', r.error)
+  }
+  console.info(`[RSI] Seed-Daten hochgeladen: ${topics.length} Topics, ${scenes.length} Scenes, ${deficits.length} Deficits, ${kurse.length} Kurse`)
 }
 
 // ── Topics ──
@@ -289,12 +314,47 @@ export async function deleteDeficitSupabase(id: string): Promise<void> {
   if (!result.ok) console.warn('[RSI] Deficit-Delete fehlgeschlagen:', result.error)
 }
 
+// ── Kurse ──
+
+export function getKurseSync(): Kurs[] {
+  return kurseCache ?? readLocal<Kurs>(K_KURSE)
+}
+
+export async function saveKursSupabase(kurs: Kurs): Promise<void> {
+  const list = kurseCache ?? readLocal<Kurs>(K_KURSE)
+  const i = list.findIndex(x => x.id === kurs.id)
+  if (i >= 0) list[i] = kurs; else list.push(kurs)
+  kurseCache = [...list]
+  writeLocal(K_KURSE, kurseCache)
+
+  if (!supabase) return
+  const result = await edgeWrite('rsi_kurse', 'upsert', {
+    rows: [{ id: kurs.id, data: kurs, updated_at: new Date().toISOString() }],
+  })
+  if (!result.ok) {
+    console.warn('[RSI] Kurs-Save fehlgeschlagen:', result.error)
+    setSupabaseStatus('offline')
+  } else {
+    setSupabaseStatus('live')
+  }
+}
+
+export async function deleteKursSupabase(id: string): Promise<void> {
+  kurseCache = (kurseCache ?? readLocal<Kurs>(K_KURSE)).filter(k => k.id !== id)
+  writeLocal(K_KURSE, kurseCache)
+
+  if (!supabase) return
+  const result = await edgeWrite('rsi_kurse', 'delete', { id })
+  if (!result.ok) console.warn('[RSI] Kurs-Delete fehlgeschlagen:', result.error)
+}
+
 // ── Cache zurücksetzen (nach App-Reset) ──
 
 export function resetCache(): void {
   topicsCache = null
   scenesCache = null
   deficitsCache = null
+  kurseCache = null
   initialized = false
 }
 

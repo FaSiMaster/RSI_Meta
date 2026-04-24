@@ -13,7 +13,7 @@
 
 import { createClient } from 'npm:@supabase/supabase-js@2'
 
-const ALLOWED_TABLES = ['rsi_topics', 'rsi_scenes', 'rsi_deficits'] as const
+const ALLOWED_TABLES = ['rsi_topics', 'rsi_scenes', 'rsi_deficits', 'rsi_kurse'] as const
 const ALLOWED_OPS    = ['upsert', 'delete'] as const
 type AllowedTable = typeof ALLOWED_TABLES[number]
 type AllowedOp    = typeof ALLOWED_OPS[number]
@@ -31,6 +31,7 @@ const TABLE_SCHEMAS: Record<AllowedTable, { required: string[]; optional: string
   rsi_topics:   { required: ['id', 'data'],                   optional: ['updated_at'] },
   rsi_scenes:   { required: ['id', 'topic_id', 'data'],       optional: ['updated_at'] },
   rsi_deficits: { required: ['id', 'scene_id', 'data'],       optional: ['updated_at'] },
+  rsi_kurse:    { required: ['id', 'data'],                   optional: ['updated_at'] },
 }
 
 function corsHeaders(origin: string | null): Record<string, string> {

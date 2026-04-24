@@ -25,17 +25,19 @@ export default defineConfig({
         cleanupOutdatedCaches: true,
         // Statische Seiten vom SPA-Fallback ausnehmen — sonst routet der
         // Service Worker /impressum.html etc. auf die index.html (App-Shell).
+        // KEIN $-Anchor: Landing-Page haengt ?lang=de an. Mit $ matcht die
+        // Denylist die Query nicht und der SW fallback-routed auf App-Shell.
         navigateFallbackDenylist: [
-          /^\/impressum\.html$/,
-          /^\/datenschutz\.html$/,
-          /^\/glossar\.html$/,
+          /^\/impressum\.html/,
+          /^\/datenschutz\.html/,
+          /^\/glossar\.html/,
         ],
         // Belt-and-braces: die statischen Rechtstexte stets per Network zuerst
         // laden. So kommt der User auch dann auf die richtige Seite, wenn ein
         // Alt-Service-Worker aus v0.4.x die App-Shell noch im Cache hat.
         runtimeCaching: [
           {
-            urlPattern: /\/(impressum|datenschutz|glossar)\.html$/,
+            urlPattern: /\/(impressum|datenschutz|glossar)\.html(\?.*)?$/,
             handler: 'NetworkFirst',
             options: {
               cacheName: 'rsi-static-pages',

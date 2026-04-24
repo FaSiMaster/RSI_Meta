@@ -737,7 +737,7 @@ function HintDialog({ hintCount, onBestätigen, onAbbrechen }: HintDialogProps) 
         fontFamily: 'var(--zh-font)',
       }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '14px' }}>
-          <Eye size={20} style={{ color: '#F0A500', flexShrink: 0 }} />
+          <Eye size={20} style={{ color: 'var(--zh-warnung)', flexShrink: 0 }} />
           <h3 style={{ fontSize: '17px', fontWeight: 700, color: 'white', margin: 0 }}>
             Hinweis verwenden?
           </h3>
@@ -745,7 +745,7 @@ function HintDialog({ hintCount, onBestätigen, onAbbrechen }: HintDialogProps) 
         <p style={{ fontSize: '13px', color: 'rgba(255,255,255,0.65)', lineHeight: 1.6, marginBottom: '8px' }}>
           Es werden <strong style={{ color: 'white' }}>{hintCount} Hotspot{hintCount !== 1 ? 's' : ''}</strong> im Bild
           eingeblendet. Pro gefundenem Sicherheitsdefizit mit aktivem Hinweis werden
-          <strong style={{ color: '#F0A500' }}> 50% der Punkte abgezogen</strong>.
+          <strong style={{ color: 'var(--zh-warnung)' }}> 50% der Punkte abgezogen</strong>.
         </p>
         <p style={{ fontSize: '12px', color: 'rgba(255,255,255,0.40)', marginBottom: '20px' }}>
           Der Hinweis bleibt für die gesamte Szene aktiv.
@@ -759,7 +759,7 @@ function HintDialog({ hintCount, onBestätigen, onAbbrechen }: HintDialogProps) 
           </button>
           <button
             onClick={onBestätigen}
-            style={{ flex: 1, padding: '10px', borderRadius: '8px', border: 'none', background: '#F0A500', color: '#1a1400', fontSize: '14px', fontWeight: 700, cursor: 'pointer', fontFamily: 'var(--zh-font)' }}
+            style={{ flex: 1, padding: '10px', borderRadius: '8px', border: 'none', background: 'var(--zh-warnung)', color: '#1a1400', fontSize: '14px', fontWeight: 700, cursor: 'pointer', fontFamily: 'var(--zh-font)' }}
           >
             Trotzdem einblenden
           </button>
@@ -1078,7 +1078,7 @@ export default function SceneViewer({
             textAlign: 'center',
             pointerEvents: 'auto',
           }}>
-            <p style={{ fontSize: '11px', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.14em', color: '#F0A500', marginBottom: '8px' }}>
+            <p style={{ fontSize: '11px', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.14em', color: 'var(--zh-warnung)', marginBottom: '8px' }}>
               Kein Panorama-Bild
             </p>
             <p style={{ fontSize: '14px', fontWeight: 600, marginBottom: '6px' }}>
@@ -1183,7 +1183,7 @@ export default function SceneViewer({
                 padding: '9px 14px', borderRadius: '9px',
                 border: '1px solid rgba(240,165,0,0.35)',
                 background: 'rgba(240,165,0,0.15)',
-                color: '#F0A500',
+                color: 'var(--zh-warnung)',
                 fontSize: '13px', fontWeight: 600,
                 cursor: 'pointer',
                 fontFamily: 'var(--zh-font)',
@@ -1199,7 +1199,7 @@ export default function SceneViewer({
               padding: '9px 14px', borderRadius: '9px',
               background: 'rgba(240,165,0,0.20)',
               border: '1px solid rgba(240,165,0,0.45)',
-              color: '#F0A500',
+              color: 'var(--zh-warnung)',
               fontSize: '12px', fontWeight: 700,
               fontFamily: 'var(--zh-font)',
             }}>
