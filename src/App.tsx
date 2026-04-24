@@ -373,6 +373,7 @@ export default function App() {
                 deficits={sceneDeficits}
                 foundDeficits={foundDeficits}
                 hintActive={hintActive}
+                sceneStartTime={sceneStartTime}
                 onDeficitConfirmed={handleDeficitConfirmed}
                 onHintActivate={handleHintActivate}
                 onBeenden={handleBeenden}

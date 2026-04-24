@@ -18,6 +18,7 @@ import {
   trefferprüfung,
 } from '../utils/sphereCoords'
 import { ml, getVerortungFürPerspektive, type AppScene, type AppDeficit, type DefizitKategorie, type FoundDeficit } from '../data/appData'
+import { triggerHaptic } from '../utils/vrHaptics'
 import KategoriePanel from './KategoriePanel'
 import KlickFeedback, { type KlickFeedbackType } from './KlickFeedback'
 import { useTranslation } from 'react-i18next'
@@ -111,16 +112,26 @@ function Hotspot({ position, found }: HotspotProps) {
 }
 
 // ── Standort-Navigationsmarker (klickbar, wechselt Perspektive) ─────────────
+// Farb-Kodierung (seit v0.8.0, VR-Orientierungshilfe):
+//   'unbesucht' — neutrales Hellgrau, signalisiert Wahlmoeglichkeit
+//   'besucht'   — gruen (konsistent mit Hotspot-Found), signalisiert "war schon da"
+// Die aktuell aktive Perspektive erscheint nicht als eigener Marker
+// (der Marker fuehrt ja von hier weg), insofern brauchen wir keinen
+// 'aktiv'-Status — der ergaebe sich nur bei anders gearteter Visualisierung.
+type StandortMarkerStatus = 'unbesucht' | 'besucht'
+
 interface StandortNavMarkerProps {
   position: THREE.Vector3
-  label: string
-  onClick: () => void
+  label:    string
+  status:   StandortMarkerStatus
+  onClick:  () => void
 }
 
-function StandortNavMarker({ position, label, onClick }: StandortNavMarkerProps) {
+function StandortNavMarker({ position, label, status, onClick }: StandortNavMarkerProps) {
   const [hovered, setHovered] = useState(false)
-  // Diamant (Quadrat um 45° rotiert) — konsistent mit Admin-BildEditor
   const size = hovered ? 3.2 : 2.6
+  const fillColor = status === 'besucht' ? '#1A7F1F' : '#d7d7d7'
+  const labelColor = status === 'besucht' ? '#cfe9d0' : 'white'
   return (
     <Billboard
       position={position}
@@ -131,7 +142,7 @@ function StandortNavMarker({ position, label, onClick }: StandortNavMarkerProps)
         <planeGeometry args={[size + 0.45, size + 0.45]} />
         <meshBasicMaterial color="white" transparent opacity={0.92} side={THREE.DoubleSide} depthTest={false} />
       </mesh>
-      {/* Füll-Diamant blau (klickbar, vorne) */}
+      {/* Füll-Diamant (klickbar, vorne) — Farbe abhaengig vom Besuch-Status */}
       <mesh
         rotation={[0, 0, Math.PI / 4]}
         position={[0, 0, 0.01]}
@@ -140,13 +151,12 @@ function StandortNavMarker({ position, label, onClick }: StandortNavMarkerProps)
         onPointerOut={() => setHovered(false)}
       >
         <planeGeometry args={[size, size]} />
-        <meshBasicMaterial color="#0076BD" transparent opacity={hovered ? 0.98 : 0.88} side={THREE.DoubleSide} depthTest={false} />
+        <meshBasicMaterial color={fillColor} transparent opacity={hovered ? 0.98 : 0.88} side={THREE.DoubleSide} depthTest={false} />
       </mesh>
-      {/* Label */}
       <Text
         position={[0, -size - 1.4, 0]}
         fontSize={1.6}
-        color="white"
+        color={labelColor}
         anchorX="center"
         anchorY="top"
         outlineWidth={0.18}
@@ -278,9 +288,17 @@ interface VRProgressPanelProps {
   foundCount: number
   totalCount: number
   dots:       { found: boolean }[]
+  /** Verbrauchte Zeit in Sekunden, zeigt MM:SS rechts oben im Panel an. */
+  elapsedSec: number
 }
 
-function VRProgressPanel({ sceneName, kontext, foundCount, totalCount, dots }: VRProgressPanelProps) {
+function formatElapsed(sec: number): string {
+  const m = Math.floor(sec / 60)
+  const s = sec % 60
+  return `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`
+}
+
+function VRProgressPanel({ sceneName, kontext, foundCount, totalCount, dots, elapsedSec }: VRProgressPanelProps) {
   const maxDots    = Math.min(dots.length, 10)
   const shownDots  = dots.slice(0, maxDots)
   const dotStep    = 0.038
@@ -298,6 +316,16 @@ function VRProgressPanel({ sceneName, kontext, foundCount, totalCount, dots }: V
       </Text>
       <Text position={[0, 0.035, 0.003]} fontSize={0.030} color="#ffffff" anchorX="center" anchorY="middle" maxWidth={0.50}>
         {sceneName}
+      </Text>
+      {/* Timer MM:SS rechts oben im Panel (v0.8.0 Orientierungshilfe) */}
+      <Text
+        position={[0.22, 0.08, 0.003]}
+        fontSize={0.022}
+        color="rgba(255,255,255,0.70)"
+        anchorX="right"
+        anchorY="middle"
+      >
+        {formatElapsed(elapsedSec)}
       </Text>
       {shownDots.map((d, i) => (
         <mesh key={i} position={[dotsStartX + i * dotStep, -0.055, 0.003]}>
@@ -518,6 +546,7 @@ interface SceneContentProps {
   progress:       { id: string; found: boolean }[]
   sceneName:      string
   sceneKontextLabel: string
+  elapsedSec:     number
   onKategorieSelect: (k: DefizitKategorie) => void
   onKategorieCancel: () => void
   onFeedbackClose:   () => void
@@ -527,6 +556,9 @@ interface SceneContentProps {
   aktiveBildUrl:       string | null | undefined
   pendingClickPos:     { theta: number; phi: number } | null
   onStandortWechsel:   (id: string | null) => void
+  /** Set mit den bereits besuchten Perspektiven-IDs. '__haupt__' = Haupt-Panorama. */
+  visitedPerspektiven: Set<string>
+  hauptKey:            string
 }
 
 function SceneContent({
@@ -534,10 +566,11 @@ function SceneContent({
   onSphereClick, startblick,
   onVRModeChange,
   phase, feedbackType, progress,
-  sceneName, sceneKontextLabel,
+  sceneName, sceneKontextLabel, elapsedSec,
   onKategorieSelect, onKategorieCancel, onFeedbackClose,
   onHintRequest, onBeenden,
   aktivePerspektiveId, aktiveBildUrl, pendingClickPos, onStandortWechsel,
+  visitedPerspektiven, hauptKey,
 }: SceneContentProps) {
   const foundIds    = new Set(foundDeficits.map(f => f.deficitId))
   const allFound    = foundDeficits.length === deficits.length
@@ -610,11 +643,13 @@ function SceneContent({
       {!aktivePerspektiveId && scene.perspektiven?.map((p, i) => {
         if (!p.standortPosition) return null
         const pos = sphericalToVector3(p.standortPosition, 60)
+        const status: StandortMarkerStatus = visitedPerspektiven.has(p.id) ? 'besucht' : 'unbesucht'
         return (
           <StandortNavMarker
             key={`nav-${p.id}`}
             position={pos}
             label={p.label || `Standort ${i + 1}`}
+            status={status}
             onClick={() => onStandortWechsel(p.id)}
           />
         )
@@ -630,11 +665,14 @@ function SceneContent({
           const label = zielId === 'haupt'
             ? 'Haupt'
             : (zielPersp?.label || zielId)
+          const visitedKey = zielId === 'haupt' ? hauptKey : zielId
+          const status: StandortMarkerStatus = visitedPerspektiven.has(visitedKey) ? 'besucht' : 'unbesucht'
           return (
             <StandortNavMarker
               key={`nav-${zielId}`}
               position={pos}
               label={label}
+              status={status}
               onClick={() => onStandortWechsel(zielId === 'haupt' ? null : zielId)}
             />
           )
@@ -682,6 +720,7 @@ function SceneContent({
               foundCount={foundDeficits.length}
               totalCount={deficits.length}
               dots={progress}
+              elapsedSec={elapsedSec}
             />
             {phase === 'exploring' && (
               <VRControlBar
@@ -815,6 +854,9 @@ interface Props {
   deficits:           AppDeficit[]
   foundDeficits:      FoundDeficit[]
   hintActive:         boolean
+  // Ms-Epoch-Stamp wann die Szene gestartet wurde (aus App.tsx handleEinstiegStart).
+  // Wird fuer den VR-HUD-Timer (v0.8.0) gebraucht.
+  sceneStartTime:     number
   onDeficitConfirmed: (payload: DeficitConfirmedPayload) => void
   onHintActivate:     () => void
   onBeenden:          () => void
@@ -831,7 +873,7 @@ type Phase =
   | 'bewertungN'
 
 export default function SceneViewer({
-  scene, deficits, foundDeficits, hintActive,
+  scene, deficits, foundDeficits, hintActive, sceneStartTime,
   onDeficitConfirmed, onHintActivate, onBeenden,
 }: Props) {
   const { i18n, t } = useTranslation()
@@ -841,6 +883,18 @@ export default function SceneViewer({
   const [feedbackType, setFeedback] = useState<KlickFeedbackType>('kein_treffer')
   const [isVR, setIsVR]             = useState(false)
   const [fov, setFov]               = useState(75)
+
+  // VR-HUD-Timer: tickt jede Sekunde waehrend die XR-Session laeuft.
+  // Ohne isVR-Gate wuerde der Timer im Browser unnoetig re-rendern.
+  const [elapsedSec, setElapsedSec] = useState(0)
+  useEffect(() => {
+    if (!isVR) return
+    setElapsedSec(Math.max(0, Math.floor((Date.now() - sceneStartTime) / 1000)))
+    const id = setInterval(() => {
+      setElapsedSec(Math.max(0, Math.floor((Date.now() - sceneStartTime) / 1000)))
+    }, 1000)
+    return () => clearInterval(id)
+  }, [isVR, sceneStartTime])
 
   const handleWheel = useCallback((e: React.WheelEvent) => {
     e.preventDefault()
@@ -855,12 +909,25 @@ export default function SceneViewer({
   const aktiveBildUrl = aktivePerspektive?.bildUrl ?? scene.panoramaBildUrl ?? scene.bildUrl
   const aktiveStartblick = aktivePerspektive?.startblick ?? scene.startblick
 
+  // Besuchte Standorte merken (v0.8.0, farb-codierte Marker).
+  // '__haupt__' steht fuer das Haupt-Panorama (kein Perspektiven-Id).
+  // Start-Set enthaelt schon '__haupt__', weil der User initial dort landet.
+  const HAUPT_KEY = '__haupt__'
+  const [visitedPerspektiven, setVisitedPerspektiven] = useState<Set<string>>(() => new Set([HAUPT_KEY]))
+
   // Standortwechsel: Perspektive wechseln + Pending-State aufräumen
   // Wichtig: Auch den Auto-Ausblenden-Timer stoppen, sonst feuert er 5s später
   // in der neuen Perspektive und setzt die Phase fälschlich zurück.
   const handleStandortWechsel = useCallback((id: string | null) => {
     if (pendingTimerRef.current) clearTimeout(pendingTimerRef.current)
     setAktivePerspektiveId(id)
+    setVisitedPerspektiven(prev => {
+      const key = id ?? HAUPT_KEY
+      if (prev.has(key)) return prev
+      const next = new Set(prev)
+      next.add(key)
+      return next
+    })
     setPendingClickPos(null)
     setPhase('exploring')
   }, [])
@@ -931,6 +998,7 @@ export default function SceneViewer({
     })
 
     if (!hit) {
+      triggerHaptic('miss')
       setFeedback('kein_treffer')
       setPhase('klickFeedback')
       setPendingClickPos(null)
@@ -938,12 +1006,16 @@ export default function SceneViewer({
     }
 
     if (foundIds.has(hit.id)) {
+      triggerHaptic('bereits-gefunden')
       setFeedback('bereits_gefunden')
       setPhase('klickFeedback')
       setPendingClickPos(null)
       return
     }
 
+    // Treffer auf noch nicht gefundenes Defizit → positiver Puls,
+    // Kategorie-Panel kommt gleich. (Idee #1 VR-Smoke-Report v0.8.0)
+    triggerHaptic('hit')
     hitDeficit.current = hit
     setPendingClickPos(null)
     setPhase('kategoriePanel')
@@ -1116,6 +1188,7 @@ export default function SceneViewer({
             progress={progress}
             sceneName={sceneName}
             sceneKontextLabel={sceneKontextLabel}
+            elapsedSec={elapsedSec}
             onKategorieSelect={handleKategorieSelect}
             onKategorieCancel={handleKategorieCancel}
             onFeedbackClose={handleFeedbackClose}
@@ -1125,6 +1198,8 @@ export default function SceneViewer({
             aktiveBildUrl={aktiveBildUrl}
             pendingClickPos={pendingClickPos}
             onStandortWechsel={handleStandortWechsel}
+            visitedPerspektiven={visitedPerspektiven}
+            hauptKey={HAUPT_KEY}
           />
         </XR>
       </Canvas>

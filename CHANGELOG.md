@@ -13,6 +13,57 @@ Versionierung nach [Semantic Versioning](https://semver.org/lang/de/).
 
 ---
 
+## [0.8.0] — 2026-04-24 — VR-Smoke-Ready (Phase 3, Teil 1)
+
+### Hinzugefuegt — VR-Orientierung & -Feedback
+
+- **Haptisches Controller-Feedback** (`src/utils/vrHaptics.ts`).
+  Controller-Rumble bei Defizit-Treffer (kurzer starker Puls 0.85/80 ms),
+  Miss (doppelter weicher Puls 0.40/60 ms), bereits-gefunden (mittlerer
+  Puls 0.55/120 ms). Beide Controller gleichzeitig — unabhaengig von der
+  klickenden Hand. No-op ausserhalb VR-Session, kein Error wenn Geraet
+  keinen HapticActuator unterstuetzt.
+- **VR-HUD-Timer**: `VRProgressPanel` zeigt rechts oben die seit
+  Szenenstart verbrauchte Zeit im Format `MM:SS`, tickt jede Sekunde.
+  Tick-Interval laeuft nur waehrend `isVR === true`.
+- **Farb-codierte Standort-Marker**: `StandortNavMarker` unterscheidet
+  jetzt zwischen `'unbesucht'` (neutral hellgrau) und `'besucht'` (gruen,
+  konsistent mit Hotspot-Found). Besuchs-Historie per `visitedPerspektiven`
+  Set im SceneViewer, startet mit dem Haupt-Panorama-Eintrag.
+
+### Geaendert
+
+- `SceneViewer` akzeptiert neue Props `sceneStartTime: number` (aus
+  App.tsx) fuer den HUD-Timer.
+- `StandortNavMarker` hat neue Pflicht-Prop `status: 'unbesucht' | 'besucht'`.
+
+### Dokumentation
+
+- `docs/VR_SMOKE_REPORT.md` neu — strukturierter Test-Plan fuer den
+  physischen Meta-Quest-Smoke-Test. Inventar der bestehenden
+  VR-Komponenten, offene Punkte, Test-Checkliste A-G fuer Stevo.
+
+### Nicht umgesetzt (bewusst verschoben)
+
+- Teleport-Pointer — im 360°-Panorama nicht sinnvoll, bleibt
+  `teleportPointer: false`.
+- Kompass, Distanz-Indikator, Audio-Cues, Head-Reset — Ideen 2/5/6 fuer
+  v0.9.0, brauchen weiteren Scope-Entscheid.
+
+### Gates
+
+- `tsc --noEmit`: 0 Fehler
+- `vitest`: 24/24 passed
+- `playwright`: 12/12 passed in 7.6 s
+
+### Nach Deploy
+
+Physischer Smoke-Test durch Stevo mit Meta Quest 3 (siehe
+`docs/VR_SMOKE_REPORT.md` Abschnitt 4). Ergebnisse in Abschnitt 6
+nachtragen, dann v0.9.0-Scope entscheiden.
+
+---
+
 ## [0.7.0] — 2026-04-24
 
 ### Refactor — Sprint 3 Schritt 1 (Modal-Split AdminDashboard)
