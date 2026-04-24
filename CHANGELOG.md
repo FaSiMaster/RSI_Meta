@@ -13,6 +13,46 @@ Versionierung nach [Semantic Versioning](https://semver.org/lang/de/).
 
 ---
 
+## [0.8.1] — 2026-04-24 — VR-Hotfixes nach Stevos Headset-Test
+
+### Behoben — kritisch
+
+- **VR-Flow blieb nach Kategorie-Auswahl haengen.** Die Bewertungs-Phasen
+  (Wichtigkeit/Abweichung/NACA) hatten nur HTML-Overlays im Browser —
+  in VR unsichtbar, Phase sass fest. Drei neue 3D-Panels im
+  `VRKategoriePanel`-Stil:
+  - `VRBewertungWPanel` — Wichtigkeit (klein/mittel/gross) inkl.
+    Kriterium-/Kontext-Anzeige + Tabellen-Hinweis
+  - `VRBewertungAPanel` — Abweichung mit Beschreibung je Option
+  - `VRBewertungNPanel` — NACA-Schwere (leicht/mittel/schwer) mit
+    Farbakzent + Sub-Text
+- Drei neue Callbacks im SceneViewer (`handleBewertungW/A/N`) mit
+  derselben State-Logik wie die Browser-Overlays, sodass am Ende
+  `onDeficitConfirmed` an App.tsx geht und die Session weiterlaeuft.
+
+### Hinzugefuegt
+
+- **VR-Ray-Reticle** (Orientierungshilfe): kleiner weisser Ziel-Ring mit
+  Punkt am Hit-Punkt des Controller-Rays auf der Panorama-Sphere.
+  Sichtbar nur in VR, nur waehrend Phase `exploring`. `PanoramaSphere`
+  bekam `onPointerMove` + `onPointerOut` Handler dafuer.
+- **Standort-Marker-Hover groesser**: von `3.2` auf `4.5` — Feedback
+  nach Stevos Rueckmeldung, dass die Vergroesserung zu dezent war.
+
+### Gates
+
+- `tsc --noEmit`: 0 Fehler
+- `vitest`: 24/24 passed
+- `playwright`: 12/12 passed in 7.7 s
+
+### Offen fuer v0.9.0 (aus Stevos Feedback)
+
+- VR-Panels verschiebbar machen (Grab-and-drop oder Pre-Set-Positionen).
+- Zweiter Headset-Test nach diesem Hotfix — neues Feedback wieder in
+  `docs/VR_SMOKE_REPORT.md` Abschnitt 6 eintragen.
+
+---
+
 ## [0.8.0] — 2026-04-24 — VR-Smoke-Ready (Phase 3, Teil 1)
 
 ### Hinzugefuegt — VR-Orientierung & -Feedback

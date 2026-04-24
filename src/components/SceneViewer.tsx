@@ -52,14 +52,16 @@ class VRErrorBoundary extends Component<{ children: React.ReactNode }, VRErrorBo
 
 // ── 360°-Sphere (invertiert, BackSide) ──────────────────────────────────────
 interface PanoramaSphereProps {
-  bildUrl: string | null | undefined
-  onClick: (e: ThreeEvent<MouseEvent>) => void
+  bildUrl:        string | null | undefined
+  onClick:        (e: ThreeEvent<MouseEvent>) => void
+  onPointerMove?: (e: ThreeEvent<PointerEvent>) => void
+  onPointerOut?:  () => void
 }
 
-function PanoramaSphere({ bildUrl, onClick }: PanoramaSphereProps) {
+function PanoramaSphere({ bildUrl, onClick, onPointerMove, onPointerOut }: PanoramaSphereProps) {
   const fallbackColor = '#2a2e35'
   return (
-    <mesh onClick={onClick} renderOrder={0}>
+    <mesh onClick={onClick} onPointerMove={onPointerMove} onPointerOut={onPointerOut} renderOrder={0}>
       <sphereGeometry args={[500, 64, 40]} />
       {bildUrl ? (
         <Suspense fallback={<meshBasicMaterial color={fallbackColor} side={THREE.BackSide} />}>
@@ -129,7 +131,8 @@ interface StandortNavMarkerProps {
 
 function StandortNavMarker({ position, label, status, onClick }: StandortNavMarkerProps) {
   const [hovered, setHovered] = useState(false)
-  const size = hovered ? 3.2 : 2.6
+  // Hover-Vergroesserung v0.8.1: Feedback auf Stevos VR-Test deutlicher machen.
+  const size = hovered ? 4.5 : 2.6
   const fillColor = status === 'besucht' ? '#1A7F1F' : '#d7d7d7'
   const labelColor = status === 'besucht' ? '#cfe9d0' : 'white'
   return (
@@ -495,6 +498,227 @@ function VRFeedback({ type, onClose }: VRFeedbackProps) {
   )
 }
 
+// ── VR: Bewertungs-Panels (v0.8.1, Fix fuer VR-Hang nach Kategorie) ─────────
+// Drei Schritte analog zu HTML-Overlays im Browser:
+//   1. VRBewertungWPanel — Wichtigkeit (klein / mittel / gross) + Tabellen-Hinweis
+//   2. VRBewertungAPanel — Abweichung (3 Optionen mit Beschreibung)
+//   3. VRBewertungNPanel — NACA-Schwere (leicht / mittel / schwer)
+
+interface VRBewertungWPanelProps {
+  kriteriumLabel: string
+  kontextLabel:   string
+  prefillHint:    string | null
+  onSelect:       (w: RSIDimension) => void
+}
+
+function VRBewertungWPanel({ kriteriumLabel, kontextLabel, prefillHint, onSelect }: VRBewertungWPanelProps) {
+  const options: { val: RSIDimension; label: string }[] = [
+    { val: 'klein',  label: 'Klein'  },
+    { val: 'mittel', label: 'Mittel' },
+    { val: 'gross',  label: 'Gross'  },
+  ]
+  const btnH    = 0.080
+  const btnGap  = 0.010
+  const btnStep = btnH + btnGap
+  const headerH = prefillHint ? 0.23 : 0.20
+  const panelH  = headerH + options.length * btnStep + 0.04
+  const panelW  = 0.80
+
+  return (
+    <VRHud offset={[0, 0, -1.5]}>
+      <mesh position={[0, 0, -0.003]}>
+        <planeGeometry args={[panelW + 0.012, panelH + 0.012]} />
+        <meshBasicMaterial color="#1a3060" transparent opacity={0.90} />
+      </mesh>
+      <mesh position={[0, 0, -0.002]}>
+        <planeGeometry args={[panelW, panelH]} />
+        <meshBasicMaterial color="#090d1b" transparent opacity={0.96} />
+      </mesh>
+      <Text position={[0, panelH / 2 - 0.040, 0.003]} fontSize={0.018} color="rgba(255,255,255,0.45)" anchorX="center" anchorY="middle">
+        Schritt 1 — Wichtigkeit
+      </Text>
+      <Text position={[0, panelH / 2 - 0.080, 0.003]} fontSize={0.034} color="#ffffff" anchorX="center" anchorY="middle" maxWidth={panelW - 0.08}>
+        Wie wichtig ist die Norm-Einhaltung?
+      </Text>
+      <Text position={[0, panelH / 2 - 0.120, 0.003]} fontSize={0.022} color="rgba(255,255,255,0.55)" anchorX="center" anchorY="middle" maxWidth={panelW - 0.08}>
+        {kriteriumLabel} · {kontextLabel}
+      </Text>
+      {prefillHint && (
+        <Text position={[0, panelH / 2 - 0.152, 0.003]} fontSize={0.020} color="#66a6e0" anchorX="center" anchorY="middle" maxWidth={panelW - 0.08}>
+          {prefillHint}
+        </Text>
+      )}
+      {options.map((o, i) => (
+        <VRButton
+          key={o.val}
+          label={o.label}
+          position={[0, panelH / 2 - headerH - 0.02 - i * btnStep, 0.002]}
+          width={panelW - 0.08}
+          height={btnH}
+          color="#131826"
+          hoverColor="#0076BD"
+          fontSize={0.034}
+          onClick={() => onSelect(o.val)}
+        />
+      ))}
+    </VRHud>
+  )
+}
+
+interface VRBewertungAOption {
+  wert:         RSIDimension
+  label:        string
+  beschreibung: string
+}
+
+interface VRBewertungAPanelProps {
+  options:  VRBewertungAOption[]
+  onSelect: (a: RSIDimension) => void
+}
+
+function VRBewertungAPanel({ options, onSelect }: VRBewertungAPanelProps) {
+  const btnH    = 0.110
+  const btnGap  = 0.010
+  const btnStep = btnH + btnGap
+  const headerH = 0.16
+  const panelH  = headerH + options.length * btnStep + 0.04
+  const panelW  = 0.86
+
+  return (
+    <VRHud offset={[0, 0, -1.5]}>
+      <mesh position={[0, 0, -0.003]}>
+        <planeGeometry args={[panelW + 0.012, panelH + 0.012]} />
+        <meshBasicMaterial color="#1a3060" transparent opacity={0.90} />
+      </mesh>
+      <mesh position={[0, 0, -0.002]}>
+        <planeGeometry args={[panelW, panelH]} />
+        <meshBasicMaterial color="#090d1b" transparent opacity={0.96} />
+      </mesh>
+      <Text position={[0, panelH / 2 - 0.040, 0.003]} fontSize={0.018} color="rgba(255,255,255,0.45)" anchorX="center" anchorY="middle">
+        Schritt 2 — Abweichung
+      </Text>
+      <Text position={[0, panelH / 2 - 0.082, 0.003]} fontSize={0.032} color="#ffffff" anchorX="center" anchorY="middle" maxWidth={panelW - 0.08}>
+        Wie gross ist die Abweichung?
+      </Text>
+      {options.map((o, i) => {
+        const yTop = panelH / 2 - headerH - 0.02 - i * btnStep
+        return (
+          <group key={o.wert} position={[0, yTop - btnH / 2, 0.002]}>
+            <VRButton
+              label=""
+              position={[0, 0, 0]}
+              width={panelW - 0.08}
+              height={btnH}
+              color="#131826"
+              hoverColor="#0076BD"
+              onClick={() => onSelect(o.wert)}
+            />
+            <Text position={[-(panelW - 0.12) / 2, 0.022, 0.004]} fontSize={0.028} color="#ffffff" anchorX="left" anchorY="middle" maxWidth={panelW - 0.12}>
+              {o.label}
+            </Text>
+            <Text position={[-(panelW - 0.12) / 2, -0.018, 0.004]} fontSize={0.020} color="rgba(255,255,255,0.60)" anchorX="left" anchorY="middle" maxWidth={panelW - 0.12}>
+              {o.beschreibung}
+            </Text>
+          </group>
+        )
+      })}
+    </VRHud>
+  )
+}
+
+interface VRBewertungNOption {
+  wert:  NACADimension
+  label: string
+  sub:   string
+  color: string
+}
+
+interface VRBewertungNPanelProps {
+  onSelect: (n: NACADimension) => void
+}
+
+const VR_NACA_OPTIONS: VRBewertungNOption[] = [
+  { wert: 'leicht', label: 'Leicht', sub: 'NACA 0-1 · Keine bis geringfuegige Verletzung', color: '#1A7F1F' },
+  { wert: 'mittel', label: 'Mittel', sub: 'NACA 2-3 · Leichte bis maessige Verletzung',    color: '#B87300' },
+  { wert: 'schwer', label: 'Schwer', sub: 'NACA 4-7 · Schwere Verletzung bis Tod',          color: '#D40053' },
+]
+
+function VRBewertungNPanel({ onSelect }: VRBewertungNPanelProps) {
+  const btnH    = 0.110
+  const btnGap  = 0.010
+  const btnStep = btnH + btnGap
+  const headerH = 0.19
+  const panelH  = headerH + VR_NACA_OPTIONS.length * btnStep + 0.04
+  const panelW  = 0.86
+
+  return (
+    <VRHud offset={[0, 0, -1.5]}>
+      <mesh position={[0, 0, -0.003]}>
+        <planeGeometry args={[panelW + 0.012, panelH + 0.012]} />
+        <meshBasicMaterial color="#1a3060" transparent opacity={0.90} />
+      </mesh>
+      <mesh position={[0, 0, -0.002]}>
+        <planeGeometry args={[panelW, panelH]} />
+        <meshBasicMaterial color="#090d1b" transparent opacity={0.96} />
+      </mesh>
+      <Text position={[0, panelH / 2 - 0.040, 0.003]} fontSize={0.018} color="rgba(255,255,255,0.45)" anchorX="center" anchorY="middle">
+        Schritt 3 — Unfallschwere
+      </Text>
+      <Text position={[0, panelH / 2 - 0.082, 0.003]} fontSize={0.032} color="#ffffff" anchorX="center" anchorY="middle" maxWidth={panelW - 0.08}>
+        Wie schwer waere ein Unfall?
+      </Text>
+      <Text position={[0, panelH / 2 - 0.122, 0.003]} fontSize={0.020} color="rgba(255,255,255,0.50)" anchorX="center" anchorY="middle" maxWidth={panelW - 0.08}>
+        Stell dir einen Unfall an dieser Stelle vor.
+      </Text>
+      {VR_NACA_OPTIONS.map((o, i) => {
+        const yTop = panelH / 2 - headerH - 0.02 - i * btnStep
+        return (
+          <group key={o.wert} position={[0, yTop - btnH / 2, 0.002]}>
+            <VRButton
+              label=""
+              position={[0, 0, 0]}
+              width={panelW - 0.08}
+              height={btnH}
+              color="#131826"
+              hoverColor={o.color}
+              onClick={() => onSelect(o.wert)}
+            />
+            <Text position={[-(panelW - 0.12) / 2, 0.022, 0.004]} fontSize={0.030} color={o.color} anchorX="left" anchorY="middle" maxWidth={panelW - 0.12}>
+              {o.label}
+            </Text>
+            <Text position={[-(panelW - 0.12) / 2, -0.020, 0.004]} fontSize={0.020} color="rgba(255,255,255,0.60)" anchorX="left" anchorY="middle" maxWidth={panelW - 0.12}>
+              {o.sub}
+            </Text>
+          </group>
+        )
+      })}
+    </VRHud>
+  )
+}
+
+// ── VR: Ray-Reticle (v0.8.1, Orientierungshilfe) ────────────────────────────
+// Zeigt einen kleinen Ziel-Ring am letzten Hit-Punkt des Controller-Rays auf
+// der Panorama-Sphere. Der User sieht so wo sein Ray landet.
+interface VRRayReticleProps {
+  position: THREE.Vector3 | null
+}
+
+function VRRayReticle({ position }: VRRayReticleProps) {
+  if (!position) return null
+  return (
+    <Billboard position={position} follow lockX={false} lockY={false} lockZ={false}>
+      <mesh renderOrder={999}>
+        <ringGeometry args={[0.70, 0.95, 32]} />
+        <meshBasicMaterial color="#ffffff" transparent opacity={0.85} side={THREE.DoubleSide} depthTest={false} />
+      </mesh>
+      <mesh renderOrder={999}>
+        <circleGeometry args={[0.18, 16]} />
+        <meshBasicMaterial color="#ffffff" transparent opacity={0.95} side={THREE.DoubleSide} depthTest={false} />
+      </mesh>
+    </Billboard>
+  )
+}
+
 // ── VR: Alle-gefunden-Banner ─────────────────────────────────────────────────
 function VRAllFound({ onBeenden }: { onBeenden: () => void }) {
   return (
@@ -559,6 +783,11 @@ interface SceneContentProps {
   /** Set mit den bereits besuchten Perspektiven-IDs. '__haupt__' = Haupt-Panorama. */
   visitedPerspektiven: Set<string>
   hauptKey:            string
+  // VR-Bewertung (v0.8.1): Daten + Callbacks fuer die drei Schritte
+  hitDeficit:          AppDeficit | null
+  onBewertungW:        (w: RSIDimension) => void
+  onBewertungA:        (a: RSIDimension) => void
+  onBewertungN:        (n: NACADimension) => void
 }
 
 function SceneContent({
@@ -571,6 +800,7 @@ function SceneContent({
   onHintRequest, onBeenden,
   aktivePerspektiveId, aktiveBildUrl, pendingClickPos, onStandortWechsel,
   visitedPerspektiven, hauptKey,
+  hitDeficit, onBewertungW, onBewertungA, onBewertungN,
 }: SceneContentProps) {
   const foundIds    = new Set(foundDeficits.map(f => f.deficitId))
   const allFound    = foundDeficits.length === deficits.length
@@ -579,6 +809,18 @@ function SceneContent({
   // XR-Session direkt via useXR erkennen (keine Verzoegerung durch State-Update)
   const xrSession = useXR(s => s.session)
   const isInXR    = xrSession != null
+
+  // VR-Ray-Reticle: letzter Hit-Punkt auf der Panorama-Sphere.
+  // Im Browser nicht gebraucht — Maus-Cursor existiert nativ.
+  const [aimPos, setAimPos] = useState<THREE.Vector3 | null>(null)
+  const handleSpherePointerMove = useCallback((e: ThreeEvent<PointerEvent>) => {
+    if (!isInXR) return
+    setAimPos(e.point.clone())
+  }, [isInXR])
+  const handleSpherePointerOut = useCallback(() => {
+    if (!isInXR) return
+    setAimPos(null)
+  }, [isInXR])
 
   // HTML-Overlay-Zustand an SceneViewer weitergeben
   useEffect(() => {
@@ -628,7 +870,15 @@ function SceneContent({
       />
 
       {/* Panorama */}
-      <PanoramaSphere bildUrl={bildUrl} onClick={onSphereClick} />
+      <PanoramaSphere
+        bildUrl={bildUrl}
+        onClick={onSphereClick}
+        onPointerMove={isInXR ? handleSpherePointerMove : undefined}
+        onPointerOut={isInXR ? handleSpherePointerOut : undefined}
+      />
+
+      {/* VR-Ray-Reticle (v0.8.1): zeigt wo der Controller-Ray landet */}
+      {isInXR && phase === 'exploring' && <VRRayReticle position={aimPos} />}
 
       {/* Hotspots: gefundene Defizite immer grün, restliche nur bei aktivem Hint */}
       {deficits.map(d => {
@@ -743,6 +993,35 @@ function SceneContent({
                 type={feedbackType}
                 onClose={onFeedbackClose}
               />
+            )}
+            {/* v0.8.1 Bugfix: Bewertungs-Phasen brauchten im VR eigene Panels.
+                Im Browser sind das HTML-Overlays — die sind in VR unsichtbar
+                und der Flow blieb nach Kategorie haengen. */}
+            {phase === 'bewertungW' && hitDeficit && (() => {
+              const tableWert = WICHTIGKEIT_TABLE[hitDeficit.kriteriumId]
+              const prefill = tableWert ? (tableWert[hitDeficit.kontext] as RSIDimension | '') : ''
+              const prefillHint = prefill
+                ? `Gemaess Tabelle: ${prefill === 'gross' ? 'Gross' : prefill === 'mittel' ? 'Mittel' : 'Klein'}`
+                : null
+              const kriteriumLabel = KRITERIUM_LABELS[hitDeficit.kriteriumId] ?? hitDeficit.kriteriumId
+              const kontextLabel = hitDeficit.kontext === 'io' ? 'Innerorts' : 'Ausserorts'
+              return (
+                <VRBewertungWPanel
+                  kriteriumLabel={kriteriumLabel}
+                  kontextLabel={kontextLabel}
+                  prefillHint={prefillHint}
+                  onSelect={onBewertungW}
+                />
+              )
+            })()}
+            {phase === 'bewertungA' && hitDeficit && (
+              <VRBewertungAPanel
+                options={ABWEICHUNG_KATEGORIEN}
+                onSelect={onBewertungA}
+              />
+            )}
+            {phase === 'bewertungN' && hitDeficit && (
+              <VRBewertungNPanel onSelect={onBewertungN} />
             )}
           </Suspense>
         </VRErrorBoundary>
@@ -1092,6 +1371,34 @@ export default function SceneViewer({
     setPhase('exploring')
   }, [feedbackType])
 
+  // ── VR-Bewertungs-Callbacks (v0.8.1) — analog zu den HTML-Overlays weiter unten.
+  // Werden von VRBewertungWPanel/APanel/NPanel gerufen, damit der VR-Flow nach
+  // der Kategorie-Auswahl weitergeht (vorher blieb die Phase haengen weil
+  // die Browser-Overlays in VR unsichtbar sind).
+  const handleBewertungW = useCallback((w: RSIDimension) => {
+    setUserWichtigkeit(w)
+    setPhase('bewertungA')
+  }, [])
+  const handleBewertungA = useCallback((a: RSIDimension) => {
+    setUserAbweichung(a)
+    setPhase('bewertungN')
+  }, [])
+  const handleBewertungN = useCallback((n: NACADimension) => {
+    const d = hitDeficit.current
+    if (!d || userWichtigkeit == null || userAbweichung == null) return
+    onDeficitConfirmed({
+      deficit:          d,
+      kategorieRichtig: hitKatRichtig.current,
+      hintPenalty:      hintActive,
+      userWichtigkeit,
+      userAbweichung,
+      userNacaSchwere:  n,
+      bewertungStartMs: bewertungStartTime.current,
+    })
+    hitDeficit.current = null
+    setPhase('exploring')
+  }, [userWichtigkeit, userAbweichung, hintActive, onDeficitConfirmed])
+
   // ── Hint aktivieren ─────────────────────────────────────────────────────────
   const handleHintRequest = useCallback(() => {
     if (isVR) {
@@ -1200,6 +1507,10 @@ export default function SceneViewer({
             onStandortWechsel={handleStandortWechsel}
             visitedPerspektiven={visitedPerspektiven}
             hauptKey={HAUPT_KEY}
+            hitDeficit={hitDeficit.current}
+            onBewertungW={handleBewertungW}
+            onBewertungA={handleBewertungA}
+            onBewertungN={handleBewertungN}
           />
         </XR>
       </Canvas>
