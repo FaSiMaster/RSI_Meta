@@ -123,6 +123,15 @@ export default function App() {
     setView('landing')
   }
 
+  // Nur die Admin-Rolle ablegen — User-Session (Name, Kurs, Score) bleibt
+  // erhalten. Danach zurueck zur LandingPage, damit der User ggf. als normaler
+  // Kursteilnehmer neu einloggt oder die Seite schliesst.
+  function handleAdminLogout() {
+    sessionStorage.removeItem('rsi-admin-auth')
+    sessionStorage.removeItem('rsi-admin-token')
+    setView('landing')
+  }
+
   function handleSelectTopic(topic: AppTopic) {
     setCurrentTopic(topic)
     setView('scenes')
@@ -307,6 +316,7 @@ export default function App() {
           onNavigate={handleNavigate}
           onToggleTheme={handleToggleTheme}
           onLogout={handleLogout}
+          onAdminLogout={handleAdminLogout}
         />
       )}
 

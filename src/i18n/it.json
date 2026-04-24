@@ -430,7 +430,8 @@
   },
   "popover": {
     "logout": "Disconnettersi",
-    "feedback": "Invia feedback"
+    "feedback": "Invia feedback",
+    "admin_logout": "Abbandona ruolo admin"
   },
   "guide": {
     "title": "Come funziona la formazione",

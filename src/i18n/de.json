@@ -430,7 +430,8 @@
   },
   "popover": {
     "logout": "Abmelden",
-    "feedback": "Feedback senden"
+    "feedback": "Feedback senden",
+    "admin_logout": "Admin-Rolle ablegen"
   },
   "guide": {
     "title": "So funktioniert das Training",

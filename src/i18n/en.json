@@ -430,7 +430,8 @@
   },
   "popover": {
     "logout": "Sign out",
-    "feedback": "Send feedback"
+    "feedback": "Send feedback",
+    "admin_logout": "Leave admin role"
   },
   "guide": {
     "title": "How the training works",

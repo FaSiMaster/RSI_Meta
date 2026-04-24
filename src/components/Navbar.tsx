@@ -2,7 +2,7 @@
 // Links: Logo | Mitte: Nav-Links | Rechts: Score + Live + Sprache + Dark-Toggle + Avatar
 // Avatar-Klick öffnet User-Popover (Name, Kurs, Score, Abmelden, Reset)
 
-import { LayoutDashboard, BarChart3, Settings, Sun, Moon, Trophy, LogOut, RotateCcw, MessageSquare, FileText, ShieldCheck, BookOpen } from 'lucide-react'
+import { LayoutDashboard, BarChart3, Settings, Sun, Moon, Trophy, LogOut, RotateCcw, MessageSquare, FileText, ShieldCheck, ShieldOff, BookOpen } from 'lucide-react'
 import { useState, useEffect, useRef } from 'react'
 import LanguageSwitcher from './LanguageSwitcher'
 import FeedbackModal from './FeedbackModal'
@@ -21,9 +21,10 @@ interface Props {
   onNavigate: (v: View) => void
   onToggleTheme: () => void
   onLogout: () => void
+  onAdminLogout?: () => void
 }
 
-export default function Navbar({ view, username, score, theme, kursName, onNavigate, onToggleTheme, onLogout }: Props) {
+export default function Navbar({ view, username, score, theme, kursName, onNavigate, onToggleTheme, onLogout, onAdminLogout }: Props) {
   const { t } = useTranslation()
   const isDark = theme === 'dark'
 
@@ -248,6 +249,24 @@ export default function Navbar({ view, username, score, theme, kursName, onNavig
                   <MessageSquare size={14} />
                   {t('popover.feedback')}
                 </button>
+
+                {isAdminAuth && onAdminLogout && (
+                  <button
+                    onClick={() => { setShowPopover(false); onAdminLogout() }}
+                    style={{
+                      display: 'flex', alignItems: 'center', gap: '10px', width: '100%',
+                      padding: '10px 8px', marginTop: '4px',
+                      background: 'none', border: 'none', cursor: 'pointer', borderRadius: '6px',
+                      fontSize: '13px', fontWeight: 600, color: 'var(--zh-color-accent)',
+                      textAlign: 'left',
+                    }}
+                    onMouseEnter={e => { e.currentTarget.style.background = 'var(--zh-color-bg-secondary)' }}
+                    onMouseLeave={e => { e.currentTarget.style.background = 'none' }}
+                  >
+                    <ShieldOff size={14} />
+                    {t('popover.admin_logout', 'Admin-Rolle ablegen')}
+                  </button>
+                )}
 
                 <button
                   onClick={() => { setShowPopover(false); onLogout() }}
