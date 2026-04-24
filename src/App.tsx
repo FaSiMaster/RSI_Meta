@@ -88,6 +88,14 @@ export default function App() {
   }
 
   function handleLogin(name: string, kursCode: string | null, kursName: string | null = null) {
+    // Normaler User-Login: Admin-Flags aus evtl. noch aktiver Admin-Session
+    // raeumen, sonst zeigt die Navbar den Admin-Button weiter an, auch wenn
+    // der User inzwischen als Kursteilnehmer eingeloggt ist (Szenario: Admin
+    // geht ohne expliziten Logout zurueck zur Landing und gibt einen neuen
+    // Namen ein). Der dedizierte Admin-Login-Pfad laeuft ueber onAdmin und
+    // setzt die Flags danach neu.
+    sessionStorage.removeItem('rsi-admin-auth')
+    sessionStorage.removeItem('rsi-admin-token')
     const session = getSession()
     session.username = name
     session.kursId = kursCode
