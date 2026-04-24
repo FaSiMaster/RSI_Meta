@@ -9,6 +9,37 @@ Versionierung nach [Semantic Versioning](https://semver.org/lang/de/).
 
 ## [Unreleased]
 
+—
+
+---
+
+## [0.7.0] — 2026-04-24
+
+### Refactor — Sprint 3 Schritt 1 (Modal-Split AdminDashboard)
+
+- **`AdminDashboard.tsx` von 1'981 auf 786 LoC reduziert** (-60 %). Die
+  vier Modals (Defizit, Szene, Thema, Kurs) und sieben Hilfskomponenten
+  (Section, SelectField, AutoField, MLInput, MLTextarea, NormRefPicker,
+  VorschaubildEditor) liegen jetzt in eigenen Dateien unter
+  `src/components/admin/{modals,fields,utils}/`.
+- Jedes Modal haelt **eigenen Draft-State** und liefert bei Save das
+  fertige Objekt zurueck. Persistenz (saveDeficit / saveScene / saveTopic
+  / saveKurs) bleibt im Parent.
+- Verhaltensneutral — Norm-Hook, Focus-Trap und ESC-Handling pro Modal
+  bleiben erhalten.
+
+### Test — Sprint 3 Schritt 2 (E2E-Tests)
+
+- **12 Playwright-Specs** (landing, admin, sceneviewer) in 6.7 s lokal.
+  Absichern des Modal-Splits und der zentralen User-Journeys.
+- Neue Infrastruktur: `playwright.config.ts`, Fixtures fuer
+  localStorage-Seed, Supabase-Stub und `reducedMotion`-Overrides.
+- `.github/workflows/e2e.yml` — Chromium in CI auf Push/PR.
+- `src/App.tsx`: `MotionConfig reducedMotion="user"` damit Framer-Motion
+  das prefers-reduced-motion-Signal konsequent honoriert (sonst
+  blockierte `AnimatePresence mode="wait"` Exit-Animationen trotz
+  CSS-Override den View-Wechsel in E2E).
+
 ### Breaking — Sprint 3 Schritt 3 (Server-Salt-Pfeffern, Hard-Cutover)
 
 - **Alle laufenden Kurs-Passwoerter werden ungueltig.** Admin muss sie
