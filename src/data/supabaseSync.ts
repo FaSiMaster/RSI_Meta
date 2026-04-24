@@ -327,25 +327,24 @@ export async function saveKursSupabase(kurs: Kurs): Promise<void> {
   kurseCache = [...list]
   writeLocal(K_KURSE, kurseCache)
 
-  if (!supabase) return
+  if (!supabase) throw new Error('Supabase nicht konfiguriert (VITE_SUPABASE_URL fehlt)')
   const result = await edgeWrite('rsi_kurse', 'upsert', {
     rows: [{ id: kurs.id, data: kurs, updated_at: new Date().toISOString() }],
   })
   if (!result.ok) {
-    console.warn('[RSI] Kurs-Save fehlgeschlagen:', result.error)
     setSupabaseStatus('offline')
-  } else {
-    setSupabaseStatus('live')
+    throw new Error(`Edge Function admin-write: ${result.error ?? 'unbekannter Fehler'}`)
   }
+  setSupabaseStatus('live')
 }
 
 export async function deleteKursSupabase(id: string): Promise<void> {
   kurseCache = (kurseCache ?? readLocal<Kurs>(K_KURSE)).filter(k => k.id !== id)
   writeLocal(K_KURSE, kurseCache)
 
-  if (!supabase) return
+  if (!supabase) throw new Error('Supabase nicht konfiguriert')
   const result = await edgeWrite('rsi_kurse', 'delete', { id })
-  if (!result.ok) console.warn('[RSI] Kurs-Delete fehlgeschlagen:', result.error)
+  if (!result.ok) throw new Error(`Edge Function admin-write: ${result.error ?? 'unbekannter Fehler'}`)
 }
 
 // ── Cache zurücksetzen (nach App-Reset) ──

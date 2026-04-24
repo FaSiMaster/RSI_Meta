@@ -472,17 +472,37 @@ export default function AdminDashboard() {
   }
   async function handleSaveKurs() {
     if (!editingKurs) return
-    await saveKurs(editingKurs)
+    const res = await saveKurs(editingKurs)
     setKurse(getKurse())
+    if (!res.ok) {
+      // Kurs ist lokal gespeichert, aber nicht in Supabase → andere Geraete
+      // sehen ihn nicht. User muss wissen, dass eine Setup-Aktion fehlt.
+      alert(
+        `Kurs lokal gespeichert, aber Supabase-Sync fehlgeschlagen:\n\n${res.supabaseError ?? 'unbekannter Fehler'}\n\n` +
+        'Haeufigste Ursachen:\n' +
+        '1. SQL-Migration `rsi_kurse` noch nicht im Supabase-Dashboard ausgefuehrt\n' +
+        '   (Datei: supabase/migrations/2026_04_24_rsi_kurse.sql)\n' +
+        '2. Edge Function `admin-write` noch nicht mit v0.6.3-Code redeployt\n' +
+        '3. Admin-Token abgelaufen (erneut einloggen)\n\n' +
+        'Der Kurs ist aktuell NUR auf diesem Geraet verfuegbar.'
+      )
+      return
+    }
     setKursModalOpen(false)
   }
   async function handleToggleKurs(k: Kurs) {
-    await saveKurs({ ...k, isActive: !k.isActive })
+    const res = await saveKurs({ ...k, isActive: !k.isActive })
     setKurse(getKurse())
+    if (!res.ok) {
+      alert(`Kurs-Status lokal geaendert, Supabase-Sync fehlgeschlagen:\n${res.supabaseError ?? 'unbekannter Fehler'}`)
+    }
   }
-  function handleDeleteKurs(id: string) {
-    deleteKurs(id)
+  async function handleDeleteKurs(id: string) {
+    const res = await deleteKurs(id)
     setKurse(getKurse())
+    if (!res.ok) {
+      alert(`Kurs lokal entfernt, Supabase-Delete fehlgeschlagen:\n${res.supabaseError ?? 'unbekannter Fehler'}`)
+    }
   }
 
   // ── Export / Import ──

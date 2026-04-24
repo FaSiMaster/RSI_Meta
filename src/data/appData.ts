@@ -874,7 +874,7 @@ export function getKursStatus(k: Kurs): 'aktiv' | 'bald' | 'abgelaufen' | 'inakt
   if (k.gueltigVon != null && k.gueltigVon > now) return 'bald'
   return 'aktiv'
 }
-export async function saveKurs(kurs: Kurs): Promise<void> {
+export async function saveKurs(kurs: Kurs): Promise<{ ok: boolean; supabaseError?: string }> {
   // Passwort bei Bedarf hashen (Klartext → Hash), bereits gehashte bleiben unverändert
   let passwort = kurs.passwort
   if (passwort && passwort.trim().length > 0 && !istPasswortHash(passwort)) {
@@ -887,12 +887,28 @@ export async function saveKurs(kurs: Kurs): Promise<void> {
   const i = list.findIndex(x => x.id === toSave.id)
   if (i >= 0) list[i] = toSave; else list.push(toSave)
   writeJSON(K_KURSE, list)
-  // Supabase (fire-and-forget) — teilt Kurse mit anderen Devices/Teilnehmern
-  saveKursSupabase(toSave).catch(() => {})
+  // Supabase synchron abwarten und Fehler an UI durchreichen — Kurse muessen
+  // auf anderen Geraeten auffindbar sein, stiller Fallback auf localStorage
+  // hat in v0.6.2 zu Verwirrung gefuehrt.
+  try {
+    await saveKursSupabase(toSave)
+    return { ok: true }
+  } catch (err) {
+    const msg = err instanceof Error ? err.message : String(err)
+    console.warn('[RSI] saveKurs: Supabase-Push fehlgeschlagen, nur lokal gespeichert:', msg)
+    return { ok: false, supabaseError: msg }
+  }
 }
-export function deleteKurs(id: string): void {
+export async function deleteKurs(id: string): Promise<{ ok: boolean; supabaseError?: string }> {
   writeJSON(K_KURSE, readJSON<Kurs>(K_KURSE, []).filter(k => k.id !== id))
-  deleteKursSupabase(id).catch(() => {})
+  try {
+    await deleteKursSupabase(id)
+    return { ok: true }
+  } catch (err) {
+    const msg = err instanceof Error ? err.message : String(err)
+    console.warn('[RSI] deleteKurs: Supabase-Delete fehlgeschlagen, nur lokal entfernt:', msg)
+    return { ok: false, supabaseError: msg }
+  }
 }
 
 // ── Ranking ──
