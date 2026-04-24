@@ -696,6 +696,134 @@ function VRBewertungNPanel({ onSelect }: VRBewertungNPanelProps) {
   )
 }
 
+// ── VR: Scoring-Summary-Panel (v0.8.2, VR-Iter 3) ──────────────────────────
+// Zeigt nach abgeschlossener Bewertung ein Ergebnis-Panel im VR, damit der
+// User in der Session bleibt. Der volle HTML-ScoringFlow mit Matrix-Erklärung
+// startet im Browser nur wenn kein VR aktiv ist (siehe App.handleDeficitConfirmed).
+
+export interface VRScoringSummary {
+  deficitName:        string
+  punkteFinal:        number
+  maxPunkte:          number
+  kategorieRichtig:   boolean
+  wichtigkeitKorrekt: boolean
+  abweichungKorrekt:  boolean
+  nacaKorrekt:        boolean
+  userW:   RSIDimension
+  userA:   RSIDimension
+  userN:   NACADimension
+  correctW: RSIDimension
+  correctA: RSIDimension
+  correctN: NACADimension
+}
+
+interface VRScoringSummaryPanelProps {
+  summary:    VRScoringSummary
+  onContinue: () => void
+}
+
+function dimLabelShort(d: RSIDimension): string {
+  return d === 'gross' ? 'Gross' : d === 'mittel' ? 'Mittel' : 'Klein'
+}
+function nacaLabelShort(n: NACADimension): string {
+  return n === 'leicht' ? 'Leicht' : n === 'mittel' ? 'Mittel' : 'Schwer'
+}
+
+function VRScoringSummaryPanel({ summary, onContinue }: VRScoringSummaryPanelProps) {
+  const allCorrect = summary.kategorieRichtig
+    && summary.wichtigkeitKorrekt
+    && summary.abweichungKorrekt
+    && summary.nacaKorrekt
+
+  const rows: { label: string; user: string; correct: string; ok: boolean }[] = [
+    { label: 'Kategorie',   user: summary.kategorieRichtig ? 'richtig' : 'falsch',
+      correct: summary.kategorieRichtig ? 'richtig' : '—', ok: summary.kategorieRichtig },
+    { label: 'Wichtigkeit', user: dimLabelShort(summary.userW),
+      correct: dimLabelShort(summary.correctW), ok: summary.wichtigkeitKorrekt },
+    { label: 'Abweichung',  user: dimLabelShort(summary.userA),
+      correct: dimLabelShort(summary.correctA), ok: summary.abweichungKorrekt },
+    { label: 'Unfallschwere', user: nacaLabelShort(summary.userN),
+      correct: nacaLabelShort(summary.correctN), ok: summary.nacaKorrekt },
+  ]
+
+  const panelW  = 0.88
+  const rowH    = 0.050
+  const rowGap  = 0.010
+  const headerH = 0.17
+  const footerH = 0.12
+  const panelH  = headerH + rows.length * (rowH + rowGap) + footerH
+
+  return (
+    <VRHud offset={[0, 0, -1.5]}>
+      <mesh position={[0, 0, -0.003]}>
+        <planeGeometry args={[panelW + 0.012, panelH + 0.012]} />
+        <meshBasicMaterial color={allCorrect ? '#083a0c' : '#3a1808'} transparent opacity={0.92} />
+      </mesh>
+      <mesh position={[0, 0, -0.002]}>
+        <planeGeometry args={[panelW, panelH]} />
+        <meshBasicMaterial color="#090d1b" transparent opacity={0.96} />
+      </mesh>
+      {/* Header */}
+      <Text position={[0, panelH / 2 - 0.040, 0.003]} fontSize={0.018} color="rgba(255,255,255,0.45)" anchorX="center" anchorY="middle">
+        Bewertung abgeschlossen
+      </Text>
+      <Text
+        position={[0, panelH / 2 - 0.080, 0.003]}
+        fontSize={0.034}
+        color={allCorrect ? '#1A7F1F' : '#F0A500'}
+        anchorX="center"
+        anchorY="middle"
+        maxWidth={panelW - 0.08}
+      >
+        {allCorrect ? 'Alles richtig!' : 'Teilweise korrekt'}
+      </Text>
+      <Text position={[0, panelH / 2 - 0.120, 0.003]} fontSize={0.030} color="#ffffff" anchorX="center" anchorY="middle">
+        {`${summary.punkteFinal} / ${summary.maxPunkte} Punkte`}
+      </Text>
+
+      {/* Zeilen: User-Wert vs korrekter Wert */}
+      {rows.map((r, i) => {
+        const y = panelH / 2 - headerH - (i + 0.5) * (rowH + rowGap)
+        return (
+          <group key={r.label} position={[0, y, 0.003]}>
+            {/* Zeilen-Hintergrund */}
+            <mesh>
+              <planeGeometry args={[panelW - 0.04, rowH]} />
+              <meshBasicMaterial color={r.ok ? '#0f2818' : '#2a1010'} transparent opacity={0.55} />
+            </mesh>
+            <Text position={[-(panelW - 0.04) / 2 + 0.020, 0, 0.001]} fontSize={0.020} color={r.ok ? '#1A7F1F' : '#D40053'} anchorX="left" anchorY="middle">
+              {r.ok ? '✓' : '✗'}
+            </Text>
+            <Text position={[-(panelW - 0.04) / 2 + 0.055, 0, 0.001]} fontSize={0.020} color="rgba(255,255,255,0.80)" anchorX="left" anchorY="middle">
+              {r.label}
+            </Text>
+            <Text position={[0.02, 0, 0.001]} fontSize={0.020} color="rgba(255,255,255,0.70)" anchorX="left" anchorY="middle">
+              {`Du: ${r.user}`}
+            </Text>
+            {!r.ok && (
+              <Text position={[0.20, 0, 0.001]} fontSize={0.020} color="#1A7F1F" anchorX="left" anchorY="middle">
+                {`Korrekt: ${r.correct}`}
+              </Text>
+            )}
+          </group>
+        )
+      })}
+
+      {/* Weiter-Button */}
+      <VRButton
+        label="Weiter"
+        position={[0, -panelH / 2 + 0.050, 0.002]}
+        width={panelW - 0.10}
+        height={0.080}
+        color={allCorrect ? '#1A7F1F' : '#0076BD'}
+        hoverColor={allCorrect ? '#25a029' : '#1a8cd8'}
+        fontSize={0.032}
+        onClick={onContinue}
+      />
+    </VRHud>
+  )
+}
+
 // ── VR: Ray-Reticle (v0.8.1, Orientierungshilfe) ────────────────────────────
 // Zeigt einen kleinen Ziel-Ring am letzten Hit-Punkt des Controller-Rays auf
 // der Panorama-Sphere. Der User sieht so wo sein Ray landet.
@@ -707,12 +835,13 @@ function VRRayReticle({ position }: VRRayReticleProps) {
   if (!position) return null
   return (
     <Billboard position={position} follow lockX={false} lockY={false} lockZ={false}>
+      {/* Ring-Groessen in v0.8.2 (VR-Iter 3) verdoppelt — vorher zu dezent. */}
       <mesh renderOrder={999}>
-        <ringGeometry args={[0.70, 0.95, 32]} />
-        <meshBasicMaterial color="#ffffff" transparent opacity={0.85} side={THREE.DoubleSide} depthTest={false} />
+        <ringGeometry args={[1.4, 1.75, 32]} />
+        <meshBasicMaterial color="#ffffff" transparent opacity={0.9} side={THREE.DoubleSide} depthTest={false} />
       </mesh>
       <mesh renderOrder={999}>
-        <circleGeometry args={[0.18, 16]} />
+        <circleGeometry args={[0.35, 16]} />
         <meshBasicMaterial color="#ffffff" transparent opacity={0.95} side={THREE.DoubleSide} depthTest={false} />
       </mesh>
     </Billboard>
@@ -788,6 +917,9 @@ interface SceneContentProps {
   onBewertungW:        (w: RSIDimension) => void
   onBewertungA:        (a: RSIDimension) => void
   onBewertungN:        (n: NACADimension) => void
+  // VR-Scoring-Summary (v0.8.2): Anzeige + Continue-Callback
+  vrScoringFeedback:   VRScoringSummary | null
+  onVRScoringContinue: () => void
 }
 
 function SceneContent({
@@ -801,6 +933,7 @@ function SceneContent({
   aktivePerspektiveId, aktiveBildUrl, pendingClickPos, onStandortWechsel,
   visitedPerspektiven, hauptKey,
   hitDeficit, onBewertungW, onBewertungA, onBewertungN,
+  vrScoringFeedback, onVRScoringContinue,
 }: SceneContentProps) {
   const foundIds    = new Set(foundDeficits.map(f => f.deficitId))
   const allFound    = foundDeficits.length === deficits.length
@@ -1023,6 +1156,12 @@ function SceneContent({
             {phase === 'bewertungN' && hitDeficit && (
               <VRBewertungNPanel onSelect={onBewertungN} />
             )}
+            {phase === 'vrScoringSummary' && vrScoringFeedback && (
+              <VRScoringSummaryPanel
+                summary={vrScoringFeedback}
+                onContinue={onVRScoringContinue}
+              />
+            )}
           </Suspense>
         </VRErrorBoundary>
       )}
@@ -1136,9 +1275,13 @@ interface Props {
   // Ms-Epoch-Stamp wann die Szene gestartet wurde (aus App.tsx handleEinstiegStart).
   // Wird fuer den VR-HUD-Timer (v0.8.0) gebraucht.
   sceneStartTime:     number
+  /** Wenn gesetzt, zeigt der Viewer das VR-Scoring-Summary-Panel (v0.8.2). null = kein Panel. */
+  vrScoringFeedback:  VRScoringSummary | null
   onDeficitConfirmed: (payload: DeficitConfirmedPayload) => void
   onHintActivate:     () => void
   onBeenden:          () => void
+  /** Wird aufgerufen wenn der User im VR-Scoring-Summary-Panel auf Weiter klickt. */
+  onVRScoringContinue: () => void
 }
 
 type Phase =
@@ -1150,10 +1293,12 @@ type Phase =
   | 'bewertungW'
   | 'bewertungA'
   | 'bewertungN'
+  | 'vrScoringSummary'
 
 export default function SceneViewer({
   scene, deficits, foundDeficits, hintActive, sceneStartTime,
-  onDeficitConfirmed, onHintActivate, onBeenden,
+  vrScoringFeedback,
+  onDeficitConfirmed, onHintActivate, onBeenden, onVRScoringContinue,
 }: Props) {
   const { i18n, t } = useTranslation()
   const lang     = i18n.language
@@ -1396,8 +1541,16 @@ export default function SceneViewer({
       bewertungStartMs: bewertungStartTime.current,
     })
     hitDeficit.current = null
+    // In VR (v0.8.2): auf vrScoringSummary wechseln — Props-Effekt oben bringt
+    // vrScoringFeedback nach. In Browser: exploring, View wechselt auf scoring.
+    setPhase(isVR ? 'vrScoringSummary' : 'exploring')
+  }, [userWichtigkeit, userAbweichung, hintActive, onDeficitConfirmed, isVR])
+
+  // Nach dem Weiter-Klick im VR-Scoring-Panel zurueck zum exploring.
+  const handleVRScoringContinueLocal = useCallback(() => {
     setPhase('exploring')
-  }, [userWichtigkeit, userAbweichung, hintActive, onDeficitConfirmed])
+    onVRScoringContinue()
+  }, [onVRScoringContinue])
 
   // ── Hint aktivieren ─────────────────────────────────────────────────────────
   const handleHintRequest = useCallback(() => {
@@ -1511,6 +1664,8 @@ export default function SceneViewer({
             onBewertungW={handleBewertungW}
             onBewertungA={handleBewertungA}
             onBewertungN={handleBewertungN}
+            vrScoringFeedback={vrScoringFeedback}
+            onVRScoringContinue={handleVRScoringContinueLocal}
           />
         </XR>
       </Canvas>

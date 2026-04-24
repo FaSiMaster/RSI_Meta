@@ -8,8 +8,10 @@ import {
   getSession, saveSession, getDeficits, getAllScenes, saveRankingEntry,
   saveSceneResult, getVersuchAnzahl, getGesamtScore,
 } from './data/appData'
-import { MAX_PUNKTE_PRO_DEFIZIT } from './data/scoreCalc'
+import { MAX_PUNKTE_PRO_DEFIZIT, calcScoreFromChoices } from './data/scoreCalc'
+import { KATEGORIE_PUNKTE } from './data/scoringEngine'
 import type { AppTopic, AppScene, AppDeficit, FoundDeficit, DefizitResult, SceneResult } from './data/appData'
+import type { RSIDimension, NACADimension } from './types'
 
 import { initSupabaseData, resetCache as resetSupabaseCache } from './data/supabaseSync'
 import { xrStore } from './xrStore'
@@ -26,6 +28,24 @@ import RankingView     from './components/RankingView'
 import TrainingEinstieg from './components/TrainingEinstieg'
 
 type View = 'landing' | 'topics' | 'scenes' | 'einstieg' | 'viewer' | 'scoring' | 'szenenabschluss' | 'admin' | 'ranking'
+
+// Daten fuer das VR-Scoring-Summary-Panel (v0.8.2, VR-Iter 3).
+// Zeigt nach einer abgeschlossenen Bewertung richtig/falsch je Schritt + Punkte.
+export interface VrScoringFeedback {
+  deficitName:         string
+  punkteFinal:         number
+  maxPunkte:           number
+  kategorieRichtig:    boolean
+  wichtigkeitKorrekt:  boolean
+  abweichungKorrekt:   boolean
+  nacaKorrekt:         boolean
+  userW:   RSIDimension
+  userA:   RSIDimension
+  userN:   NACADimension
+  correctW: RSIDimension
+  correctA: RSIDimension
+  correctN: NACADimension
+}
 
 export default function App() {
   const [view, setView]     = useState<View>('landing')
@@ -63,6 +83,11 @@ export default function App() {
 
   // Letztes SceneResult (für SzenenAbschluss)
   const [lastSceneResult, setLastSceneResult] = useState<SceneResult | null>(null)
+
+  // VR-Scoring-Summary (v0.8.2): wird statt setView('scoring') benutzt wenn der
+  // User in einer aktiven XR-Session ist. Panel zeigt Richtig/Falsch-Zusammenfassung
+  // inline im R3F-Canvas, damit die Session nicht beendet werden muss.
+  const [vrScoringFeedback, setVrScoringFeedback] = useState<VrScoringFeedback | null>(null)
 
   // Session + Theme + Supabase-Sync beim Start laden
   useEffect(() => {
@@ -158,16 +183,80 @@ export default function App() {
 
   // ── Defizit im Viewer bestätigt → ScoringFlow (Auswertung) starten ────────
   function handleDeficitConfirmed(payload: DeficitConfirmedPayload) {
-    setScoringDeficit(payload.deficit)
-    setPendingKatRichtig(payload.kategorieRichtig)
-    setPendingHintPenalty(payload.hintPenalty)
-    setPendingWichtigkeit(payload.userWichtigkeit)
-    setPendingAbweichung(payload.userAbweichung)
-    setPendingNacaSchwere(payload.userNacaSchwere)
-    deficitStartTime.current = payload.bewertungStartMs
-    // VR beenden damit der HTML-ScoringFlow sichtbar ist
-    xrStore.getState().session?.end()
-    setView('scoring')
+    const inVR = xrStore.getState().session != null
+
+    if (!inVR) {
+      // Browser-Pfad: ScoringFlow-HTML-Overlay wie bisher.
+      setScoringDeficit(payload.deficit)
+      setPendingKatRichtig(payload.kategorieRichtig)
+      setPendingHintPenalty(payload.hintPenalty)
+      setPendingWichtigkeit(payload.userWichtigkeit)
+      setPendingAbweichung(payload.userAbweichung)
+      setPendingNacaSchwere(payload.userNacaSchwere)
+      deficitStartTime.current = payload.bewertungStartMs
+      setView('scoring')
+      return
+    }
+
+    // VR-Pfad (v0.8.2): keine Session beenden, Punkte direkt berechnen,
+    // VR-Scoring-Summary-Panel anzeigen. Logik analog zu ScoringFlow.renderResult +
+    // handleScoringComplete, aber ohne HTML-UI-Schritt dazwischen.
+    const d  = payload.deficit
+    const ca = d.correctAssessment
+
+    const rohPts = calcScoreFromChoices(
+      payload.userWichtigkeit, payload.userAbweichung, payload.userNacaSchwere,
+      ca.wichtigkeit, ca.abweichung, ca.relevanzSD, ca.unfallschwere, ca.unfallrisiko,
+    )
+    const katPts      = payload.kategorieRichtig ? KATEGORIE_PUNKTE : 0
+    const hintAbzug   = payload.hintPenalty ? 25 : 0
+    const ptsVorBonus = Math.max(0, rohPts + katPts - hintAbzug)
+    const boosterPct  = d.isBooster ? (d.boosterBonusProzent ?? 10) : 0
+    const finalPts    = Math.round(ptsVorBonus * (1 + boosterPct / 100))
+
+    const entry: FoundDeficit = {
+      deficitId:        d.id,
+      kategorieRichtig: payload.kategorieRichtig,
+      pointsEarned:     finalPts,
+      hintPenalty:      payload.hintPenalty,
+    }
+    const defResult: DefizitResult = {
+      deficitId:          d.id,
+      kategorieRichtig:   payload.kategorieRichtig,
+      hintPenalty:        payload.hintPenalty,
+      punkteRoh:          rohPts + katPts,
+      punkteFinal:        finalPts,
+      dauerSekunden:      Math.round((Date.now() - payload.bewertungStartMs) / 1000),
+      wichtigkeitKorrekt: payload.userWichtigkeit === ca.wichtigkeit,
+      abweichungKorrekt:  payload.userAbweichung  === ca.abweichung,
+      nacaKorrekt:        payload.userNacaSchwere === ca.unfallschwere,
+    }
+
+    setFoundDeficits(prev => [...prev, entry])
+    setSceneScore(prev => prev + finalPts)
+    setDefizitResults(prev => [...prev, defResult])
+
+    setVrScoringFeedback({
+      deficitName:        d.nameI18n.de,
+      punkteFinal:        finalPts,
+      maxPunkte:          MAX_PUNKTE_PRO_DEFIZIT,
+      kategorieRichtig:   payload.kategorieRichtig,
+      wichtigkeitKorrekt: defResult.wichtigkeitKorrekt,
+      abweichungKorrekt:  defResult.abweichungKorrekt,
+      nacaKorrekt:        defResult.nacaKorrekt,
+      userW:   payload.userWichtigkeit,
+      userA:   payload.userAbweichung,
+      userN:   payload.userNacaSchwere,
+      correctW: ca.wichtigkeit,
+      correctA: ca.abweichung,
+      correctN: ca.unfallschwere,
+    })
+  }
+
+  // VR-Scoring-Panel vom SceneViewer bestaetigt → raeumt Feedback auf,
+  // User bleibt im exploring-Modus.
+  function handleVRScoringContinue() {
+    setVrScoringFeedback(null)
   }
 
   // ── ScoringFlow abgeschlossen ──────────────────────────────────────────────
@@ -374,9 +463,11 @@ export default function App() {
                 foundDeficits={foundDeficits}
                 hintActive={hintActive}
                 sceneStartTime={sceneStartTime}
+                vrScoringFeedback={vrScoringFeedback}
                 onDeficitConfirmed={handleDeficitConfirmed}
                 onHintActivate={handleHintActivate}
                 onBeenden={handleBeenden}
+                onVRScoringContinue={handleVRScoringContinue}
               />
               {view === 'scoring' && scoringDeficit && (
                 <div style={{

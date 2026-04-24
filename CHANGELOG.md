@@ -13,7 +13,65 @@ Versionierung nach [Semantic Versioning](https://semver.org/lang/de/).
 
 ---
 
-## [0.8.1] — 2026-04-24 — VR-Hotfixes nach Stevos Headset-Test
+## Versionierungs-Konvention (seit v0.8.2)
+
+- **Patch-Releases** (`0.8.x`): VR-Iterationen und Hotfixes.
+  Jeder VR-Release bekommt eine **VR-Iter-Nummer** im Titel.
+- **Minor-Bump auf `0.9.0`**: reserviert fuer das groessere Feature
+  "VR-Panels verschiebbar machen" + weitere Architektur-Arbeit.
+
+Aktuelle VR-Iterationen:
+- `v0.8.0` = VR-Iter 1 — Smoke-Ready (Haptik, HUD-Timer, Farb-Marker)
+- `v0.8.1` = VR-Iter 2 — Bewertungs-Panels, Ray-Reticle, groesserer Hover
+- `v0.8.2` = VR-Iter 3 — Scoring-in-VR, Fadenkreuz-Vergroesserung
+
+---
+
+## [0.8.2] — 2026-04-24 — VR-Iter 3: Scoring-in-VR
+
+### Behoben — kritisch
+
+- **VR-Session wurde nach der Bewertung beendet.** `handleDeficitConfirmed`
+  in App.tsx schaltete auf `view='scoring'` und rief
+  `xrStore.session.end()` — der User flog aus der Immersion raus und
+  musste ueber den 2D-HTML-ScoringFlow wieder zurueck ins Headset.
+- Fix: Weichenlogik. In VR wird der volle ScoringFlow uebersprungen.
+  Stattdessen berechnet App.tsx die Punkte direkt (analog zu
+  `ScoringFlow.renderResult`) und liefert ein neues
+  `vrScoringFeedback`-Payload an den SceneViewer.
+- Neuer `VRScoringSummaryPanel`: zeigt Richtig/Falsch pro Schritt
+  (Kategorie, Wichtigkeit, Abweichung, Unfallschwere) + Punkte-Resultat
+  + Weiter-Button. User bleibt durchgehend in der XR-Session.
+- Der volle ScoringFlow mit Matrix-Drilldown bleibt im Browser
+  erreichbar — im VR-Kontext bewusst reduziert fuer schnelles
+  Durcharbeiten vieler Defizite.
+
+### Geaendert
+
+- **Fadenkreuz vergroessert**: Reticle-Ring `0.70/0.95 → 1.4/1.75`,
+  Innenpunkt `0.18 → 0.35`. Feedback von Stevo: war vorher zu dezent.
+
+### Hinzugefuegt
+
+- `App.tsx` Export `VrScoringFeedback`-Interface.
+- `SceneViewer` Export `VRScoringSummary`-Interface.
+- Neue Phase `vrScoringSummary` in SceneViewer.
+- Neue Props fuer SceneViewer: `vrScoringFeedback`, `onVRScoringContinue`.
+
+### Gates
+
+- `tsc --noEmit`: 0 Fehler
+- `vitest`: 24/24 passed
+- `playwright`: 12/12 passed in 7.8 s
+
+### Offen fuer v0.9.0 (aus Stevos Feedback)
+
+- **VR-Panels verschiebbar** (Grab-and-drop oder Stick-Drag). Grosser
+  Scope, separates Release — rechtfertigt den Minor-Bump.
+
+---
+
+## [0.8.1] — 2026-04-24 — VR-Iter 2: Bewertungs-Panels + Reticle
 
 ### Behoben — kritisch
 
@@ -53,7 +111,7 @@ Versionierung nach [Semantic Versioning](https://semver.org/lang/de/).
 
 ---
 
-## [0.8.0] — 2026-04-24 — VR-Smoke-Ready (Phase 3, Teil 1)
+## [0.8.0] — 2026-04-24 — VR-Iter 1: Smoke-Ready (Phase 3, Teil 1)
 
 ### Hinzugefuegt — VR-Orientierung & -Feedback
 
