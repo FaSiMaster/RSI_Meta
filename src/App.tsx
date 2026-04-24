@@ -3,7 +3,7 @@
 // FaSi Kanton Zürich · ZH Corporate Design
 
 import { useState, useEffect, useMemo, useRef } from 'react'
-import { AnimatePresence, motion } from 'motion/react'
+import { AnimatePresence, motion, MotionConfig } from 'motion/react'
 import {
   getSession, saveSession, getDeficits, getAllScenes, saveRankingEntry,
   saveSceneResult, getVersuchAnzahl, getGesamtScore,
@@ -297,6 +297,7 @@ export default function App() {
   }, [currentScene?.id, currentTopic?.id])
 
   return (
+    <MotionConfig reducedMotion="user">
     <div
       className="flex flex-col"
       style={{
@@ -434,5 +435,6 @@ export default function App() {
         </AnimatePresence>
       </div>
     </div>
+    </MotionConfig>
   )
 }
