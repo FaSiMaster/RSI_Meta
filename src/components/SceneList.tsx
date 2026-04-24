@@ -19,7 +19,7 @@ interface Props {
 
 // Sterne-Anzeige (1-3)
 function SterneAnzeige({ sterne, size = 14 }: { sterne: 0 | 1 | 2 | 3; size?: number }) {
-  const colors = ['#CCCCCC', '#B87300', '#949494', '#1A7F1F']
+  const colors = ['#CCCCCC', 'var(--zh-orange)', '#949494', 'var(--zh-gruen)']
   // 0 = keine Sterne (nicht gespielt), 1-3 = Sterne
   if (sterne === 0) return null
   return (
@@ -162,12 +162,12 @@ function NeueSzeneModal({ topicId, onSave, onClose }: NeueSzeneModalProps) {
             placeholder="z.B. Innerorts – Gehweg mit Querung"
             style={{
               ...inputStyle,
-              border: validationError ? '1px solid #D40053' : '1px solid var(--zh-color-border)',
+              border: validationError ? '1px solid var(--zh-rot)' : '1px solid var(--zh-color-border)',
             }}
             autoFocus
           />
           {validationError && (
-            <p style={{ fontSize: '12px', color: '#D40053', marginTop: '4px' }}>
+            <p style={{ fontSize: '12px', color: 'var(--zh-rot)', marginTop: '4px' }}>
               Name (DE) ist ein Pflichtfeld.
             </p>
           )}
@@ -362,7 +362,7 @@ export default function SceneList({ topic, username, isAdmin = false, onBack, on
                   {(() => {
                     const imgUrl = scene.vorschauBild1 === 'panorama' ? scene.panoramaBildUrl : scene.vorschauBild1
                     return imgUrl ? (
-                      <img src={imgUrl} alt="" style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover' }} />
+                      <img src={imgUrl} alt={`Panorama-Vorschau: ${ml(scene.nameI18n, lang) || `Szenario ${i + 1}`}`} style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover' }} />
                     ) : null
                   })()}
                   <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
@@ -396,7 +396,7 @@ export default function SceneList({ topic, username, isAdmin = false, onBack, on
                           {stats.versuche}× gespielt
                         </span>
                         <span style={{ fontSize: '10px', color: 'var(--zh-color-text-disabled)' }}>·</span>
-                        <span style={{ fontSize: '12px', fontWeight: 700, color: stats.prozent >= 90 ? '#1A7F1F' : stats.prozent >= 60 ? '#B87300' : 'var(--zh-color-text-muted)' }}>
+                        <span style={{ fontSize: '12px', fontWeight: 700, color: stats.prozent >= 90 ? 'var(--zh-gruen)' : stats.prozent >= 60 ? 'var(--zh-orange)' : 'var(--zh-color-text-muted)' }}>
                           Best: {stats.prozent}%
                         </span>
                       </>

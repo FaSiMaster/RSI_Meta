@@ -145,7 +145,7 @@ export default function AdminRanking() {
           {isOnline && results.length > 0 && (
             <button
               onClick={() => setConfirmAction({ label: 'Alle Einträge unwiderruflich löschen?', action: deleteAll })}
-              style={{ ...btnStyle, background: 'rgba(212,0,83,0.1)', color: '#D40053' }}
+              style={{ ...btnStyle, background: 'rgba(212,0,83,0.1)', color: 'var(--zh-rot)' }}
             >
               <Trash2 size={12} /> Alles zurücksetzen
             </button>
@@ -155,7 +155,7 @@ export default function AdminRanking() {
 
       {/* Feedback-Toast */}
       {feedback && (
-        <div style={{ padding: '10px 16px', borderRadius: '8px', background: 'rgba(26,127,31,0.1)', border: '1px solid rgba(26,127,31,0.3)', color: '#1A7F1F', fontSize: '13px', fontWeight: 600, marginBottom: '16px' }}>
+        <div style={{ padding: '10px 16px', borderRadius: '8px', background: 'rgba(26,127,31,0.1)', border: '1px solid rgba(26,127,31,0.3)', color: 'var(--zh-gruen)', fontSize: '13px', fontWeight: 600, marginBottom: '16px' }}>
           {feedback}
         </div>
       )}
@@ -163,13 +163,13 @@ export default function AdminRanking() {
       {/* Bestätigungs-Dialog */}
       {confirmAction && (
         <div style={{ padding: '16px', borderRadius: '10px', background: 'rgba(212,0,83,0.06)', border: '1px solid rgba(212,0,83,0.2)', marginBottom: '16px', display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap' }}>
-          <AlertTriangle size={18} style={{ color: '#D40053', flexShrink: 0 }} />
+          <AlertTriangle size={18} style={{ color: 'var(--zh-rot)', flexShrink: 0 }} />
           <span style={{ fontSize: '13px', fontWeight: 600, color: 'var(--zh-color-text)', flex: 1 }}>
             {confirmAction.label}
           </span>
           <button
             onClick={async () => { await confirmAction.action(); setConfirmAction(null) }}
-            style={{ ...btnStyle, background: '#D40053', color: 'white' }}
+            style={{ ...btnStyle, background: 'var(--zh-rot)', color: 'white' }}
           >
             Ja, löschen
           </button>
@@ -203,7 +203,7 @@ export default function AdminRanking() {
                   <span style={{ color: 'var(--zh-color-text-disabled)' }}>({count})</span>
                   <button
                     onClick={() => setConfirmAction({ label: `Alle ${count} Einträge von "${u}" löschen?`, action: () => deleteByUsername(u) })}
-                    style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#D40053', padding: '2px', display: 'flex', alignItems: 'center' }}
+                    style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--zh-rot)', padding: '2px', display: 'flex', alignItems: 'center' }}
                     title={`Alle Einträge von ${u} löschen`}
                   >
                     <Trash2 size={12} />
@@ -235,7 +235,7 @@ export default function AdminRanking() {
                   <span style={{ color: 'var(--zh-color-text-disabled)' }}>({count})</span>
                   <button
                     onClick={() => setConfirmAction({ label: `Kurs "${k}" zurücksetzen (${count} Einträge)?`, action: () => deleteByKurs(k) })}
-                    style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#D40053', padding: '2px', display: 'flex', alignItems: 'center' }}
+                    style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--zh-rot)', padding: '2px', display: 'flex', alignItems: 'center' }}
                     title={`Kurs ${k} zurücksetzen`}
                   >
                     <Trash2 size={12} />
@@ -288,7 +288,7 @@ export default function AdminRanking() {
                   <td style={{ padding: '7px 10px', color: 'var(--zh-color-text-muted)' }}>{r.scene_id}</td>
                   <td style={{ padding: '7px 10px', color: 'var(--zh-color-text-muted)' }}>{r.kurs_code ?? '—'}</td>
                   <td style={{ padding: '7px 10px', fontWeight: 700, color: 'var(--zh-blau)', textAlign: 'right' }}>{r.punkte}</td>
-                  <td style={{ padding: '7px 10px', fontWeight: 700, textAlign: 'right', color: r.prozent >= 90 ? '#1A7F1F' : r.prozent >= 60 ? '#B87300' : 'var(--zh-color-text-muted)' }}>{r.prozent}%</td>
+                  <td style={{ padding: '7px 10px', fontWeight: 700, textAlign: 'right', color: r.prozent >= 90 ? 'var(--zh-gruen)' : r.prozent >= 60 ? 'var(--zh-orange)' : 'var(--zh-color-text-muted)' }}>{r.prozent}%</td>
                   <td style={{ padding: '7px 10px', color: 'var(--zh-color-text-muted)', textAlign: 'right' }}>{r.dauer_sekunden ? `${r.dauer_sekunden}s` : '—'}</td>
                   <td style={{ padding: '7px 10px', color: 'var(--zh-color-text-disabled)', textAlign: 'right', fontSize: '11px' }}>{new Date(r.created_at).toLocaleString('de-CH', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' })}</td>
                   <td style={{ padding: '7px 10px', textAlign: 'right' }}>

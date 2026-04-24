@@ -138,8 +138,8 @@ export default function Navbar({ view, username, score, theme, kursName, onNavig
         </div>
 
         {/* Live-Indikator */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '5px', fontSize: '10px', fontWeight: 700, color: sbStatus === 'live' ? '#1A7F1F' : 'var(--zh-color-text-disabled)' }} title={sbStatus === 'live' ? 'Supabase Live' : 'Nur localStorage'}>
-          <span style={{ width: '7px', height: '7px', borderRadius: '50%', background: sbStatus === 'live' ? '#1A7F1F' : 'var(--zh-color-text-disabled)' }} />
+        <div style={{ display: 'flex', alignItems: 'center', gap: '5px', fontSize: '10px', fontWeight: 700, color: sbStatus === 'live' ? 'var(--zh-gruen)' : 'var(--zh-color-text-disabled)' }} title={sbStatus === 'live' ? 'Supabase Live' : 'Nur localStorage'}>
+          <span style={{ width: '7px', height: '7px', borderRadius: '50%', background: sbStatus === 'live' ? 'var(--zh-gruen)' : 'var(--zh-color-text-disabled)' }} />
           {sbStatus === 'live' ? t('status.live') : t('status.offline')}
         </div>
 

@@ -284,10 +284,10 @@ export default function LandingPage({ theme, onToggleTheme, onStart, onAdmin }: 
               placeholder={t('landing.namePlaceholder')}
               autoFocus
               className={inputClass}
-              style={{ padding: '11px 14px', border: nameFehlend ? '1px solid #D40053' : '1px solid var(--zh-color-border)', background: 'var(--zh-color-bg-secondary)', color: 'var(--zh-color-text)', fontFamily: 'var(--zh-font)', marginBottom: nameFehlend ? '4px' : '16px', boxSizing: 'border-box' }}
+              style={{ padding: '11px 14px', border: nameFehlend ? '1px solid var(--zh-rot)' : '1px solid var(--zh-color-border)', background: 'var(--zh-color-bg-secondary)', color: 'var(--zh-color-text)', fontFamily: 'var(--zh-font)', marginBottom: nameFehlend ? '4px' : '16px', boxSizing: 'border-box' }}
             />
             {nameFehlend && (
-              <p role="alert" aria-live="polite" className="flex items-center gap-1.5 text-xs mb-3" style={{ color: '#D40053' }}>
+              <p role="alert" aria-live="polite" className="flex items-center gap-1.5 text-xs mb-3" style={{ color: 'var(--zh-rot)' }}>
                 <AlertCircle size={12} aria-hidden="true" /> {t('landing.nameRequired')}
               </p>
             )}
@@ -322,7 +322,7 @@ export default function LandingPage({ theme, onToggleTheme, onStart, onAdmin }: 
                     onKeyDown={e => { if (e.key === 'Enter') handleStart() }}
                     placeholder={t('kurs.passwort')}
                     className={inputClass}
-                    style={{ padding: '11px 44px 11px 14px', border: passwortFehler ? '1px solid #D40053' : '1px solid var(--zh-color-border)', background: 'var(--zh-color-bg-secondary)', color: 'var(--zh-color-text)', fontFamily: 'var(--zh-font)', boxSizing: 'border-box' }}
+                    style={{ padding: '11px 44px 11px 14px', border: passwortFehler ? '1px solid var(--zh-rot)' : '1px solid var(--zh-color-border)', background: 'var(--zh-color-bg-secondary)', color: 'var(--zh-color-text)', fontFamily: 'var(--zh-font)', boxSizing: 'border-box' }}
                   />
                   <button
                     type="button"
@@ -338,7 +338,7 @@ export default function LandingPage({ theme, onToggleTheme, onStart, onAdmin }: 
             )}
 
             {passwortFehler && (
-              <p role="alert" aria-live="polite" className="flex items-center gap-1.5 text-xs mb-3" style={{ color: '#D40053' }}>
+              <p role="alert" aria-live="polite" className="flex items-center gap-1.5 text-xs mb-3" style={{ color: 'var(--zh-rot)' }}>
                 <AlertCircle size={12} aria-hidden="true" /> {t('kurs.passwort_falsch')}
               </p>
             )}
@@ -369,7 +369,7 @@ export default function LandingPage({ theme, onToggleTheme, onStart, onAdmin }: 
       {/* ── Footer ── */}
       <div className="flex items-center justify-between gap-3 px-5 sm:px-8 flex-wrap" style={{ minHeight: 'var(--zh-footer-h)', borderTop: '1px solid var(--zh-color-border)' }}>
         <div className="flex items-center gap-2 text-xs" style={{ color: 'var(--zh-color-text-disabled)' }}>
-          <span style={{ color: '#1A7F1F', fontWeight: 800 }}>●</span>
+          <span style={{ color: 'var(--zh-gruen)', fontWeight: 800 }}>●</span>
           {t('landing.systemOnline')} · v{import.meta.env.VITE_APP_VERSION ?? '0.5.0'}
         </div>
         <div className="flex items-center gap-3 flex-wrap">
@@ -468,7 +468,7 @@ export default function LandingPage({ theme, onToggleTheme, onStart, onAdmin }: 
               className="w-full rounded-lg text-center text-2xl font-bold tracking-[0.3em] outline-none"
               style={{
                 padding: '14px',
-                border: adminPinFehler ? '2px solid #D40053' : '1px solid var(--zh-color-border)',
+                border: adminPinFehler ? '2px solid var(--zh-rot)' : '1px solid var(--zh-color-border)',
                 background: 'var(--zh-color-bg-secondary)',
                 color: 'var(--zh-color-text)',
                 fontFamily: 'var(--zh-font)',
@@ -478,7 +478,7 @@ export default function LandingPage({ theme, onToggleTheme, onStart, onAdmin }: 
             />
 
             {adminPinFehler && (
-              <p role="alert" aria-live="polite" className="flex items-center justify-center gap-1.5 text-xs mb-3 text-center" style={{ color: '#D40053' }}>
+              <p role="alert" aria-live="polite" className="flex items-center justify-center gap-1.5 text-xs mb-3 text-center" style={{ color: 'var(--zh-rot)' }}>
                 <AlertCircle size={12} aria-hidden="true" /> {t('admin.pin_falsch')}
               </p>
             )}

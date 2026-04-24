@@ -378,9 +378,9 @@ export default function TopicDashboard({ username, score, onSelectTopic }: Props
                       {t('methodik.naca_desc')}
                     </p>
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-                      <NacaBar label={t('scoring.schwere_leicht')} range="NACA 0–1" color="#1A7F1F" width="33%" />
-                      <NacaBar label={t('scoring.schwere_mittel')} range="NACA 2–3" color="#B87300" width="50%" />
-                      <NacaBar label={t('scoring.schwere_schwer')} range="NACA 4–7" color="#D40053" width="100%" />
+                      <NacaBar label={t('scoring.schwere_leicht')} range="NACA 0–1" color="var(--zh-gruen)" width="33%" />
+                      <NacaBar label={t('scoring.schwere_mittel')} range="NACA 2–3" color="var(--zh-orange)" width="50%" />
+                      <NacaBar label={t('scoring.schwere_schwer')} range="NACA 4–7" color="var(--zh-rot)" width="100%" />
                     </div>
                   </div>
                 </div>
@@ -458,7 +458,7 @@ function tdStyle(): React.CSSProperties {
 
 function tdCell(level: 'gering' | 'mittel' | 'hoch'): React.CSSProperties {
   const bg = level === 'hoch' ? 'rgba(212,0,83,0.1)' : level === 'mittel' ? 'rgba(184,115,0,0.1)' : 'rgba(26,127,31,0.1)'
-  const color = level === 'hoch' ? '#D40053' : level === 'mittel' ? '#B87300' : '#1A7F1F'
+  const color = level === 'hoch' ? 'var(--zh-rot)' : level === 'mittel' ? 'var(--zh-orange)' : 'var(--zh-gruen)'
   return {
     padding: '6px 8px',
     textAlign: 'center',

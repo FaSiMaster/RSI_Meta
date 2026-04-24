@@ -30,9 +30,9 @@ import { useFocusTrap } from '../lib/useFocusTrap'
 
 // ── Badge-Farben ──
 function riskBg(w: RSIDimension): { bg: string; color: string; label: string } {
-  if (w === 'gross')  return { bg: '#D4005322', color: '#D40053', label: 'N' }
-  if (w === 'mittel') return { bg: '#B8730022', color: '#B87300', label: 'A' }
-  return { bg: '#1A7F1F22', color: '#1A7F1F', label: 'W' }
+  if (w === 'gross')  return { bg: '#D4005322', color: 'var(--zh-rot)', label: 'N' }
+  if (w === 'mittel') return { bg: '#B8730022', color: 'var(--zh-orange)', label: 'A' }
+  return { bg: '#1A7F1F22', color: 'var(--zh-gruen)', label: 'W' }
 }
 
 function emptyDeficit(sceneId: string, topicId: string): AppDeficit {
@@ -662,12 +662,12 @@ export default function AdminDashboard() {
           <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
             {/* Feedback */}
             {importFeedback && (
-              <span style={{ fontSize: '12px', color: importFeedback.startsWith('Fehler') ? '#D40053' : '#1A7F1F', fontWeight: 600 }}>
+              <span style={{ fontSize: '12px', color: importFeedback.startsWith('Fehler') ? 'var(--zh-rot)' : 'var(--zh-gruen)', fontWeight: 600 }}>
                 {importFeedback}
               </span>
             )}
             {szeneGespeichertFeedback && (
-              <span style={{ fontSize: '12px', color: '#1A7F1F', fontWeight: 600 }}>
+              <span style={{ fontSize: '12px', color: 'var(--zh-gruen)', fontWeight: 600 }}>
                 {t('admin.gespeichert_einstieg')}
               </span>
             )}
@@ -723,7 +723,7 @@ export default function AdminDashboard() {
                       <button onClick={() => openEditScene(sc)} style={{ display: 'flex', alignItems: 'center', gap: '3px', padding: '4px 8px', borderRadius: '5px', border: '1px solid var(--zh-color-border)', background: 'var(--zh-color-bg-secondary)', fontSize: '11px', color: 'var(--zh-color-text-muted)', cursor: 'pointer', flexShrink: 0 }}>
                         <Pencil size={10} /> {t('admin.editBtn')}
                       </button>
-                      <button onClick={() => handleDeleteScene(sc.id)} style={{ display: 'flex', alignItems: 'center', gap: '3px', padding: '4px 8px', borderRadius: '5px', border: '1px solid rgba(212,0,83,0.2)', background: 'rgba(212,0,83,0.06)', fontSize: '11px', color: '#D40053', cursor: 'pointer', flexShrink: 0 }}>
+                      <button onClick={() => handleDeleteScene(sc.id)} style={{ display: 'flex', alignItems: 'center', gap: '3px', padding: '4px 8px', borderRadius: '5px', border: '1px solid rgba(212,0,83,0.2)', background: 'rgba(212,0,83,0.06)', fontSize: '11px', color: 'var(--zh-rot)', cursor: 'pointer', flexShrink: 0 }}>
                         <Trash2 size={10} /> {t('admin.deleteBtn')}
                       </button>
                     </div>
@@ -767,8 +767,8 @@ export default function AdminDashboard() {
                     <div key={d.id} style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '14px 20px', borderBottom: i < deficits.length - 1 ? '1px solid var(--zh-color-border)' : 'none', justifyContent: 'space-between' }}>
                       <div style={{ display: 'flex', alignItems: 'center', gap: '10px', minWidth: 0, flex: 1 }}>
                         <span style={{ padding: '2px 8px', borderRadius: '4px', fontSize: '10px', fontWeight: 800, background: badge.bg, color: badge.color, letterSpacing: '0.08em', flexShrink: 0 }}>{badge.label}</span>
-                        {d.isPflicht && <span style={{ padding: '2px 7px', borderRadius: '4px', fontSize: '9px', fontWeight: 800, background: 'rgba(212,0,83,0.12)', color: '#D40053', textTransform: 'uppercase', letterSpacing: '0.08em', flexShrink: 0 }}>Pflicht</span>}
-                        {d.isBooster && <span style={{ padding: '2px 7px', borderRadius: '4px', fontSize: '9px', fontWeight: 800, background: 'rgba(184,115,0,0.12)', color: '#B87300', textTransform: 'uppercase', letterSpacing: '0.08em', flexShrink: 0 }}>Booster</span>}
+                        {d.isPflicht && <span style={{ padding: '2px 7px', borderRadius: '4px', fontSize: '9px', fontWeight: 800, background: 'rgba(212,0,83,0.12)', color: 'var(--zh-rot)', textTransform: 'uppercase', letterSpacing: '0.08em', flexShrink: 0 }}>Pflicht</span>}
+                        {d.isBooster && <span style={{ padding: '2px 7px', borderRadius: '4px', fontSize: '9px', fontWeight: 800, background: 'rgba(184,115,0,0.12)', color: 'var(--zh-orange)', textTransform: 'uppercase', letterSpacing: '0.08em', flexShrink: 0 }}>Booster</span>}
                         {d.verortung && <span style={{ padding: '2px 7px', borderRadius: '4px', fontSize: '9px', fontWeight: 800, background: 'rgba(0,118,189,0.1)', color: 'var(--zh-blau)', textTransform: 'uppercase', letterSpacing: '0.08em', flexShrink: 0 }}>{d.verortung.typ}</span>}
                         <div style={{ minWidth: 0 }}>
                           <p style={{ fontSize: '14px', fontWeight: 600, color: 'var(--zh-color-text)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{ml(d.nameI18n, lang)}</p>
@@ -779,7 +779,7 @@ export default function AdminDashboard() {
                         <button onClick={() => openEditDef(d)} style={{ display: 'flex', alignItems: 'center', gap: '4px', padding: '5px 10px', borderRadius: '6px', border: '1px solid var(--zh-color-border)', background: 'var(--zh-color-bg-secondary)', fontSize: '12px', color: 'var(--zh-color-text-muted)', cursor: 'pointer' }}>
                           <Pencil size={11} /> {t('admin.editBtn')}
                         </button>
-                        <button onClick={() => handleDeleteDef(d.id)} style={{ display: 'flex', alignItems: 'center', gap: '4px', padding: '5px 10px', borderRadius: '6px', border: '1px solid rgba(212,0,83,0.2)', background: 'rgba(212,0,83,0.06)', fontSize: '12px', color: '#D40053', cursor: 'pointer' }}>
+                        <button onClick={() => handleDeleteDef(d.id)} style={{ display: 'flex', alignItems: 'center', gap: '4px', padding: '5px 10px', borderRadius: '6px', border: '1px solid rgba(212,0,83,0.2)', background: 'rgba(212,0,83,0.06)', fontSize: '12px', color: 'var(--zh-rot)', cursor: 'pointer' }}>
                           <Trash2 size={11} /> {t('admin.deleteBtn')}
                         </button>
                       </div>
@@ -843,7 +843,7 @@ export default function AdminDashboard() {
                       <button onClick={() => handleDeleteThema(node.topic.id)}
                         aria-label={t('admin.thema_loeschen', 'Themenbereich löschen')}
                         title={t('admin.thema_loeschen', 'Themenbereich löschen')}
-                        style={{ padding: '4px 8px', borderRadius: '6px', border: '1px solid rgba(212,0,83,0.2)', background: 'rgba(212,0,83,0.06)', fontSize: '11px', color: '#D40053', cursor: 'pointer', display: 'flex', alignItems: 'center' }}>
+                        style={{ padding: '4px 8px', borderRadius: '6px', border: '1px solid rgba(212,0,83,0.2)', background: 'rgba(212,0,83,0.06)', fontSize: '11px', color: 'var(--zh-rot)', cursor: 'pointer', display: 'flex', alignItems: 'center' }}>
                         <Trash2 size={12} />
                       </button>
                     </div>
@@ -859,7 +859,7 @@ export default function AdminDashboard() {
                           {t('admin.thema_archivieren')}
                         </button>
                         <button onClick={() => { deleteTopic(child.id); setTopics(getTopics()); setTopicsTree(getTopicsTree()) }}
-                          style={{ padding: '3px 8px', borderRadius: '6px', border: '1px solid rgba(212,0,83,0.2)', background: 'rgba(212,0,83,0.06)', fontSize: '11px', color: '#D40053', cursor: 'pointer' }}>
+                          style={{ padding: '3px 8px', borderRadius: '6px', border: '1px solid rgba(212,0,83,0.2)', background: 'rgba(212,0,83,0.06)', fontSize: '11px', color: 'var(--zh-rot)', cursor: 'pointer' }}>
                           <Trash2 size={11} />
                         </button>
                       </div>
@@ -906,7 +906,7 @@ export default function AdminDashboard() {
                           {(() => {
                             const status = getKursStatus(k)
                             const statusConfig = {
-                              aktiv:     { bg: 'rgba(26,127,31,0.1)',   color: '#1A7F1F',                    label: t('kurs.aktiv') },
+                              aktiv:     { bg: 'rgba(26,127,31,0.1)',   color: 'var(--zh-gruen)',                    label: t('kurs.aktiv') },
                               bald:      { bg: 'rgba(0,118,189,0.1)',   color: 'var(--zh-blau)',             label: t('kurs.bald') },
                               abgelaufen:{ bg: 'var(--zh-color-bg-tertiary)', color: 'var(--zh-color-text-disabled)', label: t('kurs.abgelaufen') },
                               inaktiv:   { bg: 'var(--zh-color-bg-tertiary)', color: 'var(--zh-color-text-disabled)', label: 'Inaktiv' },
@@ -926,7 +926,7 @@ export default function AdminDashboard() {
                             <button onClick={() => handleToggleKurs(k)} style={{ padding: '4px 10px', borderRadius: '6px', border: '1px solid var(--zh-color-border)', background: 'transparent', fontSize: '11px', color: 'var(--zh-color-text-muted)', cursor: 'pointer' }}>
                               {t('admin.kurs_deaktivieren')}
                             </button>
-                            <button onClick={() => handleDeleteKurs(k.id)} style={{ display: 'flex', alignItems: 'center', gap: '4px', padding: '4px 10px', borderRadius: '6px', border: '1px solid rgba(212,0,83,0.2)', background: 'rgba(212,0,83,0.06)', fontSize: '11px', color: '#D40053', cursor: 'pointer' }}>
+                            <button onClick={() => handleDeleteKurs(k.id)} style={{ display: 'flex', alignItems: 'center', gap: '4px', padding: '4px 10px', borderRadius: '6px', border: '1px solid rgba(212,0,83,0.2)', background: 'rgba(212,0,83,0.06)', fontSize: '11px', color: 'var(--zh-rot)', cursor: 'pointer' }}>
                               <Trash2 size={10} /> {t('admin.kurs_löschen')}
                             </button>
                           </div>
@@ -1243,7 +1243,7 @@ export default function AdminDashboard() {
                             style={{ width: '100%', padding: '7px 10px', borderRadius: '6px', border: '1px solid var(--zh-color-border)', background: 'var(--zh-color-bg-secondary)', color: 'var(--zh-color-text)', fontSize: '13px', fontFamily: 'var(--zh-font)', boxSizing: 'border-box' }} />
                         )}
                       </div>
-                      <button onClick={() => removeMerkmal(i)} style={{ padding: '7px 10px', borderRadius: '6px', border: '1px solid rgba(212,0,83,0.2)', background: 'rgba(212,0,83,0.06)', color: '#D40053', cursor: 'pointer', flexShrink: 0 }}>
+                      <button onClick={() => removeMerkmal(i)} style={{ padding: '7px 10px', borderRadius: '6px', border: '1px solid rgba(212,0,83,0.2)', background: 'rgba(212,0,83,0.06)', color: 'var(--zh-rot)', cursor: 'pointer', flexShrink: 0 }}>
                         <Trash2 size={13} />
                       </button>
                     </div>
@@ -1326,7 +1326,7 @@ export default function AdminDashboard() {
                       }}
                       style={{
                         background: 'none', border: 'none', cursor: 'pointer',
-                        color: '#D40053', padding: '2px', flexShrink: 0,
+                        color: 'var(--zh-rot)', padding: '2px', flexShrink: 0,
                       }}
                     >
                       <Trash2 size={14} />
@@ -1581,11 +1581,11 @@ export default function AdminDashboard() {
             <Section label={t('admin.passwort')}>
               {istPasswortHash(editingKurs.passwort) ? (
                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
-                  <span style={{ fontSize: '12px', color: '#1A7F1F', fontWeight: 700 }}>Passwort gesetzt (gehasht)</span>
+                  <span style={{ fontSize: '12px', color: 'var(--zh-gruen)', fontWeight: 700 }}>Passwort gesetzt (gehasht)</span>
                   <button
                     type="button"
                     onClick={() => setEditingKurs(prev => prev ? { ...prev, passwort: null } : prev)}
-                    style={{ background: 'none', border: '1px solid var(--zh-color-border)', borderRadius: '6px', padding: '4px 10px', fontSize: '11px', cursor: 'pointer', color: '#D40053', fontFamily: 'var(--zh-font)' }}
+                    style={{ background: 'none', border: '1px solid var(--zh-color-border)', borderRadius: '6px', padding: '4px 10px', fontSize: '11px', cursor: 'pointer', color: 'var(--zh-rot)', fontFamily: 'var(--zh-font)' }}
                   >
                     Passwort entfernen / neu setzen
                   </button>

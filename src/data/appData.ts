@@ -640,7 +640,7 @@ function writeJSON<T>(key: string, data: T[]): void {
     toast.textContent = `Speichern fehlgeschlagen — localStorage ist voll. Bilder als URL statt Upload verwenden.`
     Object.assign(toast.style, {
       position: 'fixed', bottom: '20px', left: '50%', transform: 'translateX(-50%)',
-      background: '#D40053', color: 'white', padding: '12px 20px', borderRadius: '8px',
+      background: 'var(--zh-rot)', color: 'white', padding: '12px 20px', borderRadius: '8px',
       fontSize: '13px', fontWeight: '700', zIndex: '9999', maxWidth: '90vw', textAlign: 'center',
       boxShadow: '0 4px 20px rgba(0,0,0,0.4)',
     })

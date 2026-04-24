@@ -18,9 +18,9 @@ import type { RSIDimension, NACADimension, ResultDimension } from '../types'
 
 // ── Farbhilfen ──
 function resultColor(v: ResultDimension): string {
-  if (v === 'hoch')   return '#D40053'
-  if (v === 'mittel') return '#B87300'
-  return '#1A7F1F'
+  if (v === 'hoch')   return 'var(--zh-rot)'
+  if (v === 'mittel') return 'var(--zh-orange)'
+  return 'var(--zh-gruen)'
 }
 function resultBg(v: ResultDimension): string {
   if (v === 'hoch')   return 'rgba(212,0,83,0.10)'
@@ -77,7 +77,7 @@ function CompactMatrix({ type, highlightRow, highlightCol, showIntersection, cor
 
   const AXIS_BG     = 'rgba(0,118,189,0.10)'
   const AXIS_BORDER = 'rgba(0,118,189,0.35)'
-  const AXIS_COLOR  = '#0076BD'
+  const AXIS_COLOR  = 'var(--zh-blau)'
 
   return (
     <div style={{ maxWidth: '360px' }}>
@@ -158,7 +158,7 @@ function CompactMatrix({ type, highlightRow, highlightCol, showIntersection, cor
                       fontSize: (isIntersect || showCorrectMarker) ? '11px' : '10px',
                       fontWeight: (isIntersect || showCorrectMarker) ? 800 : 600,
                       background: userCorrect
-                        ? '#1A7F1F'
+                        ? 'var(--zh-gruen)'
                         : userWrong
                           ? 'rgba(212,0,83,0.18)'
                           : showCorrectMarker
@@ -169,16 +169,16 @@ function CompactMatrix({ type, highlightRow, highlightCol, showIntersection, cor
                       color: userCorrect
                         ? 'white'
                         : userWrong
-                          ? '#D40053'
+                          ? 'var(--zh-rot)'
                           : showCorrectMarker
-                            ? '#1A7F1F'
+                            ? 'var(--zh-gruen)'
                             : resultColor(val),
                       border: userCorrect
-                        ? '2px solid #1A7F1F'
+                        ? '2px solid var(--zh-gruen)'
                         : userWrong
-                          ? '2px solid #D40053'
+                          ? '2px solid var(--zh-rot)'
                           : showCorrectMarker
-                            ? '2px solid #1A7F1F'
+                            ? '2px solid var(--zh-gruen)'
                             : isAxisHL
                               ? `1px solid ${resultColor(val)}44`
                               : '1px solid var(--zh-color-border)',
@@ -274,7 +274,7 @@ function StepCard({ nr, title, subtitle, isActive, isCompleted, onChange, change
           width: '24px', height: '24px', borderRadius: '50%',
           display: 'flex', alignItems: 'center', justifyContent: 'center',
           fontSize: '12px', fontWeight: 800,
-          background: isCompleted ? '#1A7F1F' : isActive ? 'var(--zh-dunkelblau)' : 'var(--zh-color-bg-tertiary)',
+          background: isCompleted ? 'var(--zh-gruen)' : isActive ? 'var(--zh-dunkelblau)' : 'var(--zh-color-bg-tertiary)',
           color: (isCompleted || isActive) ? 'white' : 'var(--zh-color-text-disabled)',
           flexShrink: 0,
         }}>
@@ -309,9 +309,9 @@ function StepCard({ nr, title, subtitle, isActive, isCompleted, onChange, change
 
 // ── NACA-Gruppen ──
 const NACA_GRUPPEN: { wert: NACADimension; color: string; titleKey: string; subKey: string }[] = [
-  { wert: 'leicht', color: '#1A7F1F', titleKey: 'scoring.naca_leicht', subKey: 'scoring.naca_leicht_sub' },
-  { wert: 'mittel', color: '#B87300', titleKey: 'scoring.naca_mittel', subKey: 'scoring.naca_mittel_sub' },
-  { wert: 'schwer', color: '#D40053', titleKey: 'scoring.naca_schwer', subKey: 'scoring.naca_schwer_sub' },
+  { wert: 'leicht', color: 'var(--zh-gruen)', titleKey: 'scoring.naca_leicht', subKey: 'scoring.naca_leicht_sub' },
+  { wert: 'mittel', color: 'var(--zh-orange)', titleKey: 'scoring.naca_mittel', subKey: 'scoring.naca_mittel_sub' },
+  { wert: 'schwer', color: 'var(--zh-rot)', titleKey: 'scoring.naca_schwer', subKey: 'scoring.naca_schwer_sub' },
 ]
 
 // ── Props ──
@@ -543,7 +543,7 @@ export default function ScoringFlow({ deficit, scene, kategorieRichtig = true, h
                 {resultLabel(value as ResultDimension, t).toUpperCase()}
               </p>
               {isUser && finalCorrect && (
-                <p style={{ fontSize: '11px', fontWeight: 700, color: '#1A7F1F', marginTop: '2px', margin: 0 }}>
+                <p style={{ fontSize: '11px', fontWeight: 700, color: 'var(--zh-gruen)', marginTop: '2px', margin: 0 }}>
                   {t('scoring.korrekt')} ✓
                 </p>
               )}
@@ -562,11 +562,11 @@ export default function ScoringFlow({ deficit, scene, kategorieRichtig = true, h
               background: d.ok ? 'rgba(26,127,31,0.03)' : 'rgba(212,0,83,0.03)',
             }}>
               <span style={{ fontSize: '11px', fontWeight: 600, color: 'var(--zh-color-text)' }}>{d.label}</span>
-              <span style={{ fontSize: '11px', fontWeight: 700, color: d.ok ? '#1A7F1F' : '#D40053' }}>{d.user}</span>
+              <span style={{ fontSize: '11px', fontWeight: 700, color: d.ok ? 'var(--zh-gruen)' : 'var(--zh-rot)' }}>{d.user}</span>
               <span style={{ fontSize: '10px', color: 'var(--zh-color-text-muted)' }}>{!d.ok && `→ ${d.correct}`}</span>
               {d.ok
-                ? <CheckCircle2 size={13} style={{ color: '#1A7F1F', flexShrink: 0 }} />
-                : <XCircle     size={13} style={{ color: '#D40053', flexShrink: 0 }} />}
+                ? <CheckCircle2 size={13} style={{ color: 'var(--zh-gruen)', flexShrink: 0 }} />
+                : <XCircle     size={13} style={{ color: 'var(--zh-rot)', flexShrink: 0 }} />}
             </div>
           ))}
         </div>
@@ -582,19 +582,19 @@ export default function ScoringFlow({ deficit, scene, kategorieRichtig = true, h
             <span style={{ fontSize: '12px', fontWeight: 700, color: 'var(--zh-color-text)' }}>
               {t('scoring.punkte_erhalten')}
             </span>
-            <span style={{ fontSize: '20px', fontWeight: 900, color: pts === maxPts ? '#1A7F1F' : 'var(--zh-dunkelblau)' }}>
+            <span style={{ fontSize: '20px', fontWeight: 900, color: pts === maxPts ? 'var(--zh-gruen)' : 'var(--zh-dunkelblau)' }}>
               {pts} <span style={{ fontSize: '12px', fontWeight: 500, color: 'var(--zh-color-text-muted)' }}>/ {maxPts} Pkt.</span>
             </span>
           </div>
           {allCorrect && !hintPenalty && kategorieRichtig && (
-            <p style={{ fontSize: '11px', fontWeight: 700, color: '#1A7F1F', marginBottom: '8px' }}>
+            <p style={{ fontSize: '11px', fontWeight: 700, color: 'var(--zh-gruen)', marginBottom: '8px' }}>
               {t('scoring.allCorrect')}
             </p>
           )}
           <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '11px' }}>
               <span style={{ color: 'var(--zh-color-text-muted)' }}>Kategorie</span>
-              <span style={{ fontWeight: 700, color: kategorieRichtig ? '#1A7F1F' : '#D40053' }}>
+              <span style={{ fontWeight: 700, color: kategorieRichtig ? 'var(--zh-gruen)' : 'var(--zh-rot)' }}>
                 {kategorieRichtig ? '+25' : '0'} Pkt.
               </span>
             </div>
@@ -604,7 +604,7 @@ export default function ScoringFlow({ deficit, scene, kategorieRichtig = true, h
               return (
                 <div key={i} style={{ display: 'flex', justifyContent: 'space-between', fontSize: '11px' }}>
                   <span style={{ color: 'var(--zh-color-text-muted)' }}>{d.label}</span>
-                  <span style={{ fontWeight: 700, color: d.ok ? '#1A7F1F' : '#D40053' }}>
+                  <span style={{ fontWeight: 700, color: d.ok ? 'var(--zh-gruen)' : 'var(--zh-rot)' }}>
                     {d.ok ? `+${ptsStep}` : '0'} Pkt.
                   </span>
                 </div>
@@ -612,8 +612,8 @@ export default function ScoringFlow({ deficit, scene, kategorieRichtig = true, h
             })}
             {hintPenalty && (
               <div style={{ marginTop: '6px', paddingTop: '6px', borderTop: '1px solid var(--zh-color-border)', display: 'flex', justifyContent: 'space-between', fontSize: '11px' }}>
-                <span style={{ color: '#B87300' }}>{t('scoring.hinweis_genutzt')}</span>
-                <span style={{ fontWeight: 700, color: '#B87300' }}>−25 Pkt.</span>
+                <span style={{ color: 'var(--zh-orange)' }}>{t('scoring.hinweis_genutzt')}</span>
+                <span style={{ fontWeight: 700, color: 'var(--zh-orange)' }}>−25 Pkt.</span>
               </div>
             )}
           </div>
@@ -628,7 +628,7 @@ export default function ScoringFlow({ deficit, scene, kategorieRichtig = true, h
             </span>
             {relevanzSD !== ca.relevanzSD && (
               <span style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-                <span style={{ width: '10px', height: '10px', borderRadius: '3px', background: '#1A7F1F', border: '1px dashed #1A7F1F', display: 'inline-block' }} />
+                <span style={{ width: '10px', height: '10px', borderRadius: '3px', background: 'var(--zh-gruen)', border: '1px dashed var(--zh-gruen)', display: 'inline-block' }} />
                 Korrekt
               </span>
             )}
@@ -650,7 +650,7 @@ export default function ScoringFlow({ deficit, scene, kategorieRichtig = true, h
             </span>
             {unfallrisiko !== ca.unfallrisiko && (
               <span style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-                <span style={{ width: '10px', height: '10px', borderRadius: '3px', background: '#1A7F1F', border: '1px dashed #1A7F1F', display: 'inline-block' }} />
+                <span style={{ width: '10px', height: '10px', borderRadius: '3px', background: 'var(--zh-gruen)', border: '1px dashed var(--zh-gruen)', display: 'inline-block' }} />
                 Korrekt
               </span>
             )}
@@ -777,9 +777,9 @@ export default function ScoringFlow({ deficit, scene, kategorieRichtig = true, h
                         style={{
                           padding: '8px 14px',
                           borderRadius: 'var(--zh-radius-btn)',
-                          border: isActive ? '2px solid #1A7F1F' : '1.5px solid var(--zh-color-border)',
+                          border: isActive ? '2px solid var(--zh-gruen)' : '1.5px solid var(--zh-color-border)',
                           background: isActive ? 'rgba(26,127,31,0.08)' : 'var(--zh-color-surface)',
-                          color: isActive ? '#1A7F1F' : 'var(--zh-color-text)',
+                          color: isActive ? 'var(--zh-gruen)' : 'var(--zh-color-text)',
                           fontWeight: isActive ? 700 : 500, fontSize: '13px',
                           cursor: wichtigkeit ? 'default' : 'pointer',
                           transition: 'all 0.15s',
@@ -790,7 +790,7 @@ export default function ScoringFlow({ deficit, scene, kategorieRichtig = true, h
                       >
                         <span style={{ flexShrink: 0 }}>
                           {isActive
-                            ? <CheckCircle2 size={14} style={{ color: '#1A7F1F' }} />
+                            ? <CheckCircle2 size={14} style={{ color: 'var(--zh-gruen)' }} />
                             : <div style={{ width: '14px', height: '14px', borderRadius: '50%', border: '1.5px solid var(--zh-color-border)' }} />}
                         </span>
                         {dimLabel(w, t)}
@@ -819,7 +819,7 @@ export default function ScoringFlow({ deficit, scene, kategorieRichtig = true, h
                       onClick={() => { if (!abweichung) setAbweichung(k.wert) }}
                       style={{
                         padding: '8px 12px', borderRadius: 'var(--zh-radius-btn)',
-                        border: isActive ? '2px solid #1A7F1F' : '1.5px solid var(--zh-color-border)',
+                        border: isActive ? '2px solid var(--zh-gruen)' : '1.5px solid var(--zh-color-border)',
                         background: isActive ? 'rgba(26,127,31,0.08)' : 'var(--zh-color-surface)',
                         textAlign: 'left',
                         cursor: abweichung ? 'default' : 'pointer',
@@ -829,11 +829,11 @@ export default function ScoringFlow({ deficit, scene, kategorieRichtig = true, h
                     >
                       <span style={{ flexShrink: 0 }}>
                         {isActive
-                          ? <CheckCircle2 size={14} style={{ color: '#1A7F1F' }} />
+                          ? <CheckCircle2 size={14} style={{ color: 'var(--zh-gruen)' }} />
                           : <div style={{ width: '14px', height: '14px', borderRadius: '50%', border: '1.5px solid var(--zh-color-border)' }} />}
                       </span>
                       <span>
-                        <span style={{ fontSize: '13px', fontWeight: isActive ? 700 : 500, color: isActive ? '#1A7F1F' : 'var(--zh-color-text)', display: 'block' }}>
+                        <span style={{ fontSize: '13px', fontWeight: isActive ? 700 : 500, color: isActive ? 'var(--zh-gruen)' : 'var(--zh-color-text)', display: 'block' }}>
                           {k.label}
                         </span>
                         <span style={{ fontSize: '11px', color: 'var(--zh-color-text-muted)', display: 'block' }}>
@@ -880,8 +880,8 @@ export default function ScoringFlow({ deficit, scene, kategorieRichtig = true, h
               <div>
                 {/* bfu-Badge */}
                 <div style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', padding: '2px 8px', borderRadius: '4px', background: 'rgba(184,115,0,0.08)', border: '1px solid rgba(184,115,0,0.3)', marginBottom: '10px' }}>
-                  <AlertTriangle size={11} style={{ color: '#B87300' }} />
-                  <span style={{ fontSize: '10px', fontWeight: 700, color: '#B87300' }}>{t('scoring.bfu_badge')}</span>
+                  <AlertTriangle size={11} style={{ color: 'var(--zh-orange)' }} />
+                  <span style={{ fontSize: '10px', fontWeight: 700, color: 'var(--zh-orange)' }}>{t('scoring.bfu_badge')}</span>
                 </div>
 
                 {/* Leitfrage */}

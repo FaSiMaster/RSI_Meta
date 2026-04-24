@@ -66,7 +66,7 @@ export default function SzenenAbschluss({
             display: 'flex', alignItems: 'center', justifyContent: 'center',
             margin: '0 auto 12px',
           }}>
-            <Trophy size={24} style={{ color: allFound ? '#1A7F1F' : 'var(--zh-blau)' }} />
+            <Trophy size={24} style={{ color: allFound ? 'var(--zh-gruen)' : 'var(--zh-blau)' }} />
           </div>
           <h1 style={{ fontSize: '24px', fontWeight: 800, color: 'var(--zh-color-text)', marginBottom: '4px' }}>
             {t('completion.titel')}
@@ -79,13 +79,13 @@ export default function SzenenAbschluss({
           <div style={{ display: 'flex', justifyContent: 'center', marginTop: '12px', gap: '4px' }}>
             <SterneAnzeige sterne={sterne} size={28} />
           </div>
-          <p style={{ fontSize: '13px', fontWeight: 700, color: sterne === 3 ? '#1A7F1F' : sterne === 2 ? '#B87300' : 'var(--zh-color-text-muted)', marginTop: '6px' }}>
+          <p style={{ fontSize: '13px', fontWeight: 700, color: sterne === 3 ? 'var(--zh-gruen)' : sterne === 2 ? 'var(--zh-orange)' : 'var(--zh-color-text-muted)', marginTop: '6px' }}>
             {prozent}% korrekt
           </p>
           {istNeuerBestwert && versuche > 1 && (
             <div style={{ display: 'inline-flex', alignItems: 'center', gap: '5px', marginTop: '8px', padding: '4px 12px', borderRadius: '12px', background: 'rgba(26,127,31,0.1)', border: '1px solid rgba(26,127,31,0.3)' }}>
-              <TrendingUp size={13} style={{ color: '#1A7F1F' }} />
-              <span style={{ fontSize: '12px', fontWeight: 700, color: '#1A7F1F' }}>{t('completion.neuer_bestwert')}</span>
+              <TrendingUp size={13} style={{ color: 'var(--zh-gruen)' }} />
+              <span style={{ fontSize: '12px', fontWeight: 700, color: 'var(--zh-gruen)' }}>{t('completion.neuer_bestwert')}</span>
             </div>
           )}
         </div>
@@ -97,7 +97,7 @@ export default function SzenenAbschluss({
         }}>
           {[
             { label: 'Punkte', value: sceneScore.toLocaleString('de-CH'), color: 'var(--zh-blau)' },
-            { label: 'Gefunden', value: `${foundCount}/${deficits.length}`, color: allFound ? '#1A7F1F' : 'var(--zh-color-text)' },
+            { label: 'Gefunden', value: `${foundCount}/${deficits.length}`, color: allFound ? 'var(--zh-gruen)' : 'var(--zh-color-text)' },
             { label: 'Versuch', value: `#${versuche}`, color: 'var(--zh-color-text)' },
             { label: 'Dauer', value: formatDauer(dauerSek), color: 'var(--zh-color-text-muted)' },
           ].map(card => (
@@ -121,7 +121,7 @@ export default function SzenenAbschluss({
           }}>
             <div style={{ padding: '10px 12px', borderRadius: '8px', background: 'var(--zh-color-bg-secondary)', border: '1px solid var(--zh-color-border)', textAlign: 'center' }}>
               <p style={{ fontSize: '9px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.1em', color: 'var(--zh-color-text-disabled)', marginBottom: '4px' }}>Bester Versuch</p>
-              <p style={{ fontSize: '16px', fontWeight: 800, color: '#1A7F1F' }}>{best.prozent}%</p>
+              <p style={{ fontSize: '16px', fontWeight: 800, color: 'var(--zh-gruen)' }}>{best.prozent}%</p>
             </div>
             <div style={{ padding: '10px 12px', borderRadius: '8px', background: 'var(--zh-color-bg-secondary)', border: '1px solid var(--zh-color-border)', textAlign: 'center' }}>
               <p style={{ fontSize: '9px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.1em', color: 'var(--zh-color-text-disabled)', marginBottom: '4px' }}>Versuche total</p>
@@ -185,8 +185,8 @@ export default function SzenenAbschluss({
                 }}
               >
                 {found
-                  ? <CheckCircle2 size={14} style={{ color: '#1A7F1F' }} />
-                  : <XCircle     size={14} style={{ color: '#D40053' }} />}
+                  ? <CheckCircle2 size={14} style={{ color: 'var(--zh-gruen)' }} />
+                  : <XCircle     size={14} style={{ color: 'var(--zh-rot)' }} />}
 
                 <div>
                   <p style={{ fontSize: '12px', fontWeight: 600, color: 'var(--zh-color-text)', marginBottom: '2px' }}>
@@ -194,12 +194,12 @@ export default function SzenenAbschluss({
                   </p>
                   <div style={{ display: 'flex', gap: '4px', flexWrap: 'wrap' }}>
                     {d.isPflicht && (
-                      <span style={{ fontSize: '8px', fontWeight: 800, padding: '1px 4px', borderRadius: '3px', background: 'rgba(212,0,83,0.1)', color: '#D40053', textTransform: 'uppercase' }}>
+                      <span style={{ fontSize: '8px', fontWeight: 800, padding: '1px 4px', borderRadius: '3px', background: 'rgba(212,0,83,0.1)', color: 'var(--zh-rot)', textTransform: 'uppercase' }}>
                         Pflicht
                       </span>
                     )}
                     {found && !found.kategorieRichtig && (
-                      <span style={{ fontSize: '8px', fontWeight: 700, padding: '1px 4px', borderRadius: '3px', background: 'rgba(184,115,0,0.1)', color: '#B87300' }}>
+                      <span style={{ fontSize: '8px', fontWeight: 700, padding: '1px 4px', borderRadius: '3px', background: 'rgba(184,115,0,0.1)', color: 'var(--zh-orange)' }}>
                         Kat. -10%
                       </span>
                     )}
@@ -209,13 +209,13 @@ export default function SzenenAbschluss({
                       </span>
                     )}
                     {defResult && !defResult.wichtigkeitKorrekt && (
-                      <span style={{ fontSize: '8px', fontWeight: 700, padding: '1px 4px', borderRadius: '3px', background: 'rgba(212,0,83,0.06)', color: '#D40053' }}>W</span>
+                      <span style={{ fontSize: '8px', fontWeight: 700, padding: '1px 4px', borderRadius: '3px', background: 'rgba(212,0,83,0.06)', color: 'var(--zh-rot)' }}>W</span>
                     )}
                     {defResult && !defResult.abweichungKorrekt && (
-                      <span style={{ fontSize: '8px', fontWeight: 700, padding: '1px 4px', borderRadius: '3px', background: 'rgba(212,0,83,0.06)', color: '#D40053' }}>A</span>
+                      <span style={{ fontSize: '8px', fontWeight: 700, padding: '1px 4px', borderRadius: '3px', background: 'rgba(212,0,83,0.06)', color: 'var(--zh-rot)' }}>A</span>
                     )}
                     {defResult && !defResult.nacaKorrekt && (
-                      <span style={{ fontSize: '8px', fontWeight: 700, padding: '1px 4px', borderRadius: '3px', background: 'rgba(212,0,83,0.06)', color: '#D40053' }}>N</span>
+                      <span style={{ fontSize: '8px', fontWeight: 700, padding: '1px 4px', borderRadius: '3px', background: 'rgba(212,0,83,0.06)', color: 'var(--zh-rot)' }}>N</span>
                     )}
                   </div>
                 </div>
@@ -231,7 +231,7 @@ export default function SzenenAbschluss({
                 <span style={{
                   fontSize: '10px', fontWeight: 700, padding: '2px 8px', borderRadius: '4px', textAlign: 'center',
                   background: found ? 'rgba(26,127,31,0.1)' : 'rgba(212,0,83,0.08)',
-                  color: found ? '#1A7F1F' : '#D40053',
+                  color: found ? 'var(--zh-gruen)' : 'var(--zh-rot)',
                 }}>
                   {found ? 'Gefunden' : 'Verpasst'}
                 </span>

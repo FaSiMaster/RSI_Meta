@@ -28,7 +28,7 @@ export default function TrainingEinstieg({ scene, topic, onStart, onBack }: Prop
   const lang = i18n.language
 
   const kontextLabel = scene.kontext === 'io' ? t('einstieg.kontext_io') : t('einstieg.kontext_ao')
-  const kontextColor = scene.kontext === 'io' ? '#0076BD' : '#1A7F1F'
+  const kontextColor = scene.kontext === 'io' ? 'var(--zh-blau)' : 'var(--zh-gruen)'
   const kontextBg    = scene.kontext === 'io' ? 'rgba(0,118,189,0.1)' : 'rgba(26,127,31,0.1)'
 
   // Vorschaubilder: neue Felder zuerst, Fallback auf Legacy-Array

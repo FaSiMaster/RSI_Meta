@@ -222,7 +222,7 @@ export default function BildUpload({
   if (phase === 'fehler') {
     return (
       <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-        <div role="alert" aria-live="polite" style={{ padding: '14px 16px', background: 'rgba(212,0,83,0.07)', border: '1px solid rgba(212,0,83,0.25)', borderRadius: '8px', color: '#D40053', fontSize: '13px' }}>
+        <div role="alert" aria-live="polite" style={{ padding: '14px 16px', background: 'rgba(212,0,83,0.07)', border: '1px solid rgba(212,0,83,0.25)', borderRadius: '8px', color: 'var(--zh-rot)', fontSize: '13px' }}>
           {fehlerText}
         </div>
         <button onClick={() => { setPhase('auswahl'); setFehlerText(null) }} style={btnSekundaerStyle}>
@@ -246,11 +246,11 @@ export default function BildUpload({
 
         {vorschauPath && (
           <div style={{ display: 'flex', flexDirection: 'column', gap: '2px', fontFamily: 'monospace' }}>
-            <span style={{ fontSize: '12px', color: istStorage ? '#1A7F1F' : '#B87300' }}>
+            <span style={{ fontSize: '12px', color: istStorage ? 'var(--zh-gruen)' : 'var(--zh-orange)' }}>
               {istStorage ? 'Supabase' : 'Extern'}: {vorschauPath}
             </span>
             {vorschauSzene && vorschauSzene !== szeneId && (
-              <span style={{ fontSize: '11px', color: '#B87300' }}>
+              <span style={{ fontSize: '11px', color: 'var(--zh-orange)' }}>
                 Hinweis: Bild gehoert zu Szene «{vorschauSzene}», nicht zur aktuellen ({szeneId}).
               </span>
             )}
@@ -258,13 +258,13 @@ export default function BildUpload({
         )}
 
         {!istStorage && vorschauUrl && (
-          <div style={{ padding: '10px 14px', background: 'rgba(184,115,0,0.08)', border: '1px solid rgba(184,115,0,0.3)', borderRadius: '6px', fontSize: '12px', color: '#B87300', lineHeight: 1.5 }}>
+          <div style={{ padding: '10px 14px', background: 'rgba(184,115,0,0.08)', border: '1px solid rgba(184,115,0,0.3)', borderRadius: '6px', fontSize: '12px', color: 'var(--zh-orange)', lineHeight: 1.5 }}>
             Hinweis: Diese URL liegt nicht im Supabase-Bucket. Empfehlung: ueber «Hochladen» in die Bibliothek bringen, damit alle Bilder zentral verwaltet sind.
           </div>
         )}
 
         {zeigeVerhältnisWarnung && (
-          <div style={{ padding: '10px 14px', background: 'rgba(184,115,0,0.08)', border: '1px solid rgba(184,115,0,0.3)', borderRadius: '6px', fontSize: '12px', color: '#B87300', lineHeight: 1.5 }}>
+          <div style={{ padding: '10px 14px', background: 'rgba(184,115,0,0.08)', border: '1px solid rgba(184,115,0,0.3)', borderRadius: '6px', fontSize: '12px', color: 'var(--zh-orange)', lineHeight: 1.5 }}>
             Hinweis: Panorama-Bilder haben ueblicherweise das Seitenverhaeltnis 2:1. Dieses Bild weicht davon ab.
           </div>
         )}
@@ -393,7 +393,7 @@ export default function BildUpload({
                                   onClick={e => { e.stopPropagation(); handleBibliothekDelete(img) }}
                                   title="Aus Bucket loeschen"
                                   aria-label={`Bild ${img.fileName} loeschen`}
-                                  style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#D40053', padding: '2px', display: 'flex', alignItems: 'center' }}
+                                  style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--zh-rot)', padding: '2px', display: 'flex', alignItems: 'center' }}
                                 >
                                   <Trash2 size={11} />
                                 </button>
@@ -458,11 +458,11 @@ export default function BildUpload({
             onDragOver={e => { e.preventDefault(); setIsDragOver(true) }}
             onDragLeave={() => setIsDragOver(false)}
             onDrop={e => { e.preventDefault(); setIsDragOver(false); const d = e.dataTransfer.files[0]; if (d) handleDatei(d) }}
-            style={{ height: '160px', border: `2px dashed ${isDragOver ? '#0076BD' : 'var(--zh-color-border)'}`, borderRadius: '8px', background: isDragOver ? 'rgba(0,118,189,0.06)' : 'var(--zh-color-bg-secondary)', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '8px', cursor: 'pointer', transition: 'border-color 0.15s, background 0.15s' }}
+            style={{ height: '160px', border: `2px dashed ${isDragOver ? 'var(--zh-blau)' : 'var(--zh-color-border)'}`, borderRadius: '8px', background: isDragOver ? 'rgba(0,118,189,0.06)' : 'var(--zh-color-bg-secondary)', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '8px', cursor: 'pointer', transition: 'border-color 0.15s, background 0.15s' }}
             onClick={() => fileInputRef.current?.click()}
           >
-            <Upload size={28} color={isDragOver ? '#0076BD' : 'var(--zh-color-text-disabled)'} />
-            <span style={{ fontSize: '13px', fontWeight: 600, color: isDragOver ? '#0076BD' : 'var(--zh-color-text-muted)' }}>
+            <Upload size={28} color={isDragOver ? 'var(--zh-blau)' : 'var(--zh-color-text-disabled)'} />
+            <span style={{ fontSize: '13px', fontWeight: 600, color: isDragOver ? 'var(--zh-blau)' : 'var(--zh-color-text-muted)' }}>
               Datei hierher ziehen oder klicken
             </span>
             <span style={{ fontSize: '11px', color: 'var(--zh-color-text-disabled)' }}>

@@ -74,7 +74,7 @@ function szeneResults(results: SupabaseResult[], sceneId: string): SceneResult[]
 // ── Rang-Anzeige ──────────────────────────────────────────────────────────
 
 function RangCell({ idx }: { idx: number }) {
-  if (idx === 0) return <span style={{ fontWeight: 800, color: '#B87300' }}>1.</span>
+  if (idx === 0) return <span style={{ fontWeight: 800, color: 'var(--zh-orange)' }}>1.</span>
   if (idx === 1) return <span style={{ fontWeight: 800, color: '#6B7280' }}>2.</span>
   if (idx === 2) return <span style={{ fontWeight: 800, color: '#7C4A00' }}>3.</span>
   return <span>#{idx + 1}</span>
@@ -272,7 +272,7 @@ export default function RankingView({ username, onBack }: Props) {
                   </td>
                   <td style={{ padding: '12px 16px', fontSize: '15px', fontWeight: 800, color: 'var(--zh-blau)', textAlign: 'right' }}>{entry.score.toLocaleString('de-CH')}</td>
                   <td style={{ padding: '12px 16px', fontSize: '13px', color: 'var(--zh-color-text-muted)', textAlign: 'right' }}>{entry.szenen}</td>
-                  <td style={{ padding: '12px 16px', fontSize: '13px', fontWeight: 700, color: entry.besteProzent >= 90 ? '#1A7F1F' : entry.besteProzent >= 60 ? '#B87300' : 'var(--zh-color-text-muted)', textAlign: 'right' }}>{entry.besteProzent}%</td>
+                  <td style={{ padding: '12px 16px', fontSize: '13px', fontWeight: 700, color: entry.besteProzent >= 90 ? 'var(--zh-gruen)' : entry.besteProzent >= 60 ? 'var(--zh-orange)' : 'var(--zh-color-text-muted)', textAlign: 'right' }}>{entry.besteProzent}%</td>
                 </tr>
               )
             })}
@@ -293,8 +293,8 @@ export default function RankingView({ username, onBack }: Props) {
           <Trophy style={{ color: 'var(--zh-orange)' }} size={24} />
           {t('ranking.title')}
           {useSupabase && (
-            <span style={{ fontSize: '10px', fontWeight: 700, color: '#1A7F1F', display: 'flex', alignItems: 'center', gap: '4px' }}>
-              <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#1A7F1F' }} />
+            <span style={{ fontSize: '10px', fontWeight: 700, color: 'var(--zh-gruen)', display: 'flex', alignItems: 'center', gap: '4px' }}>
+              <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: 'var(--zh-gruen)' }} />
               {t('status.live')}
             </span>
           )}
@@ -407,7 +407,7 @@ export default function RankingView({ username, onBack }: Props) {
                         <td style={{ padding: '10px 12px', textAlign: 'right' }}><RangCell idx={idx} /></td>
                         <td style={{ padding: '10px 12px', fontWeight: isOwn ? 700 : 500, color: isOwn ? 'var(--zh-blau)' : 'var(--zh-color-text)', textAlign: 'left', fontSize: '13px' }}>{r.username}</td>
                         <td style={{ padding: '10px 12px', fontWeight: 800, color: 'var(--zh-blau)', textAlign: 'right', fontSize: '14px' }}>{r.punkte.toLocaleString('de-CH')}</td>
-                        <td style={{ padding: '10px 12px', fontWeight: 700, color: r.prozent >= 90 ? '#1A7F1F' : r.prozent >= 60 ? '#B87300' : 'var(--zh-color-text-muted)', textAlign: 'right' }}>{r.prozent}%</td>
+                        <td style={{ padding: '10px 12px', fontWeight: 700, color: r.prozent >= 90 ? 'var(--zh-gruen)' : r.prozent >= 60 ? 'var(--zh-orange)' : 'var(--zh-color-text-muted)', textAlign: 'right' }}>{r.prozent}%</td>
                         <td style={{ padding: '10px 12px', color: 'var(--zh-color-text-muted)', textAlign: 'right', fontSize: '12px' }}>
                           <Clock size={11} style={{ display: 'inline', verticalAlign: '-1px', marginRight: '3px' }} />
                           {formatDauer(r.dauerSekunden)}
