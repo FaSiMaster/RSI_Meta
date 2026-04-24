@@ -166,6 +166,12 @@ export async function initSupabaseData(): Promise<void> {
     setSupabaseStatus('live')
     initialized = true
     console.info(`[RSI] Supabase geladen: ${topicsCache.length} Topics, ${scenesCache.length} Scenes, ${deficitsCache.length} Deficits, ${(kurseCache ?? []).length} Kurse`)
+    // Consumer (RankingView, LandingPage-Kurs-Dropdown) koennen auf das Event
+    // reagieren um ihre Listen neu aus localStorage zu lesen. Ohne das bleibt
+    // eine Liste stale, wenn die Komponente vor dem Supabase-Load gemountet hat.
+    if (typeof window !== 'undefined') {
+      window.dispatchEvent(new CustomEvent('rsi-data-loaded'))
+    }
   } catch (err) {
     console.warn('[RSI] Supabase-Init fehlgeschlagen, localStorage-Fallback:', err)
     setSupabaseStatus('offline')

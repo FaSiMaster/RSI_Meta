@@ -114,12 +114,20 @@ export default function RankingView({ username, onBack }: Props) {
   const [themaLocal, setThemaLocal] = useState<{ username: string; score: number; szenen: number; besteProzent: number }[]>([])
   const [szeneLocal, setSzeneLocal] = useState<SceneResult[]>([])
 
-  // Stammdaten + lokale Ranking-Daten bei jedem Mount laden
+  // Stammdaten + lokale Ranking-Daten bei jedem Mount laden. Zusaetzlich
+  // bei jedem 'rsi-data-loaded'-Event (Supabase-Load wurde asynchron fertig)
+  // neu laden, sonst bleiben Dropdowns leer wenn die Komponente vor dem
+  // Supabase-Fetch gemountet hat.
   useEffect(() => {
-    setTopics(getTopics().filter(tp => tp.isActive))
-    setScenes(getAllScenes().filter(s => s.isActive))
-    setKurse(getKurse().filter(k => k.isActive))
-    setGesamtLocal(getGesamtRanking())
+    function reload() {
+      setTopics(getTopics().filter(tp => tp.isActive))
+      setScenes(getAllScenes().filter(s => s.isActive))
+      setKurse(getKurse().filter(k => k.isActive))
+      setGesamtLocal(getGesamtRanking())
+    }
+    reload()
+    window.addEventListener('rsi-data-loaded', reload)
+    return () => window.removeEventListener('rsi-data-loaded', reload)
   }, [])
 
   // Lokale Daten nochmal nach 1s auffrischen (faengt gerade gespeicherte Resultate ab)

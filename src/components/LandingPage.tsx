@@ -40,7 +40,15 @@ export default function LandingPage({ theme, onToggleTheme, onStart, onAdmin }: 
   const [adminPinFehler, setAdminPinFehler] = useState(false)
   const [adminPruefung, setAdminPruefung] = useState(false)
 
-  // Kurse
+  // Kurse — Trigger-State forciert Rerender nach 'rsi-data-loaded' (Supabase-
+  // Load asynchron nach Mount). Ohne das bleibt die Liste leer wenn die App
+  // noch nicht die Kurse aus Supabase gezogen hat beim ersten Render.
+  const [, setDataVersion] = useState(0)
+  useEffect(() => {
+    function bump() { setDataVersion(v => v + 1) }
+    window.addEventListener('rsi-data-loaded', bump)
+    return () => window.removeEventListener('rsi-data-loaded', bump)
+  }, [])
   const kurse: Kurs[] = getKurseZeitlichAktiv()
   const selectedKurs = kurse.find(k => k.id === selectedKursId) ?? null
   const kursHatPasswort = selectedKurs?.passwort != null && selectedKurs.passwort.trim().length > 0
