@@ -1597,6 +1597,16 @@ export default function AdminDashboard() {
                     value={editingKurs.passwort ?? ''}
                     onChange={e => setEditingKurs(prev => prev ? { ...prev, passwort: e.target.value || null } : prev)}
                     placeholder={t('admin.passwort_hinweis')}
+                    // Autofill deaktivieren: verhindert dass der Browser-
+                    // Passwort-Manager das Admin-PIN hier einfuellt (unsichtbar
+                    // durch type=password) und dass das native Autofill-
+                    // Dropdown den Modal-Backdrop-Klick ausloest.
+                    name="rsi-kurs-passwort"
+                    autoComplete="new-password"
+                    autoCorrect="off"
+                    spellCheck={false}
+                    data-lpignore="true"
+                    data-1p-ignore="true"
                     style={{ width: '100%', padding: '8px 40px 8px 12px', borderRadius: '6px', border: '1px solid var(--zh-color-border)', background: 'var(--zh-color-bg-secondary)', color: 'var(--zh-color-text)', fontSize: '13px', fontFamily: 'var(--zh-font)', boxSizing: 'border-box' }}
                   />
                   <button
