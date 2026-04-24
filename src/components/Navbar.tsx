@@ -155,12 +155,16 @@ export default function Navbar({ view, username, score, theme, kursName, onNavig
           {isDark ? <Sun size={16} aria-hidden="true" /> : <Moon size={16} aria-hidden="true" />}
         </button>
 
-        {/* Avatar mit Popover */}
-        {username && (
+        {/* Avatar mit Popover — auch im reinen Admin-Modus sichtbar,
+            damit Admin-Rolle-ablegen zugaenglich bleibt wenn kein User-
+            Login vorausging. */}
+        {(username || isAdminAuth) && (
           <div ref={popoverRef} style={{ position: 'relative' }}>
             <button
               onClick={() => setShowPopover(v => !v)}
-              aria-label={t('popover.ariaLabel', { name: username, defaultValue: `Menü für ${username}` })}
+              aria-label={username
+                ? t('popover.ariaLabel', { name: username, defaultValue: `Menü für ${username}` })
+                : t('popover.adminAriaLabel', 'Admin-Menü')}
               aria-expanded={showPopover}
               aria-haspopup="menu"
               style={{
@@ -172,7 +176,7 @@ export default function Navbar({ view, username, score, theme, kursName, onNavig
                 cursor: 'pointer', transition: 'border-color 0.15s', flexShrink: 0,
               }}
             >
-              {username.charAt(0).toUpperCase()}
+              {username ? username.charAt(0).toUpperCase() : <ShieldCheck size={18} aria-hidden="true" />}
             </button>
 
             {/* Popover */}
@@ -198,11 +202,11 @@ export default function Navbar({ view, username, score, theme, kursName, onNavig
                     fontSize: '16px', fontWeight: 800, flexShrink: 0,
                     display: 'flex', alignItems: 'center', justifyContent: 'center',
                   }}>
-                    {username.charAt(0).toUpperCase()}
+                    {username ? username.charAt(0).toUpperCase() : <ShieldCheck size={18} aria-hidden="true" />}
                   </div>
                   <div style={{ minWidth: 0 }}>
                     <div style={{ fontSize: '14px', fontWeight: 700, color: 'var(--zh-color-text)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                      {username}
+                      {username || t('popover.adminLabel', 'Admin-Modus')}
                     </div>
                     {kursName && (
                       <div style={{ fontSize: '11px', color: 'var(--zh-color-text-muted)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
@@ -212,23 +216,25 @@ export default function Navbar({ view, username, score, theme, kursName, onNavig
                   </div>
                 </div>
 
-                {/* Score */}
-                <div style={{
-                  display: 'flex', alignItems: 'center', gap: '8px',
-                  padding: '10px 12px', borderRadius: '8px',
-                  background: 'var(--zh-color-bg-secondary)',
-                  marginBottom: '12px',
-                }}>
-                  <Trophy size={14} style={{ color: 'var(--zh-color-accent)', flexShrink: 0 }} />
-                  <div>
-                    <div style={{ fontSize: '16px', fontWeight: 700, color: 'var(--zh-color-text)' }}>
-                      {score.toLocaleString('de-CH')} {t('score.points')}
-                    </div>
-                    <div style={{ fontSize: '10px', color: 'var(--zh-color-text-disabled)' }}>
-                      {t('completion.gesamtscore')}
+                {/* Score — nur bei eingeloggtem User, im Admin-Modus ohne User verbirgt */}
+                {username && (
+                  <div style={{
+                    display: 'flex', alignItems: 'center', gap: '8px',
+                    padding: '10px 12px', borderRadius: '8px',
+                    background: 'var(--zh-color-bg-secondary)',
+                    marginBottom: '12px',
+                  }}>
+                    <Trophy size={14} style={{ color: 'var(--zh-color-accent)', flexShrink: 0 }} />
+                    <div>
+                      <div style={{ fontSize: '16px', fontWeight: 700, color: 'var(--zh-color-text)' }}>
+                        {score.toLocaleString('de-CH')} {t('score.points')}
+                      </div>
+                      <div style={{ fontSize: '10px', color: 'var(--zh-color-text-disabled)' }}>
+                        {t('completion.gesamtscore')}
+                      </div>
                     </div>
                   </div>
-                </div>
+                )}
 
                 {/* Trennlinie */}
                 <div style={{ height: '1px', background: 'var(--zh-color-border)', margin: '4px 0' }} />

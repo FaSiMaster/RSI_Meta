@@ -431,7 +431,9 @@
   "popover": {
     "logout": "Abmelden",
     "feedback": "Feedback senden",
-    "admin_logout": "Admin-Rolle ablegen"
+    "admin_logout": "Admin-Rolle ablegen",
+    "adminLabel": "Admin-Modus",
+    "adminAriaLabel": "Admin-Menü"
   },
   "guide": {
     "title": "So funktioniert das Training",

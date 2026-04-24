@@ -431,7 +431,9 @@
   "popover": {
     "logout": "Disconnettersi",
     "feedback": "Invia feedback",
-    "admin_logout": "Abbandona ruolo admin"
+    "admin_logout": "Abbandona ruolo admin",
+    "adminLabel": "Modalità admin",
+    "adminAriaLabel": "Menu admin"
   },
   "guide": {
     "title": "Come funziona la formazione",

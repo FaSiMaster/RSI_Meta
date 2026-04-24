@@ -431,7 +431,9 @@
   "popover": {
     "logout": "Sign out",
     "feedback": "Send feedback",
-    "admin_logout": "Leave admin role"
+    "admin_logout": "Leave admin role",
+    "adminLabel": "Admin mode",
+    "adminAriaLabel": "Admin menu"
   },
   "guide": {
     "title": "How the training works",
