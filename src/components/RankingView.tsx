@@ -42,7 +42,10 @@ function aggregateGesamt(results: SupabaseResult[]): { username: string; score: 
 }
 
 function aggregateByKurs(results: SupabaseResult[], kursCode: string): { username: string; score: number; szenen: number; besteProzent: number }[] {
-  return aggregateGesamt(results.filter(r => r.kurs_code === kursCode))
+  // Case-insensitiver Match + trim, weil Zugangscode auch manuell eingegeben
+  // wird (Copy-Paste, Tippfehler bei Gross-/Kleinschreibung).
+  const norm = kursCode.trim().toLowerCase()
+  return aggregateGesamt(results.filter(r => (r.kurs_code ?? '').trim().toLowerCase() === norm))
 }
 
 function aggregateBySceneIds(results: SupabaseResult[], sceneIds: Set<string>): { username: string; score: number; szenen: number; besteProzent: number }[] {
@@ -192,7 +195,9 @@ export default function RankingView({ username, onBack }: Props) {
     if (tab === 'kurs') {
       if (selectedKursId) setKursLocal(getKursRanking(selectedKursId))
       else if (kursCodeInput.trim()) {
-        const found = kurse.find(k => k.zugangscode === kursCodeInput.trim())
+        // Case-insensitiv match — Zugangscode kann manuell getippt werden
+        const needle = kursCodeInput.trim().toLowerCase()
+        const found = kurse.find(k => k.zugangscode.trim().toLowerCase() === needle)
         if (found) setKursLocal(getKursRanking(found.id))
         else setKursLocal([])
       } else setKursLocal([])
@@ -355,7 +360,10 @@ export default function RankingView({ username, onBack }: Props) {
                 type="text"
                 value={kursCodeInput}
                 onChange={e => { setKursCodeInput(e.target.value); setSelectedKursId('') }}
-                placeholder="FaSi4safety"
+                placeholder="z.B. FK-RSI-123456"
+                autoCapitalize="off"
+                autoCorrect="off"
+                spellCheck={false}
                 style={{ ...selectStyle, boxSizing: 'border-box' as const }}
               />
             </div>
