@@ -51,7 +51,10 @@ export default function LandingPage({ theme, onToggleTheme, onStart, onAdmin }: 
   }, [])
   const kurse: Kurs[] = getKurseZeitlichAktiv()
   const selectedKurs = kurse.find(k => k.id === selectedKursId) ?? null
-  const kursHatPasswort = selectedKurs?.passwort != null && selectedKurs.passwort.trim().length > 0
+  // Seit v0.7.0 weiss der Client nicht mehr ob ein Passwort gesetzt ist — der
+  // Hash liegt nur noch serverseitig. admin-write setzt beim Upsert `hatPasswort`
+  // im data-JSONB, das via anon-SELECT sichtbar ist.
+  const kursHatPasswort = selectedKurs?.hatPasswort === true
   // canStart darf nicht synchron auf Klartext prüfen, weil Hash gespeichert ist.
   // Validierung erfolgt ausschliesslich in handleStart (async) — Button bleibt klickbar,
   // solange Name und (bei Passwort-Pflicht) eine Eingabe vorhanden sind.
@@ -64,7 +67,7 @@ export default function LandingPage({ theme, onToggleTheme, onStart, onAdmin }: 
     }
     setNameFehlend(false)
     if (kursHatPasswort) {
-      const ok = await pruefeKursPasswort(passwortInput, selectedKurs?.passwort ?? '')
+      const ok = await pruefeKursPasswort(passwortInput, selectedKurs)
       if (!ok) { setPasswortFehler(true); return }
     }
     setPasswortFehler(false)

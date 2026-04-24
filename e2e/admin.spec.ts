@@ -91,8 +91,11 @@ test('KursModal oeffnet sich mit Zugangscode-Feld', async ({ page }) => {
   await page.getByRole('button', { name: 'Kurse', exact: true }).click()
   await page.getByRole('button', { name: /Neuer Kurs/ }).click()
 
-  await expect(page.getByText('Kursname')).toBeVisible()
-  await expect(page.getByText('Zugangscode', { exact: true })).toBeVisible()
+  // Section-Labels sind in <p> innerhalb des Dialogs — Scope einschraenken,
+  // weil die Kurs-Tabelle daneben <th>Kursname</th> rendert.
+  const dialog = page.getByRole('dialog')
+  await expect(dialog.getByText('Kursname')).toBeVisible()
+  await expect(dialog.getByText('Zugangscode', { exact: true })).toBeVisible()
 
   await page.keyboard.press('Escape')
 })

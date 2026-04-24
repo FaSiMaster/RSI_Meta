@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { X, Save, Eye, EyeOff } from 'lucide-react'
-import { type AppTopic, type Kurs, istPasswortHash, ml } from '../../../data/appData'
+import { type AppTopic, type Kurs, ml } from '../../../data/appData'
 import { useFocusTrap } from '../../../lib/useFocusTrap'
 import { Section } from '../fields/Section'
 import { generateKursCode } from '../utils/adminHelpers'
@@ -96,7 +96,7 @@ export default function KursModal({ open, initial, topics, onClose, onSave }: Pr
         </Section>
 
         <Section label={t('admin.passwort')}>
-          {istPasswortHash(draft.passwort) ? (
+          {draft.hatPasswort === true && (draft.passwort === undefined || draft.passwort === '') ? (
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
               <span style={{ fontSize: '12px', color: 'var(--zh-gruen)', fontWeight: 700 }}>Passwort gesetzt (gehasht)</span>
               <button

@@ -1,60 +1,94 @@
-import { describe, it, expect } from 'vitest'
-import { hashKursPasswort, istPasswortHash, pruefeKursPasswort } from './appData'
+// Unit-Tests fuer pruefeKursPasswort (v0.7.0, Server-Salt-Pfeffern).
+// Seit dem Hard-Cutover ist kein Client-Hashing mehr drin — die Pruefung
+// laeuft ausschliesslich ueber die Edge Function `kurs-auth`. Die Tests
+// stubben `fetch` und verifizieren den Kontrakt.
 
-describe('istPasswortHash', () => {
-  it('true fuer korrekt praefixierte Hashes', () => {
-    expect(istPasswortHash('kp:abcdef0123456789')).toBe(true)
-  })
+import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest'
+import { pruefeKursPasswort, type Kurs } from './appData'
 
-  it('false fuer Klartext', () => {
-    expect(istPasswortHash('meinPasswort')).toBe(false)
-  })
+const VITE_SUPABASE_URL = 'http://localhost:9999'
+const VITE_SUPABASE_ANON_KEY = 'test-anon-key'
 
-  it('false fuer null/undefined/leer', () => {
-    expect(istPasswortHash(null)).toBe(false)
-    expect(istPasswortHash(undefined)).toBe(false)
-    expect(istPasswortHash('')).toBe(false)
-  })
-})
-
-describe('hashKursPasswort', () => {
-  it('liefert 64-Hex + kp:-Prefix (SHA-256)', async () => {
-    const h = await hashKursPasswort('test')
-    expect(h).toMatch(/^kp:[0-9a-f]{64}$/)
-  })
-
-  it('ist deterministisch', async () => {
-    const a = await hashKursPasswort('gleicher_string')
-    const b = await hashKursPasswort('gleicher_string')
-    expect(a).toBe(b)
-  })
-
-  it('unterschiedliche Inputs → unterschiedliche Hashes', async () => {
-    const a = await hashKursPasswort('a')
-    const b = await hashKursPasswort('b')
-    expect(a).not.toBe(b)
-  })
-})
+function makeKurs(overrides: Partial<Kurs> = {}): Kurs {
+  return {
+    id: 'k-test',
+    name: 'Test',
+    datum: '2026-04-24',
+    zugangscode: 'FK-RSI-UNIT',
+    topicIds: [],
+    isActive: true,
+    createdAt: 0,
+    gueltigVon: null,
+    gueltigBis: null,
+    hatPasswort: true,
+    ...overrides,
+  }
+}
 
 describe('pruefeKursPasswort', () => {
-  it('true wenn gespeichertes Passwort leer/null (kein Passwort gesetzt)', async () => {
+  const originalEnv = { ...import.meta.env }
+
+  beforeEach(() => {
+    import.meta.env.VITE_SUPABASE_URL = VITE_SUPABASE_URL
+    import.meta.env.VITE_SUPABASE_ANON_KEY = VITE_SUPABASE_ANON_KEY
+  })
+
+  afterEach(() => {
+    Object.assign(import.meta.env, originalEnv)
+    vi.restoreAllMocks()
+  })
+
+  it('true wenn Kurs null/undefined ist', async () => {
     expect(await pruefeKursPasswort('irgendwas', null)).toBe(true)
-    expect(await pruefeKursPasswort('irgendwas', '')).toBe(true)
-    expect(await pruefeKursPasswort('irgendwas', '  ')).toBe(true)
+    expect(await pruefeKursPasswort('irgendwas', undefined)).toBe(true)
   })
 
-  it('true bei Hash-Match', async () => {
-    const hash = await hashKursPasswort('geheim')
-    expect(await pruefeKursPasswort('geheim', hash)).toBe(true)
+  it('true wenn Kurs kein Passwort hat (hatPasswort=false)', async () => {
+    const kurs = makeKurs({ hatPasswort: false })
+    expect(await pruefeKursPasswort('egal', kurs)).toBe(true)
   })
 
-  it('false bei Hash-Mismatch', async () => {
-    const hash = await hashKursPasswort('geheim')
-    expect(await pruefeKursPasswort('falsch', hash)).toBe(false)
+  it('true wenn hatPasswort=undefined (neuer/ungespeicherter Kurs)', async () => {
+    const kurs = makeKurs({ hatPasswort: undefined })
+    expect(await pruefeKursPasswort('egal', kurs)).toBe(true)
   })
 
-  it('Legacy-Klartext-Vergleich funktioniert (rueckwaertskompatibel)', async () => {
-    expect(await pruefeKursPasswort('alt_klartext', 'alt_klartext')).toBe(true)
-    expect(await pruefeKursPasswort('falsch', 'alt_klartext')).toBe(false)
+  it('true wenn Edge Function {ok: true} liefert', async () => {
+    const calls: Array<[string, RequestInit]> = []
+    const fetchMock = vi.fn(async (url: string, init: RequestInit) => {
+      calls.push([url, init])
+      return new Response(JSON.stringify({ ok: true }), { status: 200 })
+    })
+    vi.stubGlobal('fetch', fetchMock)
+
+    const kurs = makeKurs({ hatPasswort: true, zugangscode: 'FK-RSI-UNIT' })
+    expect(await pruefeKursPasswort('geheim', kurs)).toBe(true)
+
+    expect(calls.length).toBe(1)
+    expect(calls[0][0]).toBe(`${VITE_SUPABASE_URL}/functions/v1/kurs-auth`)
+    const body = JSON.parse(calls[0][1].body as string)
+    expect(body).toEqual({ zugangscode: 'FK-RSI-UNIT', passwort: 'geheim' })
+  })
+
+  it('false wenn Edge Function {ok: false} liefert', async () => {
+    vi.stubGlobal('fetch', vi.fn(async () => new Response(JSON.stringify({ ok: false }), { status: 200 })))
+    expect(await pruefeKursPasswort('falsch', makeKurs())).toBe(false)
+  })
+
+  it('false bei HTTP-Fehler (4xx/5xx)', async () => {
+    vi.stubGlobal('fetch', vi.fn(async () => new Response('{}', { status: 500 })))
+    expect(await pruefeKursPasswort('x', makeKurs())).toBe(false)
+  })
+
+  it('false bei Netzwerk-Exception', async () => {
+    vi.stubGlobal('fetch', vi.fn(async () => { throw new Error('offline') }))
+    expect(await pruefeKursPasswort('x', makeKurs())).toBe(false)
+  })
+
+  it('false wenn Supabase-Env fehlt (Dev-Fallback)', async () => {
+    import.meta.env.VITE_SUPABASE_URL = ''
+    import.meta.env.VITE_SUPABASE_ANON_KEY = ''
+    const kurs = makeKurs({ hatPasswort: true })
+    expect(await pruefeKursPasswort('x', kurs)).toBe(false)
   })
 })

@@ -208,7 +208,16 @@ export interface Kurs {
   createdAt: number
   gueltigVon: number | null
   gueltigBis: number | null
-  passwort:   string | null
+  // Intent-Feld fuer saveKurs (seit v0.7.0 Server-Salt-Pfeffern):
+  //   - string non-empty → Klartext; Edge Function hasht serverseitig
+  //   - null             → Passwort entfernen
+  //   - undefined (Feld fehlt) → passwort_hash auf dem Server unveraendert lassen
+  // Beim Load aus Supabase ist `passwort` immer undefined — der Hash liegt in
+  // der Column `passwort_hash` und ist via anon-SELECT nicht lesbar.
+  passwort?: string | null
+  // Vom Server (kurs-auth-Upsert) gesetztes Flag — zeigt an, ob ein Passwort
+  // aktuell gesetzt ist. Client prueft damit, ob der Passwort-Prompt noetig ist.
+  hatPasswort?: boolean
 }
 
 // Topic-Hierarchie-Knoten
@@ -670,33 +679,38 @@ async function hashUsername(name: string): Promise<string> {
   return arr.map(b => b.toString(16).padStart(2, '0')).join('').slice(0, 8)
 }
 
-// Voller SHA-256-Hash (64 Hex-Zeichen) für Kurs-Passwörter. Vor-Token `kp:`
-// als Marker damit Klartext-Passwörter von Hashes unterscheidbar sind (Legacy).
-const PASSWORT_HASH_PREFIX = 'kp:'
-
-export async function hashKursPasswort(plain: string): Promise<string> {
-  const encoder = new TextEncoder()
-  const data = encoder.encode(plain)
-  const buffer = await crypto.subtle.digest('SHA-256', data)
-  const arr = Array.from(new Uint8Array(buffer))
-  return PASSWORT_HASH_PREFIX + arr.map(b => b.toString(16).padStart(2, '0')).join('')
-}
-
-export function istPasswortHash(value: string | null | undefined): boolean {
-  return !!value && typeof value === 'string' && value.startsWith(PASSWORT_HASH_PREFIX)
-}
-
-// Prüft eingegebenes Klartext-Passwort gegen gespeicherten Wert.
-// Rückwärtskompatibel: Klartext-Passwörter aus älteren Kursen werden direkt
-// verglichen (beim nächsten saveKurs automatisch migriert).
-export async function pruefeKursPasswort(eingabe: string, gespeichert: string | null | undefined): Promise<boolean> {
-  if (!gespeichert || gespeichert.trim().length === 0) return true
-  if (istPasswortHash(gespeichert)) {
-    const hashEingabe = await hashKursPasswort(eingabe)
-    return hashEingabe === gespeichert
+// Kurs-Passwort-Verifikation (seit v0.7.0 Server-Salt-Pfeffern, Hard-Cutover).
+// Der Client hasht nichts mehr selbst — PBKDF2 + Pepper laeuft in der Edge
+// Function `kurs-auth` mit Service-Role-Zugriff auf rsi_kurse.passwort_hash
+// (Spalte ist anon nicht sichtbar, siehe Migration 2026_04_24_kurs_passwort_pfeffer.sql).
+export async function pruefeKursPasswort(eingabe: string, kurs: Kurs | null | undefined): Promise<boolean> {
+  if (!kurs) return true
+  if (kurs.hatPasswort !== true) return true
+  const url = import.meta.env.VITE_SUPABASE_URL as string | undefined
+  const anonKey = import.meta.env.VITE_SUPABASE_ANON_KEY as string | undefined
+  if (!url || !anonKey) {
+    // Dev-Fallback: Ohne Supabase-Config kann der Server das Passwort nicht
+    // verifizieren. Wir verweigern den Zugang konservativ.
+    logger.warn('pruefeKursPasswort: VITE_SUPABASE_URL fehlt — Zugang verweigert')
+    return false
   }
-  // Legacy-Klartext
-  return eingabe === gespeichert
+  try {
+    const res = await fetch(`${url}/functions/v1/kurs-auth`, {
+      method: 'POST',
+      headers: {
+        'content-type': 'application/json',
+        'apikey': anonKey,
+        'authorization': `Bearer ${anonKey}`,
+      },
+      body: JSON.stringify({ zugangscode: kurs.zugangscode, passwort: eingabe }),
+    })
+    if (!res.ok) return false
+    const json = await res.json() as { ok?: boolean }
+    return json.ok === true
+  } catch (err) {
+    logger.warn('pruefeKursPasswort: Fetch fehlgeschlagen', err)
+    return false
+  }
 }
 
 export function ml(text: MultiLang | undefined | null, lang: string): string {
@@ -876,23 +890,35 @@ export function getKursStatus(k: Kurs): 'aktiv' | 'bald' | 'abgelaufen' | 'inakt
   return 'aktiv'
 }
 export async function saveKurs(kurs: Kurs): Promise<{ ok: boolean; supabaseError?: string }> {
-  // Passwort bei Bedarf hashen (Klartext → Hash), bereits gehashte bleiben unverändert
-  let passwort = kurs.passwort
-  if (passwort && passwort.trim().length > 0 && !istPasswortHash(passwort)) {
-    passwort = await hashKursPasswort(passwort)
+  // Passwort-Intent (v0.7.0):
+  //   - string non-empty → Klartext; admin-write hasht serverseitig (PBKDF2+Pepper)
+  //   - null             → Passwort entfernen
+  //   - undefined        → Passwort-Hash auf Server unveraendert lassen
+  // Klartext landet also kurzzeitig ueber HTTPS in der Edge Function. LocalStorage
+  // haelt keinen Klartext vor: vor dem Speichern in localStorage wird der Wert auf
+  // undefined gesetzt, damit der Hash-Status rein aus `hatPasswort` abgelesen wird.
+  const hasNewPasswort = typeof kurs.passwort === 'string' && kurs.passwort.length > 0
+  const hasRemovePasswort = kurs.passwort === null
+  const hatPasswortLocal = hasNewPasswort
+    ? true
+    : hasRemovePasswort
+      ? false
+      : (kurs.hatPasswort ?? false)
+  const toLocal: Kurs = {
+    ...kurs,
+    passwort: undefined,
+    hatPasswort: hatPasswortLocal,
   }
-  const toSave: Kurs = { ...kurs, passwort }
 
-  // localStorage sofort (synchron für UI)
   const list = readJSON<Kurs>(K_KURSE, [])
-  const i = list.findIndex(x => x.id === toSave.id)
-  if (i >= 0) list[i] = toSave; else list.push(toSave)
+  const i = list.findIndex(x => x.id === toLocal.id)
+  if (i >= 0) list[i] = toLocal; else list.push(toLocal)
   writeJSON(K_KURSE, list)
-  // Supabase synchron abwarten und Fehler an UI durchreichen — Kurse muessen
-  // auf anderen Geraeten auffindbar sein, stiller Fallback auf localStorage
-  // hat in v0.6.2 zu Verwirrung gefuehrt.
+
+  // An den Server geht das Original-Objekt inkl. Klartext-Passwort (oder null zum
+  // Entfernen, oder undefined = "nicht aendern"). Edge Function hasht + speichert.
   try {
-    await saveKursSupabase(toSave)
+    await saveKursSupabase(kurs)
     return { ok: true }
   } catch (err) {
     const msg = err instanceof Error ? err.message : String(err)

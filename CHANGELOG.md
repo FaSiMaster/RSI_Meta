@@ -9,7 +9,54 @@ Versionierung nach [Semantic Versioning](https://semver.org/lang/de/).
 
 ## [Unreleased]
 
-—
+### Breaking — Sprint 3 Schritt 3 (Server-Salt-Pfeffern, Hard-Cutover)
+
+- **Alle laufenden Kurs-Passwoerter werden ungueltig.** Admin muss sie
+  im Admin-Dashboard neu setzen. Grund: Client-seitiges SHA-256-Hashing
+  (`kp:<hash>` v1) wurde komplett entfernt; ersetzt durch serverseitiges
+  PBKDF2-HMAC-SHA256 mit 100'000 Iterationen, per-Kurs-Salt und globalem
+  Server-Pepper.
+- **Deploy-Reihenfolge** (Stevo, vor Release):
+  1. SQL-Migration `supabase/migrations/2026_04_24_kurs_passwort_pfeffer.sql`
+     im Supabase-Dashboard ausfuehren. Fuegt Spalte `passwort_hash` hinzu,
+     entzieht anon SELECT-Recht fuer diese Spalte, entfernt bestehende
+     `data.passwort`-Eintraege.
+  2. Supabase-Secret `KURS_PASSWORT_PEPPER` setzen (32 hex bytes,
+     `openssl rand -hex 32`). **Niemals rotieren** ohne alle Hashes zu
+     invalidieren.
+  3. Edge Function `admin-write` mit v0.7.0-Code redeployen (hasht
+     serverseitig, schreibt `passwort_hash`).
+  4. Neue Edge Function `kurs-auth` deployen (PBKDF2-Vergleich, gibt
+     `{ ok: true | false }` zurueck).
+  5. Client-Release.
+- **Rollback**: `ALTER TABLE rsi_kurse DROP COLUMN passwort_hash`,
+  `GRANT SELECT ON rsi_kurse TO anon`. Alle neu gesetzten Passwoerter
+  sind dann verloren.
+
+### Hinzugefuegt
+
+- Edge Function `supabase/functions/kurs-auth/` — verifiziert Kurs-
+  Passwoerter serverseitig gegen `passwort_hash` mit PBKDF2 + Pepper.
+- `Kurs.hatPasswort?: boolean` — vom Server gesetzt, Client-UI nutzt
+  das Flag statt die alte `istPasswortHash()`-Heuristik.
+- `Kurs.passwort?: string | null` wird jetzt als **Intent**-Feld
+  interpretiert: non-empty string = hashen, null = entfernen, undefined =
+  unveraendert lassen.
+- Unit-Tests fuer `pruefeKursPasswort` gegen Fetch-Mock (8 Szenarien).
+
+### Entfernt
+
+- `hashKursPasswort()` und `istPasswortHash()` aus `src/data/appData.ts`.
+  Kein Klartext-Hash und kein Hash-Marker-Check mehr im Client-Bundle.
+- Zugehoerige Unit-Tests (6 Stueck).
+
+### Sicherheitsmodell
+
+- **Rainbow-Tables wirkungslos** (Per-Kurs-Salt).
+- **GPU-Brute-Force ausgebremst** (~10^9/s → ~10^3/s durch PBKDF2 100k).
+- **Offline-Brute-Force blockiert**, solange der Pepper nicht leaked —
+  der Hash selbst ist via anon-SELECT nicht mehr abrufbar.
+- **Timing-safe Hash-Compare** via Padding-Trick in der Edge Function.
 
 ---
 

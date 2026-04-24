@@ -10,6 +10,13 @@
 // - PIN nicht mehr im Bundle → Token-Flow ueber admin-auth
 // - CORS auf Vercel + Localhost eingeschraenkt
 // - Payload-Schema pro Tabelle, JSON-Size-Limit 256 KB pro Row
+//
+// Seit v0.7.0 (Sprint 3, Server-Salt-Pfeffern):
+// - rsi_kurse-Upsert hasht data.passwort serverseitig mit PBKDF2 +
+//   Pepper + per-Kurs-Salt. Resultat landet in der separaten Spalte
+//   passwort_hash (anon kann diese nicht lesen). Klartext-Passwort
+//   wird vor dem Schreiben aus data entfernt.
+// - Neuer Pflicht-Secret: KURS_PASSWORT_PEPPER (32 hex bytes).
 
 import { createClient } from 'npm:@supabase/supabase-js@2'
 
@@ -26,12 +33,17 @@ const ALLOWED_ORIGINS = [
 const MAX_ROW_BYTES = 256 * 1024
 const MAX_ROWS      = 200
 
+const PBKDF2_ITERATIONS = 100_000
+const HASH_BITS = 256
+const SALT_BYTES = 16
+
 // Pro Tabelle: Pflichtfelder + optionale Felder. Andere Felder werden abgelehnt.
+// passwort_hash wird NICHT vom Client gesetzt (v0.7.0) — serverseitig gefuellt.
 const TABLE_SCHEMAS: Record<AllowedTable, { required: string[]; optional: string[] }> = {
-  rsi_topics:   { required: ['id', 'data'],                   optional: ['updated_at'] },
-  rsi_scenes:   { required: ['id', 'topic_id', 'data'],       optional: ['updated_at'] },
-  rsi_deficits: { required: ['id', 'scene_id', 'data'],       optional: ['updated_at'] },
-  rsi_kurse:    { required: ['id', 'data'],                   optional: ['updated_at'] },
+  rsi_topics:   { required: ['id', 'data'],             optional: ['updated_at'] },
+  rsi_scenes:   { required: ['id', 'topic_id', 'data'], optional: ['updated_at'] },
+  rsi_deficits: { required: ['id', 'scene_id', 'data'], optional: ['updated_at'] },
+  rsi_kurse:    { required: ['id', 'data'],             optional: ['updated_at'] },
 }
 
 function corsHeaders(origin: string | null): Record<string, string> {
@@ -81,6 +93,36 @@ async function verifyToken(token: string, secret: string): Promise<boolean> {
   return timingSafeEqual(token, expected)
 }
 
+function bytesToHex(bytes: Uint8Array): string {
+  return Array.from(bytes).map(b => b.toString(16).padStart(2, '0')).join('')
+}
+
+// PBKDF2-HMAC-SHA256 mit Passwort+Pepper, Salt pro Hash.
+async function pbkdf2(passwort: string, salt: Uint8Array, pepper: string): Promise<string> {
+  const pwPeppered = new TextEncoder().encode(passwort + pepper)
+  const key = await crypto.subtle.importKey(
+    'raw',
+    pwPeppered,
+    { name: 'PBKDF2' },
+    false,
+    ['deriveBits'],
+  )
+  const bits = await crypto.subtle.deriveBits(
+    { name: 'PBKDF2', salt, iterations: PBKDF2_ITERATIONS, hash: 'SHA-256' },
+    key,
+    HASH_BITS,
+  )
+  return bytesToHex(new Uint8Array(bits))
+}
+
+// Format: "kp:v2:<salt_hex>:<hash_hex>"
+async function hashKursPasswort(passwort: string, pepper: string): Promise<string> {
+  const salt = new Uint8Array(SALT_BYTES)
+  crypto.getRandomValues(salt)
+  const hash = await pbkdf2(passwort, salt, pepper)
+  return `kp:v2:${bytesToHex(salt)}:${hash}`
+}
+
 function validateRow(table: AllowedTable, row: unknown): string | null {
   if (typeof row !== 'object' || row === null) return 'row not object'
   const obj = row as Record<string, unknown>
@@ -102,6 +144,59 @@ function validateRow(table: AllowedTable, row: unknown): string | null {
   const size = new TextEncoder().encode(JSON.stringify(obj)).length
   if (size > MAX_ROW_BYTES) return `row too large: ${size} bytes (max ${MAX_ROW_BYTES})`
   return null
+}
+
+// Nur fuer rsi_kurse-Upsert: passwort aus data ziehen, serverseitig hashen,
+// ins passwort_hash-Feld schreiben. Liefert die transformierte Row zurueck.
+//
+// Intent-Logik (siehe Client-Kommentar in appData.ts):
+//   data.passwort === string non-empty → hash, passwort_hash = neuer Hash, data.passwort raus
+//   data.passwort === null             → passwort_hash = null (Passwort entfernen)
+//   data.passwort === undefined        → passwort_hash unveraendert (Feld nicht im Upsert)
+//                                        → wir merken: weder hatPasswort noch passwort_hash anfassen
+async function transformKursRow(
+  row: Record<string, unknown>,
+  pepper: string,
+): Promise<{ out: Record<string, unknown>; error?: string }> {
+  const data = row.data as Record<string, unknown>
+  const rawPw = data.passwort
+  const out: Record<string, unknown> = { ...row }
+
+  // data-Kopie ohne passwort-Feld — nur der Server kennt den Hash.
+  const dataCopy: Record<string, unknown> = { ...data }
+  delete dataCopy.passwort
+
+  if (rawPw === undefined) {
+    // Kein Intent → passwort_hash nicht beruehren.
+    // hatPasswort-Flag muessen wir hier nicht setzen (kommt aus vorherigem Hash).
+    out.data = dataCopy
+    return { out }
+  }
+  if (rawPw === null) {
+    // Explizit entfernen.
+    out.data = { ...dataCopy, hatPasswort: false }
+    out.passwort_hash = null
+    return { out }
+  }
+  if (typeof rawPw === 'string' && rawPw.trim().length > 0) {
+    // Klartext → hashen.
+    if (rawPw.length > 512) return { out, error: 'passwort too long' }
+    try {
+      const hash = await hashKursPasswort(rawPw, pepper)
+      out.data = { ...dataCopy, hatPasswort: true }
+      out.passwort_hash = hash
+      return { out }
+    } catch (e) {
+      return { out, error: `hash-failed: ${e instanceof Error ? e.message : e}` }
+    }
+  }
+  if (typeof rawPw === 'string' && rawPw.trim().length === 0) {
+    // Leerer String → wie null behandeln.
+    out.data = { ...dataCopy, hatPasswort: false }
+    out.passwort_hash = null
+    return { out }
+  }
+  return { out, error: 'invalid passwort type' }
 }
 
 Deno.serve(async (req) => {
@@ -150,9 +245,24 @@ Deno.serve(async (req) => {
         const err = validateRow(table, body.rows[i])
         if (err) return jsonResponse({ error: `row ${i}: ${err}` }, 400, cors)
       }
-      const { error } = await db.from(table).upsert(body.rows)
+
+      // rsi_kurse: Passwort-Hashing serverseitig
+      let rowsToWrite = body.rows as Record<string, unknown>[]
+      if (table === 'rsi_kurse') {
+        const pepper = Deno.env.get('KURS_PASSWORT_PEPPER')
+        if (!pepper) return jsonResponse({ error: 'server-misconfigured: pepper' }, 500, cors)
+        const transformed: Record<string, unknown>[] = []
+        for (let i = 0; i < rowsToWrite.length; i++) {
+          const { out, error } = await transformKursRow(rowsToWrite[i], pepper)
+          if (error) return jsonResponse({ error: `row ${i}: ${error}` }, 400, cors)
+          transformed.push(out)
+        }
+        rowsToWrite = transformed
+      }
+
+      const { error } = await db.from(table).upsert(rowsToWrite)
       if (error) throw error
-      return jsonResponse({ ok: true, table, op, count: body.rows.length }, 200, cors)
+      return jsonResponse({ ok: true, table, op, count: rowsToWrite.length }, 200, cors)
     }
     // op === 'delete'
     if (typeof body.id !== 'string' || body.id.length === 0 || body.id.length > 200) {
