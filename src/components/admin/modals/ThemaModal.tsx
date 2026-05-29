@@ -62,7 +62,7 @@ export default function ThemaModal({ open, initial, initialTyp, onClose, onSave 
       onClick={e => { if (e.target === e.currentTarget) onClose() }}>
       <div ref={modalRef} role="dialog" aria-modal="true" style={{ width: '560px', maxHeight: '88vh', overflowY: 'auto', borderRadius: 'var(--zh-radius-card)', border: '1px solid var(--zh-color-border)', background: 'var(--zh-color-surface)', padding: '28px 32px', boxShadow: 'var(--zh-shadow-lg)' }}>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '24px' }}>
-          <h3 style={{ fontSize: '18px', fontWeight: 700, color: 'var(--zh-color-text)' }}>{draft.nameI18n.de ? t('admin.szene_bearbeiten') : t('admin.thema_neu')}</h3>
+          <h3 style={{ fontSize: '18px', fontWeight: 700, color: 'var(--zh-color-text)' }}>{draft.nameI18n.de ? t('admin.thema_bearbeiten') : t('admin.thema_neu')}</h3>
           <button onClick={onClose} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--zh-color-text-muted)' }}><X size={18} /></button>
         </div>
 

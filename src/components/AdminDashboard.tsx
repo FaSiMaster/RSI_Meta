@@ -187,6 +187,11 @@ export default function AdminDashboard() {
     setThemaTyp('ober')
     setThemaModalOpen(true)
   }
+  function openEditThema(topic: AppTopic) {
+    setEditingThema({ ...topic })
+    setThemaTyp(topic.parentTopicId ? 'unter' : 'ober')
+    setThemaModalOpen(true)
+  }
   function handleSaveThema(thema: AppTopic) {
     saveTopic(thema)
     setTopics(getTopics())
@@ -617,6 +622,10 @@ export default function AdminDashboard() {
                         style={{ padding: '4px 10px', borderRadius: '6px', border: '1px solid var(--zh-color-border)', background: 'var(--zh-color-bg-secondary)', fontSize: '11px', fontWeight: 600, color: 'var(--zh-color-text-muted)', cursor: 'pointer' }}>
                         + {t('admin.gruppe_neu')}
                       </button>
+                      <button onClick={() => openEditThema(node.topic)}
+                        style={{ display: 'flex', alignItems: 'center', gap: '4px', padding: '4px 10px', borderRadius: '6px', border: '1px solid var(--zh-color-border)', background: 'var(--zh-color-bg-secondary)', fontSize: '11px', fontWeight: 600, color: 'var(--zh-color-text-muted)', cursor: 'pointer' }}>
+                        <Pencil size={11} /> {t('admin.editBtn')}
+                      </button>
                       <button onClick={() => handleArchiveThema(node.topic.id)}
                         style={{ padding: '4px 10px', borderRadius: '6px', border: '1px solid var(--zh-color-border)', background: 'var(--zh-color-bg-secondary)', fontSize: '11px', fontWeight: 600, color: 'var(--zh-color-text-muted)', cursor: 'pointer' }}>
                         {t('admin.thema_archivieren')}
@@ -635,6 +644,10 @@ export default function AdminDashboard() {
                     <div key={child.id} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '10px 16px 10px 42px', borderBottom: ci < node.children.length - 1 ? '1px solid var(--zh-color-border)' : 'none', background: 'var(--zh-color-bg-secondary)' }}>
                       <span style={{ fontSize: '13px', color: 'var(--zh-color-text)' }}>{ml(child.nameI18n, lang)}</span>
                       <div style={{ display: 'flex', gap: '6px' }}>
+                        <button onClick={() => openEditThema(child)}
+                          style={{ display: 'flex', alignItems: 'center', gap: '4px', padding: '3px 8px', borderRadius: '6px', border: '1px solid var(--zh-color-border)', background: 'transparent', fontSize: '11px', color: 'var(--zh-color-text-muted)', cursor: 'pointer' }}>
+                          <Pencil size={11} /> {t('admin.editBtn')}
+                        </button>
                         <button onClick={() => handleArchiveThema(child.id)}
                           style={{ padding: '3px 8px', borderRadius: '6px', border: '1px solid var(--zh-color-border)', background: 'transparent', fontSize: '11px', color: 'var(--zh-color-text-muted)', cursor: 'pointer' }}>
                           {t('admin.thema_archivieren')}
