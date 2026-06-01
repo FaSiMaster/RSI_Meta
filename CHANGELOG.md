@@ -24,6 +24,64 @@ Aktuelle VR-Iterationen:
 - `v0.8.0` = VR-Iter 1 — Smoke-Ready (Haptik, HUD-Timer, Farb-Marker)
 - `v0.8.1` = VR-Iter 2 — Bewertungs-Panels, Ray-Reticle, groesserer Hover
 - `v0.8.2` = VR-Iter 3 — Scoring-in-VR, Fadenkreuz-Vergroesserung
+- `v0.8.3` = VR-Iter 4 — Review-Fixe (XR-Session-Lifecycle, VR-i18n, UX)
+
+---
+
+## [0.8.3] — 2026-06-01 — VR-Iter 4: Multi-Agent-Review-Fixe
+
+Umsetzung der Befunde aus einem 5-dimensionalen Code-Review (Fokus
+Browser↔VR-Wechsel + Aufgabenerfüllung), jedes Finding adversarial verifiziert.
+
+### Behoben — kritisch
+
+- **Verwaiste XR-Session beim Szenenende (M1).** Beendete der Inspektor die
+  Szene aus VR (VRControlBar/VRAllFound → `onBeenden`), unmountete der
+  SceneViewer samt `<XR>`, aber die immersive-vr-Session lief weiter — das
+  Headset blieb in einer toten Szene hängen (auf der Quest kein ESC).
+  `xrStore.exitVR()` existierte nur als Kommentar. Fix: `handleBeenden` beendet
+  die Session aktiv via `session.end()`; zusätzlich Unmount-Cleanup im
+  SceneViewer als Sicherheitsnetz. Irreführenden Kommentar korrigiert.
+- **VR-Modus komplett ohne i18n (M2).** Alle VR-Panels (Kategorie, W/A/N,
+  Scoring-Summary, ControlBar, AllFound, Feedback) zeigten hartcodiertes Deutsch
+  — fr/it/en-Inspektoren erlebten den ganzen VR-Fluss auf Deutsch. Fix: `t` als
+  Prop durch `SceneContent` an alle VR-Panels gereicht; `VR_KATEGORIEN`/
+  `VR_NACA_OPTIONS`/`VR_FEEDBACK_CFG` auf bestehende i18n-Keys umgestellt; neuer
+  `vr`-Block in de/fr/it/en; `deficitName` via `ml()`.
+
+### Behoben — Scoring
+
+- **`punkteRoh` inkonsistent (S1).** VR speicherte `rohPts + katPts`, Browser
+  `rohPts` — die persistierte Roh-Statistik divergierte um 25 Punkte (Endscore
+  war korrekt). VR-Pfad auf reine 9-Schritte-Punkte vereinheitlicht.
+- **`KATEGORIE_PUNKTE` im Browser hartcodiert (Q2).** ScoringFlow nutzte das
+  Literal `25` statt der SACRED-Konstante → Drift-Risiko bei Norm-Änderung.
+
+### Behoben — VR-UX
+
+- **Reticle 10–20× zu klein (S2).** `aimPos` lag auf der Sphere bei Radius 500
+  statt 60 → der Ray-Zielring war winzig. Auf Radius 60 normalisiert.
+- **Kein Abbrechen in VR-Bewertung (S3).** Die Panels W/A/N hatten keinen
+  Zurück-Weg (und auf der Quest kein ESC) — Fehleingaben waren nicht
+  korrigierbar. Abbrechen-Button pro Panel ergänzt.
+- **`vrScoringSummary` fehlte im VR-Exit-Reset (S4).** Headset-Abnahme während
+  des Summary-Panels liess die Phase hängen. In `handleVRModeChange` aufgenommen.
+- **Verwaister Pending-Timer (S5).** Der 5s-Auto-Ausblend-Timer wurde von ESC /
+  VR-Wechsel nicht gecleart und konnte aus einer anderen Phase zurückreissen.
+  Phasen-Guard im Timer-Callback + Unmount-Cleanup.
+- **Standortmarker während VR-Bewertung klickbar (Q3).** Per Phasen-Gate nur
+  noch in exploring/pendingConfirm aktiv; Refs defensiv geräumt.
+- **Doppelter Bewertungs-Abschluss-Pfad (Q4).** HTML-NACA-Overlay nutzt jetzt
+  `handleBewertungN` statt duplizierter Payload-Logik (ein Pfad, ein Null-Guard).
+- **`enterVR()` ohne Fehler-Handling (Q5).** `.catch()` ergänzt — kein stiller
+  Fehlschlag / unhandled rejection mehr auf Nicht-WebXR-Browsern.
+
+### Geändert
+
+- ASCII-Ersatzschreibungen in VR-User-Texten (`waere`, `maessige`,
+  `geringfuegige`, `Gemaess`) durch echte Umlaute ersetzt (via i18n aufgelöst).
+
+Gates: tsc 0, vitest 24/24, Production-Build grün. Keine Sacred-File-Änderung.
 
 ---
 

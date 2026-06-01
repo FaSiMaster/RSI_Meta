@@ -25,18 +25,19 @@ import { useTranslation } from 'react-i18next'
 import { WICHTIGKEIT_TABLE, ABWEICHUNG_KATEGORIEN } from '../data/scoringEngine'
 import { KRITERIUM_LABELS } from '../data/kriteriumLabels'
 import type { RSIDimension, NACADimension } from '../types'
+import type { TFunction } from 'i18next'
 
 // Modul-Level Singleton – nie innerhalb von Komponenten erzeugen
 
-// Kategorien für VR-Panel
-const VR_KATEGORIEN: { value: DefizitKategorie; label: string }[] = [
-  { value: 'verkehrsfuehrung', label: 'Verkehrsführung'        },
-  { value: 'sicht',            label: 'Sicht'                  },
-  { value: 'ausruestung',      label: 'Ausrüstung'             },
-  { value: 'zustand',          label: 'Zustand Verkehrsfläche' },
-  { value: 'strassenrand',     label: 'Strassenrand'           },
-  { value: 'verkehrsablauf',   label: 'Verkehrsablauf'         },
-  { value: 'baustelle',        label: 'Baustelle'              },
+// Kategorien für VR-Panel — Labels via i18n-Key (de/fr/it/en), aufgelöst mit t().
+const VR_KATEGORIEN: { value: DefizitKategorie; labelKey: string }[] = [
+  { value: 'verkehrsfuehrung', labelKey: 'kategorie.verkehrsfuehrung' },
+  { value: 'sicht',            labelKey: 'kategorie.sicht'            },
+  { value: 'ausruestung',      labelKey: 'kategorie.ausruestung'      },
+  { value: 'zustand',          labelKey: 'kategorie.zustand'          },
+  { value: 'strassenrand',     labelKey: 'kategorie.strassenrand'     },
+  { value: 'verkehrsablauf',   labelKey: 'kategorie.verkehrsablauf'   },
+  { value: 'baustelle',        labelKey: 'kategorie.baustelle'        },
 ]
 
 // ── Fehlergrenze für VR-Panels (verhindert Scene-Crash) ────────────────────
@@ -354,9 +355,10 @@ interface VRControlBarProps {
   hintActive: boolean
   onHint:     () => void
   onBeenden:  () => void
+  t:          TFunction
 }
 
-function VRControlBar({ hintActive, onHint, onBeenden }: VRControlBarProps) {
+function VRControlBar({ hintActive, onHint, onBeenden, t }: VRControlBarProps) {
   return (
     <VRHud offset={[0, -0.44, -1.5]}>
       <mesh>
@@ -365,7 +367,7 @@ function VRControlBar({ hintActive, onHint, onBeenden }: VRControlBarProps) {
       </mesh>
       {!hintActive ? (
         <VRButton
-          label="Hinweis"
+          label={t('szene.hinweis_btn')}
           position={[-0.27, 0, 0.002]}
           width={0.45}
           height={0.085}
@@ -377,11 +379,11 @@ function VRControlBar({ hintActive, onHint, onBeenden }: VRControlBarProps) {
         />
       ) : (
         <Text position={[-0.27, 0, 0.003]} fontSize={0.030} color="#F0A500" anchorX="center" anchorY="middle">
-          Hinweis aktiv
+          {t('szene.hinweis_aktiv')}
         </Text>
       )}
       <VRButton
-        label="Szene beenden"
+        label={t('szene.beenden')}
         position={[0.27, 0, 0.002]}
         width={0.45}
         height={0.085}
@@ -399,9 +401,10 @@ function VRControlBar({ hintActive, onHint, onBeenden }: VRControlBarProps) {
 interface VRKategoriePanelProps {
   onSelect: (k: DefizitKategorie) => void
   onCancel: () => void
+  t:        TFunction
 }
 
-function VRKategoriePanel({ onSelect, onCancel }: VRKategoriePanelProps) {
+function VRKategoriePanel({ onSelect, onCancel, t }: VRKategoriePanelProps) {
   const btnH    = 0.077
   const btnGap  = 0.010
   const btnStep = btnH + btnGap
@@ -420,15 +423,15 @@ function VRKategoriePanel({ onSelect, onCancel }: VRKategoriePanelProps) {
         <meshBasicMaterial color="#090d1b" transparent opacity={0.96} />
       </mesh>
       <Text position={[0, panelH / 2 - 0.048, 0.003]} fontSize={0.022} color="rgba(255,255,255,0.45)" anchorX="center" anchorY="middle">
-        Schritt 0 — Kategorisierung
+        {t('kategorie.schritt_label')}
       </Text>
       <Text position={[0, panelH / 2 - 0.090, 0.003]} fontSize={0.036} color="#ffffff" anchorX="center" anchorY="middle">
-        Was hast du identifiziert?
+        {t('kategorie.frage')}
       </Text>
-      {VR_KATEGORIEN.map(({ value, label }, i) => (
+      {VR_KATEGORIEN.map(({ value, labelKey }, i) => (
         <VRButton
           key={value}
-          label={label}
+          label={t(labelKey)}
           position={[0, panelH / 2 - 0.158 - i * btnStep, 0.002]}
           width={panelW - 0.08}
           height={btnH}
@@ -439,7 +442,7 @@ function VRKategoriePanel({ onSelect, onCancel }: VRKategoriePanelProps) {
         />
       ))}
       <VRButton
-        label="Abbrechen"
+        label={t('scoring.abbrechen')}
         position={[0, panelH / 2 - 0.158 - VR_KATEGORIEN.length * btnStep, 0.002]}
         width={panelW - 0.08}
         height={btnH}
@@ -457,23 +460,26 @@ function VRKategoriePanel({ onSelect, onCancel }: VRKategoriePanelProps) {
 interface VRFeedbackProps {
   type:    KlickFeedbackType
   onClose: () => void
+  t:       TFunction
 }
 
-const VR_FEEDBACK_CFG: Record<KlickFeedbackType, { bg: string; title: string; sub: string; dauer: number }> = {
-  kein_treffer:     { bg: '#141820', title: 'Kein Sicherheitsdefizit an dieser Stelle.', sub: 'Versuche es an einer anderen Stelle.', dauer: 2000 },
-  bereits_gefunden: { bg: '#003060', title: 'Dieses Defizit hast du bereits gefunden.',  sub: '',                                       dauer: 2000 },
-  kategorie_falsch: { bg: '#6a3800', title: 'Gefunden — aber falsche Kategorie.',         sub: '-10% Abzug. Weiter zur RSI-Bewertung.', dauer: 1800 },
-  richtig:          { bg: '#0f4a12', title: 'Richtige Kategorie!',                        sub: 'Weiter zur RSI-Bewertung...',           dauer: 1500 },
+// Texte via i18n-Key (identisch zum Browser-KlickFeedback), Farbe/Dauer VR-spezifisch.
+const VR_FEEDBACK_CFG: Record<KlickFeedbackType, { bg: string; titleKey: string; subKey: string; dauer: number }> = {
+  kein_treffer:     { bg: '#141820', titleKey: 'szene.kein_treffer',     subKey: 'szene.kein_treffer_sub',     dauer: 2000 },
+  bereits_gefunden: { bg: '#003060', titleKey: 'szene.bereits_gefunden', subKey: '',                            dauer: 2000 },
+  kategorie_falsch: { bg: '#6a3800', titleKey: 'szene.kategorie_falsch',  subKey: 'szene.kategorie_falsch_sub', dauer: 1800 },
+  richtig:          { bg: '#0f4a12', titleKey: 'szene.kategorie_richtig', subKey: 'szene.weiter_bewertung',     dauer: 1500 },
 }
 
-function VRFeedback({ type, onClose }: VRFeedbackProps) {
+function VRFeedback({ type, onClose, t }: VRFeedbackProps) {
   const cfg      = VR_FEEDBACK_CFG[type]
-  const hasSubtext = cfg.sub.length > 0
+  const sub        = cfg.subKey ? t(cfg.subKey) : ''
+  const hasSubtext = sub.length > 0
   const panelH   = hasSubtext ? 0.19 : 0.13
 
   useEffect(() => {
-    const t = setTimeout(onClose, cfg.dauer)
-    return () => clearTimeout(t)
+    const timer = setTimeout(onClose, cfg.dauer)
+    return () => clearTimeout(timer)
   }, [onClose, cfg.dauer])
 
   return (
@@ -487,11 +493,11 @@ function VRFeedback({ type, onClose }: VRFeedbackProps) {
         <meshBasicMaterial color={cfg.bg} transparent opacity={0.95} />
       </mesh>
       <Text position={[0, hasSubtext ? 0.042 : 0, 0.003]} fontSize={0.034} color="#ffffff" anchorX="center" anchorY="middle" maxWidth={0.68}>
-        {cfg.title}
+        {t(cfg.titleKey)}
       </Text>
       {hasSubtext && (
         <Text position={[0, -0.042, 0.003]} fontSize={0.026} color="rgba(255,255,255,0.75)" anchorX="center" anchorY="middle" maxWidth={0.68}>
-          {cfg.sub}
+          {sub}
         </Text>
       )}
     </VRHud>
@@ -509,19 +515,22 @@ interface VRBewertungWPanelProps {
   kontextLabel:   string
   prefillHint:    string | null
   onSelect:       (w: RSIDimension) => void
+  onCancel:       () => void
+  t:              TFunction
 }
 
-function VRBewertungWPanel({ kriteriumLabel, kontextLabel, prefillHint, onSelect }: VRBewertungWPanelProps) {
-  const options: { val: RSIDimension; label: string }[] = [
-    { val: 'klein',  label: 'Klein'  },
-    { val: 'mittel', label: 'Mittel' },
-    { val: 'gross',  label: 'Gross'  },
+function VRBewertungWPanel({ kriteriumLabel, kontextLabel, prefillHint, onSelect, onCancel, t }: VRBewertungWPanelProps) {
+  const options: { val: RSIDimension; labelKey: string }[] = [
+    { val: 'klein',  labelKey: 'scoring.dim_klein'  },
+    { val: 'mittel', labelKey: 'scoring.dim_mittel' },
+    { val: 'gross',  labelKey: 'scoring.dim_gross'  },
   ]
   const btnH    = 0.080
   const btnGap  = 0.010
   const btnStep = btnH + btnGap
   const headerH = prefillHint ? 0.23 : 0.20
-  const panelH  = headerH + options.length * btnStep + 0.04
+  const footerH = 0.075
+  const panelH  = headerH + options.length * btnStep + footerH + 0.04
   const panelW  = 0.80
 
   return (
@@ -535,10 +544,10 @@ function VRBewertungWPanel({ kriteriumLabel, kontextLabel, prefillHint, onSelect
         <meshBasicMaterial color="#090d1b" transparent opacity={0.96} />
       </mesh>
       <Text position={[0, panelH / 2 - 0.040, 0.003]} fontSize={0.018} color="rgba(255,255,255,0.45)" anchorX="center" anchorY="middle">
-        Schritt 1 — Wichtigkeit
+        {`${t('scoring.bewertung_schritt', { nr: 1 })} — ${t('scoring.phase_a')}`}
       </Text>
       <Text position={[0, panelH / 2 - 0.080, 0.003]} fontSize={0.034} color="#ffffff" anchorX="center" anchorY="middle" maxWidth={panelW - 0.08}>
-        Wie wichtig ist die Norm-Einhaltung?
+        {t('scoring.wie_wichtig')}
       </Text>
       <Text position={[0, panelH / 2 - 0.120, 0.003]} fontSize={0.022} color="rgba(255,255,255,0.55)" anchorX="center" anchorY="middle" maxWidth={panelW - 0.08}>
         {kriteriumLabel} · {kontextLabel}
@@ -551,7 +560,7 @@ function VRBewertungWPanel({ kriteriumLabel, kontextLabel, prefillHint, onSelect
       {options.map((o, i) => (
         <VRButton
           key={o.val}
-          label={o.label}
+          label={t(o.labelKey)}
           position={[0, panelH / 2 - headerH - 0.02 - i * btnStep, 0.002]}
           width={panelW - 0.08}
           height={btnH}
@@ -561,6 +570,17 @@ function VRBewertungWPanel({ kriteriumLabel, kontextLabel, prefillHint, onSelect
           onClick={() => onSelect(o.val)}
         />
       ))}
+      <VRButton
+        label={t('scoring.abbrechen')}
+        position={[0, -panelH / 2 + 0.050, 0.002]}
+        width={panelW - 0.08}
+        height={0.060}
+        color="#1a1a2a"
+        hoverColor="#333355"
+        textColor="rgba(255,255,255,0.55)"
+        fontSize={0.026}
+        onClick={onCancel}
+      />
     </VRHud>
   )
 }
@@ -574,14 +594,17 @@ interface VRBewertungAOption {
 interface VRBewertungAPanelProps {
   options:  VRBewertungAOption[]
   onSelect: (a: RSIDimension) => void
+  onCancel: () => void
+  t:        TFunction
 }
 
-function VRBewertungAPanel({ options, onSelect }: VRBewertungAPanelProps) {
+function VRBewertungAPanel({ options, onSelect, onCancel, t }: VRBewertungAPanelProps) {
   const btnH    = 0.110
   const btnGap  = 0.010
   const btnStep = btnH + btnGap
   const headerH = 0.16
-  const panelH  = headerH + options.length * btnStep + 0.04
+  const footerH = 0.075
+  const panelH  = headerH + options.length * btnStep + footerH + 0.04
   const panelW  = 0.86
 
   return (
@@ -595,10 +618,10 @@ function VRBewertungAPanel({ options, onSelect }: VRBewertungAPanelProps) {
         <meshBasicMaterial color="#090d1b" transparent opacity={0.96} />
       </mesh>
       <Text position={[0, panelH / 2 - 0.040, 0.003]} fontSize={0.018} color="rgba(255,255,255,0.45)" anchorX="center" anchorY="middle">
-        Schritt 2 — Abweichung
+        {`${t('scoring.bewertung_schritt', { nr: 2 })} — ${t('scoring.phase_b')}`}
       </Text>
       <Text position={[0, panelH / 2 - 0.082, 0.003]} fontSize={0.032} color="#ffffff" anchorX="center" anchorY="middle" maxWidth={panelW - 0.08}>
-        Wie gross ist die Abweichung?
+        {t('scoring.wie_abweichung')}
       </Text>
       {options.map((o, i) => {
         const yTop = panelH / 2 - headerH - 0.02 - i * btnStep
@@ -622,33 +645,47 @@ function VRBewertungAPanel({ options, onSelect }: VRBewertungAPanelProps) {
           </group>
         )
       })}
+      <VRButton
+        label={t('scoring.abbrechen')}
+        position={[0, -panelH / 2 + 0.050, 0.002]}
+        width={panelW - 0.08}
+        height={0.060}
+        color="#1a1a2a"
+        hoverColor="#333355"
+        textColor="rgba(255,255,255,0.55)"
+        fontSize={0.026}
+        onClick={onCancel}
+      />
     </VRHud>
   )
 }
 
 interface VRBewertungNOption {
-  wert:  NACADimension
-  label: string
-  sub:   string
-  color: string
+  wert:     NACADimension
+  labelKey: string
+  subKey:   string
+  color:    string
 }
 
 interface VRBewertungNPanelProps {
   onSelect: (n: NACADimension) => void
+  onCancel: () => void
+  t:        TFunction
 }
 
 const VR_NACA_OPTIONS: VRBewertungNOption[] = [
-  { wert: 'leicht', label: 'Leicht', sub: 'NACA 0-1 · Keine bis geringfuegige Verletzung', color: '#1A7F1F' },
-  { wert: 'mittel', label: 'Mittel', sub: 'NACA 2-3 · Leichte bis maessige Verletzung',    color: '#B87300' },
-  { wert: 'schwer', label: 'Schwer', sub: 'NACA 4-7 · Schwere Verletzung bis Tod',          color: '#D40053' },
+  { wert: 'leicht', labelKey: 'scoring.naca_leicht', subKey: 'scoring.naca_leicht_sub', color: '#1A7F1F' },
+  { wert: 'mittel', labelKey: 'scoring.naca_mittel', subKey: 'scoring.naca_mittel_sub', color: '#B87300' },
+  { wert: 'schwer', labelKey: 'scoring.naca_schwer', subKey: 'scoring.naca_schwer_sub', color: '#D40053' },
 ]
 
-function VRBewertungNPanel({ onSelect }: VRBewertungNPanelProps) {
+function VRBewertungNPanel({ onSelect, onCancel, t }: VRBewertungNPanelProps) {
   const btnH    = 0.110
   const btnGap  = 0.010
   const btnStep = btnH + btnGap
   const headerH = 0.19
-  const panelH  = headerH + VR_NACA_OPTIONS.length * btnStep + 0.04
+  const footerH = 0.075
+  const panelH  = headerH + VR_NACA_OPTIONS.length * btnStep + footerH + 0.04
   const panelW  = 0.86
 
   return (
@@ -662,13 +699,13 @@ function VRBewertungNPanel({ onSelect }: VRBewertungNPanelProps) {
         <meshBasicMaterial color="#090d1b" transparent opacity={0.96} />
       </mesh>
       <Text position={[0, panelH / 2 - 0.040, 0.003]} fontSize={0.018} color="rgba(255,255,255,0.45)" anchorX="center" anchorY="middle">
-        Schritt 3 — Unfallschwere
+        {`${t('scoring.bewertung_schritt', { nr: 3 })} — ${t('scoring.phase_d')}`}
       </Text>
       <Text position={[0, panelH / 2 - 0.082, 0.003]} fontSize={0.032} color="#ffffff" anchorX="center" anchorY="middle" maxWidth={panelW - 0.08}>
-        Wie schwer waere ein Unfall?
+        {t('scoring.wie_schwer')}
       </Text>
       <Text position={[0, panelH / 2 - 0.122, 0.003]} fontSize={0.020} color="rgba(255,255,255,0.50)" anchorX="center" anchorY="middle" maxWidth={panelW - 0.08}>
-        Stell dir einen Unfall an dieser Stelle vor.
+        {t('scoring.stell_dir_vor')}
       </Text>
       {VR_NACA_OPTIONS.map((o, i) => {
         const yTop = panelH / 2 - headerH - 0.02 - i * btnStep
@@ -684,14 +721,25 @@ function VRBewertungNPanel({ onSelect }: VRBewertungNPanelProps) {
               onClick={() => onSelect(o.wert)}
             />
             <Text position={[-(panelW - 0.12) / 2, 0.022, 0.004]} fontSize={0.030} color={o.color} anchorX="left" anchorY="middle" maxWidth={panelW - 0.12}>
-              {o.label}
+              {t(o.labelKey)}
             </Text>
             <Text position={[-(panelW - 0.12) / 2, -0.020, 0.004]} fontSize={0.020} color="rgba(255,255,255,0.60)" anchorX="left" anchorY="middle" maxWidth={panelW - 0.12}>
-              {o.sub}
+              {t(o.subKey)}
             </Text>
           </group>
         )
       })}
+      <VRButton
+        label={t('scoring.abbrechen')}
+        position={[0, -panelH / 2 + 0.050, 0.002]}
+        width={panelW - 0.08}
+        height={0.060}
+        color="#1a1a2a"
+        hoverColor="#333355"
+        textColor="rgba(255,255,255,0.55)"
+        fontSize={0.026}
+        onClick={onCancel}
+      />
     </VRHud>
   )
 }
@@ -720,30 +768,31 @@ export interface VRScoringSummary {
 interface VRScoringSummaryPanelProps {
   summary:    VRScoringSummary
   onContinue: () => void
+  t:          TFunction
 }
 
-function dimLabelShort(d: RSIDimension): string {
-  return d === 'gross' ? 'Gross' : d === 'mittel' ? 'Mittel' : 'Klein'
+function dimLabelShort(d: RSIDimension, t: TFunction): string {
+  return t(d === 'gross' ? 'scoring.dim_gross' : d === 'mittel' ? 'scoring.dim_mittel' : 'scoring.dim_klein')
 }
-function nacaLabelShort(n: NACADimension): string {
-  return n === 'leicht' ? 'Leicht' : n === 'mittel' ? 'Mittel' : 'Schwer'
+function nacaLabelShort(n: NACADimension, t: TFunction): string {
+  return t(n === 'leicht' ? 'scoring.schwere_leicht' : n === 'mittel' ? 'scoring.schwere_mittel' : 'scoring.schwere_schwer')
 }
 
-function VRScoringSummaryPanel({ summary, onContinue }: VRScoringSummaryPanelProps) {
+function VRScoringSummaryPanel({ summary, onContinue, t }: VRScoringSummaryPanelProps) {
   const allCorrect = summary.kategorieRichtig
     && summary.wichtigkeitKorrekt
     && summary.abweichungKorrekt
     && summary.nacaKorrekt
 
   const rows: { label: string; user: string; correct: string; ok: boolean }[] = [
-    { label: 'Kategorie',   user: summary.kategorieRichtig ? 'richtig' : 'falsch',
-      correct: summary.kategorieRichtig ? 'richtig' : '—', ok: summary.kategorieRichtig },
-    { label: 'Wichtigkeit', user: dimLabelShort(summary.userW),
-      correct: dimLabelShort(summary.correctW), ok: summary.wichtigkeitKorrekt },
-    { label: 'Abweichung',  user: dimLabelShort(summary.userA),
-      correct: dimLabelShort(summary.correctA), ok: summary.abweichungKorrekt },
-    { label: 'Unfallschwere', user: nacaLabelShort(summary.userN),
-      correct: nacaLabelShort(summary.correctN), ok: summary.nacaKorrekt },
+    { label: t('vr.kategorie'),   user: summary.kategorieRichtig ? t('vr.richtig') : t('vr.falsch'),
+      correct: summary.kategorieRichtig ? t('vr.richtig') : '—', ok: summary.kategorieRichtig },
+    { label: t('scoring.phase_a'), user: dimLabelShort(summary.userW, t),
+      correct: dimLabelShort(summary.correctW, t), ok: summary.wichtigkeitKorrekt },
+    { label: t('scoring.phase_b'),  user: dimLabelShort(summary.userA, t),
+      correct: dimLabelShort(summary.correctA, t), ok: summary.abweichungKorrekt },
+    { label: t('scoring.phase_d'), user: nacaLabelShort(summary.userN, t),
+      correct: nacaLabelShort(summary.correctN, t), ok: summary.nacaKorrekt },
   ]
 
   const panelW  = 0.88
@@ -765,7 +814,7 @@ function VRScoringSummaryPanel({ summary, onContinue }: VRScoringSummaryPanelPro
       </mesh>
       {/* Header */}
       <Text position={[0, panelH / 2 - 0.040, 0.003]} fontSize={0.018} color="rgba(255,255,255,0.45)" anchorX="center" anchorY="middle">
-        Bewertung abgeschlossen
+        {t('vr.bewertung_abgeschlossen')}
       </Text>
       <Text
         position={[0, panelH / 2 - 0.080, 0.003]}
@@ -775,10 +824,10 @@ function VRScoringSummaryPanel({ summary, onContinue }: VRScoringSummaryPanelPro
         anchorY="middle"
         maxWidth={panelW - 0.08}
       >
-        {allCorrect ? 'Alles richtig!' : 'Teilweise korrekt'}
+        {allCorrect ? t('vr.alles_richtig') : t('vr.teilweise_korrekt')}
       </Text>
       <Text position={[0, panelH / 2 - 0.120, 0.003]} fontSize={0.030} color="#ffffff" anchorX="center" anchorY="middle">
-        {`${summary.punkteFinal} / ${summary.maxPunkte} Punkte`}
+        {t('vr.punkte', { final: summary.punkteFinal, max: summary.maxPunkte })}
       </Text>
 
       {/* Zeilen: User-Wert vs korrekter Wert */}
@@ -798,11 +847,11 @@ function VRScoringSummaryPanel({ summary, onContinue }: VRScoringSummaryPanelPro
               {r.label}
             </Text>
             <Text position={[0.02, 0, 0.001]} fontSize={0.020} color="rgba(255,255,255,0.70)" anchorX="left" anchorY="middle">
-              {`Du: ${r.user}`}
+              {t('vr.du', { wert: r.user })}
             </Text>
             {!r.ok && (
               <Text position={[0.20, 0, 0.001]} fontSize={0.020} color="#1A7F1F" anchorX="left" anchorY="middle">
-                {`Korrekt: ${r.correct}`}
+                {t('vr.korrekt', { wert: r.correct })}
               </Text>
             )}
           </group>
@@ -811,7 +860,7 @@ function VRScoringSummaryPanel({ summary, onContinue }: VRScoringSummaryPanelPro
 
       {/* Weiter-Button */}
       <VRButton
-        label="Weiter"
+        label={t('scoring.weiter')}
         position={[0, -panelH / 2 + 0.050, 0.002]}
         width={panelW - 0.10}
         height={0.080}
@@ -849,7 +898,7 @@ function VRRayReticle({ position }: VRRayReticleProps) {
 }
 
 // ── VR: Alle-gefunden-Banner ─────────────────────────────────────────────────
-function VRAllFound({ onBeenden }: { onBeenden: () => void }) {
+function VRAllFound({ onBeenden, t }: { onBeenden: () => void; t: TFunction }) {
   return (
     <VRHud offset={[0, -0.22, -1.5]}>
       <mesh position={[0, 0, -0.002]}>
@@ -857,10 +906,10 @@ function VRAllFound({ onBeenden }: { onBeenden: () => void }) {
         <meshBasicMaterial color="#083a0c" transparent opacity={0.95} />
       </mesh>
       <Text position={[0, 0.048, 0.003]} fontSize={0.032} color="#ffffff" anchorX="center" anchorY="middle">
-        Alle Sicherheitsdefizite gefunden!
+        {t('szene.alle_gefunden')}
       </Text>
       <VRButton
-        label="Szene beenden"
+        label={t('szene.beenden')}
         position={[0, -0.048, 0.003]}
         width={0.55}
         height={0.075}
@@ -917,9 +966,12 @@ interface SceneContentProps {
   onBewertungW:        (w: RSIDimension) => void
   onBewertungA:        (a: RSIDimension) => void
   onBewertungN:        (n: NACADimension) => void
+  onBewertungCancel:   () => void
   // VR-Scoring-Summary (v0.8.2): Anzeige + Continue-Callback
   vrScoringFeedback:   VRScoringSummary | null
   onVRScoringContinue: () => void
+  // i18n (v0.8.3): t als Prop, damit die VR-Panels im Canvas übersetzt sind.
+  t:                   TFunction
 }
 
 function SceneContent({
@@ -932,8 +984,9 @@ function SceneContent({
   onHintRequest, onBeenden,
   aktivePerspektiveId, aktiveBildUrl, pendingClickPos, onStandortWechsel,
   visitedPerspektiven, hauptKey,
-  hitDeficit, onBewertungW, onBewertungA, onBewertungN,
+  hitDeficit, onBewertungW, onBewertungA, onBewertungN, onBewertungCancel,
   vrScoringFeedback, onVRScoringContinue,
+  t,
 }: SceneContentProps) {
   const foundIds    = new Set(foundDeficits.map(f => f.deficitId))
   const allFound    = foundDeficits.length === deficits.length
@@ -948,7 +1001,10 @@ function SceneContent({
   const [aimPos, setAimPos] = useState<THREE.Vector3 | null>(null)
   const handleSpherePointerMove = useCallback((e: ThreeEvent<PointerEvent>) => {
     if (!isInXR) return
-    setAimPos(e.point.clone())
+    // Schnittpunkt liegt auf der Sphere bei Radius 500. Auf Radius 60 normalisieren,
+    // damit das Reticle in derselben Ebene wie Hotspots/Crosshair sitzt und gross
+    // genug erscheint (sonst subtendiert der Ring bei r=500 nur ~0.4° — winzig).
+    setAimPos(e.point.clone().normalize().multiplyScalar(60))
   }, [isInXR])
   const handleSpherePointerOut = useCallback(() => {
     if (!isInXR) return
@@ -1022,8 +1078,11 @@ function SceneContent({
         return <Hotspot key={d.id} position={renderPos} found={isFound} />
       })}
 
-      {/* Standort-Navigationsmarker (Haupt-Panorama → Perspektiven) */}
-      {!aktivePerspektiveId && scene.perspektiven?.map((p, i) => {
+      {/* Standort-Navigationsmarker (Haupt-Panorama → Perspektiven)
+          Nur in exploring/pendingConfirm sichtbar — sonst könnte ein Marker-Klick
+          mitten in einer VR-Bewertung den Flow still abbrechen (Marker sind über
+          den halbtransparenten Panels per Ray weiterhin treffbar). */}
+      {(phase === 'exploring' || phase === 'pendingConfirm') && !aktivePerspektiveId && scene.perspektiven?.map((p, i) => {
         if (!p.standortPosition) return null
         const pos = sphericalToVector3(p.standortPosition, 60)
         const status: StandortMarkerStatus = visitedPerspektiven.has(p.id) ? 'besucht' : 'unbesucht'
@@ -1039,7 +1098,7 @@ function SceneContent({
       })}
 
       {/* NavMarker (Perspektive → Haupt / andere Perspektiven) */}
-      {aktivePerspektiveId && (() => {
+      {(phase === 'exploring' || phase === 'pendingConfirm') && aktivePerspektiveId && (() => {
         const aktPersp = scene.perspektiven?.find(p => p.id === aktivePerspektiveId)
         if (!aktPersp?.navMarker) return null
         return Object.entries(aktPersp.navMarker).map(([zielId, markerPos]) => {
@@ -1110,21 +1169,24 @@ function SceneContent({
                 hintActive={hintActive}
                 onHint={onHintRequest}
                 onBeenden={onBeenden}
+                t={t}
               />
             )}
             {allFound && phase === 'exploring' && (
-              <VRAllFound onBeenden={onBeenden} />
+              <VRAllFound onBeenden={onBeenden} t={t} />
             )}
             {phase === 'kategoriePanel' && (
               <VRKategoriePanel
                 onSelect={onKategorieSelect}
                 onCancel={onKategorieCancel}
+                t={t}
               />
             )}
             {phase === 'klickFeedback' && (
               <VRFeedback
                 type={feedbackType}
                 onClose={onFeedbackClose}
+                t={t}
               />
             )}
             {/* v0.8.1 Bugfix: Bewertungs-Phasen brauchten im VR eigene Panels.
@@ -1134,16 +1196,18 @@ function SceneContent({
               const tableWert = WICHTIGKEIT_TABLE[hitDeficit.kriteriumId]
               const prefill = tableWert ? (tableWert[hitDeficit.kontext] as RSIDimension | '') : ''
               const prefillHint = prefill
-                ? `Gemaess Tabelle: ${prefill === 'gross' ? 'Gross' : prefill === 'mittel' ? 'Mittel' : 'Klein'}`
+                ? t('scoring.gemäss_tabelle', { wert: t(`scoring.dim_${prefill}`) })
                 : null
               const kriteriumLabel = KRITERIUM_LABELS[hitDeficit.kriteriumId] ?? hitDeficit.kriteriumId
-              const kontextLabel = hitDeficit.kontext === 'io' ? 'Innerorts' : 'Ausserorts'
+              const kontextLabel = t(hitDeficit.kontext === 'io' ? 'einstieg.kontext_io' : 'einstieg.kontext_ao')
               return (
                 <VRBewertungWPanel
                   kriteriumLabel={kriteriumLabel}
                   kontextLabel={kontextLabel}
                   prefillHint={prefillHint}
                   onSelect={onBewertungW}
+                  onCancel={onBewertungCancel}
+                  t={t}
                 />
               )
             })()}
@@ -1151,15 +1215,18 @@ function SceneContent({
               <VRBewertungAPanel
                 options={ABWEICHUNG_KATEGORIEN}
                 onSelect={onBewertungA}
+                onCancel={onBewertungCancel}
+                t={t}
               />
             )}
             {phase === 'bewertungN' && hitDeficit && (
-              <VRBewertungNPanel onSelect={onBewertungN} />
+              <VRBewertungNPanel onSelect={onBewertungN} onCancel={onBewertungCancel} t={t} />
             )}
             {phase === 'vrScoringSummary' && vrScoringFeedback && (
               <VRScoringSummaryPanel
                 summary={vrScoringFeedback}
                 onContinue={onVRScoringContinue}
+                t={t}
               />
             )}
           </Suspense>
@@ -1352,6 +1419,11 @@ export default function SceneViewer({
       next.add(key)
       return next
     })
+    // Defensiv: laufende Bewertung verwerfen, falls doch ein Wechsel ausgelöst wird
+    // (Marker sind via Phasen-Gate eigentlich nur in exploring/pendingConfirm aktiv).
+    hitDeficit.current = null
+    setUserWichtigkeit(null)
+    setUserAbweichung(null)
     setPendingClickPos(null)
     setPhase('exploring')
   }, [])
@@ -1394,20 +1466,39 @@ export default function SceneViewer({
     return () => window.removeEventListener('keydown', handleKeyDown)
   }, [onBeenden])
 
+  // VR-Lifecycle-Sicherheitsnetz (v0.8.3): beim Unmount des Viewers eine evtl.
+  // noch laufende XR-Session und den pending-Timer abräumen. handleBeenden
+  // beendet die Session bereits aktiv vor dem View-Wechsel — dies fängt jeden
+  // anderen Unmount-Pfad ab, damit das Headset nie in einer toten Szene hängt.
+  useEffect(() => {
+    return () => {
+      if (pendingTimerRef.current) clearTimeout(pendingTimerRef.current)
+      xrStore.getState().session?.end().catch(() => { /* evtl. schon beendet */ })
+    }
+  }, [])
+
   // VR-Modus-Wechsel (von SceneContent via useXR gemeldet)
   // Kein phase-Dependency – phaseRef verhindert dass jeder Phase-Wechsel
   // das useEffect in SceneContent neu ausloest und den Klick-Flow resetzt
   const handleVRModeChange = useCallback((v: boolean) => {
     setIsVR(v)
     const p = phaseRef.current
-    if (!v && (p === 'kategoriePanel' || p === 'pendingConfirm' || p === 'bewertungW' || p === 'bewertungA' || p === 'bewertungN')) {
+    // Beim Verlassen der VR-Session jede Zwischenphase sauber auf exploring
+    // zurücksetzen. 'vrScoringSummary' MUSS dabei sein: sonst bliebe die Phase
+    // hängen und es gibt im Browser kein HTML-Pendant für dieses Panel.
+    if (!v && (
+      p === 'kategoriePanel' || p === 'pendingConfirm' || p === 'klickFeedback' ||
+      p === 'bewertungW' || p === 'bewertungA' || p === 'bewertungN' || p === 'vrScoringSummary'
+    )) {
       hitDeficit.current = null
       setUserWichtigkeit(null)
       setUserAbweichung(null)
       setPendingClickPos(null)
       setPhase('exploring')
+      // Eltern-Feedback-State (vrScoringFeedback) mitraeumen.
+      onVRScoringContinue()
     }
-  }, [])
+  }, [onVRScoringContinue])
 
   // ── Treffer-Prüfung (gemeinsam für Browser-Bestätigung und VR-Direktklick) ──
   const runHitCheck = useCallback((clickPos: { theta: number; phi: number }) => {
@@ -1467,6 +1558,10 @@ export default function SceneViewer({
     // Auto-Ausblenden nach 5 Sekunden
     if (pendingTimerRef.current) clearTimeout(pendingTimerRef.current)
     pendingTimerRef.current = setTimeout(() => {
+      // Phasen-Guard: nur ausblenden wenn wir noch im pendingConfirm sind. Sonst
+      // könnte ein nicht geclearter Timer (z.B. nach ESC → hintDialog) den
+      // User aus einer ganz anderen Phase zurück nach exploring reissen.
+      if (phaseRef.current !== 'pendingConfirm') return
       setPendingClickPos(null)
       setPhase('exploring')
     }, 5000)
@@ -1545,6 +1640,15 @@ export default function SceneViewer({
     // vrScoringFeedback nach. In Browser: exploring, View wechselt auf scoring.
     setPhase(isVR ? 'vrScoringSummary' : 'exploring')
   }, [userWichtigkeit, userAbweichung, hintActive, onDeficitConfirmed, isVR])
+
+  // Abbruch einer laufenden Bewertung (v0.8.3, VR-Cancel-Buttons): verwirft den
+  // Treffer und kehrt zum Erkunden zurück. Genutzt von den VR-Bewertungs-Panels.
+  const handleBewertungCancel = useCallback(() => {
+    hitDeficit.current = null
+    setUserWichtigkeit(null)
+    setUserAbweichung(null)
+    setPhase('exploring')
+  }, [])
 
   // Nach dem Weiter-Klick im VR-Scoring-Panel zurueck zum exploring.
   const handleVRScoringContinueLocal = useCallback(() => {
@@ -1664,8 +1768,10 @@ export default function SceneViewer({
             onBewertungW={handleBewertungW}
             onBewertungA={handleBewertungA}
             onBewertungN={handleBewertungN}
+            onBewertungCancel={handleBewertungCancel}
             vrScoringFeedback={vrScoringFeedback}
             onVRScoringContinue={handleVRScoringContinueLocal}
+            t={t}
           />
         </XR>
       </Canvas>
@@ -1748,7 +1854,13 @@ export default function SceneViewer({
             </div>
           )}
           <button
-            onClick={() => xrStore.enterVR()}
+            onClick={() => {
+              // enterVR() rejected bei fehlendem WebXR / abgelehnter Permission /
+              // ohne Headset — abfangen, sonst unhandled rejection + stummer Button.
+              xrStore.enterVR().catch((err: unknown) => {
+                console.warn('[RSI] VR-Start fehlgeschlagen (kein WebXR/Headset oder Permission verweigert):', err)
+              })
+            }}
             title="VR-Modus starten (Meta Quest)"
             style={{
               display: 'flex', alignItems: 'center', gap: '7px',
@@ -1988,21 +2100,9 @@ export default function SceneViewer({
             ]).map(g => (
               <button
                 key={g.wert}
-                onClick={() => {
-                  // Alle 3 Schritte fertig → Payload an App.tsx
-                  const d = hitDeficit.current!
-                  onDeficitConfirmed({
-                    deficit:          d,
-                    kategorieRichtig: hitKatRichtig.current,
-                    hintPenalty:      hintActive,
-                    userWichtigkeit:  userWichtigkeit!,
-                    userAbweichung:   userAbweichung!,
-                    userNacaSchwere:  g.wert,
-                    bewertungStartMs: bewertungStartTime.current,
-                  })
-                  hitDeficit.current = null
-                  setPhase('exploring')
-                }}
+                // Gemeinsamer Abschluss-Pfad mit dem VR-Flow (handleBewertungN) —
+                // ein einziger Payload-Bau + Null-Guard statt duplizierter Logik.
+                onClick={() => handleBewertungN(g.wert)}
                 style={{
                   textAlign: 'left', padding: '11px 16px', borderRadius: '8px',
                   border: '1px solid rgba(255,255,255,0.10)', background: 'rgba(255,255,255,0.05)',

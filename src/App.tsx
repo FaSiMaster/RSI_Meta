@@ -3,10 +3,11 @@
 // FaSi Kanton Zürich · ZH Corporate Design
 
 import { useState, useEffect, useMemo, useRef } from 'react'
+import { useTranslation } from 'react-i18next'
 import { AnimatePresence, motion, MotionConfig } from 'motion/react'
 import {
   getSession, saveSession, getDeficits, getAllScenes, saveRankingEntry,
-  saveSceneResult, getVersuchAnzahl, getGesamtScore,
+  saveSceneResult, getVersuchAnzahl, getGesamtScore, ml,
 } from './data/appData'
 import { MAX_PUNKTE_PRO_DEFIZIT, calcScoreFromChoices } from './data/scoreCalc'
 import { KATEGORIE_PUNKTE } from './data/scoringEngine'
@@ -48,6 +49,7 @@ export interface VrScoringFeedback {
 }
 
 export default function App() {
+  const { i18n } = useTranslation()
   const [view, setView]     = useState<View>('landing')
   const [username, setUsername] = useState('')
   const [score, setScore]   = useState(0)
@@ -172,6 +174,7 @@ export default function App() {
     setSceneScore(0)
     setScoringDeficit(null)
     setDefizitResults([])
+    setVrScoringFeedback(null)
     setView('einstieg')
   }
 
@@ -224,7 +227,9 @@ export default function App() {
       deficitId:          d.id,
       kategorieRichtig:   payload.kategorieRichtig,
       hintPenalty:        payload.hintPenalty,
-      punkteRoh:          rohPts + katPts,
+      // punkteRoh = reine 9-Schritte-Punkte OHNE Kategorie — konsistent mit dem
+      // Browser-Pfad (handleScoringComplete) und der Doku in appData.ts ("Vor Strafen").
+      punkteRoh:          rohPts,
       punkteFinal:        finalPts,
       dauerSekunden:      Math.round((Date.now() - payload.bewertungStartMs) / 1000),
       wichtigkeitKorrekt: payload.userWichtigkeit === ca.wichtigkeit,
@@ -237,7 +242,7 @@ export default function App() {
     setDefizitResults(prev => [...prev, defResult])
 
     setVrScoringFeedback({
-      deficitName:        d.nameI18n.de,
+      deficitName:        ml(d.nameI18n, i18n.language),
       punkteFinal:        finalPts,
       maxPunkte:          MAX_PUNKTE_PRO_DEFIZIT,
       kategorieRichtig:   payload.kategorieRichtig,
@@ -301,6 +306,13 @@ export default function App() {
   // ── Szene beenden (manuell oder alle gefunden) ─────────────────────────────
   function handleBeenden() {
     if (!currentScene || !currentTopic) return
+
+    // VR-Lifecycle: Eine laufende immersive-vr-Session MUSS hier aktiv beendet
+    // werden. SceneViewer unmountet gleich (view-Wechsel), und @react-three/xr
+    // beendet die Session beim Unmount NICHT von selbst — sonst bliebe das
+    // Headset in einer toten Szene hängen (es gibt auf der Quest kein ESC).
+    xrStore.getState().session?.end().catch(() => { /* Session evtl. schon beendet */ })
+    setVrScoringFeedback(null)
 
     const dauerSekunden = Math.round((Date.now() - sceneStartTime) / 1000)
     const maxPunkte = sceneDeficits.length * MAX_PUNKTE_PRO_DEFIZIT
@@ -453,8 +465,9 @@ export default function App() {
             </motion.div>
           )}
 
-          {/* SceneViewer bleibt während Scoring gemountet (XR-Session läuft weiter,
-              VR wird via xrStore.exitVR() beendet). ScoringFlow als Overlay darüber. */}
+          {/* SceneViewer bleibt während Scoring gemountet (XR-Session läuft weiter).
+              Eine aktive VR-Session wird in handleBeenden via session.end() beendet,
+              bevor der View wechselt. ScoringFlow als Overlay darüber. */}
           {(view === 'viewer' || view === 'scoring') && currentScene && (
             <motion.div key="viewer" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.15 }} className="flex-1 flex flex-col" style={{ overflow: 'hidden', position: 'relative' }}>
               <SceneViewer

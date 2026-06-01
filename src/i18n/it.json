@@ -529,5 +529,16 @@
     "warnung_seitenverhältnis": "Nota: Le immagini panoramiche hanno di solito un rapporto 2:1. Questa immagine si discosta da tale proporzione.",
     "abmessungen": "{{breite}} × {{hoehe}} pixel",
     "laden": "Caricamento immagine..."
+  },
+  "vr": {
+    "bewertung_abgeschlossen": "Valutazione completata",
+    "alles_richtig": "Tutto corretto!",
+    "teilweise_korrekt": "Parzialmente corretto",
+    "punkte": "{{final}} / {{max}} punti",
+    "du": "Tu: {{wert}}",
+    "korrekt": "Corretto: {{wert}}",
+    "kategorie": "Categoria",
+    "richtig": "corretto",
+    "falsch": "errato"
   }
 }

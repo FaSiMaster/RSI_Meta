@@ -529,5 +529,16 @@
     "warnung_seitenverhältnis": "Note: Panoramic images usually have a 2:1 aspect ratio. This image deviates from that.",
     "abmessungen": "{{breite}} × {{hoehe}} pixels",
     "laden": "Loading image..."
+  },
+  "vr": {
+    "bewertung_abgeschlossen": "Assessment complete",
+    "alles_richtig": "All correct!",
+    "teilweise_korrekt": "Partially correct",
+    "punkte": "{{final}} / {{max}} points",
+    "du": "You: {{wert}}",
+    "korrekt": "Correct: {{wert}}",
+    "kategorie": "Category",
+    "richtig": "correct",
+    "falsch": "incorrect"
   }
 }

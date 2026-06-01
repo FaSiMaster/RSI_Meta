@@ -529,5 +529,16 @@
     "warnung_seitenverhältnis": "Hinweis: Panoramabilder haben üblicherweise das Seitenverhältnis 2:1. Dieses Bild weicht davon ab.",
     "abmessungen": "{{breite}} × {{hoehe}} Pixel",
     "laden": "Bild wird geladen..."
+  },
+  "vr": {
+    "bewertung_abgeschlossen": "Bewertung abgeschlossen",
+    "alles_richtig": "Alles richtig!",
+    "teilweise_korrekt": "Teilweise korrekt",
+    "punkte": "{{final}} / {{max}} Punkte",
+    "du": "Du: {{wert}}",
+    "korrekt": "Korrekt: {{wert}}",
+    "kategorie": "Kategorie",
+    "richtig": "richtig",
+    "falsch": "falsch"
   }
 }

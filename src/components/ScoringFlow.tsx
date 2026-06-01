@@ -10,7 +10,7 @@ import { ml, type AppDeficit, type AppScene } from '../data/appData'
 import LernKarte from './LernKarte'
 import {
   WICHTIGKEIT_TABLE, NORMHIERARCHIE, ABWEICHUNG_KATEGORIEN,
-  calcRelevanzSD, calcUnfallrisiko,
+  calcRelevanzSD, calcUnfallrisiko, KATEGORIE_PUNKTE,
 } from '../data/scoringEngine'
 import { KRITERIUM_LABELS } from '../data/kriteriumLabels'
 import { calcScore as calcScorePure, MAX_PUNKTE_PRO_DEFIZIT } from '../data/scoreCalc'
@@ -496,8 +496,9 @@ export default function ScoringFlow({ deficit, scene, kategorieRichtig = true, h
   function renderResult() {
     const rawPts = calcScore()
     const maxPts = MAX_PUNKTE_PRO_DEFIZIT
-    // Kategorie additiv + Hinweis-Abzug
-    const katPts       = kategorieRichtig ? 25 : 0
+    // Kategorie additiv + Hinweis-Abzug — KATEGORIE_PUNKTE-Konstante statt Literal,
+    // damit Browser- und VR-Pfad bei einer Norm-Änderung synchron bleiben.
+    const katPts       = kategorieRichtig ? KATEGORIE_PUNKTE : 0
     const hintAbzug    = hintPenalty ? 25 : 0
     const ptsVorBonus  = Math.max(0, rawPts + katPts - hintAbzug)
     // D-9: Booster-Bonus (10 % oder 20 %) auf den finalen Score
