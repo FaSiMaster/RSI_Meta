@@ -15,7 +15,7 @@
 
 | Schicht | Technologie | Version |
 |---|---|---|
-| Version | **v0.9.1** (2026-07-28) | VR-Ergebnis-Didaktik: Hint-Dialog, Lernkarte + Matrizen in VR |
+| Version | **v0.9.2** (2026-07-28) | VR-Ergebnis-Didaktik + Headset-Feedback-Fixe |
 | Framework | React + Vite + TypeScript | React 18, Vite 5, TS strict |
 | Animation | Framer Motion (motion/react) | v12 |
 | i18n | react-i18next | — |

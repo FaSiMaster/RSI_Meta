@@ -697,13 +697,12 @@ function VRFeedback({ type, onClose, t }: VRFeedbackProps) {
 interface VRBewertungWPanelProps {
   kriteriumLabel: string
   kontextLabel:   string
-  prefillHint:    string | null
   onSelect:       (w: RSIDimension) => void
   onCancel:       () => void
   t:              TFunction
 }
 
-function VRBewertungWPanel({ kriteriumLabel, kontextLabel, prefillHint, onSelect, onCancel, t }: VRBewertungWPanelProps) {
+function VRBewertungWPanel({ kriteriumLabel, kontextLabel, onSelect, onCancel, t }: VRBewertungWPanelProps) {
   const options: { val: RSIDimension; labelKey: string }[] = [
     { val: 'klein',  labelKey: 'scoring.dim_klein'  },
     { val: 'mittel', labelKey: 'scoring.dim_mittel' },
@@ -712,7 +711,7 @@ function VRBewertungWPanel({ kriteriumLabel, kontextLabel, prefillHint, onSelect
   const btnH    = 0.080
   const btnGap  = 0.010
   const btnStep = btnH + btnGap
-  const headerH = prefillHint ? 0.23 : 0.20
+  const headerH = 0.20
   const footerH = 0.075
   const panelH  = headerH + options.length * btnStep + footerH + 0.04
   const panelW  = 0.80
@@ -736,11 +735,6 @@ function VRBewertungWPanel({ kriteriumLabel, kontextLabel, prefillHint, onSelect
       <Text position={[0, panelH / 2 - 0.120, 0.003]} fontSize={0.022} color="rgba(255,255,255,0.55)" anchorX="center" anchorY="middle" maxWidth={panelW - 0.08}>
         {kriteriumLabel} · {kontextLabel}
       </Text>
-      {prefillHint && (
-        <Text position={[0, panelH / 2 - 0.152, 0.003]} fontSize={0.020} color="#66a6e0" anchorX="center" anchorY="middle" maxWidth={panelW - 0.08}>
-          {prefillHint}
-        </Text>
-      )}
       {options.map((o, i) => (
         <VRButton
           key={o.val}
@@ -1723,18 +1717,14 @@ function SceneContent({
                 Im Browser sind das HTML-Overlays — die sind in VR unsichtbar
                 und der Flow blieb nach Kategorie haengen. */}
             {phase === 'bewertungW' && hitDeficit && (() => {
-              const tableWert = WICHTIGKEIT_TABLE[hitDeficit.kriteriumId]
-              const prefill = tableWert ? (tableWert[hitDeficit.kontext] as RSIDimension | '') : ''
-              const prefillHint = prefill
-                ? t('scoring.gemäss_tabelle', { wert: t(`scoring.dim_${prefill}`) })
-                : null
+              // v0.9.2: kein «Gemäss Tabelle»-Prefill mehr — der Hinweis zeigte
+              // die korrekte Wichtigkeit an und nahm Schritt 1 die Bewertung ab.
               const kriteriumLabel = KRITERIUM_LABELS[hitDeficit.kriteriumId] ?? hitDeficit.kriteriumId
               const kontextLabel = t(hitDeficit.kontext === 'io' ? 'einstieg.kontext_io' : 'einstieg.kontext_ao')
               return (
                 <VRBewertungWPanel
                   kriteriumLabel={kriteriumLabel}
                   kontextLabel={kontextLabel}
-                  prefillHint={prefillHint}
                   onSelect={onBewertungW}
                   onCancel={onBewertungCancel}
                   t={t}

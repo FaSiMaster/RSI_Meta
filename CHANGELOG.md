@@ -13,6 +13,25 @@ Versionierung nach [Semantic Versioning](https://semver.org/lang/de/).
 
 ---
 
+## [0.9.2] — 2026-07-28 — Headset-Feedback zu v0.9.1
+
+### Behoben
+
+- **Weiter-Button zeigte den rohen Schlüssel `scoring.weiter`** statt
+  «Weiter»: Der i18n-Schlüssel fehlte in allen vier Sprachen (bestand
+  latent seit v0.8.2, sichtbar in den Summary-Footern). Neu:
+  `scoring.weiter` = Weiter / Continuer / Avanti / Continue.
+- **«Gemäss Tabelle»-Hinweis im Wichtigkeits-Panel entfernt** (VR): Der
+  blaue Prefill-Text zeigte die korrekte Wichtigkeit an, bevor der User
+  Schritt 1 selbst bewertet hatte — die Trainingsfrage war damit
+  vorweggenommen. Panel-Prop `prefillHint` komplett entfernt.
+
+### Gates
+
+- `tsc --noEmit`: 0 Fehler · `vitest`: 46/46 · `vite build`: grün
+
+---
+
 ## [0.9.1] — 2026-07-28 — VR-Iter 5: Ergebnis-Didaktik in VR (Browser-Parität)
 
 Schliesst die Darstellungslücke zwischen Browser und VR: Hinweis-Bestätigung,
