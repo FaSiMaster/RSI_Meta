@@ -13,6 +13,30 @@ Versionierung nach [Semantic Versioning](https://semver.org/lang/de/).
 
 ---
 
+## [0.9.4] — 2026-07-28 — Hinweis-Wegweiser über Standorte
+
+### Behoben / Hinzugefügt
+
+- **Hinweis zeigte aus Nebenstandorten keine Hotspots** (Stevos
+  Headset-Befund): Hotspots erscheinen bewusst nur im Standort, in dem das
+  Defizit verortet ist (kein Fallback seit v0.4.0 — verhindert
+  Phantom-Positionen im falschen Bild). Aus einem anderen Standort lief der
+  Hinweis damit ins Leere. **Neu: Hinweis-Wegweiser** — bei aktivem Hinweis
+  werden Standort-Marker **orange umrandet**, wenn hinter ihnen noch
+  unentdeckte Defizite verortet sind. Der Weg wird gezeigt, die genaue
+  Position erst am richtigen Standort (User-Entscheid: Variante
+  «Standort-Marker orange»).
+- Gilt in **VR** (Diamant-Marker: oranger Rand + oranges Label) und im
+  **Browser** (Standort-Leiste: oranger Button-Rand inkl. Haupt-Button).
+  Grundlage: neue Helper-Funktion `standortHatOffeneDefizite()` auf Basis
+  von `getHotspotPosition` — dieselbe Logik, die auch die Hotspots rendert.
+
+### Gates
+
+- `tsc --noEmit`: 0 Fehler · `vitest`: 46/46 · `vite build`: grün
+
+---
+
 ## [0.9.3] — 2026-07-28 — Browser-Parität + Rest-Politur
 
 ### Behoben

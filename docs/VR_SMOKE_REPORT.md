@@ -247,6 +247,18 @@ Screenshot zurueckmelden.
 - [ ] Panel bleibt beim Seitenwechsel an der verschobenen Position
       (gleiche Griffleiste, ID `summary`).
 
+### J. Hinweis-Wegweiser (v0.9.4)
+- [ ] Hinweis in einem Nebenstandort aktivieren: Standort-Marker, hinter
+      denen unentdeckte Defizite liegen, sind orange umrandet (auch der
+      Rücksprung-Marker zum Hauptbild, falls dort Defizite offen sind).
+- [ ] Standort ohne offene Defizite: Marker bleibt weiss/grün (kein Orange).
+- [ ] Nach Standortwechsel zum orangen Marker: orange Hotspots der dort
+      verorteten Defizite sichtbar.
+- [ ] Defizit gefunden → Orange am Standort-Marker erlischt, sobald dort
+      nichts Offenes mehr liegt.
+- [ ] Browser-Gegenprobe: Standort-Leiste unten zeigt dieselben Standorte
+      mit orangem Rand.
+
 ---
 
 ## 5. Bekannte Limitationen
@@ -282,6 +294,7 @@ Screenshot zurueckmelden.
 | G. Beenden | ? | |
 | H. Panels verschiebbar (v0.9.0) | ? | |
 | I. Ergebnis-Didaktik in VR (v0.9.1) | ? | |
+| J. Hinweis-Wegweiser (v0.9.4) | ? | |
 
 **Gesamt-Eindruck**: _(ausstehend)_
 

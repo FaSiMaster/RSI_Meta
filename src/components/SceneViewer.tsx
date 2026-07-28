@@ -129,24 +129,28 @@ interface StandortNavMarkerProps {
   position: THREE.Vector3
   label:    string
   status:   StandortMarkerStatus
+  /** v0.9.4: Hinweis aktiv + hinter diesem Standort liegen unentdeckte Defizite.
+      Der Marker wird orange umrandet — Wegweiser, ohne die Position zu verraten. */
+  hintZiel?: boolean
   onClick:  () => void
 }
 
-function StandortNavMarker({ position, label, status, onClick }: StandortNavMarkerProps) {
+function StandortNavMarker({ position, label, status, hintZiel = false, onClick }: StandortNavMarkerProps) {
   const [hovered, setHovered] = useState(false)
   // Hover-Vergroesserung v0.8.1: Feedback auf Stevos VR-Test deutlicher machen.
   const size = hovered ? 4.5 : 2.6
   const fillColor = status === 'besucht' ? '#1A7F1F' : '#d7d7d7'
-  const labelColor = status === 'besucht' ? '#cfe9d0' : 'white'
+  const labelColor = hintZiel ? '#F0A500' : status === 'besucht' ? '#cfe9d0' : 'white'
+  const randColor  = hintZiel ? '#F0A500' : 'white'
   return (
     <Billboard
       position={position}
       follow lockX={false} lockY={false} lockZ={false}
     >
-      {/* Weisser Rand-Diamant (leicht grösser, hinten) */}
+      {/* Rand-Diamant (leicht grösser, hinten) — orange als Hinweis-Wegweiser */}
       <mesh rotation={[0, 0, Math.PI / 4]}>
-        <planeGeometry args={[size + 0.45, size + 0.45]} />
-        <meshBasicMaterial color="white" transparent opacity={0.92} side={THREE.DoubleSide} depthTest={false} />
+        <planeGeometry args={[size + (hintZiel ? 0.9 : 0.45), size + (hintZiel ? 0.9 : 0.45)]} />
+        <meshBasicMaterial color={randColor} transparent opacity={0.92} side={THREE.DoubleSide} depthTest={false} />
       </mesh>
       {/* Füll-Diamant (klickbar, vorne) — Farbe abhaengig vom Besuch-Status */}
       <mesh
@@ -201,6 +205,18 @@ function getHotspotPosition(d: AppDeficit, perspektivenId: string | null = null)
   // Haupt-Koordinate sonst eine irreführende Position im anderen Bild zeigen.
   if (!perspektivenId && d.position) return sphericalToVector3(d.position, 60)
   return null
+}
+
+// v0.9.4: Liegen hinter einem Ziel-Standort noch unentdeckte, dort verortete
+// Defizite? Grundlage für den Hinweis-Wegweiser: Hotspots erscheinen bewusst
+// nur im Standort der Verortung (kein Fallback seit v0.4.0) — der Hinweis
+// muss deshalb den Weg zum richtigen Standort zeigen.
+function standortHatOffeneDefizite(
+  deficits: AppDeficit[],
+  foundIds: Set<string>,
+  zielPerspektivenId: string | null,
+): boolean {
+  return deficits.some(d => !foundIds.has(d.id) && getHotspotPosition(d, zielPerspektivenId) !== null)
 }
 
 // ── VR: Panel im Weltraum – Position einmalig bei Mount erfassen ─────────────
@@ -1612,6 +1628,7 @@ function SceneContent({
             position={pos}
             label={p.label || t('szene.standort', { nr: i + 1 })}
             status={status}
+            hintZiel={hintActive && standortHatOffeneDefizite(deficits, foundIds, p.id)}
             onClick={() => onStandortWechsel(p.id)}
           />
         )
@@ -1635,6 +1652,7 @@ function SceneContent({
               position={pos}
               label={label}
               status={status}
+              hintZiel={hintActive && standortHatOffeneDefizite(deficits, foundIds, zielId === 'haupt' ? null : zielId)}
               onClick={() => onStandortWechsel(zielId === 'haupt' ? null : zielId)}
             />
           )
@@ -2658,7 +2676,11 @@ export default function SceneViewer({
             style={{
               display: 'flex', alignItems: 'center', gap: '8px',
               padding: '8px 14px', borderRadius: '9px',
-              border: !aktivePerspektiveId ? '2px solid #0076BD' : '1px solid rgba(255,255,255,0.18)',
+              border: !aktivePerspektiveId
+                ? '2px solid #0076BD'
+                : hintActive && standortHatOffeneDefizite(deficits, foundIds, null)
+                  ? '2px solid #F0A500'
+                  : '1px solid rgba(255,255,255,0.18)',
               background: !aktivePerspektiveId ? 'rgba(0,118,189,0.25)' : 'rgba(0,0,0,0.55)',
               backdropFilter: 'blur(10px)',
               color: !aktivePerspektiveId ? 'white' : 'rgba(255,255,255,0.70)',
@@ -2676,6 +2698,9 @@ export default function SceneViewer({
           {/* Perspektiven */}
           {perspektiven.map((p, i) => {
             const isActive = p.id === aktivePerspektiveId
+            // v0.9.4: Hinweis-Wegweiser — orange Umrandung, wenn hinter dem
+            // Standort noch unentdeckte Defizite verortet sind.
+            const hintZiel = !isActive && hintActive && standortHatOffeneDefizite(deficits, foundIds, p.id)
             return (
               <button
                 key={p.id}
@@ -2683,10 +2708,10 @@ export default function SceneViewer({
                 style={{
                   display: 'flex', alignItems: 'center', gap: '8px',
                   padding: '8px 14px', borderRadius: '9px',
-                  border: isActive ? '2px solid #0076BD' : '1px solid rgba(255,255,255,0.18)',
+                  border: isActive ? '2px solid #0076BD' : hintZiel ? '2px solid #F0A500' : '1px solid rgba(255,255,255,0.18)',
                   background: isActive ? 'rgba(0,118,189,0.25)' : 'rgba(0,0,0,0.55)',
                   backdropFilter: 'blur(10px)',
-                  color: isActive ? 'white' : 'rgba(255,255,255,0.70)',
+                  color: isActive ? 'white' : hintZiel ? '#F0A500' : 'rgba(255,255,255,0.70)',
                   fontSize: '13px', fontWeight: isActive ? 700 : 500,
                   cursor: isActive ? 'default' : 'pointer',
                   fontFamily: 'var(--zh-font)',
@@ -2695,7 +2720,7 @@ export default function SceneViewer({
                   textAlign: 'left',
                 }}
               >
-                <MapPin size={13} style={{ flexShrink: 0, opacity: isActive ? 1 : 0.5 }} />
+                <MapPin size={13} style={{ flexShrink: 0, opacity: isActive ? 1 : 0.5, color: hintZiel ? '#F0A500' : undefined }} />
                 <span>{p.label || t('szene.standort', { nr: i + 1 })}</span>
               </button>
             )
