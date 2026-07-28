@@ -13,6 +13,55 @@ Versionierung nach [Semantic Versioning](https://semver.org/lang/de/).
 
 ---
 
+## [0.9.1] — 2026-07-28 — VR-Iter 5: Ergebnis-Didaktik in VR (Browser-Parität)
+
+Schliesst die Darstellungslücke zwischen Browser und VR: Hinweis-Bestätigung,
+Lernkarte und Matrix-Herleitung gibt es jetzt in beiden Welten.
+
+### Hinzugefügt
+
+- **VR-Hinweis-Dialog** (`VRHintDialog`, neue Phase `vrHintDialog`): In VR
+  aktivierte der Hinweis-Button die Punkte-Penalty bisher sofort und ohne
+  Warnung — der Browser hatte den Bestätigungs-Dialog, VR nicht. Jetzt
+  erscheint in VR dasselbe Bestätigungs-Panel (Anzahl Hotspots, Abzug,
+  «bleibt für die ganze Szene aktiv», Abbrechen/Bestätigen).
+- **Scoring-Summary mit drei Seiten** (Wiedererkennung zum Browser-Flow):
+  1. *Ergebnis* — wie bisher (richtig/falsch pro Schritt + Punkte),
+  2. *Herleitung* — beide normative Matrizen als R3F-Grids
+     (`VRMatrix`): Relevanz-Matrix (Wichtigkeit × Abweichung) und
+     Unfallrisiko-Matrix (Relevanz SD × Unfallschwere), mit derselben
+     Marker-Semantik wie die Browser-CompactMatrix (User-Schnittpunkt grün
+     gefüllt bzw. rot bei Fehler, korrekte Zelle grün umrandet,
+     User-Achsen hervorgehoben),
+  3. *Lernkarte* — Kriterium + Kontext, Norm-Referenzen, Erklärungstext und
+     Defizit-Beschreibung, analog zur Browser-LernKarte.
+- **Gemeinsames Ergebnis-Modell** `src/data/ergebnisModel.ts` (pure
+  Functions): Matrix-Aufbau + Marker-Logik einmal definiert, von VR
+  konsumiert; 9 Unit-Tests pinnen zusätzlich alle 18 normativen Zellwerte
+  gegen die Sacred-Engine (Regressionsnetz).
+
+### Geändert
+
+- **Browser-HintDialog auf i18n umgestellt** (war hartcodiert Deutsch;
+  Keys `szene.hint_*` existierten bereits ungenutzt).
+- **Penalty-Text korrigiert:** Dialog behauptete «50% der Punkte» — Browser
+  und VR rechnen tatsächlich beide additiv **−25 Punkte**
+  (`ScoringFlow.tsx` `hintAbzug`, `App.tsx` VR-Pfad). Texte in de/fr/it/en
+  auf die reale Berechnung angepasst; Rechenlogik unverändert.
+- `App.VrScoringFeedback` ist jetzt ein Typ-Alias auf
+  `SceneViewer.VRScoringSummary` statt eines Feld-Duplikats (war beim
+  Erweitern bereits auseinandergedriftet).
+- Neuer i18n-Key `scoring.herleitung` (de/fr/it/en).
+
+### Gates
+
+- `tsc --noEmit`: 0 Fehler · `vitest`: 46/46 · `playwright`: 12/12 ·
+  `vite build`: grün
+- Headset-Smoke-Test Meta Quest 3: ausstehend (Protokoll I in
+  `docs/VR_SMOKE_REPORT.md`)
+
+---
+
 ## [0.9.0] — 2026-07-28 — VR-Panels verschiebbar
 
 ### Hinzugefügt

@@ -225,6 +225,28 @@ Screenshot zurueckmelden.
 - [ ] Klick-Feedback-Toast (Treffer/Fehlschlag) hat KEINE Griffleiste
       (transient, gewollt).
 
+### I. Ergebnis-Didaktik in VR (v0.9.1)
+- [ ] Hinweis-Button in VR öffnet zuerst den Bestätigungs-Dialog
+      (Anzahl Hotspots, «25 Punkte abgezogen», «bleibt aktiv») —
+      KEINE sofortige Aktivierung mehr.
+- [ ] «Abbrechen» im Hinweis-Dialog: kein Punktabzug, Hotspots bleiben aus.
+- [ ] Bestätigen: Hotspots erscheinen, Kontroll-Leiste zeigt «Hinweis aktiv».
+- [ ] Nach der Bewertung: Ergebnis-Seite mit zwei Buttons
+      «Herleitung» und «Weiter».
+- [ ] «Herleitung» zeigt beide Matrizen; die eigene Wahl ist als
+      gefüllte Zelle markiert (grün = korrekt, rot = falsch),
+      die korrekte Zelle grün umrandet — gleiches Farbschema wie
+      im Browser-ScoringFlow (Wiedererkennung).
+- [ ] Matrix-Texte sind auf dem Quest-Display lesbar (Zellen ~6 cm
+      bei 1.5 m Distanz).
+- [ ] «Lernkarte» zeigt Kriterium, Norm-Referenzen, Erklärung und
+      Beschreibung; lange Erklärungstexte laufen nicht aus dem Panel.
+- [ ] «Zurück»-Navigation zwischen den drei Seiten funktioniert.
+- [ ] «Weiter» (auf Ergebnis- oder Lernkarten-Seite) schliesst das Panel,
+      Suche geht weiter.
+- [ ] Panel bleibt beim Seitenwechsel an der verschobenen Position
+      (gleiche Griffleiste, ID `summary`).
+
 ---
 
 ## 5. Bekannte Limitationen
@@ -259,6 +281,7 @@ Screenshot zurueckmelden.
 | F. Farb-codierte Marker | ? | |
 | G. Beenden | ? | |
 | H. Panels verschiebbar (v0.9.0) | ? | |
+| I. Ergebnis-Didaktik in VR (v0.9.1) | ? | |
 
 **Gesamt-Eindruck**: _(ausstehend)_
 

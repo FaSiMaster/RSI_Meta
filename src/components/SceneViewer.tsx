@@ -25,7 +25,8 @@ import KlickFeedback, { type KlickFeedbackType } from './KlickFeedback'
 import { useTranslation } from 'react-i18next'
 import { WICHTIGKEIT_TABLE, ABWEICHUNG_KATEGORIEN } from '../data/scoringEngine'
 import { KRITERIUM_LABELS } from '../data/kriteriumLabels'
-import type { RSIDimension, NACADimension } from '../types'
+import { buildRelevanzMatrix, buildRisikoMatrix, deriveErgebnisse, type MatrixModel } from '../data/ergebnisModel'
+import type { RSIDimension, NACADimension, ResultDimension } from '../types'
 import type { TFunction } from 'i18next'
 
 // Modul-Level Singleton – nie innerhalb von Komponenten erzeugen
@@ -580,6 +581,65 @@ function VRKategoriePanel({ onSelect, onCancel, t }: VRKategoriePanelProps) {
   )
 }
 
+// ── VR: Hinweis-Dialog (v0.9.1, VR-Iter 5) ──────────────────────────────────
+// Gleiche Semantik wie der Browser-HintDialog: erst bestaetigen, dann Penalty.
+// Vorher aktivierte der VR-Hinweis-Button die Penalty ohne jede Warnung.
+interface VRHintDialogProps {
+  hintCount:    number
+  onBestätigen: () => void
+  onAbbrechen:  () => void
+  t:            TFunction
+}
+
+function VRHintDialog({ hintCount, onBestätigen, onAbbrechen, t }: VRHintDialogProps) {
+  const panelW = 0.80
+  const panelH = 0.48
+
+  return (
+    <VRHud offset={[0, 0, -1.5]} drag={{ id: 'hint', width: panelW, top: panelH / 2 }}>
+      <mesh position={[0, 0, -0.003]}>
+        <planeGeometry args={[panelW + 0.012, panelH + 0.012]} />
+        <meshBasicMaterial color="#6a4a00" transparent opacity={0.90} />
+      </mesh>
+      <mesh position={[0, 0, -0.002]}>
+        <planeGeometry args={[panelW, panelH]} />
+        <meshBasicMaterial color="#090d1b" transparent opacity={0.96} />
+      </mesh>
+      <Text position={[0, panelH / 2 - 0.055, 0.003]} fontSize={0.034} color="#F0A500" anchorX="center" anchorY="middle" maxWidth={panelW - 0.08}>
+        {t('szene.hint_titel')}
+      </Text>
+      <Text position={[0, 0.035, 0.003]} fontSize={0.024} color="rgba(255,255,255,0.80)" anchorX="center" anchorY="middle" maxWidth={panelW - 0.10} textAlign="center" lineHeight={1.45}>
+        {t('szene.hint_text', { count: hintCount })}
+      </Text>
+      <Text position={[0, -0.095, 0.003]} fontSize={0.019} color="rgba(255,255,255,0.45)" anchorX="center" anchorY="middle" maxWidth={panelW - 0.10} textAlign="center">
+        {t('szene.hint_dauer')}
+      </Text>
+      <VRButton
+        label={t('scoring.abbrechen')}
+        position={[-0.19, -panelH / 2 + 0.070, 0.002]}
+        width={0.34}
+        height={0.075}
+        color="#1a1a2a"
+        hoverColor="#333355"
+        textColor="rgba(255,255,255,0.65)"
+        fontSize={0.027}
+        onClick={onAbbrechen}
+      />
+      <VRButton
+        label={t('szene.hint_bestätigen')}
+        position={[0.19, -panelH / 2 + 0.070, 0.002]}
+        width={0.34}
+        height={0.075}
+        color="#7a5500"
+        hoverColor="#F0A500"
+        textColor="#ffffff"
+        fontSize={0.027}
+        onClick={onBestätigen}
+      />
+    </VRHud>
+  )
+}
+
 // ── VR: Klick-Feedback ───────────────────────────────────────────────────────
 interface VRFeedbackProps {
   type:    KlickFeedbackType
@@ -868,6 +928,155 @@ function VRBewertungNPanel({ onSelect, onCancel, t }: VRBewertungNPanelProps) {
   )
 }
 
+// ── VR: Matrix-Herleitung (v0.9.1, VR-Iter 5) ───────────────────────────────
+// 3×3-Matrix als R3F-Grid, visuell an die Browser-CompactMatrix angelehnt
+// (Wiedererkennung): User-Schnittpunkt gruen gefuellt (korrekt) bzw. rot (falsch),
+// korrekte Zelle gruen umrandet, User-Achsen dezent hervorgehoben.
+const VR_RESULT_COLOR: Record<ResultDimension, string> = {
+  hoch:   '#D40053',
+  mittel: '#B87300',
+  gering: '#1A7F1F',
+}
+
+function resultLabelShort(v: ResultDimension, t: TFunction): string {
+  return t(v === 'hoch' ? 'scoring.result_hoch' : v === 'mittel' ? 'scoring.result_mittel' : 'scoring.result_gering')
+}
+
+// Achsen-Beschriftungen pro Matrix-Typ (Reihenfolge = Modell-Reihenfolge)
+function vrMatrixLabels(model: MatrixModel, t: TFunction): {
+  rowLabels: string[]; colLabels: string[]; xLabel: string; yLabel: string
+} {
+  if (model.type === 'relevanz') {
+    return {
+      rowLabels: model.rows.map(r => dimLabelShort(r as RSIDimension, t)),
+      colLabels: model.cols.map(c => dimLabelShort(c as RSIDimension, t)),
+      xLabel:    t('scoring.matrix_abweichung'),
+      yLabel:    t('scoring.matrix_wichtigkeit'),
+    }
+  }
+  return {
+    rowLabels: model.rows.map(r => resultLabelShort(r as ResultDimension, t)),
+    colLabels: model.cols.map(c => nacaLabelShort(c as NACADimension, t)),
+    xLabel:    t('scoring.matrix_unfallschwere'),
+    yLabel:    t('scoring.matrix_relevanz'),
+  }
+}
+
+interface VRMatrixProps {
+  model: MatrixModel
+  titel: string
+  t:     TFunction
+}
+
+// Layout-Konstanten (Meter im Panel-Raum)
+const MX_LABEL_W = 0.15
+const MX_CELL_W  = 0.17
+const MX_CELL_H  = 0.060
+const MX_GAP     = 0.006
+const MX_GRID_W  = MX_LABEL_W + 3 * MX_CELL_W + 3 * MX_GAP
+/** Gesamthoehe eines VRMatrix-Blocks (Titel + X-Label + Header + 3 Zeilen). */
+export const MX_BLOCK_H = 0.040 + 0.028 + 0.038 + 3 * (MX_CELL_H + MX_GAP)
+
+// Rendert eine Matrix, oben-zentriert bei y=0 (waechst nach unten).
+function VRMatrix({ model, titel, t }: VRMatrixProps) {
+  const { rowLabels, colLabels, xLabel, yLabel } = vrMatrixLabels(model, t)
+  const gridLeft = -MX_GRID_W / 2
+  // X-Positionen: Zeilen-Label-Spalte + 3 Zellen-Spalten (Zentren)
+  const colX = (ci: number) => gridLeft + MX_LABEL_W + MX_GAP + ci * (MX_CELL_W + MX_GAP) + MX_CELL_W / 2
+  const labelX = gridLeft + MX_LABEL_W / 2
+  // Y-Positionen (von oben): Titel, X-Achsen-Label, Spalten-Header, Zeilen
+  const yTitel  = -0.020
+  const yXAxis  = -0.054
+  const yHeader = -0.088
+  const rowY = (ri: number) => yHeader - 0.019 - MX_GAP - ri * (MX_CELL_H + MX_GAP) - MX_CELL_H / 2
+
+  return (
+    <group>
+      <Text position={[0, yTitel, 0.003]} fontSize={0.026} color="#ffffff" anchorX="center" anchorY="middle" maxWidth={MX_GRID_W}>
+        {titel}
+      </Text>
+      <Text position={[colX(1), yXAxis, 0.003]} fontSize={0.017} color="rgba(255,255,255,0.45)" anchorX="center" anchorY="middle">
+        {`${xLabel} →`}
+      </Text>
+      {/* Y-Achsen-Label vertikal links */}
+      <Text
+        position={[gridLeft - 0.020, rowY(1), 0.003]}
+        rotation={[0, 0, Math.PI / 2]}
+        fontSize={0.017}
+        color="rgba(255,255,255,0.45)"
+        anchorX="center"
+        anchorY="middle"
+      >
+        {`← ${yLabel}`}
+      </Text>
+      {/* Spalten-Header */}
+      {model.cols.map((col, ci) => {
+        const istUserCol = col === model.userCol
+        return (
+          <group key={`h-${String(col)}`} position={[colX(ci), yHeader, 0]}>
+            <mesh>
+              <planeGeometry args={[MX_CELL_W, 0.034]} />
+              <meshBasicMaterial color={istUserCol ? '#0a2438' : '#131826'} transparent opacity={0.95} />
+            </mesh>
+            <Text position={[0, 0, 0.002]} fontSize={0.017} color={istUserCol ? '#66a6e0' : 'rgba(255,255,255,0.55)'} anchorX="center" anchorY="middle">
+              {colLabels[ci]}
+            </Text>
+          </group>
+        )
+      })}
+      {/* Zeilen: Zeilen-Label + 3 Zellen */}
+      {model.rows.map((row, ri) => {
+        const istUserRow = row === model.userRow
+        return (
+          <group key={`r-${String(row)}`}>
+            <group position={[labelX, rowY(ri), 0]}>
+              <mesh>
+                <planeGeometry args={[MX_LABEL_W, MX_CELL_H]} />
+                <meshBasicMaterial color={istUserRow ? '#0a2438' : '#131826'} transparent opacity={0.95} />
+              </mesh>
+              <Text position={[0, 0, 0.002]} fontSize={0.017} color={istUserRow ? '#66a6e0' : 'rgba(255,255,255,0.55)'} anchorX="center" anchorY="middle" maxWidth={MX_LABEL_W - 0.01}>
+                {rowLabels[ri]}
+              </Text>
+            </group>
+            {model.cols.map((col, ci) => {
+              const zelle = model.cells[ri * model.cols.length + ci]
+              const wertFarbe = VR_RESULT_COLOR[zelle.value]
+              let bg = '#0d1120'; let rand = '#1a2030'; let farbe = wertFarbe
+              let prefix = ''; let dimmen = true
+              if (zelle.userCorrect)        { bg = '#1A7F1F'; rand = '#25a029'; farbe = '#ffffff'; prefix = '✓ '; dimmen = false }
+              else if (zelle.userWrong)     { bg = '#2a1010'; rand = '#D40053'; farbe = '#D40053'; prefix = '✗ '; dimmen = false }
+              else if (zelle.correctMarker) { bg = '#0f2818'; rand = '#1A7F1F'; farbe = '#1A7F1F'; prefix = '✓ '; dimmen = false }
+              else if (zelle.axisHighlight) { bg = '#131826'; rand = '#25476a'; dimmen = false }
+              return (
+                <group key={`c-${String(row)}-${String(col)}`} position={[colX(ci), rowY(ri), 0]}>
+                  <mesh position={[0, 0, -0.001]}>
+                    <planeGeometry args={[MX_CELL_W + 0.004, MX_CELL_H + 0.004]} />
+                    <meshBasicMaterial color={rand} transparent opacity={0.95} />
+                  </mesh>
+                  <mesh>
+                    <planeGeometry args={[MX_CELL_W, MX_CELL_H]} />
+                    <meshBasicMaterial color={bg} transparent opacity={0.96} />
+                  </mesh>
+                  <Text
+                    position={[0, 0, 0.002]}
+                    fontSize={0.018}
+                    color={farbe}
+                    fillOpacity={dimmen ? 0.55 : 1}
+                    anchorX="center"
+                    anchorY="middle"
+                  >
+                    {`${prefix}${resultLabelShort(zelle.value, t)}`}
+                  </Text>
+                </group>
+              )
+            })}
+          </group>
+        )
+      })}
+    </group>
+  )
+}
+
 // ── VR: Scoring-Summary-Panel (v0.8.2, VR-Iter 3) ──────────────────────────
 // Zeigt nach abgeschlossener Bewertung ein Ergebnis-Panel im VR, damit der
 // User in der Session bleibt. Der volle HTML-ScoringFlow mit Matrix-Erklärung
@@ -887,6 +1096,9 @@ export interface VRScoringSummary {
   correctW: RSIDimension
   correctA: RSIDimension
   correctN: NACADimension
+  // v0.9.1 (VR-Iter 5): fuer Lernkarte- und Herleitungs-Seite im VR-Panel
+  deficit: AppDeficit
+  lang:    string
 }
 
 interface VRScoringSummaryPanelProps {
@@ -902,7 +1114,21 @@ function nacaLabelShort(n: NACADimension, t: TFunction): string {
   return t(n === 'leicht' ? 'scoring.schwere_leicht' : n === 'mittel' ? 'scoring.schwere_mittel' : 'scoring.schwere_schwer')
 }
 
+// Zeilen-Schätzung für Lernkarten-Texte: troika bricht selbst um, die
+// Schätzung dient nur der Panel-Höhen-Berechnung.
+function schaetzeZeilen(text: string, zeichenProZeile: number, maxZeilen: number): number {
+  if (!text) return 0
+  return Math.min(maxZeilen, Math.max(1, Math.ceil(text.length / zeichenProZeile)))
+}
+
+type SummarySeite = 'ergebnis' | 'herleitung' | 'lernkarte'
+
 function VRScoringSummaryPanel({ summary, onContinue, t }: VRScoringSummaryPanelProps) {
+  // v0.9.1 (VR-Iter 5): drei Seiten — Ergebnis, Matrix-Herleitung, Lernkarte.
+  // Gleicher Ablauf wie im Browser (Ergebnis mit Matrizen, danach Lernkarte),
+  // damit VR und Browser dieselbe Didaktik zeigen (Wiedererkennung).
+  const [seite, setSeite] = useState<SummarySeite>('ergebnis')
+
   const allCorrect = summary.kategorieRichtig
     && summary.wichtigkeitKorrekt
     && summary.abweichungKorrekt
@@ -924,75 +1150,244 @@ function VRScoringSummaryPanel({ summary, onContinue, t }: VRScoringSummaryPanel
   const rowGap  = 0.010
   const headerH = 0.17
   const footerH = 0.12
-  const panelH  = headerH + rows.length * (rowH + rowGap) + footerH
+
+  // ── Herleitung: Matrizen aus dem gemeinsamen Modell (wie Browser) ──────────
+  const ca            = summary.deficit.correctAssessment
+  const abgeleitet    = deriveErgebnisse(summary.userW, summary.userA, summary.userN)
+  const relevanzMatrix = buildRelevanzMatrix(summary.userW, summary.userA, summary.correctW, summary.correctA)
+  const risikoMatrix   = buildRisikoMatrix(abgeleitet.relevanzSD, summary.userN, ca.relevanzSD, summary.correctN)
+
+  // ── Lernkarte: Inhalte wie Browser-LernKarte ───────────────────────────────
+  const d              = summary.deficit
+  const kriteriumLabel = KRITERIUM_LABELS[d.kriteriumId] ?? d.kriteriumId
+  const kontextLabel   = t(d.kontext === 'io' ? 'einstieg.kontext_io' : 'einstieg.kontext_ao')
+  const normRefs       = d.normRefs.slice(0, 4)
+  const weitereRefs    = d.normRefs.length - normRefs.length
+  const erklaerung     = d.erklaerungI18n ? ml(d.erklaerungI18n, summary.lang).trim() : ''
+  const beschreibung   = ml(d.beschreibungI18n, summary.lang).trim()
+
+  // Lernkarten-Layout: Offsets von der Panel-Oberkante (anchorY top)
+  const nameZeilen   = schaetzeZeilen(summary.deficitName, 38, 2)
+  const erklZeilen   = schaetzeZeilen(erklaerung, 62, 8)
+  const beschrZeilen = schaetzeZeilen(beschreibung, 70, 5)
+  const lk = (() => {
+    let cur = 0.040
+    const titelY = cur; cur += 0.034
+    const nameY = cur; cur += nameZeilen * 0.040 + 0.012
+    const kritY = cur; cur += 0.040
+    let normLabelY = 0; let normStartY = 0
+    if (normRefs.length > 0) {
+      normLabelY = cur + 0.008; cur += 0.008 + 0.030
+      normStartY = cur
+      cur += normRefs.length * 0.030 + (weitereRefs > 0 ? 0.030 : 0) + 0.008
+    }
+    let erklLabelY = 0; let erklY = 0
+    if (erklaerung) {
+      erklLabelY = cur + 0.012; cur += 0.012 + 0.030
+      erklY = cur; cur += erklZeilen * 0.031 + 0.010
+    }
+    let beschrY = 0
+    if (beschreibung) {
+      beschrY = cur + 0.008; cur += 0.008 + beschrZeilen * 0.028 + 0.008
+    }
+    return { titelY, nameY, kritY, normLabelY, normStartY, erklLabelY, erklY, beschrY, contentH: cur }
+  })()
+
+  // ── Panel-Höhe pro Seite ───────────────────────────────────────────────────
+  const ergebnisH   = headerH + rows.length * (rowH + rowGap) + footerH
+  const herleitungH = 0.055 + MX_BLOCK_H + 0.030 + MX_BLOCK_H + 0.125
+  const lernkarteH  = lk.contentH + 0.125
+  const panelH = seite === 'ergebnis' ? ergebnisH : seite === 'herleitung' ? herleitungH : lernkarteH
+
+  const randFarbe = seite === 'ergebnis' ? (allCorrect ? '#083a0c' : '#3a1808') : '#1a3060'
+
+  // Footer: zwei Buttons nebeneinander (links Navigation, rechts weiter)
+  const footerY = -panelH / 2 + 0.055
+  const btnW = 0.37
+  const btnX = 0.205
 
   return (
     <VRHud offset={[0, 0, -1.5]} drag={{ id: 'summary', width: panelW, top: panelH / 2 }}>
       <mesh position={[0, 0, -0.003]}>
         <planeGeometry args={[panelW + 0.012, panelH + 0.012]} />
-        <meshBasicMaterial color={allCorrect ? '#083a0c' : '#3a1808'} transparent opacity={0.92} />
+        <meshBasicMaterial color={randFarbe} transparent opacity={0.92} />
       </mesh>
       <mesh position={[0, 0, -0.002]}>
         <planeGeometry args={[panelW, panelH]} />
         <meshBasicMaterial color="#090d1b" transparent opacity={0.96} />
       </mesh>
-      {/* Header */}
-      <Text position={[0, panelH / 2 - 0.040, 0.003]} fontSize={0.018} color="rgba(255,255,255,0.45)" anchorX="center" anchorY="middle">
-        {t('vr.bewertung_abgeschlossen')}
-      </Text>
-      <Text
-        position={[0, panelH / 2 - 0.080, 0.003]}
-        fontSize={0.034}
-        color={allCorrect ? '#1A7F1F' : '#F0A500'}
-        anchorX="center"
-        anchorY="middle"
-        maxWidth={panelW - 0.08}
-      >
-        {allCorrect ? t('vr.alles_richtig') : t('vr.teilweise_korrekt')}
-      </Text>
-      <Text position={[0, panelH / 2 - 0.120, 0.003]} fontSize={0.030} color="#ffffff" anchorX="center" anchorY="middle">
-        {t('vr.punkte', { final: summary.punkteFinal, max: summary.maxPunkte })}
-      </Text>
 
-      {/* Zeilen: User-Wert vs korrekter Wert */}
-      {rows.map((r, i) => {
-        const y = panelH / 2 - headerH - (i + 0.5) * (rowH + rowGap)
-        return (
-          <group key={r.label} position={[0, y, 0.003]}>
-            {/* Zeilen-Hintergrund */}
-            <mesh>
-              <planeGeometry args={[panelW - 0.04, rowH]} />
-              <meshBasicMaterial color={r.ok ? '#0f2818' : '#2a1010'} transparent opacity={0.55} />
-            </mesh>
-            <Text position={[-(panelW - 0.04) / 2 + 0.020, 0, 0.001]} fontSize={0.020} color={r.ok ? '#1A7F1F' : '#D40053'} anchorX="left" anchorY="middle">
-              {r.ok ? '✓' : '✗'}
-            </Text>
-            <Text position={[-(panelW - 0.04) / 2 + 0.055, 0, 0.001]} fontSize={0.020} color="rgba(255,255,255,0.80)" anchorX="left" anchorY="middle">
-              {r.label}
-            </Text>
-            <Text position={[0.02, 0, 0.001]} fontSize={0.020} color="rgba(255,255,255,0.70)" anchorX="left" anchorY="middle">
-              {t('vr.du', { wert: r.user })}
-            </Text>
-            {!r.ok && (
-              <Text position={[0.20, 0, 0.001]} fontSize={0.020} color="#1A7F1F" anchorX="left" anchorY="middle">
-                {t('vr.korrekt', { wert: r.correct })}
-              </Text>
-            )}
+      {seite === 'ergebnis' && (
+        <>
+          {/* Header */}
+          <Text position={[0, panelH / 2 - 0.040, 0.003]} fontSize={0.018} color="rgba(255,255,255,0.45)" anchorX="center" anchorY="middle">
+            {t('vr.bewertung_abgeschlossen')}
+          </Text>
+          <Text
+            position={[0, panelH / 2 - 0.080, 0.003]}
+            fontSize={0.034}
+            color={allCorrect ? '#1A7F1F' : '#F0A500'}
+            anchorX="center"
+            anchorY="middle"
+            maxWidth={panelW - 0.08}
+          >
+            {allCorrect ? t('vr.alles_richtig') : t('vr.teilweise_korrekt')}
+          </Text>
+          <Text position={[0, panelH / 2 - 0.120, 0.003]} fontSize={0.030} color="#ffffff" anchorX="center" anchorY="middle">
+            {t('vr.punkte', { final: summary.punkteFinal, max: summary.maxPunkte })}
+          </Text>
+
+          {/* Zeilen: User-Wert vs korrekter Wert */}
+          {rows.map((r, i) => {
+            const y = panelH / 2 - headerH - (i + 0.5) * (rowH + rowGap)
+            return (
+              <group key={r.label} position={[0, y, 0.003]}>
+                {/* Zeilen-Hintergrund */}
+                <mesh>
+                  <planeGeometry args={[panelW - 0.04, rowH]} />
+                  <meshBasicMaterial color={r.ok ? '#0f2818' : '#2a1010'} transparent opacity={0.55} />
+                </mesh>
+                <Text position={[-(panelW - 0.04) / 2 + 0.020, 0, 0.001]} fontSize={0.020} color={r.ok ? '#1A7F1F' : '#D40053'} anchorX="left" anchorY="middle">
+                  {r.ok ? '✓' : '✗'}
+                </Text>
+                <Text position={[-(panelW - 0.04) / 2 + 0.055, 0, 0.001]} fontSize={0.020} color="rgba(255,255,255,0.80)" anchorX="left" anchorY="middle">
+                  {r.label}
+                </Text>
+                <Text position={[0.02, 0, 0.001]} fontSize={0.020} color="rgba(255,255,255,0.70)" anchorX="left" anchorY="middle">
+                  {t('vr.du', { wert: r.user })}
+                </Text>
+                {!r.ok && (
+                  <Text position={[0.20, 0, 0.001]} fontSize={0.020} color="#1A7F1F" anchorX="left" anchorY="middle">
+                    {t('vr.korrekt', { wert: r.correct })}
+                  </Text>
+                )}
+              </group>
+            )
+          })}
+
+          <VRButton
+            label={t('scoring.herleitung')}
+            position={[-btnX, footerY, 0.002]}
+            width={btnW}
+            height={0.075}
+            color="#131826"
+            hoverColor="#0076BD"
+            textColor="rgba(255,255,255,0.85)"
+            fontSize={0.028}
+            onClick={() => setSeite('herleitung')}
+          />
+          <VRButton
+            label={t('scoring.weiter')}
+            position={[btnX, footerY, 0.002]}
+            width={btnW}
+            height={0.075}
+            color={allCorrect ? '#1A7F1F' : '#0076BD'}
+            hoverColor={allCorrect ? '#25a029' : '#1a8cd8'}
+            fontSize={0.028}
+            onClick={onContinue}
+          />
+        </>
+      )}
+
+      {seite === 'herleitung' && (
+        <>
+          <group position={[0, panelH / 2 - 0.030, 0]}>
+            <VRMatrix model={relevanzMatrix} titel={t('scoring.relevanz_matrix_kurz')} t={t} />
           </group>
-        )
-      })}
+          <group position={[0, panelH / 2 - 0.030 - MX_BLOCK_H - 0.030, 0]}>
+            <VRMatrix model={risikoMatrix} titel={t('scoring.unfallrisiko_matrix_kurz')} t={t} />
+          </group>
+          <VRButton
+            label={t('einstieg.zurück')}
+            position={[-btnX, footerY, 0.002]}
+            width={btnW}
+            height={0.075}
+            color="#1a1a2a"
+            hoverColor="#333355"
+            textColor="rgba(255,255,255,0.65)"
+            fontSize={0.028}
+            onClick={() => setSeite('ergebnis')}
+          />
+          <VRButton
+            label={t('lernkarte.titel')}
+            position={[btnX, footerY, 0.002]}
+            width={btnW}
+            height={0.075}
+            color="#131826"
+            hoverColor="#0076BD"
+            textColor="rgba(255,255,255,0.85)"
+            fontSize={0.028}
+            onClick={() => setSeite('lernkarte')}
+          />
+        </>
+      )}
 
-      {/* Weiter-Button */}
-      <VRButton
-        label={t('scoring.weiter')}
-        position={[0, -panelH / 2 + 0.050, 0.002]}
-        width={panelW - 0.10}
-        height={0.080}
-        color={allCorrect ? '#1A7F1F' : '#0076BD'}
-        hoverColor={allCorrect ? '#25a029' : '#1a8cd8'}
-        fontSize={0.032}
-        onClick={onContinue}
-      />
+      {seite === 'lernkarte' && (
+        <>
+          <Text position={[-(panelW - 0.10) / 2, panelH / 2 - lk.titelY, 0.003]} fontSize={0.018} color="#66a6e0" anchorX="left" anchorY="top">
+            {t('lernkarte.titel').toUpperCase()}
+          </Text>
+          <Text position={[-(panelW - 0.10) / 2, panelH / 2 - lk.nameY, 0.003]} fontSize={0.030} color="#ffffff" anchorX="left" anchorY="top" maxWidth={panelW - 0.10} lineHeight={1.25}>
+            {summary.deficitName}
+          </Text>
+          <Text position={[-(panelW - 0.10) / 2, panelH / 2 - lk.kritY, 0.003]} fontSize={0.020} color="rgba(255,255,255,0.55)" anchorX="left" anchorY="top" maxWidth={panelW - 0.10}>
+            {`${kriteriumLabel} · ${kontextLabel}`}
+          </Text>
+          {normRefs.length > 0 && (
+            <>
+              <Text position={[-(panelW - 0.10) / 2, panelH / 2 - lk.normLabelY, 0.003]} fontSize={0.016} color="rgba(255,255,255,0.40)" anchorX="left" anchorY="top">
+                {t('lernkarte.normreferenz').toUpperCase()}
+              </Text>
+              {normRefs.map((ref, i) => (
+                <Text key={ref} position={[-(panelW - 0.10) / 2, panelH / 2 - lk.normStartY - i * 0.030, 0.003]} fontSize={0.020} color="#66a6e0" anchorX="left" anchorY="top" maxWidth={panelW - 0.10}>
+                  {`· ${ref}`}
+                </Text>
+              ))}
+              {weitereRefs > 0 && (
+                <Text position={[-(panelW - 0.10) / 2, panelH / 2 - lk.normStartY - normRefs.length * 0.030, 0.003]} fontSize={0.018} color="rgba(255,255,255,0.40)" anchorX="left" anchorY="top">
+                  {`+ ${weitereRefs}`}
+                </Text>
+              )}
+            </>
+          )}
+          {erklaerung.length > 0 && (
+            <>
+              <Text position={[-(panelW - 0.10) / 2, panelH / 2 - lk.erklLabelY, 0.003]} fontSize={0.016} color="rgba(102,166,224,0.75)" anchorX="left" anchorY="top">
+                {t('lernkarte.erklaerung').toUpperCase()}
+              </Text>
+              <Text position={[-(panelW - 0.10) / 2, panelH / 2 - lk.erklY, 0.003]} fontSize={0.021} color="rgba(255,255,255,0.80)" anchorX="left" anchorY="top" maxWidth={panelW - 0.10} lineHeight={1.4}>
+                {erklaerung}
+              </Text>
+            </>
+          )}
+          {beschreibung.length > 0 && (
+            <Text position={[-(panelW - 0.10) / 2, panelH / 2 - lk.beschrY, 0.003]} fontSize={0.019} color="rgba(255,255,255,0.55)" anchorX="left" anchorY="top" maxWidth={panelW - 0.10} lineHeight={1.4}>
+              {beschreibung}
+            </Text>
+          )}
+          <VRButton
+            label={t('einstieg.zurück')}
+            position={[-btnX, footerY, 0.002]}
+            width={btnW}
+            height={0.075}
+            color="#1a1a2a"
+            hoverColor="#333355"
+            textColor="rgba(255,255,255,0.65)"
+            fontSize={0.028}
+            onClick={() => setSeite('herleitung')}
+          />
+          <VRButton
+            label={t('scoring.weiter')}
+            position={[btnX, footerY, 0.002]}
+            width={btnW}
+            height={0.075}
+            color={allCorrect ? '#1A7F1F' : '#0076BD'}
+            hoverColor={allCorrect ? '#25a029' : '#1a8cd8'}
+            fontSize={0.028}
+            onClick={onContinue}
+          />
+        </>
+      )}
     </VRHud>
   )
 }
@@ -1077,6 +1472,9 @@ interface SceneContentProps {
   onKategorieCancel: () => void
   onFeedbackClose:   () => void
   onHintRequest:     () => void
+  // v0.9.1: VR-Hinweis-Dialog (Bestaetigen aktiviert die Penalty, Abbrechen nicht)
+  onHintConfirm:     () => void
+  onHintCancel:      () => void
   onBeenden:         () => void
   aktivePerspektiveId: string | null
   aktiveBildUrl:       string | null | undefined
@@ -1105,7 +1503,7 @@ function SceneContent({
   phase, feedbackType, progress,
   sceneName, sceneKontextLabel, elapsedSec,
   onKategorieSelect, onKategorieCancel, onFeedbackClose,
-  onHintRequest, onBeenden,
+  onHintRequest, onHintConfirm, onHintCancel, onBeenden,
   aktivePerspektiveId, aktiveBildUrl, pendingClickPos, onStandortWechsel,
   visitedPerspektiven, hauptKey,
   hitDeficit, onBewertungW, onBewertungA, onBewertungN, onBewertungCancel,
@@ -1306,6 +1704,14 @@ function SceneContent({
                 t={t}
               />
             )}
+            {phase === 'vrHintDialog' && (
+              <VRHintDialog
+                hintCount={deficits.length - foundIds.size}
+                onBestätigen={onHintConfirm}
+                onAbbrechen={onHintCancel}
+                t={t}
+              />
+            )}
             {phase === 'klickFeedback' && (
               <VRFeedback
                 type={feedbackType}
@@ -1368,6 +1774,9 @@ interface HintDialogProps {
 }
 
 function HintDialog({ hintCount, onBestätigen, onAbbrechen }: HintDialogProps) {
+  // v0.9.1: hartcodierte deutsche Strings durch bestehende i18n-Keys ersetzt
+  // (HTML-Overlay ausserhalb des Canvas — useTranslation ist hier sicher).
+  const { t } = useTranslation()
   return (
     <div style={{
       position: 'absolute', inset: 0,
@@ -1387,29 +1796,27 @@ function HintDialog({ hintCount, onBestätigen, onAbbrechen }: HintDialogProps) 
         <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '14px' }}>
           <Eye size={20} style={{ color: 'var(--zh-warnung)', flexShrink: 0 }} />
           <h3 style={{ fontSize: '17px', fontWeight: 700, color: 'white', margin: 0 }}>
-            Hinweis verwenden?
+            {t('szene.hint_titel')}
           </h3>
         </div>
         <p style={{ fontSize: '13px', color: 'rgba(255,255,255,0.65)', lineHeight: 1.6, marginBottom: '8px' }}>
-          Es werden <strong style={{ color: 'white' }}>{hintCount} Hotspot{hintCount !== 1 ? 's' : ''}</strong> im Bild
-          eingeblendet. Pro gefundenem Sicherheitsdefizit mit aktivem Hinweis werden
-          <strong style={{ color: 'var(--zh-warnung)' }}> 50% der Punkte abgezogen</strong>.
+          {t('szene.hint_text', { count: hintCount })}
         </p>
         <p style={{ fontSize: '12px', color: 'rgba(255,255,255,0.40)', marginBottom: '20px' }}>
-          Der Hinweis bleibt für die gesamte Szene aktiv.
+          {t('szene.hint_dauer')}
         </p>
         <div style={{ display: 'flex', gap: '10px' }}>
           <button
             onClick={onAbbrechen}
             style={{ flex: 1, padding: '10px', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.12)', background: 'transparent', color: 'rgba(255,255,255,0.55)', fontSize: '14px', cursor: 'pointer', fontFamily: 'var(--zh-font)' }}
           >
-            Abbrechen
+            {t('scoring.abbrechen')}
           </button>
           <button
             onClick={onBestätigen}
             style={{ flex: 1, padding: '10px', borderRadius: '8px', border: 'none', background: 'var(--zh-warnung)', color: '#1a1400', fontSize: '14px', fontWeight: 700, cursor: 'pointer', fontFamily: 'var(--zh-font)' }}
           >
-            Trotzdem einblenden
+            {t('szene.hint_bestätigen')}
           </button>
         </div>
       </div>
@@ -1481,6 +1888,7 @@ type Phase =
   | 'kategoriePanel'
   | 'klickFeedback'
   | 'hintDialog'
+  | 'vrHintDialog'
   | 'bewertungW'
   | 'bewertungA'
   | 'bewertungN'
@@ -1612,7 +2020,8 @@ export default function SceneViewer({
     // hängen und es gibt im Browser kein HTML-Pendant für dieses Panel.
     if (!v && (
       p === 'kategoriePanel' || p === 'pendingConfirm' || p === 'klickFeedback' ||
-      p === 'bewertungW' || p === 'bewertungA' || p === 'bewertungN' || p === 'vrScoringSummary'
+      p === 'bewertungW' || p === 'bewertungA' || p === 'bewertungN' ||
+      p === 'vrScoringSummary' || p === 'vrHintDialog'
     )) {
       hitDeficit.current = null
       setUserWichtigkeit(null)
@@ -1782,12 +2191,10 @@ export default function SceneViewer({
 
   // ── Hint aktivieren ─────────────────────────────────────────────────────────
   const handleHintRequest = useCallback(() => {
-    if (isVR) {
-      onHintActivate()
-    } else {
-      setPhase('hintDialog')
-    }
-  }, [isVR, onHintActivate])
+    // v0.9.1: auch in VR erst bestaetigen — vorher wurde die Penalty ohne
+    // Warnung scharf (Browser hatte den Dialog, VR nicht).
+    setPhase(isVR ? 'vrHintDialog' : 'hintDialog')
+  }, [isVR])
 
   const handleHintBestätigen = useCallback(() => {
     onHintActivate()
@@ -1881,6 +2288,8 @@ export default function SceneViewer({
             onKategorieCancel={handleKategorieCancel}
             onFeedbackClose={handleFeedbackClose}
             onHintRequest={handleHintRequest}
+            onHintConfirm={handleHintBestätigen}
+            onHintCancel={handleHintAbbrechen}
             onBeenden={onBeenden}
             aktivePerspektiveId={aktivePerspektiveId}
             aktiveBildUrl={aktiveBildUrl}

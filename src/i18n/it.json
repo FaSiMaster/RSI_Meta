@@ -324,7 +324,8 @@
     "matrix_wichtigkeit": "Importanza",
     "matrix_unfallschwere": "Gravità",
     "matrix_relevanz": "Rilevanza SD",
-    "hinweis_genutzt": "Suggerimento usato"
+    "hinweis_genutzt": "Suggerimento usato",
+    "herleitung": "Derivazione"
   },
   "ranking": {
     "title": "Classifica",
@@ -363,7 +364,7 @@
     "weiter_suchen": "Continua la ricerca",
     "abschluss_titel": "Scena completata",
     "nächste": "Scena successiva",
-    "hint_warnung": "Mostrare gli hotspot? Per ogni deficit trovato verrà dedotto il 50% dei punti.",
+    "hint_warnung": "Mostrare gli hotspot? Per ogni deficit trovato verranno dedotti 25 punti.",
     "hint_bestätigen": "Mostra comunque",
     "gefunden_von": "{{found}} di {{total}} trovati",
     "pflicht_fehlt": "Deficit obbligatorio non trovato",
@@ -383,7 +384,7 @@
     "hinweis_btn": "Suggerimento",
     "hinweis_aktiv": "Suggerimento attivo",
     "hint_titel": "Usare un suggerimento?",
-    "hint_text": "Verranno mostrati {{count}} hotspot. Per ogni deficit trovato con suggerimento attivo, verrà dedotto il 50% dei punti.",
+    "hint_text": "Verranno mostrati {{count}} hotspot. Per ogni deficit trovato con suggerimento attivo, verranno dedotti 25 punti.",
     "hint_dauer": "Il suggerimento resta attivo per tutta la scena."
   },
   "kategorie": {

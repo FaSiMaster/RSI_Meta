@@ -324,7 +324,8 @@
     "matrix_wichtigkeit": "Wichtigkeit",
     "matrix_unfallschwere": "Unfallschwere",
     "matrix_relevanz": "Relevanz SD",
-    "hinweis_genutzt": "Hinweis genutzt"
+    "hinweis_genutzt": "Hinweis genutzt",
+    "herleitung": "Herleitung"
   },
   "ranking": {
     "title": "Rangliste",
@@ -363,7 +364,7 @@
     "weiter_suchen": "Weiter suchen",
     "abschluss_titel": "Szene abgeschlossen",
     "nächste": "Nächste Szene",
-    "hint_warnung": "Hotspots einblenden? Pro Defizit werden 50% der Punkte abgezogen.",
+    "hint_warnung": "Hotspots einblenden? Pro gefundenem Defizit werden 25 Punkte abgezogen.",
     "hint_bestätigen": "Trotzdem einblenden",
     "gefunden_von": "{{found}} von {{total}} gefunden",
     "pflicht_fehlt": "Pflichtdefizit nicht gefunden",
@@ -383,7 +384,7 @@
     "hinweis_btn": "Hinweis",
     "hinweis_aktiv": "Hinweis aktiv",
     "hint_titel": "Hinweis verwenden?",
-    "hint_text": "Es werden {{count}} Hotspot(s) im Bild eingeblendet. Pro gefundenem Defizit mit aktivem Hinweis werden 50% der Punkte abgezogen.",
+    "hint_text": "Es werden {{count}} Hotspot(s) im Bild eingeblendet. Pro gefundenem Defizit mit aktivem Hinweis werden 25 Punkte abgezogen.",
     "hint_dauer": "Der Hinweis bleibt für die gesamte Szene aktiv."
   },
   "kategorie": {

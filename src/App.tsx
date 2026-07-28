@@ -12,7 +12,6 @@ import {
 import { MAX_PUNKTE_PRO_DEFIZIT, calcScoreFromChoices } from './data/scoreCalc'
 import { KATEGORIE_PUNKTE } from './data/scoringEngine'
 import type { AppTopic, AppScene, AppDeficit, FoundDeficit, DefizitResult, SceneResult } from './data/appData'
-import type { RSIDimension, NACADimension } from './types'
 
 import { initSupabaseData, resetCache as resetSupabaseCache } from './data/supabaseSync'
 import { xrStore } from './xrStore'
@@ -21,6 +20,7 @@ import Navbar          from './components/Navbar'
 import TopicDashboard  from './components/TopicDashboard'
 import SceneList       from './components/SceneList'
 import SceneViewer     from './components/SceneViewer'
+import type { VRScoringSummary } from './components/SceneViewer'
 import type { DeficitConfirmedPayload } from './components/SceneViewer'
 import ScoringFlow     from './components/ScoringFlow'
 import SzenenAbschluss from './components/SzenenAbschluss'
@@ -31,22 +31,9 @@ import TrainingEinstieg from './components/TrainingEinstieg'
 type View = 'landing' | 'topics' | 'scenes' | 'einstieg' | 'viewer' | 'scoring' | 'szenenabschluss' | 'admin' | 'ranking'
 
 // Daten fuer das VR-Scoring-Summary-Panel (v0.8.2, VR-Iter 3).
-// Zeigt nach einer abgeschlossenen Bewertung richtig/falsch je Schritt + Punkte.
-export interface VrScoringFeedback {
-  deficitName:         string
-  punkteFinal:         number
-  maxPunkte:           number
-  kategorieRichtig:    boolean
-  wichtigkeitKorrekt:  boolean
-  abweichungKorrekt:   boolean
-  nacaKorrekt:         boolean
-  userW:   RSIDimension
-  userA:   RSIDimension
-  userN:   NACADimension
-  correctW: RSIDimension
-  correctA: RSIDimension
-  correctN: NACADimension
-}
+// v0.9.1: Alias auf die eine Typ-Quelle in SceneViewer — das fruehere
+// Feld-Duplikat hier ist beim Erweitern (deficit/lang) auseinandergedriftet.
+export type VrScoringFeedback = VRScoringSummary
 
 export default function App() {
   const { i18n } = useTranslation()
@@ -255,6 +242,9 @@ export default function App() {
       correctW: ca.wichtigkeit,
       correctA: ca.abweichung,
       correctN: ca.unfallschwere,
+      // v0.9.1 (VR-Iter 5): Lernkarte + Matrix-Herleitung im VR-Panel
+      deficit: d,
+      lang:    i18n.language,
     })
   }
 
