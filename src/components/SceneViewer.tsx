@@ -23,7 +23,7 @@ import { getVRPanelOffset, saveVRPanelOffset, clearVRPanelOffset, clampOffset } 
 import KategoriePanel from './KategoriePanel'
 import KlickFeedback, { type KlickFeedbackType } from './KlickFeedback'
 import { useTranslation } from 'react-i18next'
-import { WICHTIGKEIT_TABLE, ABWEICHUNG_KATEGORIEN } from '../data/scoringEngine'
+import { ABWEICHUNG_KATEGORIEN } from '../data/scoringEngine'
 import { KRITERIUM_LABELS } from '../data/kriteriumLabels'
 import { buildRelevanzMatrix, buildRisikoMatrix, deriveErgebnisse, type MatrixModel } from '../data/ergebnisModel'
 import type { RSIDimension, NACADimension, ResultDimension } from '../types'
@@ -1128,9 +1128,13 @@ function VRScoringSummaryPanel({ summary, onContinue, t }: VRScoringSummaryPanel
     && summary.abweichungKorrekt
     && summary.nacaKorrekt
 
+  // v0.9.3: bei falscher Kategorie die korrekte anzeigen (vorher nur «—»)
+  const korrekteKategorie = summary.deficit.kategorie
+    ? t(`kategorie.${summary.deficit.kategorie}`)
+    : '—'
   const rows: { label: string; user: string; correct: string; ok: boolean }[] = [
     { label: t('vr.kategorie'),   user: summary.kategorieRichtig ? t('vr.richtig') : t('vr.falsch'),
-      correct: summary.kategorieRichtig ? t('vr.richtig') : '—', ok: summary.kategorieRichtig },
+      correct: summary.kategorieRichtig ? t('vr.richtig') : korrekteKategorie, ok: summary.kategorieRichtig },
     { label: t('scoring.phase_a'), user: dimLabelShort(summary.userW, t),
       correct: dimLabelShort(summary.correctW, t), ok: summary.wichtigkeitKorrekt },
     { label: t('scoring.phase_b'),  user: dimLabelShort(summary.userA, t),
@@ -1606,7 +1610,7 @@ function SceneContent({
           <StandortNavMarker
             key={`nav-${p.id}`}
             position={pos}
-            label={p.label || `Standort ${i + 1}`}
+            label={p.label || t('szene.standort', { nr: i + 1 })}
             status={status}
             onClick={() => onStandortWechsel(p.id)}
           />
@@ -1621,7 +1625,7 @@ function SceneContent({
           const pos = sphericalToVector3(markerPos, 60)
           const zielPersp = scene.perspektiven?.find(p => p.id === zielId)
           const label = zielId === 'haupt'
-            ? 'Haupt'
+            ? t('szene.haupt')
             : (zielPersp?.label || zielId)
           const visitedKey = zielId === 'haupt' ? hauptKey : zielId
           const status: StandortMarkerStatus = visitedPerspektiven.has(visitedKey) ? 'besucht' : 'unbesucht'
@@ -2514,10 +2518,6 @@ export default function SceneViewer({
 
       {htmlVisible && phase === 'bewertungW' && hitDeficit.current && (() => {
         const d = hitDeficit.current!
-        const tableWert = WICHTIGKEIT_TABLE[d.kriteriumId]
-        const prefill: RSIDimension | null = tableWert
-          ? ((tableWert[d.kontext] as RSIDimension | '') || null)
-          : null
         return (
           <div style={{
             position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)',
@@ -2532,14 +2532,9 @@ export default function SceneViewer({
             <h3 style={{ fontSize: '17px', fontWeight: 700, color: 'white', marginBottom: '12px' }}>
               {t('scoring.wie_wichtig')}
             </h3>
-            <p style={{ fontSize: '12px', color: 'rgba(255,255,255,0.55)', marginBottom: '6px' }}>
-              {KRITERIUM_LABELS[d.kriteriumId] ?? d.kriteriumId} · {d.kontext === 'io' ? 'Innerorts' : 'Ausserorts'}
+            <p style={{ fontSize: '12px', color: 'rgba(255,255,255,0.55)', marginBottom: '14px' }}>
+              {KRITERIUM_LABELS[d.kriteriumId] ?? d.kriteriumId} · {t(d.kontext === 'io' ? 'einstieg.kontext_io' : 'einstieg.kontext_ao')}
             </p>
-            {prefill && (
-              <p style={{ fontSize: '11px', color: 'color-mix(in srgb, var(--zh-blau) 85%, transparent)', marginBottom: '14px' }}>
-                Gemäss Tabelle: <strong>{prefill === 'gross' ? 'Gross' : prefill === 'mittel' ? 'Mittel' : 'Klein'}</strong>
-              </p>
-            )}
             <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
               {(['klein', 'mittel', 'gross'] as RSIDimension[]).map(w => (
                 <button
@@ -2554,7 +2549,7 @@ export default function SceneViewer({
                   onMouseEnter={e => { e.currentTarget.style.background = 'rgba(0,118,189,0.45)'; e.currentTarget.style.borderColor = 'rgba(0,118,189,0.6)' }}
                   onMouseLeave={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.05)'; e.currentTarget.style.borderColor = 'rgba(255,255,255,0.10)' }}
                 >
-                  {w === 'gross' ? 'Gross' : w === 'mittel' ? 'Mittel' : 'Klein'}
+                  {t(w === 'gross' ? 'scoring.dim_gross' : w === 'mittel' ? 'scoring.dim_mittel' : 'scoring.dim_klein')}
                 </button>
               ))}
             </div>
@@ -2676,7 +2671,7 @@ export default function SceneViewer({
             }}
           >
             <MapPin size={13} style={{ flexShrink: 0, opacity: !aktivePerspektiveId ? 1 : 0.5 }} />
-            <span>Haupt</span>
+            <span>{t('szene.haupt')}</span>
           </button>
           {/* Perspektiven */}
           {perspektiven.map((p, i) => {
@@ -2701,7 +2696,7 @@ export default function SceneViewer({
                 }}
               >
                 <MapPin size={13} style={{ flexShrink: 0, opacity: isActive ? 1 : 0.5 }} />
-                <span>{p.label || `Standort ${i + 1}`}</span>
+                <span>{p.label || t('szene.standort', { nr: i + 1 })}</span>
               </button>
             )
           })}

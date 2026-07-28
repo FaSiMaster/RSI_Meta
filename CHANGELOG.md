@@ -13,6 +13,26 @@ Versionierung nach [Semantic Versioning](https://semver.org/lang/de/).
 
 ---
 
+## [0.9.3] — 2026-07-28 — Browser-Parität + Rest-Politur
+
+### Behoben
+
+- **«Gemäss Tabelle»-Lösungsvorschau auch im Browser entfernt**
+  (Bewertungs-Overlay Schritt 1) — Parität zum VR-Fix aus v0.9.2.
+- **VR-Summary zeigt bei falscher Kategorie jetzt die korrekte Kategorie**
+  statt «—» (offenes INFO-Item aus dem v0.8.3-Review).
+- **Hartcodierte deutsche Strings i18n-isiert:** Innerorts/Ausserorts und
+  Gross/Mittel/Klein im Browser-Wichtigkeits-Overlay, «Standort N» und
+  «Haupt» in Standort-Markern (Canvas) und Standort-Leiste (HTML).
+  Neuer Key `szene.haupt` (de/fr/it/en).
+
+### Gates
+
+- `tsc --noEmit`: 0 Fehler · `vitest`: 46/46 · `playwright`: 12/12 ·
+  `vite build`: grün
+
+---
+
 ## [0.9.2] — 2026-07-28 — Headset-Feedback zu v0.9.1
 
 ### Behoben
