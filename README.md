@@ -246,3 +246,19 @@ CI:     npm ci + tsc --noEmit + vite build auf PR + push main
 
 Internes Tool der Fachstelle Verkehrssicherheit, Tiefbauamt, Kanton Zürich.
 Nicht für die öffentliche Verbreitung bestimmt.
+
+---
+
+## Supabase Keep-Alive
+
+Supabase pausiert Free-Tier-Projekte nach rund einer Woche Inaktivität. Der
+GitHub-Actions-Workflow `.github/workflows/supabase-keepalive.yml` verhindert
+die Suspendierung durch regelmässige Leseabfragen auf die Tabelle
+`public.keepalive` (Setup-SQL: `supabase/keepalive.sql`).
+
+- **Zeitplan:** Montag und Donnerstag, 06:00 UTC
+- **Benötigte GitHub Secrets:** `SUPABASE_URL`, `SUPABASE_ANON_KEY`
+  (Repo → Settings → Secrets and variables → Actions)
+- **Protokoll:** Jeder erfolgreiche Lauf schreibt einen Zeitstempel in
+  `keepalive.log` (bewusst versioniert, der Workflow committet die Datei)
+- **Manueller Testlauf:** Actions-Tab → «Supabase Keep-Alive» → «Run workflow»
