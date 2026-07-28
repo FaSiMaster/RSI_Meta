@@ -13,6 +13,36 @@ Versionierung nach [Semantic Versioning](https://semver.org/lang/de/).
 
 ---
 
+## [0.9.5] — 2026-07-28 — Punkte-Aufriss vollständig + Wegweiser nur für Neues
+
+### Behoben
+
+- **Punkte-Aufriss summierte im Browser nicht auf die Kopfzahl:** Bei
+  Booster-Defiziten fehlte der Bonus als Zeile (Kopf zeigte z.B. 110, die
+  Zeilen ergaben 100). Neu: Booster-Zeile «+X Pkt. (+Y %)» im
+  Browser-Ergebnis. Die eigentliche Punkte**berechnung** ist in Browser und
+  VR nachweislich identisch (gleiche Formel, gleiche Konstanten aus
+  scoringEngine) — falsch war nur die Anzeige.
+- **VR-Ergebnis-Seite zeigt jetzt denselben Aufriss wie der Browser:**
+  Punkte-Beitrag pro Zeile (Kategorie ±25, Wichtigkeit/Abweichung/NACA je
+  ±25 aus STEP_WEIGHTS), plus eigene Zeilen für Hinweis-Abzug (−25) und
+  Booster-Bonus. Zeilensumme geht exakt auf punkteFinal auf — Browser und
+  VR sind damit direkt vergleichbar.
+- **Hinweis-Wegweiser nur noch für Neues:** Marker leuchten nur, wenn
+  dahinter ein offenes Defizit liegt, das am aktuellen Standort NICHT
+  sichtbar ist. Vorher leuchteten fast alle Rauten, weil Defizite mehrfach
+  verortet sind (gegen Live-Daten verifiziert: in SZ_2026_002 sind 7 von 8
+  Defiziten in 4–6 Ansichten verortet — einziger echter Wegweiser-Fall ist
+  SD_0012 mit genau einem Standort).
+- Hartcodiertes «Kategorie»-Label im Browser-Aufriss über i18n.
+  Neuer Key `scoring.booster` (de/fr/it/en).
+
+### Gates
+
+- `tsc --noEmit`: 0 Fehler · `vitest`: 46/46 · `vite build`: grün
+
+---
+
 ## [0.9.4] — 2026-07-28 — Hinweis-Wegweiser über Standorte
 
 ### Behoben / Hinzugefügt

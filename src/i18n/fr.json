@@ -326,7 +326,8 @@
     "matrix_unfallschwere": "Gravité",
     "matrix_relevanz": "Pertinence SD",
     "hinweis_genutzt": "Indice utilisé",
-    "herleitung": "Dérivation"
+    "herleitung": "Dérivation",
+    "booster": "Bonus booster"
   },
   "ranking": {
     "title": "Classement",

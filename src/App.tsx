@@ -245,6 +245,9 @@ export default function App() {
       // v0.9.1 (VR-Iter 5): Lernkarte + Matrix-Herleitung im VR-Panel
       deficit: d,
       lang:    i18n.language,
+      // v0.9.5: Punkte-Aufriss im VR-Ergebnis (identisch zum Browser)
+      hintPenalty:    payload.hintPenalty,
+      boosterProzent: boosterPct,
     })
   }
 

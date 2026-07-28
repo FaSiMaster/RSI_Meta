@@ -326,7 +326,8 @@
     "matrix_unfallschwere": "Severity",
     "matrix_relevanz": "Relevance SD",
     "hinweis_genutzt": "Hint used",
-    "herleitung": "Derivation"
+    "herleitung": "Derivation",
+    "booster": "Booster bonus"
   },
   "ranking": {
     "title": "Ranking",

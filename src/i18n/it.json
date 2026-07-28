@@ -326,7 +326,8 @@
     "matrix_unfallschwere": "Gravità",
     "matrix_relevanz": "Rilevanza SD",
     "hinweis_genutzt": "Suggerimento usato",
-    "herleitung": "Derivazione"
+    "herleitung": "Derivazione",
+    "booster": "Bonus booster"
   },
   "ranking": {
     "title": "Classifica",

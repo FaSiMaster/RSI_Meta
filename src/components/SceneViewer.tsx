@@ -23,7 +23,7 @@ import { getVRPanelOffset, saveVRPanelOffset, clearVRPanelOffset, clampOffset } 
 import KategoriePanel from './KategoriePanel'
 import KlickFeedback, { type KlickFeedbackType } from './KlickFeedback'
 import { useTranslation } from 'react-i18next'
-import { ABWEICHUNG_KATEGORIEN } from '../data/scoringEngine'
+import { ABWEICHUNG_KATEGORIEN, KATEGORIE_PUNKTE, STEP_WEIGHTS, STEP_WEIGHT_UNIT } from '../data/scoringEngine'
 import { KRITERIUM_LABELS } from '../data/kriteriumLabels'
 import { buildRelevanzMatrix, buildRisikoMatrix, deriveErgebnisse, type MatrixModel } from '../data/ergebnisModel'
 import type { RSIDimension, NACADimension, ResultDimension } from '../types'
@@ -211,12 +211,20 @@ function getHotspotPosition(d: AppDeficit, perspektivenId: string | null = null)
 // Defizite? Grundlage für den Hinweis-Wegweiser: Hotspots erscheinen bewusst
 // nur im Standort der Verortung (kein Fallback seit v0.4.0) — der Hinweis
 // muss deshalb den Weg zum richtigen Standort zeigen.
+// v0.9.5: Nur Defizite zählen, die am AKTUELLEN Standort NICHT sichtbar sind.
+// Defizite sind oft mehrfach verortet (Haupt + mehrere Perspektiven) — ohne
+// diesen Filter leuchteten fast alle Marker, obwohl es dort nichts Neues gibt.
 function standortHatOffeneDefizite(
   deficits: AppDeficit[],
   foundIds: Set<string>,
   zielPerspektivenId: string | null,
+  aktuellePerspektivenId: string | null,
 ): boolean {
-  return deficits.some(d => !foundIds.has(d.id) && getHotspotPosition(d, zielPerspektivenId) !== null)
+  return deficits.some(d =>
+    !foundIds.has(d.id) &&
+    getHotspotPosition(d, zielPerspektivenId) !== null &&
+    getHotspotPosition(d, aktuellePerspektivenId) === null,
+  )
 }
 
 // ── VR: Panel im Weltraum – Position einmalig bei Mount erfassen ─────────────
@@ -1109,6 +1117,9 @@ export interface VRScoringSummary {
   // v0.9.1 (VR-Iter 5): fuer Lernkarte- und Herleitungs-Seite im VR-Panel
   deficit: AppDeficit
   lang:    string
+  // v0.9.5: fuer den Punkte-Aufriss (identisch zum Browser-Ergebnis)
+  hintPenalty:    boolean
+  boosterProzent: number
 }
 
 interface VRScoringSummaryPanelProps {
@@ -1148,16 +1159,31 @@ function VRScoringSummaryPanel({ summary, onContinue, t }: VRScoringSummaryPanel
   const korrekteKategorie = summary.deficit.kategorie
     ? t(`kategorie.${summary.deficit.kategorie}`)
     : '—'
-  const rows: { label: string; user: string; correct: string; ok: boolean }[] = [
+  // v0.9.5: Punkte-Beitrag pro Zeile — dieselben Gewichte wie die Berechnung
+  // (STEP_WEIGHTS Schritte 1/3/7 + KATEGORIE_PUNKTE), damit die Zeilensumme
+  // exakt auf punkteFinal aufgeht (inkl. Hinweis-Abzug und Booster unten).
+  const wPkt = Math.round(STEP_WEIGHTS[0] * STEP_WEIGHT_UNIT)
+  const aPkt = Math.round(STEP_WEIGHTS[2] * STEP_WEIGHT_UNIT)
+  const nPkt = Math.round(STEP_WEIGHTS[6] * STEP_WEIGHT_UNIT)
+  const rows: { label: string; user: string; correct: string; ok: boolean; pkt: number }[] = [
     { label: t('vr.kategorie'),   user: summary.kategorieRichtig ? t('vr.richtig') : t('vr.falsch'),
-      correct: summary.kategorieRichtig ? t('vr.richtig') : korrekteKategorie, ok: summary.kategorieRichtig },
+      correct: summary.kategorieRichtig ? t('vr.richtig') : korrekteKategorie, ok: summary.kategorieRichtig,
+      pkt: summary.kategorieRichtig ? KATEGORIE_PUNKTE : 0 },
     { label: t('scoring.phase_a'), user: dimLabelShort(summary.userW, t),
-      correct: dimLabelShort(summary.correctW, t), ok: summary.wichtigkeitKorrekt },
+      correct: dimLabelShort(summary.correctW, t), ok: summary.wichtigkeitKorrekt,
+      pkt: summary.wichtigkeitKorrekt ? wPkt : 0 },
     { label: t('scoring.phase_b'),  user: dimLabelShort(summary.userA, t),
-      correct: dimLabelShort(summary.correctA, t), ok: summary.abweichungKorrekt },
+      correct: dimLabelShort(summary.correctA, t), ok: summary.abweichungKorrekt,
+      pkt: summary.abweichungKorrekt ? aPkt : 0 },
     { label: t('scoring.phase_d'), user: nacaLabelShort(summary.userN, t),
-      correct: nacaLabelShort(summary.correctN, t), ok: summary.nacaKorrekt },
+      correct: nacaLabelShort(summary.correctN, t), ok: summary.nacaKorrekt,
+      pkt: summary.nacaKorrekt ? nPkt : 0 },
   ]
+  // Abzug/Bonus-Zeilen unter der Tabelle (nur wenn zutreffend)
+  const hintAbzugPkt = summary.hintPenalty ? 25 : 0
+  const vorBonus     = Math.max(0, rows.reduce((s, r) => s + r.pkt, 0) - hintAbzugPkt)
+  const boosterPkt   = summary.punkteFinal - vorBonus
+  const extraZeilen  = (summary.hintPenalty ? 1 : 0) + (summary.boosterProzent > 0 && boosterPkt !== 0 ? 1 : 0)
 
   const panelW  = 0.88
   const rowH    = 0.050
@@ -1208,7 +1234,7 @@ function VRScoringSummaryPanel({ summary, onContinue, t }: VRScoringSummaryPanel
   })()
 
   // ── Panel-Höhe pro Seite ───────────────────────────────────────────────────
-  const ergebnisH   = headerH + rows.length * (rowH + rowGap) + footerH
+  const ergebnisH   = headerH + rows.length * (rowH + rowGap) + extraZeilen * 0.036 + footerH
   const herleitungH = 0.055 + MX_BLOCK_H + 0.030 + MX_BLOCK_H + 0.125
   const lernkarteH  = lk.contentH + 0.125
   const panelH = seite === 'ergebnis' ? ergebnisH : seite === 'herleitung' ? herleitungH : lernkarteH
@@ -1271,13 +1297,39 @@ function VRScoringSummaryPanel({ summary, onContinue, t }: VRScoringSummaryPanel
                   {t('vr.du', { wert: r.user })}
                 </Text>
                 {!r.ok && (
-                  <Text position={[0.20, 0, 0.001]} fontSize={0.020} color="#1A7F1F" anchorX="left" anchorY="middle">
+                  <Text position={[0.17, 0, 0.001]} fontSize={0.018} color="#1A7F1F" anchorX="left" anchorY="middle" maxWidth={0.17} lineHeight={1.1}>
                     {t('vr.korrekt', { wert: r.correct })}
                   </Text>
                 )}
+                {/* v0.9.5: Punkte-Beitrag rechts — Zeilensumme = Endpunkte */}
+                <Text position={[(panelW - 0.04) / 2 - 0.015, 0, 0.001]} fontSize={0.019} color={r.ok ? '#1A7F1F' : '#D40053'} anchorX="right" anchorY="middle">
+                  {r.pkt > 0 ? `+${r.pkt}` : '0'}
+                </Text>
               </group>
             )
           })}
+
+          {/* v0.9.5: Hinweis-Abzug und Booster-Bonus als eigene Zeilen */}
+          {(() => {
+            const yBasis = panelH / 2 - headerH - rows.length * (rowH + rowGap)
+            const zeilen: { label: string; wert: string; farbe: string }[] = []
+            if (summary.hintPenalty) {
+              zeilen.push({ label: t('scoring.hinweis_genutzt'), wert: '−25', farbe: '#F0A500' })
+            }
+            if (summary.boosterProzent > 0 && boosterPkt !== 0) {
+              zeilen.push({ label: `${t('scoring.booster')} (+${summary.boosterProzent} %)`, wert: `+${boosterPkt}`, farbe: '#1A7F1F' })
+            }
+            return zeilen.map((z, i) => (
+              <group key={z.label} position={[0, yBasis - 0.010 - i * 0.036, 0.003]}>
+                <Text position={[-(panelW - 0.04) / 2 + 0.020, 0, 0.001]} fontSize={0.019} color={z.farbe} anchorX="left" anchorY="middle" maxWidth={panelW - 0.20}>
+                  {z.label}
+                </Text>
+                <Text position={[(panelW - 0.04) / 2 - 0.015, 0, 0.001]} fontSize={0.019} color={z.farbe} anchorX="right" anchorY="middle">
+                  {z.wert}
+                </Text>
+              </group>
+            ))
+          })()}
 
           <VRButton
             label={t('scoring.herleitung')}
@@ -1628,7 +1680,7 @@ function SceneContent({
             position={pos}
             label={p.label || t('szene.standort', { nr: i + 1 })}
             status={status}
-            hintZiel={hintActive && standortHatOffeneDefizite(deficits, foundIds, p.id)}
+            hintZiel={hintActive && standortHatOffeneDefizite(deficits, foundIds, p.id, aktivePerspektiveId)}
             onClick={() => onStandortWechsel(p.id)}
           />
         )
@@ -1652,7 +1704,7 @@ function SceneContent({
               position={pos}
               label={label}
               status={status}
-              hintZiel={hintActive && standortHatOffeneDefizite(deficits, foundIds, zielId === 'haupt' ? null : zielId)}
+              hintZiel={hintActive && standortHatOffeneDefizite(deficits, foundIds, zielId === 'haupt' ? null : zielId, aktivePerspektiveId)}
               onClick={() => onStandortWechsel(zielId === 'haupt' ? null : zielId)}
             />
           )
@@ -2678,7 +2730,7 @@ export default function SceneViewer({
               padding: '8px 14px', borderRadius: '9px',
               border: !aktivePerspektiveId
                 ? '2px solid #0076BD'
-                : hintActive && standortHatOffeneDefizite(deficits, foundIds, null)
+                : hintActive && standortHatOffeneDefizite(deficits, foundIds, null, aktivePerspektiveId)
                   ? '2px solid #F0A500'
                   : '1px solid rgba(255,255,255,0.18)',
               background: !aktivePerspektiveId ? 'rgba(0,118,189,0.25)' : 'rgba(0,0,0,0.55)',
@@ -2700,7 +2752,7 @@ export default function SceneViewer({
             const isActive = p.id === aktivePerspektiveId
             // v0.9.4: Hinweis-Wegweiser — orange Umrandung, wenn hinter dem
             // Standort noch unentdeckte Defizite verortet sind.
-            const hintZiel = !isActive && hintActive && standortHatOffeneDefizite(deficits, foundIds, p.id)
+            const hintZiel = !isActive && hintActive && standortHatOffeneDefizite(deficits, foundIds, p.id, aktivePerspektiveId)
             return (
               <button
                 key={p.id}

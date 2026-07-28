@@ -596,7 +596,7 @@ export default function ScoringFlow({ deficit, scene, kategorieRichtig = true, h
           )}
           <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '11px' }}>
-              <span style={{ color: 'var(--zh-color-text-muted)' }}>Kategorie</span>
+              <span style={{ color: 'var(--zh-color-text-muted)' }}>{t('vr.kategorie')}</span>
               <span style={{ fontWeight: 700, color: kategorieRichtig ? 'var(--zh-gruen)' : 'var(--zh-rot)' }}>
                 {kategorieRichtig ? '+25' : '0'} Pkt.
               </span>
@@ -617,6 +617,14 @@ export default function ScoringFlow({ deficit, scene, kategorieRichtig = true, h
               <div style={{ marginTop: '6px', paddingTop: '6px', borderTop: '1px solid var(--zh-color-border)', display: 'flex', justifyContent: 'space-between', fontSize: '11px' }}>
                 <span style={{ color: 'var(--zh-orange)' }}>{t('scoring.hinweis_genutzt')}</span>
                 <span style={{ fontWeight: 700, color: 'var(--zh-orange)' }}>−25 Pkt.</span>
+              </div>
+            )}
+            {/* v0.9.5: Booster-Zeile — vorher summierten die Zeilen bei Booster-
+                Defiziten nicht auf die Kopfzahl (Bonus fehlte im Aufriss). */}
+            {boosterPct > 0 && pts - ptsVorBonus !== 0 && (
+              <div style={{ marginTop: '6px', paddingTop: '6px', borderTop: '1px solid var(--zh-color-border)', display: 'flex', justifyContent: 'space-between', fontSize: '11px' }}>
+                <span style={{ color: 'var(--zh-gruen)' }}>{t('scoring.booster')} (+{boosterPct} %)</span>
+                <span style={{ fontWeight: 700, color: 'var(--zh-gruen)' }}>+{pts - ptsVorBonus} Pkt.</span>
               </div>
             )}
           </div>

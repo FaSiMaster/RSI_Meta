@@ -15,7 +15,7 @@
 
 | Schicht | Technologie | Version |
 |---|---|---|
-| Version | **v0.9.4** (2026-07-28) | VR-Ergebnis-Didaktik + Hinweis-Wegweiser über Standorte |
+| Version | **v0.9.5** (2026-07-28) | Punkte-Aufriss Browser=VR + Wegweiser nur für Neues |
 | Framework | React + Vite + TypeScript | React 18, Vite 5, TS strict |
 | Animation | Framer Motion (motion/react) | v12 |
 | i18n | react-i18next | — |
