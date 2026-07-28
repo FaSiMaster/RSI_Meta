@@ -206,6 +206,25 @@ Screenshot zurueckmelden.
 - [ ] Nach Beenden: Browser-Ansicht zeigt normalen Viewer bzw.
       Szenenabschluss.
 
+### H. Panels verschiebbar (v0.9.0)
+- [ ] Über jedem stehenden Panel ist eine Griffleiste mit drei
+      Grip-Punkten sichtbar (Fortschritt, Kontroll-Leiste, Kategorie,
+      Bewertung W/A/N, Summary, Alle-gefunden).
+- [ ] Ray auf Griffleiste → Leiste hellt auf (Hover).
+- [ ] Trigger halten + Controller bewegen → Panel folgt dem Ray flüssig,
+      Distanz zum Körper bleibt konstant.
+- [ ] Trigger loslassen → Panel bleibt an der neuen Stelle stehen.
+- [ ] Bewertungs-Flow: Panel-Position von Schritt 1 (Wichtigkeit) gilt
+      auch für Schritt 2 (Abweichung) und 3 (NACA) — kein Springen.
+- [ ] Szene beenden, neue Szene starten → verschobene Panels erscheinen
+      an der gemerkten Position relativ zur Blickrichtung.
+- [ ] Doppelklick (2× Trigger) auf Griffleiste → Panel springt auf
+      Default-Position zurück.
+- [ ] Panel lässt sich nicht hinter den Rücken oder ausser Reichweite
+      ziehen (Clamp greift beim Loslassen).
+- [ ] Klick-Feedback-Toast (Treffer/Fehlschlag) hat KEINE Griffleiste
+      (transient, gewollt).
+
 ---
 
 ## 5. Bekannte Limitationen
@@ -239,6 +258,7 @@ Screenshot zurueckmelden.
 | E. HUD mit Zeit | ? | |
 | F. Farb-codierte Marker | ? | |
 | G. Beenden | ? | |
+| H. Panels verschiebbar (v0.9.0) | ? | |
 
 **Gesamt-Eindruck**: _(ausstehend)_
 

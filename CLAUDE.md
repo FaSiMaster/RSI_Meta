@@ -15,7 +15,7 @@
 
 | Schicht | Technologie | Version |
 |---|---|---|
-| Version | **v0.5.0** (2026-04-20) | Beta-Polishing-Sprint, 16 Commits seit v0.4.0 |
+| Version | **v0.9.0** (2026-07-28) | VR-Panels verschiebbar (Grab-and-Drop + Persistenz) |
 | Framework | React + Vite + TypeScript | React 18, Vite 5, TS strict |
 | Animation | Framer Motion (motion/react) | v12 |
 | i18n | react-i18next | — |

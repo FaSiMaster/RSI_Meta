@@ -13,6 +13,46 @@ Versionierung nach [Semantic Versioning](https://semver.org/lang/de/).
 
 ---
 
+## [0.9.0] — 2026-07-28 — VR-Panels verschiebbar
+
+### Hinzugefügt
+
+- **Verschiebbare VR-Panels** (Stevos Wunsch seit VR-Iter 2): Jedes stehende
+  VR-Panel hat eine Griffleiste mit Grip-Punkten über der Oberkante.
+  Grab-and-Drop mit dem Controller-Ray: Trigger auf der Leiste halten,
+  Panel folgt dem Ray, loslassen platziert es. Die Distanz zum User bleibt
+  beim Verschieben konstant (Pointer-Capture via View-Plane, verifiziert am
+  Quellcode von `@pmndrs/pointer-events`, `dist/intersections/ray.js`).
+- **Position persistiert** pro Panel in `localStorage`
+  (`rsi-v3-vr-panel-offsets`), gespeichert im Kamera-Koordinatensystem des
+  Mount-Zeitpunkts: Das Panel erscheint in jeder Szene und Session an der
+  gleichen Stelle relativ zur Blickrichtung. Die drei Bewertungs-Schritte
+  (Wichtigkeit/Abweichung/NACA) teilen eine Position (`bewertung`), damit
+  das Panel im Flow nicht springt.
+- **Doppelklick auf die Griffleiste** setzt das Panel auf die
+  Default-Position zurück und löscht den gespeicherten Offset.
+- **Clamp-Sicherheitsnetz**: Offsets werden auf x ±1.6 m, y ±1.1 m,
+  z −0.5 bis −3.0 m begrenzt — ein Panel kann nicht ausser Reichweite oder
+  hinter den User geraten.
+- Neues Util `src/utils/vrPanelOffsets.ts` (Laden defensiv gegen kaputtes
+  JSON und falsche Typen) mit 13 Unit-Tests (`vrPanelOffsets.test.ts`).
+
+### Verschiebbar sind
+
+Fortschritts-Panel (`progress`), Kontroll-Leiste (`controls`),
+Kategorie-Panel (`kategorie`), Bewertungs-Panels W/A/N (gemeinsam
+`bewertung`), Scoring-Summary (`summary`), Alle-gefunden-Banner
+(`allfound`). Das transiente Klick-Feedback (Auto-Close nach 1.5–2 s)
+bleibt bewusst fix.
+
+### Gates
+
+- `tsc --noEmit`: 0 Fehler · `vitest`: 37/37 · `vite build`: grün
+- Headset-Smoke-Test Meta Quest 3: ausstehend (Protokoll H in
+  `docs/VR_SMOKE_REPORT.md`)
+
+---
+
 ## Versionierungs-Konvention (seit v0.8.2)
 
 - **Patch-Releases** (`0.8.x`): VR-Iterationen und Hotfixes.

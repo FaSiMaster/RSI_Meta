@@ -19,6 +19,7 @@ import {
 } from '../utils/sphereCoords'
 import { ml, getVerortungFürPerspektive, type AppScene, type AppDeficit, type DefizitKategorie, type FoundDeficit } from '../data/appData'
 import { triggerHaptic } from '../utils/vrHaptics'
+import { getVRPanelOffset, saveVRPanelOffset, clearVRPanelOffset, clampOffset } from '../utils/vrPanelOffsets'
 import KategoriePanel from './KategoriePanel'
 import KlickFeedback, { type KlickFeedbackType } from './KlickFeedback'
 import { useTranslation } from 'react-i18next'
@@ -205,19 +206,55 @@ function getHotspotPosition(d: AppDeficit, perspektivenId: string | null = null)
 // Beim ersten Frame wird die aktuelle Blickrichtung erfasst und das Panel
 // dort fixiert. Danach dreht nur noch Billboard es zur Kamera – die Position
 // bleibt unverändert (keine Kopf-Bindung mehr).
+//
+// v0.9.0 — Panels verschiebbar: Mit `drag` bekommt das Panel eine Griffleiste
+// über der Oberkante. Grab-and-Drop via Pointer-Capture: @pmndrs/pointer-events
+// (Basis von @react-three/xr v6) schneidet den Controller-Ray nach
+// setPointerCapture mit einer kamerazugewandten View-Plane im Grab-Abstand —
+// e.point wandert also mit dem Ray mit, das Panel folgt dem Delta. Die
+// Distanz zum User bleibt dabei konstant. Beim Loslassen wird die Position
+// im Kamera-System des Mount-Zeitpunkts persistiert (localStorage), Doppel-
+// klick auf die Griffleiste setzt auf die Default-Position zurück.
+interface VRHudDragConfig {
+  /** Persistenz-Schlüssel — gleiche ID teilt die Position (z.B. Bewertungs-Schritte). */
+  id:    string
+  /** Breite der Griffleiste (= Panelbreite). */
+  width: number
+  /** Y-Oberkante des Panels in Panel-Lokalkoordinaten (= panelH / 2). */
+  top:   number
+}
+
 interface VRHudProps {
   offset?: [number, number, number]
+  drag?:   VRHudDragConfig
   children: React.ReactNode
 }
 
-function VRHud({ offset = [0, 0, -1.5], children }: VRHudProps) {
+const VR_HANDLE_H   = 0.045
+const VR_HANDLE_GAP = 0.008
+
+function VRHud({ offset = [0, 0, -1.5], drag, children }: VRHudProps) {
   const groupRef    = useRef<THREE.Group>(null)
   const initialized = useRef(false)
+  // Kamera-Pose beim Mount — Referenzsystem für Persistenz und Reset
+  const mountPos  = useRef(new THREE.Vector3())
+  const mountQuat = useRef(new THREE.Quaternion())
+  const dragState = useRef<{
+    pointerId:  number
+    startPoint: THREE.Vector3
+    startPos:   THREE.Vector3
+  } | null>(null)
+  const [handleHover, setHandleHover] = useState(false)
+  const [handleDrag,  setHandleDrag]  = useState(false)
 
   useFrame(({ camera }) => {
     if (!groupRef.current || initialized.current) return
-    // Position einmalig in Kamera-Richtung + Offset setzen
-    const pos = new THREE.Vector3(offset[0], offset[1], offset[2])
+    mountPos.current.copy(camera.position)
+    mountQuat.current.copy(camera.quaternion)
+    // Position einmalig in Kamera-Richtung + Offset setzen (persistierter
+    // Offset des Panels hat Vorrang vor dem Default)
+    const eff = (drag ? getVRPanelOffset(drag.id) : null) ?? offset
+    const pos = new THREE.Vector3(eff[0], eff[1], eff[2])
       .applyQuaternion(camera.quaternion)
       .add(camera.position)
     groupRef.current.position.copy(pos)
@@ -225,10 +262,97 @@ function VRHud({ offset = [0, 0, -1.5], children }: VRHudProps) {
     initialized.current = true
   })
 
+  const setzePositionAusOffset = (o: [number, number, number]) => {
+    if (!groupRef.current) return
+    const pos = new THREE.Vector3(o[0], o[1], o[2])
+      .applyQuaternion(mountQuat.current)
+      .add(mountPos.current)
+    groupRef.current.position.copy(pos)
+  }
+
+  const handleGrabStart = (e: ThreeEvent<PointerEvent>) => {
+    if (!groupRef.current || dragState.current) return
+    e.stopPropagation()
+    ;(e.target as unknown as THREE.Object3D).setPointerCapture(e.pointerId)
+    dragState.current = {
+      pointerId:  e.pointerId,
+      startPoint: e.point.clone(),
+      startPos:   groupRef.current.position.clone(),
+    }
+    setHandleDrag(true)
+  }
+
+  const handleGrabMove = (e: ThreeEvent<PointerEvent>) => {
+    const d = dragState.current
+    if (!d || d.pointerId !== e.pointerId || !groupRef.current) return
+    e.stopPropagation()
+    groupRef.current.position
+      .copy(d.startPos)
+      .add(e.point)
+      .sub(d.startPoint)
+  }
+
+  const handleGrabEnd = (e: ThreeEvent<PointerEvent>) => {
+    const d = dragState.current
+    if (!d || d.pointerId !== e.pointerId) return
+    e.stopPropagation()
+    dragState.current = null
+    setHandleDrag(false)
+    try {
+      ;(e.target as unknown as THREE.Object3D).releasePointerCapture(e.pointerId)
+    } catch {
+      // Capture wurde bereits implizit gelöst — unkritisch
+    }
+    if (!drag || !groupRef.current) return
+    // Weltposition zurück ins Kamera-System des Mount-Zeitpunkts rechnen
+    const lokal = groupRef.current.position
+      .clone()
+      .sub(mountPos.current)
+      .applyQuaternion(mountQuat.current.clone().invert())
+    const geclampt = clampOffset([lokal.x, lokal.y, lokal.z])
+    saveVRPanelOffset(drag.id, geclampt)
+    // Clamp auch räumlich anwenden, damit Anzeige und Persistenz übereinstimmen
+    setzePositionAusOffset(geclampt)
+  }
+
+  const handleReset = (e: ThreeEvent<MouseEvent>) => {
+    e.stopPropagation()
+    if (!drag) return
+    clearVRPanelOffset(drag.id)
+    setzePositionAusOffset(offset)
+  }
+
   // Unsichtbar starten, damit kein Flash bei (0,0,0) vor erstem Frame
   return (
     <group ref={groupRef} visible={false}>
       <Billboard follow lockX={false} lockY={false} lockZ={false}>
+        {drag && (
+          <group position={[0, drag.top + VR_HANDLE_GAP + VR_HANDLE_H / 2, 0]}>
+            <mesh
+              onPointerDown={handleGrabStart}
+              onPointerMove={handleGrabMove}
+              onPointerUp={handleGrabEnd}
+              onPointerCancel={handleGrabEnd}
+              onPointerOver={() => setHandleHover(true)}
+              onPointerOut={() => setHandleHover(false)}
+              onDoubleClick={handleReset}
+            >
+              <planeGeometry args={[drag.width, VR_HANDLE_H]} />
+              <meshBasicMaterial
+                color={handleDrag ? '#0076BD' : handleHover ? '#25476a' : '#131826'}
+                transparent
+                opacity={0.92}
+              />
+            </mesh>
+            {/* Grip-Punkte als Verschiebbar-Signal */}
+            {[-0.036, 0, 0.036].map(x => (
+              <mesh key={x} position={[x, 0, 0.002]}>
+                <circleGeometry args={[0.006, 12]} />
+                <meshBasicMaterial color="#ffffff" transparent opacity={handleDrag || handleHover ? 0.95 : 0.55} />
+              </mesh>
+            ))}
+          </group>
+        )}
         {children}
       </Billboard>
     </group>
@@ -310,7 +434,7 @@ function VRProgressPanel({ sceneName, kontext, foundCount, totalCount, dots, ela
   const dotsStartX = -dotsWidth / 2
 
   return (
-    <VRHud offset={[-0.55, 0.36, -1.5]}>
+    <VRHud offset={[-0.55, 0.36, -1.5]} drag={{ id: 'progress', width: 0.56, top: 0.12 }}>
       <mesh>
         <planeGeometry args={[0.56, 0.24]} />
         <meshBasicMaterial color="#080c18" transparent opacity={0.88} />
@@ -360,7 +484,7 @@ interface VRControlBarProps {
 
 function VRControlBar({ hintActive, onHint, onBeenden, t }: VRControlBarProps) {
   return (
-    <VRHud offset={[0, -0.44, -1.5]}>
+    <VRHud offset={[0, -0.44, -1.5]} drag={{ id: 'controls', width: 1.02, top: 0.055 }}>
       <mesh>
         <planeGeometry args={[1.02, 0.11]} />
         <meshBasicMaterial color="#080c18" transparent opacity={0.80} />
@@ -413,7 +537,7 @@ function VRKategoriePanel({ onSelect, onCancel, t }: VRKategoriePanelProps) {
   const panelW  = 0.80
 
   return (
-    <VRHud offset={[0, 0, -1.5]}>
+    <VRHud offset={[0, 0, -1.5]} drag={{ id: 'kategorie', width: panelW, top: panelH / 2 }}>
       <mesh position={[0, 0, -0.003]}>
         <planeGeometry args={[panelW + 0.012, panelH + 0.012]} />
         <meshBasicMaterial color="#1a3060" transparent opacity={0.90} />
@@ -534,7 +658,7 @@ function VRBewertungWPanel({ kriteriumLabel, kontextLabel, prefillHint, onSelect
   const panelW  = 0.80
 
   return (
-    <VRHud offset={[0, 0, -1.5]}>
+    <VRHud offset={[0, 0, -1.5]} drag={{ id: 'bewertung', width: panelW, top: panelH / 2 }}>
       <mesh position={[0, 0, -0.003]}>
         <planeGeometry args={[panelW + 0.012, panelH + 0.012]} />
         <meshBasicMaterial color="#1a3060" transparent opacity={0.90} />
@@ -608,7 +732,7 @@ function VRBewertungAPanel({ options, onSelect, onCancel, t }: VRBewertungAPanel
   const panelW  = 0.86
 
   return (
-    <VRHud offset={[0, 0, -1.5]}>
+    <VRHud offset={[0, 0, -1.5]} drag={{ id: 'bewertung', width: panelW, top: panelH / 2 }}>
       <mesh position={[0, 0, -0.003]}>
         <planeGeometry args={[panelW + 0.012, panelH + 0.012]} />
         <meshBasicMaterial color="#1a3060" transparent opacity={0.90} />
@@ -689,7 +813,7 @@ function VRBewertungNPanel({ onSelect, onCancel, t }: VRBewertungNPanelProps) {
   const panelW  = 0.86
 
   return (
-    <VRHud offset={[0, 0, -1.5]}>
+    <VRHud offset={[0, 0, -1.5]} drag={{ id: 'bewertung', width: panelW, top: panelH / 2 }}>
       <mesh position={[0, 0, -0.003]}>
         <planeGeometry args={[panelW + 0.012, panelH + 0.012]} />
         <meshBasicMaterial color="#1a3060" transparent opacity={0.90} />
@@ -803,7 +927,7 @@ function VRScoringSummaryPanel({ summary, onContinue, t }: VRScoringSummaryPanel
   const panelH  = headerH + rows.length * (rowH + rowGap) + footerH
 
   return (
-    <VRHud offset={[0, 0, -1.5]}>
+    <VRHud offset={[0, 0, -1.5]} drag={{ id: 'summary', width: panelW, top: panelH / 2 }}>
       <mesh position={[0, 0, -0.003]}>
         <planeGeometry args={[panelW + 0.012, panelH + 0.012]} />
         <meshBasicMaterial color={allCorrect ? '#083a0c' : '#3a1808'} transparent opacity={0.92} />
@@ -900,7 +1024,7 @@ function VRRayReticle({ position }: VRRayReticleProps) {
 // ── VR: Alle-gefunden-Banner ─────────────────────────────────────────────────
 function VRAllFound({ onBeenden, t }: { onBeenden: () => void; t: TFunction }) {
   return (
-    <VRHud offset={[0, -0.22, -1.5]}>
+    <VRHud offset={[0, -0.22, -1.5]} drag={{ id: 'allfound', width: 0.82, top: 0.11 }}>
       <mesh position={[0, 0, -0.002]}>
         <planeGeometry args={[0.82, 0.22]} />
         <meshBasicMaterial color="#083a0c" transparent opacity={0.95} />
