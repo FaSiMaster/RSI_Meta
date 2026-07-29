@@ -7,6 +7,7 @@ import { Trash2, AlertTriangle, RefreshCw, Users, Search } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { supabase, setSupabaseStatus, type SupabaseResult } from '../../lib/supabase'
 import { getAllSceneResults } from '../../data/appData'
+import { deleteResultsSupabase } from '../../data/supabaseSync'
 
 // Lokaler Fallback-Typ (passt zu SceneResult-Struktur)
 interface LocalResult {
@@ -69,41 +70,56 @@ export default function AdminRanking() {
     setTimeout(() => setFeedback(null), 3000)
   }
 
+  // Loeschungen laufen seit v0.9.9 ueber die Edge Function admin-write
+  // (service_role). Direkte anon-Deletes wurden von der RLS still verworfen —
+  // die Buttons taten vorher nur scheinbar etwas.
+
   // ── Löschen: einzelner Eintrag ──
   async function deleteEntry(id: string) {
     if (!supabase) return
-    const { error } = await supabase.from('rsi_results').delete().eq('id', id)
-    if (error) { showFeedback(`Fehler: ${error.message}`); return }
-    setResults(prev => prev.filter(r => r.id !== id))
-    showFeedback('Eintrag gelöscht.')
+    try {
+      await deleteResultsSupabase({ id })
+      setResults(prev => prev.filter(r => r.id !== id))
+      showFeedback('Eintrag gelöscht.')
+    } catch (err) {
+      showFeedback(`Fehler: ${err instanceof Error ? err.message : err}`)
+    }
   }
 
   // ── Löschen: alle Einträge eines Users ──
   async function deleteByUsername(username: string) {
     if (!supabase) return
-    const { error } = await supabase.from('rsi_results').delete().eq('username', username)
-    if (error) { showFeedback(`Fehler: ${error.message}`); return }
-    setResults(prev => prev.filter(r => r.username !== username))
-    showFeedback(`Alle Einträge von "${username}" gelöscht.`)
+    try {
+      const n = await deleteResultsSupabase({ username })
+      setResults(prev => prev.filter(r => r.username !== username))
+      showFeedback(`${n} Einträge von "${username}" gelöscht.`)
+    } catch (err) {
+      showFeedback(`Fehler: ${err instanceof Error ? err.message : err}`)
+    }
   }
 
   // ── Löschen: alle Einträge eines Kurses ──
   async function deleteByKurs(kursCode: string) {
     if (!supabase) return
-    const { error } = await supabase.from('rsi_results').delete().eq('kurs_code', kursCode)
-    if (error) { showFeedback(`Fehler: ${error.message}`); return }
-    setResults(prev => prev.filter(r => r.kurs_code !== kursCode))
-    showFeedback(`Kurs "${kursCode}" zurückgesetzt.`)
+    try {
+      const n = await deleteResultsSupabase({ kurs_code: kursCode })
+      setResults(prev => prev.filter(r => r.kurs_code !== kursCode))
+      showFeedback(`Kurs "${kursCode}" zurückgesetzt (${n} Einträge).`)
+    } catch (err) {
+      showFeedback(`Fehler: ${err instanceof Error ? err.message : err}`)
+    }
   }
 
   // ── Löschen: alles ──
   async function deleteAll() {
     if (!supabase) return
-    // Supabase: delete mit always-true Filter
-    const { error } = await supabase.from('rsi_results').delete().gte('created_at', '1970-01-01')
-    if (error) { showFeedback(`Fehler: ${error.message}`); return }
-    setResults([])
-    showFeedback('Alle Einträge gelöscht.')
+    try {
+      const n = await deleteResultsSupabase({ all: true })
+      setResults([])
+      showFeedback(`Alle Einträge gelöscht (${n}).`)
+    } catch (err) {
+      showFeedback(`Fehler: ${err instanceof Error ? err.message : err}`)
+    }
   }
 
   // ── Eindeutige User + Kurse für Schnellaktionen ──

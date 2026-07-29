@@ -30,8 +30,16 @@ const K_KURSE    = 'rsi-v3-kurse'
 
 // ── Edge-Function-Helper ──
 
-type EdgeTable = 'rsi_topics' | 'rsi_scenes' | 'rsi_deficits' | 'rsi_kurse'
+type EdgeTable = 'rsi_topics' | 'rsi_scenes' | 'rsi_deficits' | 'rsi_kurse' | 'rsi_results'
 type EdgeOp    = 'upsert' | 'delete'
+
+// Gefiltertes Loeschen der Rangliste (nur rsi_results, v0.9.9)
+export interface ResultsDeleteWhere {
+  id?: string
+  username?: string
+  kurs_code?: string
+  all?: boolean
+}
 
 function getAdminToken(): string | null {
   if (typeof sessionStorage === 'undefined') return null
@@ -41,7 +49,7 @@ function getAdminToken(): string | null {
 async function edgeWrite(
   table: EdgeTable,
   op: EdgeOp,
-  payload: { rows?: unknown[]; id?: string }
+  payload: { rows?: unknown[]; id?: string; where?: ResultsDeleteWhere }
 ): Promise<{ ok: boolean; error?: string }> {
   const token = getAdminToken()
   if (!token) return { ok: false, error: 'no-admin-token' }
@@ -352,6 +360,39 @@ export async function deleteKursSupabase(id: string): Promise<void> {
   if (!supabase) throw new Error('Supabase nicht konfiguriert')
   const result = await edgeWrite('rsi_kurse', 'delete', { id })
   if (!result.ok) throw new Error(`Edge Function admin-write: ${result.error ?? 'unbekannter Fehler'}`)
+}
+
+// ── Rangliste: gefiltertes Loeschen via admin-write (v0.9.9) ──
+// Die RLS erlaubt anon auf rsi_results nur SELECT+INSERT — direkte Client-
+// Deletes der Admin-Rangliste loeschten deshalb still nichts. Der Umweg
+// ueber die Edge Function (service_role, Token-geprueft) ist der einzige
+// funktionierende Loeschpfad. Liefert die Anzahl geloeschter Zeilen.
+export async function deleteResultsSupabase(where: ResultsDeleteWhere): Promise<number> {
+  if (!supabase) throw new Error('Supabase nicht konfiguriert')
+  const token = getAdminToken()
+  if (!token) throw new Error('no-admin-token')
+  const url = import.meta.env.VITE_SUPABASE_URL as string | undefined
+  const anonKey = import.meta.env.VITE_SUPABASE_ANON_KEY as string | undefined
+  if (!url || !anonKey) throw new Error('supabase-env-missing')
+  const res = await fetch(`${url}/functions/v1/admin-write`, {
+    method: 'POST',
+    headers: {
+      'content-type': 'application/json',
+      'x-admin-token': token,
+      'apikey': anonKey,
+      'authorization': `Bearer ${anonKey}`,
+    },
+    body: JSON.stringify({ table: 'rsi_results', op: 'delete', where }),
+  })
+  const json = await res.json().catch(() => ({} as Record<string, unknown>))
+  if (!res.ok) {
+    if (res.status === 401 && typeof sessionStorage !== 'undefined') {
+      sessionStorage.removeItem('rsi-admin-token')
+      sessionStorage.removeItem('rsi-admin-auth')
+    }
+    throw new Error(String(json.error ?? `HTTP ${res.status}`))
+  }
+  return Number(json.count ?? 0)
 }
 
 // ── Cache zurücksetzen (nach App-Reset) ──

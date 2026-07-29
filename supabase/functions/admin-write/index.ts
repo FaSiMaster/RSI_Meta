@@ -20,7 +20,11 @@
 
 import { createClient } from 'npm:@supabase/supabase-js@2'
 
-const ALLOWED_TABLES = ['rsi_topics', 'rsi_scenes', 'rsi_deficits', 'rsi_kurse'] as const
+// rsi_results ist DELETE-ONLY (v0.9.9): Die RLS erlaubt anon nur SELECT+INSERT,
+// die Admin-Rangliste loeschte deshalb still gar nichts. Loeschungen laufen
+// jetzt hier ueber service_role — Upserts auf rsi_results bleiben verboten
+// (Resultate schreibt nur die App selbst als anon).
+const ALLOWED_TABLES = ['rsi_topics', 'rsi_scenes', 'rsi_deficits', 'rsi_kurse', 'rsi_results'] as const
 const ALLOWED_OPS    = ['upsert', 'delete'] as const
 type AllowedTable = typeof ALLOWED_TABLES[number]
 type AllowedOp    = typeof ALLOWED_OPS[number]
@@ -215,7 +219,14 @@ Deno.serve(async (req) => {
   }
 
   // Payload
-  let body: { table?: string; op?: string; rows?: unknown[]; id?: string }
+  let body: {
+    table?: string
+    op?: string
+    rows?: unknown[]
+    id?: string
+    // Nur rsi_results (v0.9.9): gefiltertes Loeschen fuer die Admin-Rangliste
+    where?: { id?: string; username?: string; kurs_code?: string; all?: boolean }
+  }
   try { body = await req.json() } catch { return jsonResponse({ error: 'invalid-json' }, 400, cors) }
 
   if (!body.table || !ALLOWED_TABLES.includes(body.table as AllowedTable)) {
@@ -226,6 +237,11 @@ Deno.serve(async (req) => {
   }
   const table = body.table as AllowedTable
   const op    = body.op as AllowedOp
+
+  // rsi_results ist delete-only
+  if (table === 'rsi_results' && op !== 'delete') {
+    return jsonResponse({ error: 'invalid-op-for-table' }, 400, cors)
+  }
 
   // Service-Role-Client
   const url = Deno.env.get('SUPABASE_URL')
@@ -265,6 +281,31 @@ Deno.serve(async (req) => {
       return jsonResponse({ ok: true, table, op, count: rowsToWrite.length }, 200, cors)
     }
     // op === 'delete'
+    if (table === 'rsi_results') {
+      // Gefiltertes Loeschen (v0.9.9): genau EIN Filter muss gesetzt sein.
+      const w = body.where
+      if (typeof w !== 'object' || w === null) {
+        return jsonResponse({ error: 'where-missing' }, 400, cors)
+      }
+      const gesetzt = [w.id, w.username, w.kurs_code, w.all === true ? true : undefined]
+        .filter(v => v !== undefined)
+      if (gesetzt.length !== 1) {
+        return jsonResponse({ error: 'where-needs-exactly-one-filter' }, 400, cors)
+      }
+      for (const [key, val] of [['id', w.id], ['username', w.username], ['kurs_code', w.kurs_code]] as const) {
+        if (val !== undefined && (typeof val !== 'string' || val.length === 0 || val.length > 200)) {
+          return jsonResponse({ error: `invalid-${key}` }, 400, cors)
+        }
+      }
+      let q = db.from(table).delete({ count: 'exact' })
+      if (w.id) q = q.eq('id', w.id)
+      else if (w.username) q = q.eq('username', w.username)
+      else if (w.kurs_code) q = q.eq('kurs_code', w.kurs_code)
+      else q = q.gte('created_at', '1970-01-01') // all
+      const { error, count } = await q
+      if (error) throw error
+      return jsonResponse({ ok: true, table, op, count: count ?? 0 }, 200, cors)
+    }
     if (typeof body.id !== 'string' || body.id.length === 0 || body.id.length > 200) {
       return jsonResponse({ error: 'invalid-id' }, 400, cors)
     }

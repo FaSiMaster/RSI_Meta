@@ -13,6 +13,30 @@ Versionierung nach [Semantic Versioning](https://semver.org/lang/de/).
 
 ---
 
+## [0.9.9] — 2026-07-29 — Admin-Rangliste löscht jetzt wirklich
+
+### Behoben
+
+- **Die Lösch-Buttons der Admin-Rangliste löschten still gar nichts:** Die
+  RLS-Policy von `rsi_results` erlaubt anon nur SELECT und INSERT — die
+  direkten Client-Deletes (Eintrag/User/Kurs/alles) wurden von Postgres
+  verworfen, ohne dass die UI es merkte (nachgewiesen per REST-Test am
+  29.07.2026). Löschungen laufen neu über die Edge Function `admin-write`
+  (service_role, Token-geprüft): `rsi_results` ist dort als
+  **delete-only**-Tabelle ergänzt mit genau einem Filter pro Aufruf
+  (id / username / kurs_code / all). Upserts auf rsi_results bleiben
+  verboten. Client neu via `deleteResultsSupabase()` (supabaseSync), die
+  UI zeigt die Anzahl tatsächlich gelöschter Zeilen.
+
+### Deployment-Hinweis
+
+- Die geänderte Edge Function muss deployt werden:
+  `npx supabase functions deploy admin-write --project-ref gtweaesunpvwjlttyaab`
+  (einmalig `supabase login` nötig). Bis zum Deploy zeigen die
+  Lösch-Buttons einen Fehler statt stillem Nichtstun.
+
+---
+
 ## [0.9.8] — 2026-07-29 — Sprach-Vollausbau: kein Deutsch mehr in fr/it/en
 
 ### Geändert
