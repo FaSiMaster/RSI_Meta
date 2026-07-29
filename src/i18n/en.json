@@ -167,7 +167,10 @@
     "bestanden_titel": "Pass criterion",
     "bestanden_pflicht": "All mandatory deficits required",
     "bestanden_prozent": "Minimum percentage",
-    "bestanden_hinweis": "Empty = no percentage threshold. Without adjustment the default applies: all mandatory deficits and at least 60 %."
+    "bestanden_hinweis": "Empty = no percentage threshold. Without adjustment the default applies: all mandatory deficits and at least 60 %.",
+    "thema_kursexklusiv_titel": "Visibility",
+    "thema_kursexklusiv": "Visible only for assigned courses",
+    "thema_kursexklusiv_hinweis": "Does not appear in free training. Course participants only see the topics checked in the course; courses without checked topics show the free selection."
   },
   "score": {
     "points": "pts"

@@ -167,7 +167,10 @@
     "bestanden_titel": "Bestanden-Kriterium",
     "bestanden_pflicht": "Alle Pflichtdefizite nötig",
     "bestanden_prozent": "Mindest-Prozent",
-    "bestanden_hinweis": "Leer = keine Prozent-Schwelle. Ohne Anpassung gilt der Standard: alle Pflichtdefizite und mindestens 60 %."
+    "bestanden_hinweis": "Leer = keine Prozent-Schwelle. Ohne Anpassung gilt der Standard: alle Pflichtdefizite und mindestens 60 %.",
+    "thema_kursexklusiv_titel": "Sichtbarkeit",
+    "thema_kursexklusiv": "Nur für zugewiesene Kurse sichtbar",
+    "thema_kursexklusiv_hinweis": "Erscheint nicht im freien Training. Kurs-Teilnehmende sehen ausschliesslich die im Kurs angehakten Themen; Kurse ohne angehakte Themen zeigen die freie Auswahl."
   },
   "score": {
     "points": "Pkt."

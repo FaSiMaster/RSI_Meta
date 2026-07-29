@@ -3,7 +3,7 @@
 
 import { motion, AnimatePresence } from 'motion/react'
 import { Trophy, Eye, MousePointerClick, BarChart3, ChevronDown, ChevronUp, BookOpen } from 'lucide-react'
-import { getTopics, getScenes, ml, type AppTopic } from '../data/appData'
+import { getSichtbareTopics, getScenes, ml, type AppTopic } from '../data/appData'
 import { getTopicIcon } from '../data/topicIcons'
 import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -20,10 +20,12 @@ const TopicIcon = ({ iconKey, size = 22 }: { iconKey: string | undefined | null;
 interface Props {
   username: string
   score: number
+  /** Kurs-Id oder Zugangscode der laufenden Session; null = freies Training */
+  kursId: string | null
   onSelectTopic: (topic: AppTopic) => void
 }
 
-export default function TopicDashboard({ username, score, onSelectTopic }: Props) {
+export default function TopicDashboard({ username, score, kursId, onSelectTopic }: Props) {
   const { t, i18n } = useTranslation()
   const lang = i18n.language
   const [topics, setTopics] = useState<AppTopic[]>([])
@@ -31,12 +33,14 @@ export default function TopicDashboard({ username, score, onSelectTopic }: Props
   const [showMethodik, setShowMethodik] = useState(false)
 
   useEffect(() => {
-    const ts = getTopics()
+    // v0.10.1: strikte Kurs-Sicht + isActive-Filter (archivierte Themen
+    // erschienen vorher weiterhin im Teilnehmer-Dashboard)
+    const ts = getSichtbareTopics(kursId)
     setTopics(ts)
     const counts: Record<string, number> = {}
     ts.forEach(tp => { counts[tp.id] = getScenes(tp.id).length })
     setSceneCounts(counts)
-  }, [])
+  }, [kursId])
 
   // Schritt-für-Schritt Daten — mit erweitertem Tooltip-Text (E-2)
   const schritte = [

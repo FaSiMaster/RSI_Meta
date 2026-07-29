@@ -167,7 +167,10 @@
     "bestanden_titel": "Critère de réussite",
     "bestanden_pflicht": "Tous les déficits obligatoires requis",
     "bestanden_prozent": "Pourcentage minimal",
-    "bestanden_hinweis": "Vide = pas de seuil de pourcentage. Sans adaptation, le standard s'applique: tous les déficits obligatoires et au moins 60 %."
+    "bestanden_hinweis": "Vide = pas de seuil de pourcentage. Sans adaptation, le standard s'applique: tous les déficits obligatoires et au moins 60 %.",
+    "thema_kursexklusiv_titel": "Visibilité",
+    "thema_kursexklusiv": "Visible uniquement pour les cours assignés",
+    "thema_kursexklusiv_hinweis": "N'apparaît pas dans l'entraînement libre. Les participants aux cours ne voient que les thèmes cochés dans le cours; les cours sans thèmes cochés affichent la sélection libre."
   },
   "score": {
     "points": "pts"

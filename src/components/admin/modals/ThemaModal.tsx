@@ -128,6 +128,24 @@ export default function ThemaModal({ open, initial, initialTyp, onClose, onSave 
           </div>
         </Section>
 
+        {/* v0.10.1: Kurs-Exklusivitaet — Thema nur in zugewiesenen Kursen sichtbar */}
+        <Section label={t('admin.thema_kursexklusiv_titel')}>
+          <label style={{ display: 'flex', alignItems: 'flex-start', gap: '8px', fontSize: '14px', color: 'var(--zh-color-text)', cursor: 'pointer' }}>
+            <input
+              type="checkbox"
+              checked={draft.kursExklusiv === true}
+              onChange={e => setDraft(prev => prev ? { ...prev, kursExklusiv: e.target.checked } : prev)}
+              style={{ marginTop: '3px' }}
+            />
+            <span>
+              {t('admin.thema_kursexklusiv')}
+              <span style={{ display: 'block', fontSize: '11px', color: 'var(--zh-color-text-disabled)', marginTop: '2px' }}>
+                {t('admin.thema_kursexklusiv_hinweis')}
+              </span>
+            </span>
+          </label>
+        </Section>
+
         <Section label={t('admin.thema_typ')}>
           <div style={{ display: 'flex', gap: '12px' }}>
             {(['ober','unter'] as const).map(val => (

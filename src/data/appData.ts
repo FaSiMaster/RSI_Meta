@@ -44,6 +44,9 @@ export interface AppTopic {
   parentTopicId?: string | null
   gruppenId?: string | null
   createdAt?: number
+  // v0.10.1: Thema erscheint NICHT im freien Training — nur in Kursen,
+  // bei denen es in kurs.topicIds angehakt ist. Default false (frei sichtbar).
+  kursExklusiv?: boolean
 }
 
 // Perspektive innerhalb einer Szene (mehrere Blickwinkel auf dieselben Defizite)
@@ -791,6 +794,34 @@ export function getOberthemen(): AppTopic[] {
 
 export function getUnterthemen(parentId: string): AppTopic[] {
   return getTopics().filter(t => t.parentTopicId === parentId)
+}
+
+// ── Kurs-Sichtbarkeit von Themen (v0.10.1, striktes Modell) ──────────────────
+// Entscheid Fachverantwortung 2026-07-29:
+//   ohne Kurs  → alle aktiven Themen OHNE kursExklusiv-Flag
+//   mit Kurs   → NUR die im Kurs angehakten Themen (kurs.topicIds), aktiv
+//   Fallback   → Kurs ohne angehakte Themen zeigt die freie Auswahl
+//                (Rueckwaertskompatibilitaet: bestehende Kurse haben topicIds []).
+// Achtung: Das ist Sichtbarkeits-Steuerung im Client, keine Zugriffssicherung —
+// die Inhalte bleiben in Supabase anon-lesbar (RLS SELECT fuer alle).
+export function filterSichtbareTopics(topics: AppTopic[], kurs: Kurs | null): AppTopic[] {
+  const aktive = topics.filter(tp => tp.isActive)
+  if (kurs && kurs.topicIds.length > 0) {
+    return aktive.filter(tp => kurs.topicIds.includes(tp.id))
+  }
+  return aktive.filter(tp => tp.kursExklusiv !== true)
+}
+
+// kursRef = Kurs-Id ODER Zugangscode (die Session speichert den Code)
+export function getSichtbareTopics(kursRef: string | null): AppTopic[] {
+  let kurs: Kurs | null = null
+  if (kursRef) {
+    const needle = kursRef.trim().toLowerCase()
+    kurs = getKurse().find(k =>
+      k.id === kursRef || k.zugangscode.trim().toLowerCase() === needle
+    ) ?? null
+  }
+  return filterSichtbareTopics(getTopics(), kurs)
 }
 
 export function getTopicsTree(): TopicNode[] {

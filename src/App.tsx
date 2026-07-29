@@ -451,7 +451,7 @@ export default function App() {
 
           {view === 'topics' && (
             <motion.div key="topics" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} transition={{ duration: 0.2 }} className="flex-1 flex flex-col">
-              <TopicDashboard username={username} score={score} onSelectTopic={handleSelectTopic} />
+              <TopicDashboard username={username} score={score} kursId={kursId} onSelectTopic={handleSelectTopic} />
             </motion.div>
           )}
 

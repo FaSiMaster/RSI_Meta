@@ -13,6 +13,30 @@ Versionierung nach [Semantic Versioning](https://semver.org/lang/de/).
 
 ---
 
+## [0.10.1] — 2026-07-29 — Kurs-exklusive Themen + Archiv-Filter-Fix
+
+### Hinzugefügt
+
+- **Themen lassen sich auf Kurse einschränken (striktes Modell):** Neues
+  Themen-Flag «Nur für zugewiesene Kurse sichtbar» (Admin-ThemaModal).
+  `kurs.topicIds` hat erstmals Wirkung: Wer mit Kurs-Code eingeloggt ist,
+  sieht ausschliesslich die im Kurs angehakten Themen; das freie Training
+  sieht nur Themen ohne Exklusiv-Flag. Kurse ohne angehakte Themen zeigen
+  als Fallback die freie Auswahl (Rückwärtskompatibilität — bestehende
+  Kurse haben leere topicIds). Logik in `filterSichtbareTopics()` /
+  `getSichtbareTopics()` (appData), 5 neue Tests.
+  Hinweis: Das ist Sichtbarkeits-Steuerung im Client, keine
+  Zugriffssicherung — die Inhalte bleiben in Supabase anon-lesbar.
+
+### Behoben
+
+- **Archivierte Themen erschienen weiterhin im Teilnehmer-Dashboard:**
+  «Thema archivieren» setzte `isActive: false`, das TopicDashboard
+  filterte aber nicht danach. Der neue Sichtbarkeits-Filter schliesst
+  inaktive Themen jetzt überall im Trainingspfad aus.
+
+---
+
 ## [0.10.0] — 2026-07-29 — Punkte-Ökonomie: Teilpunkte + zweistufiger Hinweis
 
 Entscheid Fachverantwortung vom 29.07.2026. Beide Konstanten liegen in
