@@ -100,7 +100,7 @@ export default function SzenenAbschluss({
             <SterneAnzeige sterne={sterne} size={28} />
           </div>
           <p style={{ fontSize: '13px', fontWeight: 700, color: sterne === 3 ? 'var(--zh-gruen)' : sterne === 2 ? 'var(--zh-orange)' : 'var(--zh-color-text-muted)', marginTop: '6px' }}>
-            {prozent}% korrekt
+            {t('completion.prozent_korrekt', { prozent })}
           </p>
           {istNeuerBestwert && versuche > 1 && (
             <div style={{ display: 'inline-flex', alignItems: 'center', gap: '5px', marginTop: '8px', padding: '4px 12px', borderRadius: '12px', background: 'rgba(26,127,31,0.1)', border: '1px solid rgba(26,127,31,0.3)' }}>
@@ -139,10 +139,10 @@ export default function SzenenAbschluss({
           gap: '8px', marginBottom: '16px',
         }}>
           {[
-            { label: 'Punkte', value: sceneScore.toLocaleString('de-CH'), color: 'var(--zh-blau)' },
-            { label: 'Gefunden', value: `${foundCount}/${deficits.length}`, color: allFound ? 'var(--zh-gruen)' : 'var(--zh-color-text)' },
-            { label: 'Versuch', value: `#${versuche}`, color: 'var(--zh-color-text)' },
-            { label: 'Dauer', value: formatDauer(dauerSek), color: 'var(--zh-color-text-muted)' },
+            { label: t('completion.punkte'), value: sceneScore.toLocaleString('de-CH'), color: 'var(--zh-blau)' },
+            { label: t('completion.gefunden'), value: `${foundCount}/${deficits.length}`, color: allFound ? 'var(--zh-gruen)' : 'var(--zh-color-text)' },
+            { label: t('completion.versuch'), value: `#${versuche}`, color: 'var(--zh-color-text)' },
+            { label: t('completion.dauer'), value: formatDauer(dauerSek), color: 'var(--zh-color-text-muted)' },
           ].map(card => (
             <div key={card.label} style={{
               borderRadius: '10px', border: '1px solid var(--zh-color-border)',
@@ -163,15 +163,15 @@ export default function SzenenAbschluss({
             gap: '8px', marginBottom: '16px',
           }}>
             <div style={{ padding: '10px 12px', borderRadius: '8px', background: 'var(--zh-color-bg-secondary)', border: '1px solid var(--zh-color-border)', textAlign: 'center' }}>
-              <p style={{ fontSize: '9px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.1em', color: 'var(--zh-color-text-disabled)', marginBottom: '4px' }}>Bester Versuch</p>
+              <p style={{ fontSize: '9px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.1em', color: 'var(--zh-color-text-disabled)', marginBottom: '4px' }}>{t('completion.bester_versuch')}</p>
               <p style={{ fontSize: '16px', fontWeight: 800, color: 'var(--zh-gruen)' }}>{best.prozent}%</p>
             </div>
             <div style={{ padding: '10px 12px', borderRadius: '8px', background: 'var(--zh-color-bg-secondary)', border: '1px solid var(--zh-color-border)', textAlign: 'center' }}>
-              <p style={{ fontSize: '9px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.1em', color: 'var(--zh-color-text-disabled)', marginBottom: '4px' }}>Versuche total</p>
+              <p style={{ fontSize: '9px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.1em', color: 'var(--zh-color-text-disabled)', marginBottom: '4px' }}>{t('completion.versuche_total')}</p>
               <p style={{ fontSize: '16px', fontWeight: 800, color: 'var(--zh-color-text)' }}>{versuche}</p>
             </div>
             <div style={{ padding: '10px 12px', borderRadius: '8px', background: 'var(--zh-color-bg-secondary)', border: '1px solid var(--zh-color-border)', textAlign: 'center' }}>
-              <p style={{ fontSize: '9px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.1em', color: 'var(--zh-color-text-disabled)', marginBottom: '4px' }}>Ø Zeit/Defizit</p>
+              <p style={{ fontSize: '9px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.1em', color: 'var(--zh-color-text-disabled)', marginBottom: '4px' }}>{t('completion.avg_zeit')}</p>
               <p style={{ fontSize: '16px', fontWeight: 800, color: 'var(--zh-color-text-muted)' }}>
                 <Clock size={13} style={{ display: 'inline', verticalAlign: '-2px', marginRight: '4px' }} />
                 {avgDefizitZeit}s
@@ -188,10 +188,10 @@ export default function SzenenAbschluss({
           marginBottom: '20px',
         }}>
           <span style={{ fontSize: '13px', color: 'var(--zh-color-text-muted)', fontWeight: 600 }}>
-            Gesamtscore (Best-of)
+            {t('completion.gesamtscore')}
           </span>
           <span style={{ fontSize: '20px', fontWeight: 900, color: 'var(--zh-blau)' }}>
-            {totalScore.toLocaleString('de-CH')} Pkt.
+            {totalScore.toLocaleString('de-CH')} {t('completion.pkt')}
           </span>
         </div>
 
@@ -206,7 +206,7 @@ export default function SzenenAbschluss({
             borderBottom: '1px solid var(--zh-color-border)',
             background: 'var(--zh-color-bg-secondary)',
           }}>
-            {['', 'Defizit', 'Pkt.', 'Zeit', 'Status'].map((h, i) => (
+            {['', t('completion.col_defizit'), t('completion.pkt'), t('completion.col_zeit'), t('completion.col_status')].map((h, i) => (
               <span key={i} style={{ fontSize: '9px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.12em', color: 'var(--zh-color-text-disabled)', textAlign: i >= 2 ? 'right' : 'left' }}>
                 {h}
               </span>
@@ -238,7 +238,7 @@ export default function SzenenAbschluss({
                   <div style={{ display: 'flex', gap: '4px', flexWrap: 'wrap' }}>
                     {d.isPflicht && (
                       <span style={{ fontSize: '8px', fontWeight: 800, padding: '1px 4px', borderRadius: '3px', background: 'rgba(212,0,83,0.1)', color: 'var(--zh-rot)', textTransform: 'uppercase' }}>
-                        Pflicht
+                        {t('completion.pflicht')}
                       </span>
                     )}
                     {found && !found.kategorieRichtig && (
@@ -281,7 +281,7 @@ export default function SzenenAbschluss({
                   background: found ? 'rgba(26,127,31,0.1)' : 'rgba(212,0,83,0.08)',
                   color: found ? 'var(--zh-gruen)' : 'var(--zh-rot)',
                 }}>
-                  {found ? 'Gefunden' : 'Verpasst'}
+                  {found ? t('completion.gefunden_status') : t('completion.verpasst_status')}
                 </span>
               </div>
             )
@@ -294,20 +294,20 @@ export default function SzenenAbschluss({
             onClick={onToTopics}
             style={{ display: 'flex', alignItems: 'center', gap: '6px', padding: '10px 18px', borderRadius: '8px', border: '1px solid var(--zh-color-border)', background: 'var(--zh-color-surface)', color: 'var(--zh-color-text-muted)', fontSize: '13px', fontWeight: 600, cursor: 'pointer', fontFamily: 'var(--zh-font)' }}
           >
-            <ArrowLeft size={14} /> Themen
+            <ArrowLeft size={14} /> {t('completion.zu_themen')}
           </button>
           <button
             onClick={onToRanking}
             style={{ display: 'flex', alignItems: 'center', gap: '6px', padding: '10px 18px', borderRadius: '8px', border: '1px solid var(--zh-color-border)', background: 'var(--zh-color-surface)', color: 'var(--zh-color-text-muted)', fontSize: '13px', fontWeight: 600, cursor: 'pointer', fontFamily: 'var(--zh-font)' }}
           >
-            <BarChart3 size={14} /> Rangliste
+            <BarChart3 size={14} /> {t('nav.ranking')}
           </button>
           {onNextScene && (
             <button
               onClick={onNextScene}
               style={{ display: 'flex', alignItems: 'center', gap: '6px', padding: '10px 18px', borderRadius: '8px', background: 'var(--zh-dunkelblau)', color: 'white', fontSize: '13px', fontWeight: 700, cursor: 'pointer', border: 'none', marginLeft: 'auto', fontFamily: 'var(--zh-font)' }}
             >
-              Nächste Szene <ChevronRight size={14} />
+              {t('szene.nächste')} <ChevronRight size={14} />
             </button>
           )}
         </div>

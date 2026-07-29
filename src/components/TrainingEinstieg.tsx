@@ -185,7 +185,7 @@ export default function TrainingEinstieg({ scene, topic, deficits, onStart, onBa
           <span aria-hidden="true" style={{ fontSize: '18px', lineHeight: 1, marginTop: '1px' }}>!</span>
           <div>
             <p style={{ fontSize: '11px', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.12em', margin: 0, marginBottom: '4px' }}>
-              Hinweis
+              {t('einstieg.hinweis_label')}
             </p>
             {bemerkung}
           </div>

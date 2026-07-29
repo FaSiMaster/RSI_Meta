@@ -17,24 +17,15 @@ interface Props {
   onWeiter: () => void
 }
 
-function dimLabel(v: RSIDimension): string {
-  const map: Record<RSIDimension, string> = { gross: 'Gross', mittel: 'Mittel', klein: 'Klein' }
+// Labels via i18n (i18n-Sweep v0.9.8): vorher hartcodiert Deutsch
+type TFn = (k: string) => string
+function dimLabel(v: RSIDimension, t: TFn): string {
+  const map: Record<RSIDimension, string> = { gross: t('scoring.dim_gross'), mittel: t('scoring.dim_mittel'), klein: t('scoring.dim_klein') }
   return map[v]
 }
-function nacaLabel(v: NACADimension): string {
-  const map: Record<NACADimension, string> = { leicht: 'Leicht', mittel: 'Mittel', schwer: 'Schwer' }
+function nacaLabel(v: NACADimension, t: TFn): string {
+  const map: Record<NACADimension, string> = { leicht: t('scoring.schwere_leicht'), mittel: t('scoring.schwere_mittel'), schwer: t('scoring.schwere_schwer') }
   return map[v]
-}
-
-// Kategorie-Label
-const KATEGORIE_LABELS: Record<string, string> = {
-  verkehrsfuehrung: 'Verkehrsführung',
-  sicht:            'Sicht',
-  ausruestung:      'Ausrüstung',
-  zustand:          'Zustand Verkehrsfläche',
-  strassenrand:     'Strassenrand',
-  verkehrsablauf:   'Verkehrsablauf',
-  baustelle:        'Baustelle',
 }
 
 export default function LernKarte({ deficit, kategorieRichtig, wichtigkeitKorrekt, abweichungKorrekt, nacaKorrekt, onWeiter }: Props) {
@@ -45,9 +36,9 @@ export default function LernKarte({ deficit, kategorieRichtig, wichtigkeitKorrek
   // Review R-25: Soll-NACA-Wert (0-7) sichtbar machen — die Musterlösung
   // unterscheidet z.B. NACA 4 von NACA 7, die Gruppe «Schwer» allein nicht.
   const feedbackRows: { label: string; korrekt: boolean; korrekterWert: string }[] = [
-    { label: t('scoring.phase_a'), korrekt: wichtigkeitKorrekt, korrekterWert: dimLabel(ca.wichtigkeit) },
-    { label: t('scoring.phase_b'), korrekt: abweichungKorrekt,  korrekterWert: dimLabel(ca.abweichung) },
-    { label: t('scoring.phase_d'), korrekt: nacaKorrekt,        korrekterWert: `${nacaLabel(ca.unfallschwere)} (NACA ${ca.naca})` },
+    { label: t('scoring.phase_a'), korrekt: wichtigkeitKorrekt, korrekterWert: dimLabel(ca.wichtigkeit, t) },
+    { label: t('scoring.phase_b'), korrekt: abweichungKorrekt,  korrekterWert: dimLabel(ca.abweichung, t) },
+    { label: t('scoring.phase_d'), korrekt: nacaKorrekt,        korrekterWert: `${nacaLabel(ca.unfallschwere, t)} (NACA ${ca.naca})` },
   ]
 
   const erklaerung = deficit.erklaerungI18n ? ml(deficit.erklaerungI18n, lang).trim() : ''
@@ -83,7 +74,7 @@ export default function LernKarte({ deficit, kategorieRichtig, wichtigkeitKorrek
             color: kategorieRichtig ? 'var(--zh-gruen)' : 'var(--zh-warnung)',
             border: `1px solid ${kategorieRichtig ? 'rgba(26,127,31,0.4)' : 'rgba(184,115,0,0.4)'}`,
           }}>
-            {KATEGORIE_LABELS[deficit.kategorie] ?? deficit.kategorie}
+            {t(`kategorie.${deficit.kategorie}`)}
           </span>
         )}
         <span style={{

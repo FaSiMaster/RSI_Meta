@@ -13,6 +13,34 @@ Versionierung nach [Semantic Versioning](https://semver.org/lang/de/).
 
 ---
 
+## [0.9.8] — 2026-07-29 — Sprach-Vollausbau: kein Deutsch mehr in fr/it/en
+
+### Geändert
+
+- **Hartcodierte deutsche UI-Strings auf i18n umgestellt** in allen
+  teilnehmenden-sichtbaren Komponenten: SzenenAbschluss (Score-Karten,
+  Statistik, Tabelle, Status-Chips, Buttons), ScoringFlow (Methodik-Overlay,
+  Matrizen-Titel, Legenden, Zwischenergebnisse, «Gemäss Tabelle»,
+  Punkte-Einheiten), LernKarte (Dimension-/NACA-/Kategorie-Labels neu via
+  i18n statt lokaler deutscher Maps), RankingView (Tab-Pills,
+  Tabellen-Header, Auswahl-Labels, Leer-Meldungen, «(Du)»), SceneList
+  (Defizit-/Versuchs-/Best-Angaben, Leer-Meldung), SceneViewer
+  («Szene beenden», Standort-Label, Zoom-Tooltips, VR-Titel,
+  AllFoundBanner), TrainingEinstieg (Trainer-Box-Label).
+- **Supabase-Content erstmals vollständig übersetzt:** Namen, Beschreibungen
+  und Erklärungen aller 8 Defizite von SZ_2026_002 in fr/it/en, mit der
+  Terminologie aus dem VSS-40-241-Normtext (passage pour piétons, distance
+  de visibilité, îlot de protection; passaggio pedonale, distanza di
+  visibilità, isola salvagente). SSV heisst fr OSR / it OSStr.
+  Maschinell übersetzt — fachliche Prüfung empfohlen. Soll-Werte unberührt.
+
+### Bekannt / bewusst offen
+
+- Admin-Bereich (SzeneModal, NeueSzeneModal, Diagnose-Overlay
+  «Kein Panorama-Bild») bleibt teilweise deutsch — interner Bereich.
+
+---
+
 ## [0.9.7] — 2026-07-29 — Bestanden-Kriterium + eigener Name im Live-Ranking
 
 ### Hinzugefügt

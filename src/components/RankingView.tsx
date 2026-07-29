@@ -295,8 +295,8 @@ export default function RankingView({ username, onBack }: Props) {
         <table style={{ width: '100%', borderCollapse: 'collapse' }}>
           <thead>
             <tr style={{ borderBottom: '1px solid var(--zh-color-border)', background: 'var(--zh-color-bg-secondary)' }}>
-              {['Rang', 'Name', 'Score', 'Szenen', 'Bestanden', 'Ø %'].map(h => (
-                <th key={h} style={{ padding: '10px 16px', fontSize: '10px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.12em', color: 'var(--zh-color-text-muted)', textAlign: h === 'Name' ? 'left' : 'right' }}>
+              {[t('ranking.rank'), t('ranking.name'), t('ranking.score'), t('ranking.scenes'), t('ranking.bestanden'), t('ranking.avg_prozent')].map((h, hi) => (
+                <th key={h} style={{ padding: '10px 16px', fontSize: '10px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.12em', color: 'var(--zh-color-text-muted)', textAlign: hi === 1 ? 'left' : 'right' }}>
                   {h}
                 </th>
               ))}
@@ -309,7 +309,7 @@ export default function RankingView({ username, onBack }: Props) {
                 <tr key={entry.username} style={{ borderBottom: '1px solid var(--zh-color-border)', background: isOwn ? 'rgba(0,118,189,0.08)' : 'transparent' }}>
                   <td style={{ padding: '12px 16px', fontSize: '14px', color: 'var(--zh-color-text-muted)', textAlign: 'right' }}><RangCell idx={idx} /></td>
                   <td style={{ padding: '12px 16px', fontSize: '14px', fontWeight: isOwn ? 700 : 500, color: isOwn ? 'var(--zh-blau)' : 'var(--zh-color-text)', textAlign: 'left' }}>
-                    {displayName(entry.username)}{isOwn && <span style={{ marginLeft: '6px', fontSize: '10px', fontWeight: 700, color: 'var(--zh-blau)', opacity: 0.7 }}>(Du)</span>}
+                    {displayName(entry.username)}{isOwn && <span style={{ marginLeft: '6px', fontSize: '10px', fontWeight: 700, color: 'var(--zh-blau)', opacity: 0.7 }}>{t('ranking.du')}</span>}
                   </td>
                   <td style={{ padding: '12px 16px', fontSize: '15px', fontWeight: 800, color: 'var(--zh-blau)', textAlign: 'right' }}>{entry.score.toLocaleString('de-CH')}</td>
                   <td style={{ padding: '12px 16px', fontSize: '13px', color: 'var(--zh-color-text-muted)', textAlign: 'right' }}>{entry.szenen}</td>
@@ -351,10 +351,10 @@ export default function RankingView({ username, onBack }: Props) {
 
       {/* Tab-Pills */}
       <div style={{ display: 'flex', gap: '8px', marginBottom: '24px', flexWrap: 'wrap' }}>
-        <button style={pillStyle(tab === 'gesamt')} onClick={() => setTab('gesamt')}>Gesamt</button>
-        <button style={pillStyle(tab === 'kurs')} onClick={() => setTab('kurs')}>Kurs</button>
-        <button style={pillStyle(tab === 'thema')} onClick={() => setTab('thema')}>Thema</button>
-        <button style={pillStyle(tab === 'szene')} onClick={() => setTab('szene')}>Szene</button>
+        <button style={pillStyle(tab === 'gesamt')} onClick={() => setTab('gesamt')}>{t('ranking.gesamt')}</button>
+        <button style={pillStyle(tab === 'kurs')} onClick={() => setTab('kurs')}>{t('ranking.kurs')}</button>
+        <button style={pillStyle(tab === 'thema')} onClick={() => setTab('thema')}>{t('ranking.thema')}</button>
+        <button style={pillStyle(tab === 'szene')} onClick={() => setTab('szene')}>{t('ranking.szene')}</button>
       </div>
 
       {/* Ladeindikator */}
@@ -366,7 +366,7 @@ export default function RankingView({ username, onBack }: Props) {
       )}
 
       {/* ═══ TAB: GESAMT ═══ */}
-      {!loading && tab === 'gesamt' && renderGesamtTable(gesamtData, 'Noch keine Resultate vorhanden.')}
+      {!loading && tab === 'gesamt' && renderGesamtTable(gesamtData, t('ranking.leer'))}
 
       {/* ═══ TAB: KURS ═══ */}
       {!loading && tab === 'kurs' && (
@@ -374,10 +374,10 @@ export default function RankingView({ username, onBack }: Props) {
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginBottom: '20px' }}>
             <div>
               <label style={{ fontSize: '11px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.12em', color: 'var(--zh-color-text-muted)', display: 'block', marginBottom: '6px' }}>
-                Kurs wählen
+                {t('ranking.kurs_wählen')}
               </label>
               <select value={selectedKursId} onChange={e => { setSelectedKursId(e.target.value); setKursCodeInput('') }} style={selectStyle}>
-                <option value="">— Kurs wählen —</option>
+                <option value="">— {t('ranking.kurs_wählen')} —</option>
                 {kurse.map(k => (
                   <option key={k.id} value={k.id}>{k.name} ({k.datum})</option>
                 ))}
@@ -385,7 +385,7 @@ export default function RankingView({ username, onBack }: Props) {
             </div>
             <div>
               <label style={{ fontSize: '11px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.12em', color: 'var(--zh-color-text-muted)', display: 'block', marginBottom: '6px' }}>
-                Oder Zugangscode eingeben
+                {t('ranking.zugangscode_eingeben')}
               </label>
               <input
                 type="text"
@@ -399,7 +399,7 @@ export default function RankingView({ username, onBack }: Props) {
               />
             </div>
           </div>
-          {renderGesamtTable(kursData, selectedKursId || kursCodeInput.trim() ? 'Noch keine Resultate für diesen Kurs.' : 'Bitte einen Kurs wählen oder Zugangscode eingeben.')}
+          {renderGesamtTable(kursData, selectedKursId || kursCodeInput.trim() ? t('ranking.leer_kurs') : t('ranking.kurs_hinweis'))}
         </>
       )}
 
@@ -408,16 +408,16 @@ export default function RankingView({ username, onBack }: Props) {
         <>
           <div style={{ marginBottom: '20px' }}>
             <label style={{ fontSize: '11px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.12em', color: 'var(--zh-color-text-muted)', display: 'block', marginBottom: '6px' }}>
-              Thema wählen
+              {t('ranking.thema_wählen')}
             </label>
             <select value={selectedTopicId} onChange={e => setSelectedTopicId(e.target.value)} style={selectStyle}>
-              <option value="">— Thema wählen —</option>
+              <option value="">— {t('ranking.thema_wählen')} —</option>
               {topics.map(tp => (
                 <option key={tp.id} value={tp.id}>{ml(tp.nameI18n, lang)}</option>
               ))}
             </select>
           </div>
-          {selectedTopicId && renderGesamtTable(themaData, 'Keine Resultate für dieses Thema.')}
+          {selectedTopicId && renderGesamtTable(themaData, t('ranking.leer_thema'))}
         </>
       )}
 
@@ -426,10 +426,10 @@ export default function RankingView({ username, onBack }: Props) {
         <>
           <div style={{ marginBottom: '20px' }}>
             <label style={{ fontSize: '11px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.12em', color: 'var(--zh-color-text-muted)', display: 'block', marginBottom: '6px' }}>
-              Szene wählen
+              {t('ranking.szene_wählen')}
             </label>
             <select value={selectedSceneId} onChange={e => setSelectedSceneId(e.target.value)} style={selectStyle}>
-              <option value="">— Szene wählen —</option>
+              <option value="">— {t('ranking.szene_wählen')} —</option>
               {scenes.map(s => (
                 <option key={s.id} value={s.id}>{ml(s.nameI18n, lang)}</option>
               ))}
@@ -441,8 +441,8 @@ export default function RankingView({ username, onBack }: Props) {
               <table style={{ width: '100%', borderCollapse: 'collapse' }}>
                 <thead>
                   <tr style={{ borderBottom: '1px solid var(--zh-color-border)', background: 'var(--zh-color-bg-secondary)' }}>
-                    {['Rang', 'Name', 'Punkte', '%', 'Bestanden', 'Dauer', 'Sterne'].map(h => (
-                      <th key={h} style={{ padding: '10px 12px', fontSize: '10px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.1em', color: 'var(--zh-color-text-muted)', textAlign: h === 'Name' ? 'left' : 'right' }}>{h}</th>
+                    {[t('ranking.rank'), t('ranking.name'), t('ranking.punkte'), '%', t('ranking.bestanden'), t('ranking.dauer'), t('ranking.sterne')].map((h, hi) => (
+                      <th key={h} style={{ padding: '10px 12px', fontSize: '10px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.1em', color: 'var(--zh-color-text-muted)', textAlign: hi === 1 ? 'left' : 'right' }}>{h}</th>
                     ))}
                   </tr>
                 </thead>
@@ -453,7 +453,7 @@ export default function RankingView({ username, onBack }: Props) {
                       <tr key={r.id} style={{ borderBottom: '1px solid var(--zh-color-border)', background: isOwn ? 'rgba(0,118,189,0.08)' : 'transparent' }}>
                         <td style={{ padding: '10px 12px', textAlign: 'right' }}><RangCell idx={idx} /></td>
                         <td style={{ padding: '10px 12px', fontWeight: isOwn ? 700 : 500, color: isOwn ? 'var(--zh-blau)' : 'var(--zh-color-text)', textAlign: 'left', fontSize: '13px' }}>
-                          {displayName(r.username)}{isOwn && <span style={{ marginLeft: '6px', fontSize: '10px', fontWeight: 700, color: 'var(--zh-blau)', opacity: 0.7 }}>(Du)</span>}
+                          {displayName(r.username)}{isOwn && <span style={{ marginLeft: '6px', fontSize: '10px', fontWeight: 700, color: 'var(--zh-blau)', opacity: 0.7 }}>{t('ranking.du')}</span>}
                         </td>
                         <td style={{ padding: '10px 12px', fontWeight: 800, color: 'var(--zh-blau)', textAlign: 'right', fontSize: '14px' }}>{r.punkte.toLocaleString('de-CH')}</td>
                         <td style={{ padding: '10px 12px', fontWeight: 700, color: r.prozent >= 90 ? 'var(--zh-gruen)' : r.prozent >= 60 ? 'var(--zh-orange)' : 'var(--zh-color-text-muted)', textAlign: 'right' }}>{r.prozent}%</td>
@@ -471,7 +471,7 @@ export default function RankingView({ username, onBack }: Props) {
                     )
                   })}
                   {szeneData.length === 0 && (
-                    <tr><td colSpan={7} style={{ padding: '32px', textAlign: 'center', color: 'var(--zh-color-text-disabled)', fontSize: '13px' }}>Keine Resultate für diese Szene.</td></tr>
+                    <tr><td colSpan={7} style={{ padding: '32px', textAlign: 'center', color: 'var(--zh-color-text-disabled)', fontSize: '13px' }}>{t('ranking.leer_szene')}</td></tr>
                   )}
                 </tbody>
               </table>

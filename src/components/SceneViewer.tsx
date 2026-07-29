@@ -1994,6 +1994,7 @@ function HintDialog({ hintCount, onBestätigen, onAbbrechen }: HintDialogProps) 
 
 // ── Alle-gefunden-Banner (Browser) ───────────────────────────────────────────
 function AllFoundBanner({ onBeenden }: { onBeenden: () => void }) {
+  const { t } = useTranslation()
   return (
     <div style={{
       position: 'absolute', bottom: '80px', left: '50%', transform: 'translateX(-50%)',
@@ -2007,13 +2008,13 @@ function AllFoundBanner({ onBeenden }: { onBeenden: () => void }) {
       boxShadow: '0 8px 32px rgba(0,0,0,0.5)',
     }}>
       <span style={{ fontSize: '14px', fontWeight: 700, color: 'white' }}>
-        Alle Sicherheitsdefizite gefunden!
+        {t('szene.alle_gefunden')}
       </span>
       <button
         onClick={onBeenden}
         style={{ padding: '8px 18px', borderRadius: '6px', border: 'none', background: 'white', color: '#1A7F1F', fontSize: '13px', fontWeight: 700, cursor: 'pointer', fontFamily: 'var(--zh-font)' }}
       >
-        Szene beenden
+        {t('szene.beenden')}
       </button>
     </div>
   )
@@ -2568,7 +2569,7 @@ export default function SceneViewer({
                 console.warn('[RSI] VR-Start fehlgeschlagen (kein WebXR/Headset oder Permission verweigert):', err)
               })
             }}
-            title="VR-Modus starten (Meta Quest)"
+            title={t('szene.vr_start_title')}
             style={{
               display: 'flex', alignItems: 'center', gap: '7px',
               padding: '9px 14px', borderRadius: '9px',
@@ -2587,9 +2588,9 @@ export default function SceneViewer({
           {/* Zoom-Kontrollen */}
           <div style={{ display: 'flex', flexDirection: 'column', borderRadius: '9px', overflow: 'hidden', border: '1px solid rgba(255,255,255,0.15)', backdropFilter: 'blur(10px)' }}>
             {[
-              { icon: <ZoomIn size={15} />, title: 'Reinzoomen', onClick: () => setFov(f => Math.max(30, f - 5)) },
-              { icon: <Maximize2 size={14} />, title: 'Standardansicht', onClick: () => setFov(75) },
-              { icon: <ZoomOut size={15} />, title: 'Rauszoomen', onClick: () => setFov(f => Math.min(90, f + 5)) },
+              { icon: <ZoomIn size={15} />, title: t('szene.zoom_in'), onClick: () => setFov(f => Math.max(30, f - 5)) },
+              { icon: <Maximize2 size={14} />, title: t('szene.zoom_reset'), onClick: () => setFov(75) },
+              { icon: <ZoomOut size={15} />, title: t('szene.zoom_out'), onClick: () => setFov(f => Math.min(90, f + 5)) },
             ].map((btn, i) => (
               <button
                 key={i}
@@ -2632,7 +2633,7 @@ export default function SceneViewer({
               fontFamily: 'var(--zh-font)',
             }}
           >
-            <X size={15} /> Szene beenden
+            <X size={15} /> {t('szene.beenden')}
           </button>
         </div>
       )}
@@ -2833,7 +2834,7 @@ export default function SceneViewer({
             letterSpacing: '0.1em', color: 'rgba(255,255,255,0.45)',
             marginBottom: '2px', paddingLeft: '2px',
           }}>
-            Standort
+            {t('szene.standort_label')}
           </span>
           {/* Haupt-Panorama */}
           <button

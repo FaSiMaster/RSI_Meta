@@ -239,7 +239,8 @@
     "bestanden": "Superata",
     "nicht_bestanden": "Non superata",
     "bestanden_grund_pflicht": "{{fehlt}} deficit obbligatori non trovati",
-    "bestanden_grund_prozent": "{{prozent}} % raggiunto – almeno {{min}} % necessario"
+    "bestanden_grund_prozent": "{{prozent}} % raggiunto – almeno {{min}} % necessario",
+    "zu_themen": "Temi"
   },
   "scoring": {
     "verwerfenConfirm": "La valutazione gia inserita verra scartata. Tornare davvero al visualizzatore?",
@@ -351,7 +352,8 @@
     "referenz_risiko_hint": "Rilevanza DS × gravità dà automaticamente il rischio di incidente:",
     "abw_klein": "Piccolo",
     "abw_mittel": "Medio",
-    "abw_gross": "Grande"
+    "abw_gross": "Grande",
+    "wie_funktioniert": "Come funziona la valutazione?"
   },
   "ranking": {
     "title": "Classifica",
@@ -381,7 +383,8 @@
     "punkte": "Punti",
     "gefunden": "Trovati",
     "dauer": "Durata",
-    "sterne": "Stelle"
+    "sterne": "Stelle",
+    "bestanden": "Superate"
   },
   "szene": {
     "laden": "Caricamento panorama...",
@@ -414,7 +417,12 @@
     "hint_text": "{{count}} hotspot saranno mostrati nell'immagine. Per ogni deficit trovato con hotspot attivi vengono detratti 25 punti.",
     "hint_dauer": "Gli hotspot restano attivi per l'intera scena.",
     "hinweis_btn_title": "Mostra hotspot (−25 punti per deficit trovato)",
-    "pflicht_zaehler": "Obbligatori {{found}}/{{total}}"
+    "pflicht_zaehler": "Obbligatori {{found}}/{{total}}",
+    "standort_label": "Posizione",
+    "zoom_in": "Ingrandire",
+    "zoom_reset": "Vista standard",
+    "zoom_out": "Ridurre",
+    "vr_start_title": "Avviare la modalità VR (Meta Quest)"
   },
   "kategorie": {
     "frage": "Cosa hai identificato?",
@@ -450,7 +458,8 @@
     "defizit_info": "Questa scena contiene {{count}} deficit di sicurezza, di cui {{pflicht}} obbligatori.",
     "booster_info": "Alcuni deficit sono booster e danno punti bonus sulla valutazione.",
     "bestanden_info": "La scena è superata quando tutti i {{pflicht}} deficit obbligatori sono trovati e almeno il {{prozent}} % dei punti è raggiunto.",
-    "bestanden_info_nur_pflicht": "La scena è superata quando tutti i {{pflicht}} deficit obbligatori sono trovati."
+    "bestanden_info_nur_pflicht": "La scena è superata quando tutti i {{pflicht}} deficit obbligatori sono trovati.",
+    "hinweis_label": "Nota"
   },
   "kurs": {
     "kein": "Nessun corso — formazione libera",

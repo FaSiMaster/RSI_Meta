@@ -239,7 +239,8 @@
     "bestanden": "Bestanden",
     "nicht_bestanden": "Nicht bestanden",
     "bestanden_grund_pflicht": "{{fehlt}} Pflichtdefizit(e) nicht gefunden",
-    "bestanden_grund_prozent": "{{prozent}} % erreicht – mindestens {{min}} % nötig"
+    "bestanden_grund_prozent": "{{prozent}} % erreicht – mindestens {{min}} % nötig",
+    "zu_themen": "Themen"
   },
   "scoring": {
     "verwerfenConfirm": "Bereits eingegebene Bewertung wird verworfen. Wirklich zurück zum Viewer?",
@@ -351,7 +352,8 @@
     "matrix_relevanz": "Relevanz SD",
     "hinweis_genutzt": "Hinweis genutzt",
     "herleitung": "Herleitung",
-    "booster": "Booster-Bonus"
+    "booster": "Booster-Bonus",
+    "wie_funktioniert": "Wie funktioniert die Bewertung?"
   },
   "ranking": {
     "title": "Rangliste",
@@ -381,7 +383,8 @@
     "punkte": "Punkte",
     "gefunden": "Gefunden",
     "dauer": "Dauer",
-    "sterne": "Sterne"
+    "sterne": "Sterne",
+    "bestanden": "Bestanden"
   },
   "szene": {
     "laden": "Panoramabild wird geladen...",
@@ -414,7 +417,12 @@
     "pflicht_zaehler": "Pflicht {{found}}/{{total}}",
     "hint_titel": "Hotspots einblenden?",
     "hint_text": "Es werden {{count}} Hotspot(s) im Bild eingeblendet. Pro gefundenem Defizit mit aktiven Hotspots werden 25 Punkte abgezogen.",
-    "hint_dauer": "Die Hotspots bleiben für die gesamte Szene aktiv."
+    "hint_dauer": "Die Hotspots bleiben für die gesamte Szene aktiv.",
+    "standort_label": "Standort",
+    "zoom_in": "Reinzoomen",
+    "zoom_reset": "Standardansicht",
+    "zoom_out": "Rauszoomen",
+    "vr_start_title": "VR-Modus starten (Meta Quest)"
   },
   "kategorie": {
     "frage": "Was hast du identifiziert?",
@@ -450,7 +458,8 @@
     "defizit_info": "Diese Szene enthält {{count}} Sicherheitsdefizite, davon {{pflicht}} Pflichtdefizite.",
     "booster_info": "Einzelne Defizite sind Booster und geben Bonuspunkte auf die Bewertung.",
     "bestanden_info": "Bestanden ist die Szene, wenn alle {{pflicht}} Pflichtdefizite gefunden sind und mindestens {{prozent}} % der Punkte erreicht werden.",
-    "bestanden_info_nur_pflicht": "Bestanden ist die Szene, wenn alle {{pflicht}} Pflichtdefizite gefunden sind."
+    "bestanden_info_nur_pflicht": "Bestanden ist die Szene, wenn alle {{pflicht}} Pflichtdefizite gefunden sind.",
+    "hinweis_label": "Hinweis"
   },
   "kurs": {
     "kein": "Kein Kurs — freies Training",

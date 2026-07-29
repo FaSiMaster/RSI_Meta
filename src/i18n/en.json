@@ -239,7 +239,8 @@
     "bestanden": "Passed",
     "nicht_bestanden": "Not passed",
     "bestanden_grund_pflicht": "{{fehlt}} mandatory deficit(s) not found",
-    "bestanden_grund_prozent": "{{prozent}} % achieved – at least {{min}} % required"
+    "bestanden_grund_prozent": "{{prozent}} % achieved – at least {{min}} % required",
+    "zu_themen": "Topics"
   },
   "scoring": {
     "verwerfenConfirm": "Already entered assessment will be discarded. Really back to viewer?",
@@ -351,7 +352,8 @@
     "referenz_risiko_hint": "SD relevance × accident severity automatically yields the accident risk:",
     "abw_klein": "Low",
     "abw_mittel": "Medium",
-    "abw_gross": "High"
+    "abw_gross": "High",
+    "wie_funktioniert": "How does the assessment work?"
   },
   "ranking": {
     "title": "Ranking",
@@ -381,7 +383,8 @@
     "punkte": "Points",
     "gefunden": "Found",
     "dauer": "Duration",
-    "sterne": "Stars"
+    "sterne": "Stars",
+    "bestanden": "Passed"
   },
   "szene": {
     "laden": "Loading panorama...",
@@ -414,7 +417,12 @@
     "hint_text": "{{count}} hotspot(s) will be shown in the image. 25 points are deducted per deficit found while hotspots are active.",
     "hint_dauer": "Hotspots stay active for the entire scene.",
     "hinweis_btn_title": "Show hotspots (−25 points per deficit found)",
-    "pflicht_zaehler": "Mandatory {{found}}/{{total}}"
+    "pflicht_zaehler": "Mandatory {{found}}/{{total}}",
+    "standort_label": "Location",
+    "zoom_in": "Zoom in",
+    "zoom_reset": "Default view",
+    "zoom_out": "Zoom out",
+    "vr_start_title": "Start VR mode (Meta Quest)"
   },
   "kategorie": {
     "frage": "What did you identify?",
@@ -450,7 +458,8 @@
     "defizit_info": "This scene contains {{count}} safety deficits, {{pflicht}} of which are mandatory.",
     "booster_info": "Some deficits are boosters and grant bonus points on the assessment.",
     "bestanden_info": "The scene is passed when all {{pflicht}} mandatory deficits are found and at least {{prozent}} % of the points are achieved.",
-    "bestanden_info_nur_pflicht": "The scene is passed when all {{pflicht}} mandatory deficits are found."
+    "bestanden_info_nur_pflicht": "The scene is passed when all {{pflicht}} mandatory deficits are found.",
+    "hinweis_label": "Note"
   },
   "kurs": {
     "kein": "No course — free training",

@@ -239,7 +239,8 @@
     "bestanden": "Réussi",
     "nicht_bestanden": "Non réussi",
     "bestanden_grund_pflicht": "{{fehlt}} déficit(s) obligatoire(s) non trouvé(s)",
-    "bestanden_grund_prozent": "{{prozent}} % atteints – au moins {{min}} % requis"
+    "bestanden_grund_prozent": "{{prozent}} % atteints – au moins {{min}} % requis",
+    "zu_themen": "Thèmes"
   },
   "scoring": {
     "verwerfenConfirm": "L'évaluation déjà saisie sera supprimée. Vraiment retour au visualiseur ?",
@@ -351,7 +352,8 @@
     "referenz_risiko_hint": "Pertinence DS × gravité donne automatiquement le risque d'accident:",
     "abw_klein": "Petit",
     "abw_mittel": "Moyen",
-    "abw_gross": "Grand"
+    "abw_gross": "Grand",
+    "wie_funktioniert": "Comment fonctionne l'évaluation?"
   },
   "ranking": {
     "title": "Classement",
@@ -381,7 +383,8 @@
     "punkte": "Points",
     "gefunden": "Trouvés",
     "dauer": "Durée",
-    "sterne": "Étoiles"
+    "sterne": "Étoiles",
+    "bestanden": "Réussi"
   },
   "szene": {
     "laden": "Chargement du panorama...",
@@ -414,7 +417,12 @@
     "hint_text": "{{count}} point(s) chaud(s) seront affichés dans l'image. 25 points sont déduits par déficit trouvé avec les points chauds actifs.",
     "hint_dauer": "Les points chauds restent actifs pour toute la scène.",
     "hinweis_btn_title": "Afficher les points chauds (−25 points par déficit trouvé)",
-    "pflicht_zaehler": "Obligatoires {{found}}/{{total}}"
+    "pflicht_zaehler": "Obligatoires {{found}}/{{total}}",
+    "standort_label": "Site",
+    "zoom_in": "Zoomer",
+    "zoom_reset": "Vue standard",
+    "zoom_out": "Dézoomer",
+    "vr_start_title": "Démarrer le mode VR (Meta Quest)"
   },
   "kategorie": {
     "frage": "Qu'avez-vous identifié?",
@@ -450,7 +458,8 @@
     "defizit_info": "Cette scène contient {{count}} déficits de sécurité, dont {{pflicht}} déficits obligatoires.",
     "booster_info": "Certains déficits sont des boosters et donnent des points bonus sur l'évaluation.",
     "bestanden_info": "La scène est réussie lorsque les {{pflicht}} déficits obligatoires sont trouvés et qu'au moins {{prozent}} % des points sont atteints.",
-    "bestanden_info_nur_pflicht": "La scène est réussie lorsque les {{pflicht}} déficits obligatoires sont trouvés."
+    "bestanden_info_nur_pflicht": "La scène est réussie lorsque les {{pflicht}} déficits obligatoires sont trouvés.",
+    "hinweis_label": "Remarque"
   },
   "kurs": {
     "kein": "Aucun cours — formation libre",

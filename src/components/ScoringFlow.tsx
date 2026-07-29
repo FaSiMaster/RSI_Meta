@@ -408,12 +408,12 @@ export default function ScoringFlow({ deficit, scene, kategorieRichtig = true, h
           }}
         >
           <h3 style={{ fontSize: '16px', fontWeight: 700, color: 'var(--zh-color-text)', marginBottom: '16px' }}>
-            RSI 9-Schritte-Methodik
+            {t('scoring.methodik_titel')}
           </h3>
 
           {/* Normhierarchie */}
           <p style={{ fontSize: '12px', fontWeight: 700, color: 'var(--zh-color-text-muted)', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: '8px' }}>
-            Normhierarchie (Abweichungsbewertung)
+            {t('scoring.normhierarchie_label')}
           </p>
           <div style={{ marginBottom: '16px' }}>
             {NORMHIERARCHIE.map(n => (
@@ -426,7 +426,7 @@ export default function ScoringFlow({ deficit, scene, kategorieRichtig = true, h
 
           {/* Relevanz-Matrix */}
           <p style={{ fontSize: '12px', fontWeight: 700, color: 'var(--zh-color-text-muted)', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: '8px' }}>
-            Relevanz-Matrix (Wichtigkeit x Abweichung)
+            {t('scoring.relevanz_matrix_label')}
           </p>
           <div style={{ marginBottom: '16px' }}>
             <CompactMatrix type="relevanz" />
@@ -434,7 +434,7 @@ export default function ScoringFlow({ deficit, scene, kategorieRichtig = true, h
 
           {/* Unfallrisiko-Matrix */}
           <p style={{ fontSize: '12px', fontWeight: 700, color: 'var(--zh-color-text-muted)', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: '8px' }}>
-            Unfallrisiko-Matrix (Relevanz SD x Unfallschwere)
+            {t('scoring.unfallrisiko_matrix_label')}
           </p>
           <div style={{ marginBottom: '16px' }}>
             <CompactMatrix type="unfallrisiko" />
@@ -442,7 +442,7 @@ export default function ScoringFlow({ deficit, scene, kategorieRichtig = true, h
 
           {/* NACA-Erklaerung */}
           <p style={{ fontSize: '12px', fontWeight: 700, color: 'var(--zh-color-text-muted)', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: '8px' }}>
-            NACA-Einstufung → Unfallschwere
+            {t('scoring.naca_einstufung_label')}
           </p>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', marginBottom: '16px' }}>
             {NACA_GRUPPEN.map(g => (
@@ -456,7 +456,7 @@ export default function ScoringFlow({ deficit, scene, kategorieRichtig = true, h
 
           {/* Abweichung-Kategorien */}
           <p style={{ fontSize: '12px', fontWeight: 700, color: 'var(--zh-color-text-muted)', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: '8px' }}>
-            Abweichungskategorien
+            {t('scoring.abweichung_kategorien_label')}
           </p>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', marginBottom: '20px' }}>
             {ABWEICHUNG_I18N.map(k => (
@@ -472,7 +472,7 @@ export default function ScoringFlow({ deficit, scene, kategorieRichtig = true, h
             background: 'rgba(0,118,189,0.06)', border: '1px solid rgba(0,118,189,0.18)',
           }}>
             <p style={{ fontSize: '11px', color: 'var(--zh-color-text-muted)', margin: 0, lineHeight: 1.6 }}>
-              <strong>Quellen:</strong> TBA-Fachkurs FK RSI (V 16.09.2020), bfu-Bericht 73 (NACA), SN 641 723 Abb. 2
+              {t('scoring.quellen')}
             </p>
           </div>
 
@@ -486,7 +486,7 @@ export default function ScoringFlow({ deficit, scene, kategorieRichtig = true, h
               cursor: 'pointer', fontFamily: 'var(--zh-font)',
             }}
           >
-            Schliessen
+            {t('scoring.schliessen')}
           </button>
         </motion.div>
       </motion.div>
@@ -587,7 +587,7 @@ export default function ScoringFlow({ deficit, scene, kategorieRichtig = true, h
               {t('scoring.punkte_erhalten')}
             </span>
             <span style={{ fontSize: '20px', fontWeight: 900, color: pts === maxPts ? 'var(--zh-gruen)' : 'var(--zh-dunkelblau)' }}>
-              {pts} <span style={{ fontSize: '12px', fontWeight: 500, color: 'var(--zh-color-text-muted)' }}>/ {maxPts} Pkt.</span>
+              {pts} <span style={{ fontSize: '12px', fontWeight: 500, color: 'var(--zh-color-text-muted)' }}>/ {maxPts} {t('score.points')}</span>
             </span>
           </div>
           {allCorrect && !hintPenalty && kategorieRichtig && (
@@ -599,7 +599,7 @@ export default function ScoringFlow({ deficit, scene, kategorieRichtig = true, h
             <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '11px' }}>
               <span style={{ color: 'var(--zh-color-text-muted)' }}>{t('vr.kategorie')}</span>
               <span style={{ fontWeight: 700, color: kategorieRichtig ? 'var(--zh-gruen)' : 'var(--zh-rot)' }}>
-                {kategorieRichtig ? '+25' : '0'} Pkt.
+                {kategorieRichtig ? '+25' : '0'} {t('score.points')}
               </span>
             </div>
             {[0, 1, 3].map(i => {
@@ -609,7 +609,7 @@ export default function ScoringFlow({ deficit, scene, kategorieRichtig = true, h
                 <div key={i} style={{ display: 'flex', justifyContent: 'space-between', fontSize: '11px' }}>
                   <span style={{ color: 'var(--zh-color-text-muted)' }}>{d.label}</span>
                   <span style={{ fontWeight: 700, color: d.ok ? 'var(--zh-gruen)' : 'var(--zh-rot)' }}>
-                    {d.ok ? `+${ptsStep}` : '0'} Pkt.
+                    {d.ok ? `+${ptsStep}` : '0'} {t('score.points')}
                   </span>
                 </div>
               )
@@ -617,7 +617,7 @@ export default function ScoringFlow({ deficit, scene, kategorieRichtig = true, h
             {hintPenalty && (
               <div style={{ marginTop: '6px', paddingTop: '6px', borderTop: '1px solid var(--zh-color-border)', display: 'flex', justifyContent: 'space-between', fontSize: '11px' }}>
                 <span style={{ color: 'var(--zh-orange)' }}>{t('scoring.hinweis_genutzt')}</span>
-                <span style={{ fontWeight: 700, color: 'var(--zh-orange)' }}>−25 Pkt.</span>
+                <span style={{ fontWeight: 700, color: 'var(--zh-orange)' }}>−25 {t('score.points')}</span>
               </div>
             )}
             {/* v0.9.5: Booster-Zeile — vorher summierten die Zeilen bei Booster-
@@ -625,23 +625,23 @@ export default function ScoringFlow({ deficit, scene, kategorieRichtig = true, h
             {boosterPct > 0 && pts - ptsVorBonus !== 0 && (
               <div style={{ marginTop: '6px', paddingTop: '6px', borderTop: '1px solid var(--zh-color-border)', display: 'flex', justifyContent: 'space-between', fontSize: '11px' }}>
                 <span style={{ color: 'var(--zh-gruen)' }}>{t('scoring.booster')} (+{boosterPct} %)</span>
-                <span style={{ fontWeight: 700, color: 'var(--zh-gruen)' }}>+{pts - ptsVorBonus} Pkt.</span>
+                <span style={{ fontWeight: 700, color: 'var(--zh-gruen)' }}>+{pts - ptsVorBonus} {t('score.points')}</span>
               </div>
             )}
           </div>
         </div>
 
         {/* Matrizen mit Vergleich (User-Wahl vs. korrekt) */}
-        <Collapsible title="Relevanz-Matrix" defaultOpen={!allCorrect}>
+        <Collapsible title={t('scoring.relevanz_matrix_kurz')} defaultOpen={!allCorrect}>
           <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', marginBottom: '8px', fontSize: '10px' }}>
             <span style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
               <span style={{ width: '10px', height: '10px', borderRadius: '3px', background: resultColor(relevanzSD ?? 'gering'), display: 'inline-block' }} />
-              Deine Wahl
+              {t('scoring.deine_wahl')}
             </span>
             {relevanzSD !== ca.relevanzSD && (
               <span style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
                 <span style={{ width: '10px', height: '10px', borderRadius: '3px', background: 'var(--zh-gruen)', border: '1px dashed var(--zh-gruen)', display: 'inline-block' }} />
-                Korrekt
+                {t('scoring.korrekt')}
               </span>
             )}
           </div>
@@ -654,16 +654,16 @@ export default function ScoringFlow({ deficit, scene, kategorieRichtig = true, h
             correctCol={ca.abweichung}
           />
         </Collapsible>
-        <Collapsible title="Unfallrisiko-Matrix" defaultOpen={!allCorrect}>
+        <Collapsible title={t('scoring.unfallrisiko_matrix_kurz')} defaultOpen={!allCorrect}>
           <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', marginBottom: '8px', fontSize: '10px' }}>
             <span style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
               <span style={{ width: '10px', height: '10px', borderRadius: '3px', background: resultColor(unfallrisiko ?? 'gering'), display: 'inline-block' }} />
-              Deine Wahl
+              {t('scoring.deine_wahl')}
             </span>
             {unfallrisiko !== ca.unfallrisiko && (
               <span style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
                 <span style={{ width: '10px', height: '10px', borderRadius: '3px', background: 'var(--zh-gruen)', border: '1px dashed var(--zh-gruen)', display: 'inline-block' }} />
-                Korrekt
+                {t('scoring.korrekt')}
               </span>
             )}
           </div>
@@ -775,7 +775,7 @@ export default function ScoringFlow({ deficit, scene, kategorieRichtig = true, h
                 {prefillWichtigkeit && (
                   <div style={{ padding: '6px 10px', borderRadius: '6px', background: 'rgba(0,118,189,0.06)', border: '1px solid rgba(0,118,189,0.18)', marginBottom: '10px' }}>
                     <p style={{ fontSize: '11px', color: 'var(--zh-color-text-muted)', margin: 0 }}>
-                      Gemäss Tabelle: <strong style={{ color: 'var(--zh-blau)' }}>{dimLabel(prefillWichtigkeit, t)}</strong>
+                      {t('scoring.gemäss_tabelle', { wert: dimLabel(prefillWichtigkeit, t) })}
                     </p>
                   </div>
                 )}
@@ -871,12 +871,12 @@ export default function ScoringFlow({ deficit, scene, kategorieRichtig = true, h
                 }}
               >
                 <span style={{ fontSize: '11px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--zh-color-text-muted)' }}>
-                  Relevanz SD
+                  {t('scoring.phase_c')}
                 </span>
                 <span style={{ fontSize: '16px', fontWeight: 900, color: resultColor(relevanzSD) }}>
                   {resultLabel(relevanzSD, t)}
                 </span>
-                <span style={{ fontSize: '10px', color: 'var(--zh-color-text-disabled)', marginLeft: 'auto' }}>auto</span>
+                <span style={{ fontSize: '10px', color: 'var(--zh-color-text-disabled)', marginLeft: 'auto' }}>{t('scoring.auto')}</span>
               </motion.div>
             )}
 
@@ -954,12 +954,12 @@ export default function ScoringFlow({ deficit, scene, kategorieRichtig = true, h
                 }}
               >
                 <span style={{ fontSize: '11px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--zh-color-text-muted)' }}>
-                  Unfallrisiko
+                  {t('scoring.unfallrisiko_titel')}
                 </span>
                 <span style={{ fontSize: '16px', fontWeight: 900, color: resultColor(unfallrisiko) }}>
                   {resultLabel(unfallrisiko, t)}
                 </span>
-                <span style={{ fontSize: '10px', color: 'var(--zh-color-text-disabled)', marginLeft: 'auto' }}>auto</span>
+                <span style={{ fontSize: '10px', color: 'var(--zh-color-text-disabled)', marginLeft: 'auto' }}>{t('scoring.auto')}</span>
               </motion.div>
             )}
 
@@ -995,7 +995,7 @@ export default function ScoringFlow({ deficit, scene, kategorieRichtig = true, h
                 fontSize: '11px', fontWeight: 600, color: 'var(--zh-blau)',
               }}
             >
-              <Info size={13} /> Wie funktioniert die Bewertung?
+              <Info size={13} /> {t('scoring.wie_funktioniert')}
             </button>
           </div>
         )}

@@ -344,7 +344,7 @@ export default function SceneList({ topic, username, isAdmin = false, onBack, on
 
       {/* Szenen-Grid */}
       {scenes.length === 0 ? (
-        <p style={{ fontSize: '14px', color: 'var(--zh-color-text-disabled)', fontStyle: 'italic' }}>Noch keine Szenen für dieses Thema vorhanden.</p>
+        <p style={{ fontSize: '14px', color: 'var(--zh-color-text-disabled)', fontStyle: 'italic' }}>{t('dashboard.noScenes')}</p>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
           {scenes.map((scene, i) => {
@@ -394,17 +394,17 @@ export default function SceneList({ topic, username, isAdmin = false, onBack, on
                   </p>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '16px' }}>
                     <span style={{ fontSize: '12px', color: 'var(--zh-color-text-muted)' }}>
-                      {count} Defizite
+                      {t('scenes.defizite_count', { count })}
                     </span>
                     {stats && stats.versuche > 0 && (
                       <>
                         <span style={{ fontSize: '10px', color: 'var(--zh-color-text-disabled)' }}>·</span>
                         <span style={{ fontSize: '12px', color: 'var(--zh-color-text-muted)' }}>
-                          {stats.versuche}× gespielt
+                          {t('scenes.versuche_count', { count: stats.versuche })}
                         </span>
                         <span style={{ fontSize: '10px', color: 'var(--zh-color-text-disabled)' }}>·</span>
                         <span style={{ fontSize: '12px', fontWeight: 700, color: stats.prozent >= 90 ? 'var(--zh-gruen)' : stats.prozent >= 60 ? 'var(--zh-orange)' : 'var(--zh-color-text-muted)' }}>
-                          Best: {stats.prozent}%
+                          {t('scenes.best_prozent', { prozent: stats.prozent })}
                         </span>
                       </>
                     )}
