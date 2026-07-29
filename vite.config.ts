@@ -23,6 +23,9 @@ export default defineConfig({
         skipWaiting: true,
         clientsClaim: true,
         cleanupOutdatedCaches: true,
+        // Haupt-Chunk liegt seit v0.9.6 knapp ueber der Workbox-Default-Grenze
+        // von 2 MiB — Limit anheben, damit die App-Shell offline-faehig bleibt.
+        maximumFileSizeToCacheInBytes: 3 * 1024 * 1024,
         // Statische Seiten vom SPA-Fallback ausnehmen — sonst routet der
         // Service Worker /impressum.html etc. auf die index.html (App-Shell).
         // KEIN $-Anchor: Landing-Page haengt ?lang=de an. Mit $ matcht die

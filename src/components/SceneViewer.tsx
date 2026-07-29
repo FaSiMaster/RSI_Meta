@@ -23,9 +23,10 @@ import { getVRPanelOffset, saveVRPanelOffset, clearVRPanelOffset, clampOffset } 
 import KategoriePanel from './KategoriePanel'
 import KlickFeedback, { type KlickFeedbackType } from './KlickFeedback'
 import { useTranslation } from 'react-i18next'
-import { ABWEICHUNG_KATEGORIEN, KATEGORIE_PUNKTE, STEP_WEIGHTS, STEP_WEIGHT_UNIT } from '../data/scoringEngine'
+import { KATEGORIE_PUNKTE, STEP_WEIGHTS, STEP_WEIGHT_UNIT, calcRelevanzSD, calcUnfallrisiko } from '../data/scoringEngine'
 import { KRITERIUM_LABELS } from '../data/kriteriumLabels'
-import { buildRelevanzMatrix, buildRisikoMatrix, deriveErgebnisse, type MatrixModel } from '../data/ergebnisModel'
+import { ABWEICHUNG_I18N } from '../data/abweichungLabels'
+import { buildRelevanzMatrix, buildRisikoMatrix, deriveErgebnisse, RELEVANZ_ROWS, RELEVANZ_COLS, RISIKO_ROWS, RISIKO_COLS, type MatrixModel } from '../data/ergebnisModel'
 import type { RSIDimension, NACADimension, ResultDimension } from '../types'
 import type { TFunction } from 'i18next'
 
@@ -751,7 +752,7 @@ function VRBewertungWPanel({ kriteriumLabel, kontextLabel, onSelect, onCancel, t
         <meshBasicMaterial color="#090d1b" transparent opacity={0.96} />
       </mesh>
       <Text position={[0, panelH / 2 - 0.040, 0.003]} fontSize={0.018} color="rgba(255,255,255,0.45)" anchorX="center" anchorY="middle">
-        {`${t('scoring.bewertung_schritt', { nr: 1 })} — ${t('scoring.phase_a')}`}
+        {`${t('scoring.bewertung_schritt', { nr: 1 })} · ${t('scoring.methodik_schritt', { schritt: 1 })} — ${t('scoring.phase_a')}`}
       </Text>
       <Text position={[0, panelH / 2 - 0.080, 0.003]} fontSize={0.034} color="#ffffff" anchorX="center" anchorY="middle" maxWidth={panelW - 0.08}>
         {t('scoring.wie_wichtig')}
@@ -820,7 +821,7 @@ function VRBewertungAPanel({ options, onSelect, onCancel, t }: VRBewertungAPanel
         <meshBasicMaterial color="#090d1b" transparent opacity={0.96} />
       </mesh>
       <Text position={[0, panelH / 2 - 0.040, 0.003]} fontSize={0.018} color="rgba(255,255,255,0.45)" anchorX="center" anchorY="middle">
-        {`${t('scoring.bewertung_schritt', { nr: 2 })} — ${t('scoring.phase_b')}`}
+        {`${t('scoring.bewertung_schritt', { nr: 2 })} · ${t('scoring.methodik_schritt', { schritt: 3 })} — ${t('scoring.phase_b')}`}
       </Text>
       <Text position={[0, panelH / 2 - 0.082, 0.003]} fontSize={0.032} color="#ffffff" anchorX="center" anchorY="middle" maxWidth={panelW - 0.08}>
         {t('scoring.wie_abweichung')}
@@ -901,7 +902,7 @@ function VRBewertungNPanel({ onSelect, onCancel, t }: VRBewertungNPanelProps) {
         <meshBasicMaterial color="#090d1b" transparent opacity={0.96} />
       </mesh>
       <Text position={[0, panelH / 2 - 0.040, 0.003]} fontSize={0.018} color="rgba(255,255,255,0.45)" anchorX="center" anchorY="middle">
-        {`${t('scoring.bewertung_schritt', { nr: 3 })} — ${t('scoring.phase_d')}`}
+        {`${t('scoring.bewertung_schritt', { nr: 3 })} · ${t('scoring.methodik_schritt', { schritt: 7 })} — ${t('scoring.phase_d')}`}
       </Text>
       <Text position={[0, panelH / 2 - 0.082, 0.003]} fontSize={0.032} color="#ffffff" anchorX="center" anchorY="middle" maxWidth={panelW - 0.08}>
         {t('scoring.wie_schwer')}
@@ -1807,7 +1808,11 @@ function SceneContent({
             })()}
             {phase === 'bewertungA' && hitDeficit && (
               <VRBewertungAPanel
-                options={ABWEICHUNG_KATEGORIEN}
+                options={ABWEICHUNG_I18N.map(o => ({
+                  wert: o.wert,
+                  label: t(o.labelKey),
+                  beschreibung: t(o.beschreibungKey),
+                }))}
                 onSelect={onBewertungA}
                 onCancel={onBewertungCancel}
                 t={t}
@@ -1827,6 +1832,105 @@ function SceneContent({
         </VRErrorBoundary>
       )}
     </>
+  )
+}
+
+// ── Mini-Methodik-Referenz in den Bewertungs-Overlays (Review R-07) ──────────
+// Nachschlagen ist Teil der RSI-Methode: aufklappbar, ohne Punktabzug.
+// Schritt W zeigt bewusst nur die Begriffserklärung (Anti-Spoiler-Entscheid:
+// die Wichtigkeits-Tabelle würde die korrekte Antwort verraten).
+
+function MiniMatrixTable({ typ, t }: { typ: 'relevanz' | 'risiko'; t: TFunction }) {
+  const rows = typ === 'relevanz' ? RELEVANZ_ROWS : RISIKO_ROWS
+  const cols = typ === 'relevanz' ? RELEVANZ_COLS : RISIKO_COLS
+  const cellVal = (r: string, c: string): ResultDimension =>
+    typ === 'relevanz'
+      ? calcRelevanzSD(r as RSIDimension, c as RSIDimension)
+      : calcUnfallrisiko(r as ResultDimension, c as NACADimension)
+  const rowLabel = (r: string) => t(typ === 'relevanz' ? `scoring.dim_${r}` : `scoring.result_${r}`)
+  const colLabel = (c: string) => t(typ === 'relevanz' ? `scoring.dim_${c}` : `scoring.schwere_${c}`)
+  const valColor = (v: ResultDimension) => v === 'hoch' ? '#FF7BAC' : v === 'mittel' ? '#F0A500' : '#6FCF73'
+  const yLabel = t(typ === 'relevanz' ? 'scoring.matrix_wichtigkeit' : 'scoring.matrix_relevanz')
+  const xLabel = t(typ === 'relevanz' ? 'scoring.matrix_abweichung' : 'scoring.matrix_unfallschwere')
+
+  const cell: React.CSSProperties = {
+    padding: '4px 6px', fontSize: '10px', textAlign: 'center',
+    border: '1px solid rgba(255,255,255,0.12)',
+  }
+  return (
+    <table style={{ borderCollapse: 'collapse', width: '100%' }}>
+      <thead>
+        <tr>
+          <th style={{ ...cell, color: 'rgba(255,255,255,0.45)', fontWeight: 700, textAlign: 'left' }}>
+            {yLabel} \ {xLabel}
+          </th>
+          {cols.map(c => (
+            <th key={c} style={{ ...cell, color: 'rgba(255,255,255,0.70)', fontWeight: 700 }}>{colLabel(c)}</th>
+          ))}
+        </tr>
+      </thead>
+      <tbody>
+        {rows.map(r => (
+          <tr key={r}>
+            <td style={{ ...cell, color: 'rgba(255,255,255,0.70)', fontWeight: 700, textAlign: 'left' }}>{rowLabel(r)}</td>
+            {cols.map(c => {
+              const v = cellVal(r, c)
+              return (
+                <td key={c} style={{ ...cell, color: valColor(v), fontWeight: 700 }}>
+                  {t(`scoring.result_${v}`)}
+                </td>
+              )
+            })}
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  )
+}
+
+function MiniReferenz({ schritt, t }: { schritt: 'w' | 'a' | 'n'; t: TFunction }) {
+  const [open, setOpen] = useState(false)
+  return (
+    <div style={{ marginTop: '14px' }}>
+      <button
+        onClick={() => setOpen(o => !o)}
+        style={{
+          background: 'none', border: 'none', cursor: 'pointer', padding: '2px 0',
+          fontSize: '11px', fontWeight: 600, color: 'rgba(120,190,255,0.90)',
+          fontFamily: 'var(--zh-font)',
+        }}
+      >
+        {open ? '▾' : '▸'} {t('scoring.referenz_btn')}
+      </button>
+      {open && (
+        <div style={{
+          marginTop: '8px', padding: '10px 12px', borderRadius: '8px',
+          background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.10)',
+        }}>
+          {schritt === 'w' && (
+            <p style={{ fontSize: '11px', color: 'rgba(255,255,255,0.70)', lineHeight: 1.5, margin: 0 }}>
+              {t('scoring.referenz_wichtigkeit')}
+            </p>
+          )}
+          {schritt === 'a' && (
+            <>
+              <p style={{ fontSize: '11px', color: 'rgba(255,255,255,0.70)', lineHeight: 1.5, margin: '0 0 8px' }}>
+                {t('scoring.referenz_relevanz_hint')}
+              </p>
+              <MiniMatrixTable typ="relevanz" t={t} />
+            </>
+          )}
+          {schritt === 'n' && (
+            <>
+              <p style={{ fontSize: '11px', color: 'rgba(255,255,255,0.70)', lineHeight: 1.5, margin: '0 0 8px' }}>
+                {t('scoring.referenz_risiko_hint')}
+              </p>
+              <MiniMatrixTable typ="risiko" t={t} />
+            </>
+          )}
+        </div>
+      )}
+    </div>
   )
 }
 
@@ -2276,6 +2380,11 @@ export default function SceneViewer({
     name:  ml(d.nameI18n, lang),
   }))
 
+  // Pflicht-Zähler (Review R-10): Pflichtdefizite sichtbar mitzählen, damit
+  // das Konzept nicht erst im Abschluss-Screen auftaucht.
+  const pflichtTotal = deficits.filter(d => d.isPflicht).length
+  const pflichtFound = deficits.filter(d => d.isPflicht && foundIds.has(d.id)).length
+
   const sceneName         = ml(scene.nameI18n, lang)
   const sceneKontextLabel = scene.kontext === 'io' ? t('einstieg.kontext_io') : t('einstieg.kontext_ao')
   const htmlVisible       = !isVR
@@ -2407,6 +2516,7 @@ export default function SceneViewer({
             ))}
             <span style={{ fontSize: '11px', color: 'rgba(255,255,255,0.55)', marginLeft: '4px' }}>
               {foundDeficits.length}/{deficits.length}
+              {pflichtTotal > 0 && ` · ${t('szene.pflicht_zaehler', { found: pflichtFound, total: pflichtTotal })}`}
             </span>
           </div>
         </div>
@@ -2421,7 +2531,7 @@ export default function SceneViewer({
           {!hintActive && (
             <button
               onClick={() => setPhase('hintDialog')}
-              title="Hotspots einblenden (−50 % Punkte)"
+              title={t('szene.hinweis_btn_title')}
               style={{
                 display: 'flex', alignItems: 'center', gap: '7px',
                 padding: '9px 14px', borderRadius: '9px',
@@ -2434,7 +2544,7 @@ export default function SceneViewer({
                 backdropFilter: 'blur(10px)',
               }}
             >
-              <Eye size={14} /> Hinweis
+              <Eye size={14} /> {t('szene.hinweis_btn')}
             </button>
           )}
           {hintActive && (
@@ -2447,7 +2557,7 @@ export default function SceneViewer({
               fontSize: '12px', fontWeight: 700,
               fontFamily: 'var(--zh-font)',
             }}>
-              <MapPin size={13} /> Hinweis aktiv
+              <MapPin size={13} /> {t('szene.hinweis_aktiv')}
             </div>
           )}
           <button
@@ -2597,7 +2707,7 @@ export default function SceneViewer({
             boxShadow: '0 16px 48px rgba(0,0,0,0.7)', zIndex: 300, fontFamily: 'var(--zh-font)',
           }}>
             <p style={{ fontSize: '10px', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.16em', color: 'rgba(255,255,255,0.45)', marginBottom: '3px' }}>
-              {t('scoring.bewertung_schritt', { nr: 1 })} — {t('scoring.phase_a')}
+              {t('scoring.bewertung_schritt', { nr: 1 })} · {t('scoring.methodik_schritt', { schritt: 1 })} — {t('scoring.phase_a')}
             </p>
             <h3 style={{ fontSize: '17px', fontWeight: 700, color: 'white', marginBottom: '12px' }}>
               {t('scoring.wie_wichtig')}
@@ -2623,6 +2733,7 @@ export default function SceneViewer({
                 </button>
               ))}
             </div>
+            <MiniReferenz schritt="w" t={t} />
           </div>
         )
       })()}
@@ -2636,13 +2747,13 @@ export default function SceneViewer({
           boxShadow: '0 16px 48px rgba(0,0,0,0.7)', zIndex: 300, fontFamily: 'var(--zh-font)',
         }}>
           <p style={{ fontSize: '10px', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.16em', color: 'rgba(255,255,255,0.45)', marginBottom: '3px' }}>
-            {t('scoring.bewertung_schritt', { nr: 2 })} — {t('scoring.phase_b')}
+            {t('scoring.bewertung_schritt', { nr: 2 })} · {t('scoring.methodik_schritt', { schritt: 3 })} — {t('scoring.phase_b')}
           </p>
           <h3 style={{ fontSize: '17px', fontWeight: 700, color: 'white', marginBottom: '14px' }}>
             {t('scoring.wie_abweichung')}
           </h3>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-            {ABWEICHUNG_KATEGORIEN.map(k => (
+            {ABWEICHUNG_I18N.map(k => (
               <button
                 key={k.wert}
                 onClick={() => { setUserAbweichung(k.wert); setPhase('bewertungN') }}
@@ -2655,11 +2766,12 @@ export default function SceneViewer({
                 onMouseEnter={e => { e.currentTarget.style.background = 'rgba(0,118,189,0.45)'; e.currentTarget.style.borderColor = 'rgba(0,118,189,0.6)' }}
                 onMouseLeave={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.05)'; e.currentTarget.style.borderColor = 'rgba(255,255,255,0.10)' }}
               >
-                <span style={{ display: 'block' }}>{k.label}</span>
-                <span style={{ display: 'block', fontSize: '11px', color: 'rgba(255,255,255,0.50)', fontWeight: 400, marginTop: '2px' }}>{k.beschreibung}</span>
+                <span style={{ display: 'block' }}>{t(k.labelKey)}</span>
+                <span style={{ display: 'block', fontSize: '11px', color: 'rgba(255,255,255,0.50)', fontWeight: 400, marginTop: '2px' }}>{t(k.beschreibungKey)}</span>
               </button>
             ))}
           </div>
+          <MiniReferenz schritt="a" t={t} />
         </div>
       )}
 
@@ -2672,7 +2784,7 @@ export default function SceneViewer({
           boxShadow: '0 16px 48px rgba(0,0,0,0.7)', zIndex: 300, fontFamily: 'var(--zh-font)',
         }}>
           <p style={{ fontSize: '10px', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.16em', color: 'rgba(255,255,255,0.45)', marginBottom: '3px' }}>
-            {t('scoring.bewertung_schritt', { nr: 3 })} — {t('scoring.phase_d')}
+            {t('scoring.bewertung_schritt', { nr: 3 })} · {t('scoring.methodik_schritt', { schritt: 7 })} — {t('scoring.phase_d')}
           </p>
           <h3 style={{ fontSize: '17px', fontWeight: 700, color: 'white', marginBottom: '8px' }}>
             {t('scoring.wie_schwer')}
@@ -2682,9 +2794,9 @@ export default function SceneViewer({
           </p>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
             {([
-              { wert: 'leicht' as NACADimension, label: 'Leicht', sub: 'NACA 0–1 · Keine bis geringfügige Verletzung', color: '#1A7F1F' },
-              { wert: 'mittel' as NACADimension, label: 'Mittel', sub: 'NACA 2–3 · Leichte bis mässige Verletzung', color: '#B87300' },
-              { wert: 'schwer' as NACADimension, label: 'Schwer', sub: 'NACA 4–7 · Schwere Verletzung bis Tod', color: '#D40053' },
+              { wert: 'leicht' as NACADimension, label: t('scoring.naca_leicht'), sub: t('scoring.naca_leicht_sub'), color: '#1A7F1F' },
+              { wert: 'mittel' as NACADimension, label: t('scoring.naca_mittel'), sub: t('scoring.naca_mittel_sub'), color: '#B87300' },
+              { wert: 'schwer' as NACADimension, label: t('scoring.naca_schwer'), sub: t('scoring.naca_schwer_sub'), color: '#D40053' },
             ]).map(g => (
               <button
                 key={g.wert}
@@ -2705,6 +2817,7 @@ export default function SceneViewer({
               </button>
             ))}
           </div>
+          <MiniReferenz schritt="n" t={t} />
         </div>
       )}
 

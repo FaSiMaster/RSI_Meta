@@ -42,10 +42,12 @@ export default function LernKarte({ deficit, kategorieRichtig, wichtigkeitKorrek
   const lang = i18n.language
   const ca = deficit.correctAssessment
 
+  // Review R-25: Soll-NACA-Wert (0-7) sichtbar machen — die Musterlösung
+  // unterscheidet z.B. NACA 4 von NACA 7, die Gruppe «Schwer» allein nicht.
   const feedbackRows: { label: string; korrekt: boolean; korrekterWert: string }[] = [
     { label: t('scoring.phase_a'), korrekt: wichtigkeitKorrekt, korrekterWert: dimLabel(ca.wichtigkeit) },
     { label: t('scoring.phase_b'), korrekt: abweichungKorrekt,  korrekterWert: dimLabel(ca.abweichung) },
-    { label: t('scoring.phase_d'), korrekt: nacaKorrekt,        korrekterWert: nacaLabel(ca.unfallschwere) },
+    { label: t('scoring.phase_d'), korrekt: nacaKorrekt,        korrekterWert: `${nacaLabel(ca.unfallschwere)} (NACA ${ca.naca})` },
   ]
 
   const erklaerung = deficit.erklaerungI18n ? ml(deficit.erklaerungI18n, lang).trim() : ''
@@ -138,7 +140,7 @@ export default function LernKarte({ deficit, kategorieRichtig, wichtigkeitKorrek
               )}
               {row.korrekt && (
                 <span style={{ fontSize: '11px', color: 'var(--zh-gruen)', fontWeight: 700 }}>
-                  {t('lernkarte.korrekt')}
+                  {t('lernkarte.korrekt')} · {row.korrekterWert}
                 </span>
               )}
             </div>

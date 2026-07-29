@@ -13,6 +13,61 @@ Versionierung nach [Semantic Versioning](https://semver.org/lang/de/).
 
 ---
 
+## [0.9.6] — 2026-07-29 — Review-Umsetzung SZ_2026_002 (Code-Teil)
+
+Umsetzung der Code-Befunde aus dem Multi-Agent-Review «Querungsstellen auf
+Schulwegen» (Bericht v1.0, 26 Befunde, `C:\ClaudeAI\RSI_Meta_Review\`).
+Content-Befunde (Normnummer, Namen, Erklärungen, Merkmale, SSV-Bezug) wurden
+direkt in Supabase geschrieben; Soll-Werte der Musterlösungen unverändert
+(R-01/R-13/R-16 zurückgestellt bis FK-RSI-Fachverifikation).
+
+### Behoben
+
+- **R-02 «−10% Abzug» war falsch:** Feedback bei falscher Kategorie sagt neu
+  in allen vier Sprachen «0 von 25 Kategorie-Punkten» — deckungsgleich mit
+  der realen Wirkung (`KATEGORIE_PUNKTE`). SzenenAbschluss-Chips «Kat. -10%»
+  und «Hint -50%» korrigiert («Kat. 0/25», «Hotspots −25»); der stale
+  Hinweis-Button-Tooltip «−50 % Punkte» sagt neu «−25 Punkte pro gefundenes
+  Defizit».
+- **VR-Abbrechen-Buttons zeigten den rohen Key:** `scoring.abbrechen` fehlte
+  in allen vier Sprachdateien (nur `feedback.abbrechen` existierte) — Key
+  ergänzt.
+- **Workbox-Limit:** Haupt-Chunk überschritt mit 2.11 MB die
+  Precache-Grenze von 2 MiB — `maximumFileSizeToCacheInBytes` auf 3 MiB.
+
+### Hinzugefügt
+
+- **R-07 Mini-Methodik-Referenz** in den drei Bewertungs-Overlays (Browser):
+  aufklappbar, ohne Punktabzug. Schritt 1 erklärt das Ablese-Prinzip
+  (bewusst ohne Wichtigkeits-Tabelle, Anti-Spoiler), Schritt 2 zeigt die
+  Relevanz-Matrix, Schritt 3 die Unfallrisiko-Matrix.
+- **R-10 Pflicht-Transparenz:** HUD-Zähler neu «x/8 · Pflicht y/7»;
+  TrainingEinstieg kündigt Anzahl Defizite, Pflichtdefizite und Booster an
+  (R-09/R-22), `deficits`-Prop neu an TrainingEinstieg.
+- **R-11 Kategorie-Definitionen:** Einzeiler pro Kategorie im
+  KategoriePanel (4 Sprachen).
+- **R-15 Standort-Vermerk:** Verpasste Defizite zeigen im Abschluss-Screen
+  neu die Standorte, an denen sie verortet gewesen wären.
+- **R-25 NACA-Wert in der Lernkarte:** Soll-Wert neu als «Schwer (NACA 4)»
+  statt nur Gruppenlabel; korrekte Zeilen zeigen den Sollwert ebenfalls.
+
+### Geändert
+
+- **R-12 Schritt-1-Frage präzisiert:** «Welche Wichtigkeit weist der
+  Fachkurs diesem Kriterium zu?» statt «Wie wichtig ist dieses Kriterium?»
+  (Ablesen statt Ermessen).
+- **R-14 Abweichungs-Texte via i18n:** neues UI-Mapping
+  `src/data/abweichungLabels.ts` (Sacred-File unangetastet) — echte Umlaute
+  in de, erstmals übersetzt in fr/it/en; genutzt in ScoringFlow, Browser-
+  und VR-Overlays. NACA-Optionen im Browser-Overlay neu aus i18n-Keys.
+- **R-20 Begriffe harmonisiert:** Button neu «Hotspots einblenden» /
+  «Hotspots aktiv» (Browser + VR, 4 Sprachen); Bewertungs-Etiketten neu
+  «Eingabe n von 3 · Methodik-Schritt m» (m = 1/3/7 der 9-Schritte-Methodik).
+- **R-26 Du-Form im Trainingskontext:** guide.* (de) und guide.* (it) neu
+  in Du-Form; fr bleibt konsistent vouvoyé, Admin bleibt Sie.
+
+---
+
 ## [0.9.5] — 2026-07-28 — Punkte-Aufriss vollständig + Wegweiser nur für Neues
 
 ### Behoben

@@ -227,7 +227,10 @@
     "pflicht": "Mandatory",
     "gefunden_status": "Found",
     "verpasst_status": "Missed",
-    "pkt": "pts"
+    "pkt": "pts",
+    "kat_chip": "Cat. 0/25",
+    "hinweis_chip": "Hotspots −25",
+    "standort_chip": "Location: {{orte}}"
   },
   "scoring": {
     "verwerfenConfirm": "Already entered assessment will be discarded. Really back to viewer?",
@@ -294,7 +297,7 @@
     "punkte_erhalten": "Points earned",
     "weiter": "Continue",
     "weiter_suchen": "Keep searching",
-    "bewertung_schritt": "Step {{nr}} of 3",
+    "bewertung_schritt": "Input {{nr}} of 3",
     "gemäss_tabelle": "Per table: {{wert}}",
     "methodik_titel": "RSI 9-step methodology",
     "normhierarchie_label": "Norm hierarchy (deviation assessment)",
@@ -308,7 +311,7 @@
     "relevanz_matrix_kurz": "Relevance matrix",
     "unfallrisiko_matrix_kurz": "Risk matrix",
     "bfu_badge": "bfu introduction aid",
-    "wie_wichtig": "How important is this criterion?",
+    "wie_wichtig": "Which importance does the FK RSI course assign to this criterion?",
     "wie_abweichung": "How much does it deviate from the norm?",
     "wie_schwer": "How severe would the injuries be?",
     "stell_dir_vor": "Imagine an accident happening exactly here.",
@@ -327,7 +330,19 @@
     "matrix_relevanz": "Relevance SD",
     "hinweis_genutzt": "Hint used",
     "herleitung": "Derivation",
-    "booster": "Booster bonus"
+    "booster": "Booster bonus",
+    "methodik_schritt": "Methodology step {{schritt}}",
+    "abbrechen": "Cancel",
+    "abw_klein_sub": "No, minor or irrelevant deviation from the standard",
+    "abw_mittel_sub": "The deviation from the standard is objectively justified",
+    "abw_gross_sub": "Due to the deviation from the standard, the road facility is no longer safe",
+    "referenz_btn": "Look up methodology (no point deduction)",
+    "referenz_wichtigkeit": "The importance is fixed for each criterion in the FK RSI course (different for urban and rural contexts). It is looked up, not estimated.",
+    "referenz_relevanz_hint": "Importance × deviation automatically yields the SD relevance:",
+    "referenz_risiko_hint": "SD relevance × accident severity automatically yields the accident risk:",
+    "abw_klein": "Low",
+    "abw_mittel": "Medium",
+    "abw_gross": "High"
   },
   "ranking": {
     "title": "Ranking",
@@ -373,10 +388,10 @@
     "booster_gefunden": "Booster found",
     "kein_treffer": "No safety deficit at this location.",
     "bereits_gefunden": "You have already found this deficit.",
-    "kategorie_falsch": "Found – but wrong category. −10% deducted.",
+    "kategorie_falsch": "Found – but wrong category: 0 of 25 category points.",
     "kategorie_richtig": "Correct category!",
     "kein_treffer_sub": "Try at a different spot.",
-    "kategorie_falsch_sub": "−10% deducted. Proceed to RSI assessment.",
+    "kategorie_falsch_sub": "No category points awarded. Proceed to RSI assessment.",
     "weiter_bewertung": "Proceed to RSI assessment...",
     "alle_gefunden": "All safety deficits found!",
     "defizit_hier": "Safety deficit here?",
@@ -384,11 +399,13 @@
     "perspektive": "Perspective",
     "standort": "Location {{nr}}",
     "haupt": "Main",
-    "hinweis_btn": "Hint",
-    "hinweis_aktiv": "Hint active",
-    "hint_titel": "Use a hint?",
-    "hint_text": "{{count}} hotspot(s) will be shown. For each deficit found with an active hint, 25 points are deducted.",
-    "hint_dauer": "The hint stays active for the entire scene."
+    "hinweis_btn": "Show hotspots",
+    "hinweis_aktiv": "Hotspots active",
+    "hint_titel": "Show hotspots?",
+    "hint_text": "{{count}} hotspot(s) will be shown in the image. 25 points are deducted per deficit found while hotspots are active.",
+    "hint_dauer": "Hotspots stay active for the entire scene.",
+    "hinweis_btn_title": "Show hotspots (−25 points per deficit found)",
+    "pflicht_zaehler": "Mandatory {{found}}/{{total}}"
   },
   "kategorie": {
     "frage": "What did you identify?",
@@ -400,7 +417,14 @@
     "zustand": "Surface condition",
     "strassenrand": "Roadside",
     "verkehrsablauf": "Traffic flow",
-    "baustelle": "Construction site"
+    "baustelle": "Construction site",
+    "def_verkehrsfuehrung": "Guidance of traffic flows, e.g. unclear lanes or multi-lane crossings",
+    "def_sicht": "Sight distances and sight lines, e.g. blocked by crests, vegetation or parked vehicles",
+    "def_ausruestung": "Equipment of the facility, e.g. markings, signage, lighting or refuge island",
+    "def_zustand": "Structural condition of the traffic area, e.g. surface damage or drainage",
+    "def_strassenrand": "Roadside design, e.g. obstacles or missing barriers",
+    "def_verkehrsablauf": "Traffic dynamics, e.g. speed level or conflicts between transport modes",
+    "def_baustelle": "Temporary situations in work zones, e.g. guidance and signage during construction"
   },
   "einstieg": {
     "kontext_io": "Built-up area",
@@ -413,7 +437,9 @@
     "kein_bild": "No preview image recorded",
     "aus_panorama": "Take from panorama",
     "bild_hochladen": "Upload image",
-    "kein_beschrieb": "No description text entered yet."
+    "kein_beschrieb": "No description text entered yet.",
+    "defizit_info": "This scene contains {{count}} safety deficits, {{pflicht}} of which are mandatory.",
+    "booster_info": "Some deficits are boosters and grant bonus points on the assessment."
   },
   "kurs": {
     "kein": "No course — free training",

@@ -227,7 +227,10 @@
     "pflicht": "Obligatoire",
     "gefunden_status": "Trouvé",
     "verpasst_status": "Manqué",
-    "pkt": "pts"
+    "pkt": "pts",
+    "kat_chip": "Cat. 0/25",
+    "hinweis_chip": "Points chauds −25",
+    "standort_chip": "Site: {{orte}}"
   },
   "scoring": {
     "verwerfenConfirm": "L'évaluation déjà saisie sera supprimée. Vraiment retour au visualiseur ?",
@@ -294,7 +297,7 @@
     "punkte_erhalten": "Points obtenus",
     "weiter": "Continuer",
     "weiter_suchen": "Continuer la recherche",
-    "bewertung_schritt": "Étape {{nr}} sur 3",
+    "bewertung_schritt": "Saisie {{nr}} sur 3",
     "gemäss_tabelle": "Selon le tableau: {{wert}}",
     "methodik_titel": "Méthode RSI en 9 étapes",
     "normhierarchie_label": "Hiérarchie normative (évaluation de l'écart)",
@@ -308,7 +311,7 @@
     "relevanz_matrix_kurz": "Matrice de pertinence",
     "unfallrisiko_matrix_kurz": "Matrice de risque",
     "bfu_badge": "Aide d'introduction bfu",
-    "wie_wichtig": "Quelle est l'importance de ce critère?",
+    "wie_wichtig": "Quelle importance le cours FK RSI attribue-t-il à ce critère?",
     "wie_abweichung": "Dans quelle mesure s'écarte-t-il de la norme?",
     "wie_schwer": "Quelle serait la gravité des blessures?",
     "stell_dir_vor": "Imaginez qu'un accident se produise exactement ici.",
@@ -327,7 +330,19 @@
     "matrix_relevanz": "Pertinence SD",
     "hinweis_genutzt": "Indice utilisé",
     "herleitung": "Dérivation",
-    "booster": "Bonus booster"
+    "booster": "Bonus booster",
+    "methodik_schritt": "Étape méthodologique {{schritt}}",
+    "abbrechen": "Annuler",
+    "abw_klein_sub": "Écart à la norme nul, faible ou non pertinent",
+    "abw_mittel_sub": "L'écart à la norme est objectivement justifié",
+    "abw_gross_sub": "En raison de l'écart à la norme, l'installation routière n'est plus sûre",
+    "referenz_btn": "Consulter la méthodologie (sans déduction de points)",
+    "referenz_wichtigkeit": "L'importance est attribuée de manière fixe au critère dans le cours FK RSI (différente en localité et hors localité). Elle se consulte, elle ne s'estime pas.",
+    "referenz_relevanz_hint": "Importance × écart donne automatiquement la pertinence DS:",
+    "referenz_risiko_hint": "Pertinence DS × gravité donne automatiquement le risque d'accident:",
+    "abw_klein": "Petit",
+    "abw_mittel": "Moyen",
+    "abw_gross": "Grand"
   },
   "ranking": {
     "title": "Classement",
@@ -373,10 +388,10 @@
     "booster_gefunden": "Booster trouvé",
     "kein_treffer": "Aucun déficit de sécurité à cet endroit.",
     "bereits_gefunden": "Vous avez déjà trouvé ce déficit.",
-    "kategorie_falsch": "Trouvé – mais mauvaise catégorie. −10% déduits.",
+    "kategorie_falsch": "Trouvé – mais mauvaise catégorie: 0 point de catégorie sur 25.",
     "kategorie_richtig": "Bonne catégorie!",
     "kein_treffer_sub": "Essayez à un autre endroit.",
-    "kategorie_falsch_sub": "−10% déduits. Vers l'évaluation RSI.",
+    "kategorie_falsch_sub": "Les points de catégorie sont perdus. Vers l'évaluation RSI.",
     "weiter_bewertung": "Vers l'évaluation RSI...",
     "alle_gefunden": "Tous les déficits de sécurité trouvés!",
     "defizit_hier": "Déficit de sécurité ici?",
@@ -384,11 +399,13 @@
     "perspektive": "Perspective",
     "standort": "Emplacement {{nr}}",
     "haupt": "Principal",
-    "hinweis_btn": "Indice",
-    "hinweis_aktiv": "Indice actif",
-    "hint_titel": "Utiliser un indice?",
-    "hint_text": "{{count}} point(s) chaud(s) seront affichés. Par déficit trouvé avec indice actif, 25 points seront déduits.",
-    "hint_dauer": "L'indice reste actif pour toute la scène."
+    "hinweis_btn": "Afficher les points chauds",
+    "hinweis_aktiv": "Points chauds actifs",
+    "hint_titel": "Afficher les points chauds?",
+    "hint_text": "{{count}} point(s) chaud(s) seront affichés dans l'image. 25 points sont déduits par déficit trouvé avec les points chauds actifs.",
+    "hint_dauer": "Les points chauds restent actifs pour toute la scène.",
+    "hinweis_btn_title": "Afficher les points chauds (−25 points par déficit trouvé)",
+    "pflicht_zaehler": "Obligatoires {{found}}/{{total}}"
   },
   "kategorie": {
     "frage": "Qu'avez-vous identifié?",
@@ -400,7 +417,14 @@
     "zustand": "État de la surface",
     "strassenrand": "Bord de route",
     "verkehrsablauf": "Déroulement du trafic",
-    "baustelle": "Chantier"
+    "baustelle": "Chantier",
+    "def_verkehrsfuehrung": "Guidage des flux de trafic, p.ex. voies peu claires ou traversées à plusieurs voies",
+    "def_sicht": "Distances et relations de visibilité, p.ex. masquées par un sommet de côte, la végétation ou des véhicules stationnés",
+    "def_ausruestung": "Équipement de l'installation, p.ex. marquage, signalisation, éclairage ou îlot de protection",
+    "def_zustand": "État de la surface de circulation, p.ex. dégâts du revêtement ou évacuation des eaux",
+    "def_strassenrand": "Aménagement du bord de la route, p.ex. obstacles ou absence de barrières",
+    "def_verkehrsablauf": "Dynamique du trafic, p.ex. niveau de vitesse ou conflits entre modes de transport",
+    "def_baustelle": "Situations temporaires en zone de chantier, p.ex. guidage et signalisation pendant les travaux"
   },
   "einstieg": {
     "kontext_io": "En localité",
@@ -413,7 +437,9 @@
     "kein_bild": "Aucune image d'aperçu saisie",
     "aus_panorama": "Reprendre du panorama",
     "bild_hochladen": "Télécharger une image",
-    "kein_beschrieb": "Aucun texte descriptif saisi."
+    "kein_beschrieb": "Aucun texte descriptif saisi.",
+    "defizit_info": "Cette scène contient {{count}} déficits de sécurité, dont {{pflicht}} déficits obligatoires.",
+    "booster_info": "Certains déficits sont des boosters et donnent des points bonus sur l'évaluation."
   },
   "kurs": {
     "kein": "Aucun cours — formation libre",

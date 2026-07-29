@@ -9,9 +9,10 @@ import { motion, AnimatePresence } from 'motion/react'
 import { ml, type AppDeficit, type AppScene } from '../data/appData'
 import LernKarte from './LernKarte'
 import {
-  WICHTIGKEIT_TABLE, NORMHIERARCHIE, ABWEICHUNG_KATEGORIEN,
+  WICHTIGKEIT_TABLE, NORMHIERARCHIE,
   calcRelevanzSD, calcUnfallrisiko, KATEGORIE_PUNKTE,
 } from '../data/scoringEngine'
+import { ABWEICHUNG_I18N } from '../data/abweichungLabels'
 import { KRITERIUM_LABELS } from '../data/kriteriumLabels'
 import { calcScore as calcScorePure, MAX_PUNKTE_PRO_DEFIZIT } from '../data/scoreCalc'
 import type { RSIDimension, NACADimension, ResultDimension } from '../types'
@@ -458,9 +459,9 @@ export default function ScoringFlow({ deficit, scene, kategorieRichtig = true, h
             Abweichungskategorien
           </p>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', marginBottom: '20px' }}>
-            {ABWEICHUNG_KATEGORIEN.map(k => (
+            {ABWEICHUNG_I18N.map(k => (
               <div key={k.wert} style={{ fontSize: '12px', color: 'var(--zh-color-text-muted)' }}>
-                <strong style={{ color: 'var(--zh-color-text)' }}>{k.label}:</strong> {k.beschreibung}
+                <strong style={{ color: 'var(--zh-color-text)' }}>{t(k.labelKey)}:</strong> {t(k.beschreibungKey)}
               </div>
             ))}
           </div>
@@ -822,7 +823,7 @@ export default function ScoringFlow({ deficit, scene, kategorieRichtig = true, h
               onChange={() => { setAbweichung(null); setNacaSchwere(null) }}
             >
               <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-                {ABWEICHUNG_KATEGORIEN.map(k => {
+                {ABWEICHUNG_I18N.map(k => {
                   const isActive = abweichung === k.wert
                   return (
                     <button
@@ -845,10 +846,10 @@ export default function ScoringFlow({ deficit, scene, kategorieRichtig = true, h
                       </span>
                       <span>
                         <span style={{ fontSize: '13px', fontWeight: isActive ? 700 : 500, color: isActive ? 'var(--zh-gruen)' : 'var(--zh-color-text)', display: 'block' }}>
-                          {k.label}
+                          {t(k.labelKey)}
                         </span>
                         <span style={{ fontSize: '11px', color: 'var(--zh-color-text-muted)', display: 'block' }}>
-                          {k.beschreibung}
+                          {t(k.beschreibungKey)}
                         </span>
                       </span>
                     </button>

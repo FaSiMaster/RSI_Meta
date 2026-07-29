@@ -452,6 +452,7 @@ export default function App() {
               <TrainingEinstieg
                 scene={currentScene}
                 topic={currentTopic}
+                deficits={sceneDeficits}
                 onStart={handleEinstiegStart}
                 onBack={() => setView('scenes')}
               />

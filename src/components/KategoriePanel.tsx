@@ -11,14 +11,16 @@ interface Props {
   onCancel: () => void
 }
 
-const KATEGORIE_KEYS: { value: DefizitKategorie; key: string }[] = [
-  { value: 'verkehrsfuehrung', key: 'kategorie.verkehrsfuehrung' },
-  { value: 'sicht',            key: 'kategorie.sicht'            },
-  { value: 'ausruestung',      key: 'kategorie.ausruestung'      },
-  { value: 'zustand',          key: 'kategorie.zustand'          },
-  { value: 'strassenrand',     key: 'kategorie.strassenrand'     },
-  { value: 'verkehrsablauf',   key: 'kategorie.verkehrsablauf'   },
-  { value: 'baustelle',        key: 'kategorie.baustelle'        },
+// defKey (Review R-11): Einzeiler-Definition pro Kategorie, damit die
+// überlappenden Begriffe (Sicht/Verkehrsführung/Strassenrand) abgegrenzt sind.
+const KATEGORIE_KEYS: { value: DefizitKategorie; key: string; defKey: string }[] = [
+  { value: 'verkehrsfuehrung', key: 'kategorie.verkehrsfuehrung', defKey: 'kategorie.def_verkehrsfuehrung' },
+  { value: 'sicht',            key: 'kategorie.sicht',            defKey: 'kategorie.def_sicht'            },
+  { value: 'ausruestung',      key: 'kategorie.ausruestung',      defKey: 'kategorie.def_ausruestung'      },
+  { value: 'zustand',          key: 'kategorie.zustand',          defKey: 'kategorie.def_zustand'          },
+  { value: 'strassenrand',     key: 'kategorie.strassenrand',     defKey: 'kategorie.def_strassenrand'     },
+  { value: 'verkehrsablauf',   key: 'kategorie.verkehrsablauf',   defKey: 'kategorie.def_verkehrsablauf'   },
+  { value: 'baustelle',        key: 'kategorie.baustelle',        defKey: 'kategorie.def_baustelle'        },
 ]
 
 export default function KategoriePanel({ onSelect, onCancel }: Props) {
@@ -75,13 +77,13 @@ export default function KategoriePanel({ onSelect, onCancel }: Props) {
 
       {/* Kategorie-Buttons */}
       <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', marginBottom: '16px' }}>
-        {KATEGORIE_KEYS.map(({ value, key }) => (
+        {KATEGORIE_KEYS.map(({ value, key, defKey }) => (
           <button
             key={value}
             onClick={() => onSelect(value)}
             style={{
               textAlign:   'left',
-              padding:     '11px 16px',
+              padding:     '9px 16px',
               borderRadius:'8px',
               border:      '1px solid rgba(255,255,255,0.10)',
               background:  'rgba(255,255,255,0.05)',
@@ -94,7 +96,10 @@ export default function KategoriePanel({ onSelect, onCancel }: Props) {
             onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.background = 'rgba(0,118,189,0.45)'; (e.currentTarget as HTMLButtonElement).style.borderColor = 'rgba(0,118,189,0.6)' }}
             onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.background = 'rgba(255,255,255,0.05)'; (e.currentTarget as HTMLButtonElement).style.borderColor = 'rgba(255,255,255,0.10)' }}
           >
-            {t(key)}
+            <span style={{ display: 'block' }}>{t(key)}</span>
+            <span style={{ display: 'block', fontSize: '11px', color: 'rgba(255,255,255,0.50)', fontWeight: 400, marginTop: '2px' }}>
+              {t(defKey)}
+            </span>
           </button>
         ))}
       </div>

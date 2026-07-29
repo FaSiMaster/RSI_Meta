@@ -38,6 +38,16 @@ export default function SzenenAbschluss({
   const foundCount = foundDeficits.length
   const allFound = foundCount === deficits.length
 
+  // Review R-15: Standort-Vermerk für verpasste Defizite — wo wäre es
+  // verortet gewesen? (Perspektiven-Ids auf Standort-Labels auflösen)
+  const perspLabel = new Map((scene.perspektiven ?? []).map(p => [p.id, p.label]))
+  function standorteFür(d: AppDeficit): string {
+    const keys = d.verortungen ? Object.keys(d.verortungen) : []
+    const labels = keys.map(k => k === 'haupt' ? t('szene.haupt') : (perspLabel.get(k) ?? k))
+    if (labels.length === 0 && d.verortung) labels.push(t('szene.haupt'))
+    return labels.join(', ')
+  }
+
   // Statistik
   const best = getBestResult(username, scene.id)
   const versuche = getVersuchAnzahl(username, scene.id)
@@ -200,12 +210,17 @@ export default function SzenenAbschluss({
                     )}
                     {found && !found.kategorieRichtig && (
                       <span style={{ fontSize: '8px', fontWeight: 700, padding: '1px 4px', borderRadius: '3px', background: 'rgba(184,115,0,0.1)', color: 'var(--zh-orange)' }}>
-                        Kat. -10%
+                        {t('completion.kat_chip')}
                       </span>
                     )}
                     {found?.hintPenalty && (
                       <span style={{ fontSize: '8px', fontWeight: 700, padding: '1px 4px', borderRadius: '3px', background: 'rgba(0,0,0,0.07)', color: 'var(--zh-color-text-muted)' }}>
-                        Hint -50%
+                        {t('completion.hinweis_chip')}
+                      </span>
+                    )}
+                    {!found && standorteFür(d).length > 0 && (
+                      <span style={{ fontSize: '8px', fontWeight: 700, padding: '1px 4px', borderRadius: '3px', background: 'rgba(0,118,189,0.08)', color: 'var(--zh-blau)' }}>
+                        {t('completion.standort_chip', { orte: standorteFür(d) })}
                       </span>
                     )}
                     {defResult && !defResult.wichtigkeitKorrekt && (

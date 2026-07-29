@@ -2,13 +2,16 @@
 // Zeigt Breadcrumb, Kontext-Badge, Vorschaubilder, Beschreibungstext,
 // Strassenmerkmale-Tabelle, Hinweis-Box und Start/Zurück-Buttons
 
-import { Camera, Info } from 'lucide-react'
+import { Camera, Info, Target } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
-import { ml, type AppScene, type AppTopic } from '../data/appData'
+import { ml, type AppScene, type AppTopic, type AppDeficit } from '../data/appData'
 
 interface Props {
   scene: AppScene
   topic: AppTopic
+  // Review R-09/R-10/R-22: Defizit-Liste für die Ankündigung von Anzahl,
+  // Pflichtdefiziten und Boostern bereits im Einstieg (statt erst im Abschluss)
+  deficits: AppDeficit[]
   onStart: () => void
   onBack: () => void
 }
@@ -23,9 +26,12 @@ function resolveVorschauBild(
   return val
 }
 
-export default function TrainingEinstieg({ scene, topic, onStart, onBack }: Props) {
+export default function TrainingEinstieg({ scene, topic, deficits, onStart, onBack }: Props) {
   const { t, i18n } = useTranslation()
   const lang = i18n.language
+
+  const pflichtCount  = deficits.filter(d => d.isPflicht).length
+  const hatBooster    = deficits.some(d => d.isBooster)
 
   const kontextLabel = scene.kontext === 'io' ? t('einstieg.kontext_io') : t('einstieg.kontext_ao')
   const kontextColor = scene.kontext === 'io' ? 'var(--zh-blau)' : 'var(--zh-gruen)'
@@ -261,6 +267,31 @@ export default function TrainingEinstieg({ scene, topic, onStart, onBack }: Prop
               </tbody>
             </table>
           </div>
+        </div>
+      )}
+
+      {/* Defizit-Ankündigung (Review R-09/R-10/R-22): Anzahl, Pflicht, Booster */}
+      {deficits.length > 0 && (
+        <div style={{
+          display: 'flex',
+          gap: '12px',
+          background: 'rgba(26,127,31,0.07)',
+          border: '1px solid rgba(26,127,31,0.25)',
+          borderRadius: '8px',
+          padding: '16px',
+          marginBottom: '12px',
+          alignItems: 'flex-start',
+        }}>
+          <Target size={18} color="var(--zh-gruen)" style={{ flexShrink: 0, marginTop: '1px' }} />
+          <p style={{
+            fontSize: '14px',
+            lineHeight: 1.6,
+            color: 'var(--zh-color-text-muted)',
+            margin: 0,
+          }}>
+            {t('einstieg.defizit_info', { count: deficits.length, pflicht: pflichtCount })}
+            {hatBooster && ` ${t('einstieg.booster_info')}`}
+          </p>
         </div>
       )}
 
