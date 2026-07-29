@@ -13,6 +13,32 @@ Versionierung nach [Semantic Versioning](https://semver.org/lang/de/).
 
 ---
 
+## [0.10.0] — 2026-07-29 — Punkte-Ökonomie: Teilpunkte + zweistufiger Hinweis
+
+Entscheid Fachverantwortung vom 29.07.2026. Beide Konstanten liegen in
+`scoreCalc.ts` — das Sacred File `scoringEngine.ts` (Matrizen,
+Schritt-Gewichte) bleibt unangetastet. Achtung: Scores sind mit
+früheren Versuchen nur noch eingeschränkt vergleichbar.
+
+### Geändert
+
+- **Teilpunkte bei falscher Kategorie:** «Gefunden, aber falsch
+  einsortiert» gibt neu 15 der 25 Kategorie-Punkte (vorher 0). Begründung:
+  Die Kategorisierung ist Schritt 0 und nicht Teil der normativen
+  9-Schritte-Methodik; die Kategorien überlappen (Review R-11). Feedback-
+  Texte, Punkte-Aufriss (Browser + VR) und Abschluss-Chip («Kat. 15/25»)
+  in 4 Sprachen nachgezogen.
+- **Zweistufiger Hinweis (Review R-18):** Stufe 1 «Wegweiser» (−10 pro
+  Fund) markiert nur die Standort-Buttons, hinter denen noch unentdeckte
+  Defizite liegen; Stufe 2 «Hotspots» (−25 pro Fund) blendet zusätzlich
+  die Marker im Bild ein. Massgebend ist die beim Fund aktive Stufe —
+  nicht additiv, nur aufwärts schaltbar, je mit Bestätigungsdialog
+  (Browser + VR). `FoundDeficit`/`DefizitResult` speichern neu den
+  effektiven `hintAbzug` (Legacy-Fallback −25); Aufriss und Abschluss-Chip
+  zeigen den echten Abzug.
+
+---
+
 ## [0.9.9] — 2026-07-29 — Admin-Rangliste löscht jetzt wirklich
 
 ### Behoben

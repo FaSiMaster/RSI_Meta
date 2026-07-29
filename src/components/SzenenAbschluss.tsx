@@ -248,7 +248,7 @@ export default function SzenenAbschluss({
                     )}
                     {found?.hintPenalty && (
                       <span style={{ fontSize: '8px', fontWeight: 700, padding: '1px 4px', borderRadius: '3px', background: 'rgba(0,0,0,0.07)', color: 'var(--zh-color-text-muted)' }}>
-                        {t('completion.hinweis_chip')}
+                        {t('completion.hinweis_chip', { abzug: found.hintAbzug ?? 25 })}
                       </span>
                     )}
                     {!found && standorteFür(d).length > 0 && (

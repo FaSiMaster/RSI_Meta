@@ -149,6 +149,9 @@ export interface FoundDeficit {
   kategorieRichtig: boolean
   pointsEarned:     number
   hintPenalty:      boolean
+  // v0.10.0 (zweistufiger Hinweis): effektiver Abzug 0/10/25 zum Fund-Zeitpunkt.
+  // Optional wegen Legacy-Daten — Fallback: hintPenalty ? 25 : 0.
+  hintAbzug?:       number
 }
 
 // ── Neues Punktesystem: SceneResult (Best-of) ──
@@ -158,6 +161,8 @@ export interface DefizitResult {
   deficitId:           string
   kategorieRichtig:    boolean
   hintPenalty:         boolean
+  // v0.10.0: effektiver Hinweis-Abzug (0/10/25); optional wegen Legacy-Daten
+  hintAbzug?:          number
   punkteRoh:           number    // Vor Strafen
   punkteFinal:         number    // Nach Strafen (Kategorie + Hint)
   dauerSekunden:       number    // Zeit für diese Bewertung

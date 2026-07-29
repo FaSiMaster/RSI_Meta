@@ -9,7 +9,7 @@ import {
   getSession, saveSession, getDeficits, getAllScenes, saveRankingEntry,
   saveSceneResult, getVersuchAnzahl, getGesamtScore, ml,
 } from './data/appData'
-import { MAX_PUNKTE_PRO_DEFIZIT, calcScoreFromChoices } from './data/scoreCalc'
+import { MAX_PUNKTE_PRO_DEFIZIT, calcScoreFromChoices, KATEGORIE_TEILPUNKTE } from './data/scoreCalc'
 import { KATEGORIE_PUNKTE } from './data/scoringEngine'
 import { istBestanden, kriteriumFuerSzene } from './data/bestandenKriterium'
 import type { AppTopic, AppScene, AppDeficit, FoundDeficit, DefizitResult, SceneResult } from './data/appData'
@@ -51,13 +51,15 @@ export default function App() {
 
   // ── Viewer-Zustand ──────────────────────────────────────────────────────────
   const [foundDeficits,  setFoundDeficits]  = useState<FoundDeficit[]>([])
-  const [hintActive,     setHintActive]     = useState(false)
+  // v0.10.0: zweistufiger Hinweis — 0 = aus, 1 = Wegweiser (−10), 2 = Hotspots (−25)
+  const [hintStufe,      setHintStufe]      = useState<0 | 1 | 2>(0)
   const [sceneScore,     setSceneScore]     = useState(0)
 
   // Pending-Daten während ScoringFlow
   const [scoringDeficit,        setScoringDeficit]        = useState<AppDeficit | null>(null)
   const [pendingKatRichtig,     setPendingKatRichtig]     = useState(true)
   const [pendingHintPenalty,    setPendingHintPenalty]    = useState(false)
+  const [pendingHintAbzug,      setPendingHintAbzug]      = useState(0)
 
   // Bewertungen aus dem Viewer-Overlay
   const [pendingWichtigkeit, setPendingWichtigkeit] = useState<'gross' | 'mittel' | 'klein' | null>(null)
@@ -158,7 +160,7 @@ export default function App() {
     setCurrentScene(scene)
     setSceneDeficits(defs)
     setFoundDeficits([])
-    setHintActive(false)
+    setHintStufe(0)
     setSceneScore(0)
     setScoringDeficit(null)
     setDefizitResults([])
@@ -181,6 +183,7 @@ export default function App() {
       setScoringDeficit(payload.deficit)
       setPendingKatRichtig(payload.kategorieRichtig)
       setPendingHintPenalty(payload.hintPenalty)
+      setPendingHintAbzug(payload.hintAbzug)
       setPendingWichtigkeit(payload.userWichtigkeit)
       setPendingAbweichung(payload.userAbweichung)
       setPendingNacaSchwere(payload.userNacaSchwere)
@@ -199,8 +202,9 @@ export default function App() {
       payload.userWichtigkeit, payload.userAbweichung, payload.userNacaSchwere,
       ca.wichtigkeit, ca.abweichung, ca.relevanzSD, ca.unfallschwere, ca.unfallrisiko,
     )
-    const katPts      = payload.kategorieRichtig ? KATEGORIE_PUNKTE : 0
-    const hintAbzug   = payload.hintPenalty ? 25 : 0
+    // v0.10.0: Teilpunkte bei falscher Kategorie + gestufter Hinweis-Abzug
+    const katPts      = payload.kategorieRichtig ? KATEGORIE_PUNKTE : KATEGORIE_TEILPUNKTE
+    const hintAbzug   = payload.hintAbzug
     const ptsVorBonus = Math.max(0, rohPts + katPts - hintAbzug)
     const boosterPct  = d.isBooster ? (d.boosterBonusProzent ?? 10) : 0
     const finalPts    = Math.round(ptsVorBonus * (1 + boosterPct / 100))
@@ -210,11 +214,13 @@ export default function App() {
       kategorieRichtig: payload.kategorieRichtig,
       pointsEarned:     finalPts,
       hintPenalty:      payload.hintPenalty,
+      hintAbzug:        payload.hintAbzug,
     }
     const defResult: DefizitResult = {
       deficitId:          d.id,
       kategorieRichtig:   payload.kategorieRichtig,
       hintPenalty:        payload.hintPenalty,
+      hintAbzug:          payload.hintAbzug,
       // punkteRoh = reine 9-Schritte-Punkte OHNE Kategorie — konsistent mit dem
       // Browser-Pfad (handleScoringComplete) und der Doku in appData.ts ("Vor Strafen").
       punkteRoh:          rohPts,
@@ -248,6 +254,7 @@ export default function App() {
       lang:    i18n.language,
       // v0.9.5: Punkte-Aufriss im VR-Ergebnis (identisch zum Browser)
       hintPenalty:    payload.hintPenalty,
+      hintAbzug:      payload.hintAbzug,
       boosterProzent: boosterPct,
     })
   }
@@ -268,6 +275,7 @@ export default function App() {
       kategorieRichtig: pendingKatRichtig,
       pointsEarned:     finalPts,
       hintPenalty:      pendingHintPenalty,
+      hintAbzug:        pendingHintAbzug,
     }
 
     // Defizit-Einzelresultat für SceneResult
@@ -276,6 +284,7 @@ export default function App() {
       deficitId:          scoringDeficit.id,
       kategorieRichtig:   pendingKatRichtig,
       hintPenalty:        pendingHintPenalty,
+      hintAbzug:          pendingHintAbzug,
       punkteRoh:          rohPts,
       punkteFinal:        finalPts,
       dauerSekunden:      Math.round((Date.now() - deficitStartTime.current) / 1000),
@@ -367,8 +376,9 @@ export default function App() {
   }
 
   // ── Hint aktivieren ────────────────────────────────────────────────────────
-  function handleHintActivate() {
-    setHintActive(true)
+  // v0.10.0: Stufe 1 (Wegweiser) oder 2 (Hotspots) aktivieren — nur aufwaerts
+  function handleHintActivate(stufe: 1 | 2) {
+    setHintStufe(prev => (stufe > prev ? stufe : prev))
   }
 
   // ── Nächste Szene (gleiche Topic) ─────────────────────────────────────────
@@ -478,7 +488,7 @@ export default function App() {
                 scene={currentScene}
                 deficits={sceneDeficits}
                 foundDeficits={foundDeficits}
-                hintActive={hintActive}
+                hintStufe={hintStufe}
                 sceneStartTime={sceneStartTime}
                 vrScoringFeedback={vrScoringFeedback}
                 onDeficitConfirmed={handleDeficitConfirmed}
@@ -501,6 +511,7 @@ export default function App() {
                     username={username}
                     kategorieRichtig={pendingKatRichtig}
                     hintPenalty={pendingHintPenalty}
+                    hintAbzug={pendingHintAbzug}
                     onComplete={handleScoringComplete}
                     onBack={() => setView('viewer')}
                     prefillWichtigkeit={pendingWichtigkeit ?? undefined}

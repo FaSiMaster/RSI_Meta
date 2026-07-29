@@ -14,7 +14,7 @@ import {
 } from '../data/scoringEngine'
 import { ABWEICHUNG_I18N } from '../data/abweichungLabels'
 import { KRITERIUM_LABELS } from '../data/kriteriumLabels'
-import { calcScore as calcScorePure, MAX_PUNKTE_PRO_DEFIZIT } from '../data/scoreCalc'
+import { calcScore as calcScorePure, MAX_PUNKTE_PRO_DEFIZIT, KATEGORIE_TEILPUNKTE, HINT_ABZUG_HOTSPOTS } from '../data/scoreCalc'
 import type { RSIDimension, NACADimension, ResultDimension } from '../types'
 
 // ── Farbhilfen ──
@@ -322,6 +322,8 @@ interface Props {
   username?:  string
   kategorieRichtig?: boolean
   hintPenalty?:      boolean
+  /** v0.10.0: effektiver Hinweis-Abzug (0/10/25); Fallback hintPenalty ? 25 : 0 */
+  hintAbzug?:        number
   onComplete: (finalScore: number, rohScore: number) => void
   onBack:     () => void
   // Vorgefuellte Bewertungen aus dem Viewer-Overlay
@@ -330,7 +332,7 @@ interface Props {
   prefillNacaSchwere?: NACADimension
 }
 
-export default function ScoringFlow({ deficit, scene, kategorieRichtig = true, hintPenalty = false, onComplete, onBack, prefillWichtigkeit: propW, prefillAbweichung: propA, prefillNacaSchwere: propN }: Props) {
+export default function ScoringFlow({ deficit, scene, kategorieRichtig = true, hintPenalty = false, hintAbzug: hintAbzugProp, onComplete, onBack, prefillWichtigkeit: propW, prefillAbweichung: propA, prefillNacaSchwere: propN }: Props) {
   const { i18n, t } = useTranslation()
   const lang = i18n.language
 
@@ -499,8 +501,9 @@ export default function ScoringFlow({ deficit, scene, kategorieRichtig = true, h
     const maxPts = MAX_PUNKTE_PRO_DEFIZIT
     // Kategorie additiv + Hinweis-Abzug — KATEGORIE_PUNKTE-Konstante statt Literal,
     // damit Browser- und VR-Pfad bei einer Norm-Änderung synchron bleiben.
-    const katPts       = kategorieRichtig ? KATEGORIE_PUNKTE : 0
-    const hintAbzug    = hintPenalty ? 25 : 0
+    // v0.10.0: Teilpunkte bei falscher Kategorie + gestufter Hinweis-Abzug
+    const katPts       = kategorieRichtig ? KATEGORIE_PUNKTE : KATEGORIE_TEILPUNKTE
+    const hintAbzug    = hintAbzugProp ?? (hintPenalty ? HINT_ABZUG_HOTSPOTS : 0)
     const ptsVorBonus  = Math.max(0, rawPts + katPts - hintAbzug)
     // D-9: Booster-Bonus (10 % oder 20 %) auf den finalen Score
     const boosterPct   = deficit.isBooster ? (deficit.boosterBonusProzent ?? 10) : 0
@@ -598,8 +601,8 @@ export default function ScoringFlow({ deficit, scene, kategorieRichtig = true, h
           <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '11px' }}>
               <span style={{ color: 'var(--zh-color-text-muted)' }}>{t('vr.kategorie')}</span>
-              <span style={{ fontWeight: 700, color: kategorieRichtig ? 'var(--zh-gruen)' : 'var(--zh-rot)' }}>
-                {kategorieRichtig ? '+25' : '0'} {t('score.points')}
+              <span style={{ fontWeight: 700, color: kategorieRichtig ? 'var(--zh-gruen)' : 'var(--zh-orange)' }}>
+                +{kategorieRichtig ? KATEGORIE_PUNKTE : KATEGORIE_TEILPUNKTE} {t('score.points')}
               </span>
             </div>
             {[0, 1, 3].map(i => {
@@ -617,7 +620,7 @@ export default function ScoringFlow({ deficit, scene, kategorieRichtig = true, h
             {hintPenalty && (
               <div style={{ marginTop: '6px', paddingTop: '6px', borderTop: '1px solid var(--zh-color-border)', display: 'flex', justifyContent: 'space-between', fontSize: '11px' }}>
                 <span style={{ color: 'var(--zh-orange)' }}>{t('scoring.hinweis_genutzt')}</span>
-                <span style={{ fontWeight: 700, color: 'var(--zh-orange)' }}>−25 {t('score.points')}</span>
+                <span style={{ fontWeight: 700, color: 'var(--zh-orange)' }}>−{hintAbzug} {t('score.points')}</span>
               </div>
             )}
             {/* v0.9.5: Booster-Zeile — vorher summierten die Zeilen bei Booster-

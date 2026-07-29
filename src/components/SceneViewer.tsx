@@ -24,6 +24,7 @@ import KategoriePanel from './KategoriePanel'
 import KlickFeedback, { type KlickFeedbackType } from './KlickFeedback'
 import { useTranslation } from 'react-i18next'
 import { KATEGORIE_PUNKTE, STEP_WEIGHTS, STEP_WEIGHT_UNIT, calcRelevanzSD, calcUnfallrisiko } from '../data/scoringEngine'
+import { KATEGORIE_TEILPUNKTE, HINT_ABZUG_WEGWEISER, HINT_ABZUG_HOTSPOTS } from '../data/scoreCalc'
 import { KRITERIUM_LABELS } from '../data/kriteriumLabels'
 import { ABWEICHUNG_I18N } from '../data/abweichungLabels'
 import { buildRelevanzMatrix, buildRisikoMatrix, deriveErgebnisse, RELEVANZ_ROWS, RELEVANZ_COLS, RISIKO_ROWS, RISIKO_COLS, type MatrixModel } from '../data/ergebnisModel'
@@ -502,45 +503,63 @@ function VRProgressPanel({ sceneName, kontext, foundCount, totalCount, dots, ela
 
 // ── VR: Kontroll-Leiste (unten mitte) ───────────────────────────────────────
 interface VRControlBarProps {
-  hintActive: boolean
-  onHint:     () => void
+  hintStufe:  number
+  onHint:     (stufe: 1 | 2) => void
   onBeenden:  () => void
   t:          TFunction
 }
 
-function VRControlBar({ hintActive, onHint, onBeenden, t }: VRControlBarProps) {
+// v0.10.0: zweistufiger Hinweis (R-18) — Wegweiser (−10) und Hotspots (−25)
+function VRControlBar({ hintStufe, onHint, onBeenden, t }: VRControlBarProps) {
   return (
-    <VRHud offset={[0, -0.44, -1.5]} drag={{ id: 'controls', width: 1.02, top: 0.055 }}>
+    <VRHud offset={[0, -0.44, -1.5]} drag={{ id: 'controls', width: 1.38, top: 0.055 }}>
       <mesh>
-        <planeGeometry args={[1.02, 0.11]} />
+        <planeGeometry args={[1.38, 0.11]} />
         <meshBasicMaterial color="#080c18" transparent opacity={0.80} />
       </mesh>
-      {!hintActive ? (
+      {hintStufe < 1 ? (
+        <VRButton
+          label={t('szene.wegweiser_btn')}
+          position={[-0.46, 0, 0.002]}
+          width={0.42}
+          height={0.085}
+          color="#20260a"
+          hoverColor="#7a8a00"
+          textColor="#d6e04a"
+          fontSize={0.028}
+          onClick={() => onHint(1)}
+        />
+      ) : (
+        <Text position={[-0.46, 0, 0.003]} fontSize={0.026} color="#d6e04a" anchorX="center" anchorY="middle">
+          {t('szene.wegweiser_aktiv')}
+        </Text>
+      )}
+      {hintStufe < 2 ? (
         <VRButton
           label={t('szene.hinweis_btn')}
-          position={[-0.27, 0, 0.002]}
-          width={0.45}
+          position={[0, 0, 0.002]}
+          width={0.42}
           height={0.085}
           color="#2a1800"
           hoverColor="#b87300"
           textColor="#F0A500"
-          fontSize={0.034}
-          onClick={onHint}
+          fontSize={0.028}
+          onClick={() => onHint(2)}
         />
       ) : (
-        <Text position={[-0.27, 0, 0.003]} fontSize={0.030} color="#F0A500" anchorX="center" anchorY="middle">
+        <Text position={[0, 0, 0.003]} fontSize={0.026} color="#F0A500" anchorX="center" anchorY="middle">
           {t('szene.hinweis_aktiv')}
         </Text>
       )}
       <VRButton
         label={t('szene.beenden')}
-        position={[0.27, 0, 0.002]}
-        width={0.45}
+        position={[0.46, 0, 0.002]}
+        width={0.42}
         height={0.085}
         color="#151820"
         hoverColor="#2a3040"
         textColor="rgba(255,255,255,0.75)"
-        fontSize={0.030}
+        fontSize={0.028}
         onClick={onBeenden}
       />
     </VRHud>
@@ -611,12 +630,13 @@ function VRKategoriePanel({ onSelect, onCancel, t }: VRKategoriePanelProps) {
 // Vorher aktivierte der VR-Hinweis-Button die Penalty ohne jede Warnung.
 interface VRHintDialogProps {
   hintCount:    number
+  stufe:        1 | 2
   onBestätigen: () => void
   onAbbrechen:  () => void
   t:            TFunction
 }
 
-function VRHintDialog({ hintCount, onBestätigen, onAbbrechen, t }: VRHintDialogProps) {
+function VRHintDialog({ hintCount, stufe, onBestätigen, onAbbrechen, t }: VRHintDialogProps) {
   const panelW = 0.80
   const panelH = 0.48
 
@@ -631,13 +651,13 @@ function VRHintDialog({ hintCount, onBestätigen, onAbbrechen, t }: VRHintDialog
         <meshBasicMaterial color="#090d1b" transparent opacity={0.96} />
       </mesh>
       <Text position={[0, panelH / 2 - 0.055, 0.003]} fontSize={0.034} color="#F0A500" anchorX="center" anchorY="middle" maxWidth={panelW - 0.08}>
-        {t('szene.hint_titel')}
+        {t(stufe === 1 ? 'szene.hint1_titel' : 'szene.hint_titel')}
       </Text>
       <Text position={[0, 0.035, 0.003]} fontSize={0.024} color="rgba(255,255,255,0.80)" anchorX="center" anchorY="middle" maxWidth={panelW - 0.10} textAlign="center" lineHeight={1.45}>
-        {t('szene.hint_text', { count: hintCount })}
+        {t(stufe === 1 ? 'szene.hint1_text' : 'szene.hint_text', { count: hintCount })}
       </Text>
       <Text position={[0, -0.095, 0.003]} fontSize={0.019} color="rgba(255,255,255,0.45)" anchorX="center" anchorY="middle" maxWidth={panelW - 0.10} textAlign="center">
-        {t('szene.hint_dauer')}
+        {t(stufe === 1 ? 'szene.hint1_dauer' : 'szene.hint_dauer')}
       </Text>
       <VRButton
         label={t('scoring.abbrechen')}
@@ -1120,6 +1140,8 @@ export interface VRScoringSummary {
   lang:    string
   // v0.9.5: fuer den Punkte-Aufriss (identisch zum Browser-Ergebnis)
   hintPenalty:    boolean
+  /** v0.10.0: effektiver Hinweis-Abzug (0/10/25); Fallback hintPenalty ? 25 : 0 */
+  hintAbzug?:     number
   boosterProzent: number
 }
 
@@ -1169,7 +1191,7 @@ function VRScoringSummaryPanel({ summary, onContinue, t }: VRScoringSummaryPanel
   const rows: { label: string; user: string; correct: string; ok: boolean; pkt: number }[] = [
     { label: t('vr.kategorie'),   user: summary.kategorieRichtig ? t('vr.richtig') : t('vr.falsch'),
       correct: summary.kategorieRichtig ? t('vr.richtig') : korrekteKategorie, ok: summary.kategorieRichtig,
-      pkt: summary.kategorieRichtig ? KATEGORIE_PUNKTE : 0 },
+      pkt: summary.kategorieRichtig ? KATEGORIE_PUNKTE : KATEGORIE_TEILPUNKTE },
     { label: t('scoring.phase_a'), user: dimLabelShort(summary.userW, t),
       correct: dimLabelShort(summary.correctW, t), ok: summary.wichtigkeitKorrekt,
       pkt: summary.wichtigkeitKorrekt ? wPkt : 0 },
@@ -1181,7 +1203,7 @@ function VRScoringSummaryPanel({ summary, onContinue, t }: VRScoringSummaryPanel
       pkt: summary.nacaKorrekt ? nPkt : 0 },
   ]
   // Abzug/Bonus-Zeilen unter der Tabelle (nur wenn zutreffend)
-  const hintAbzugPkt = summary.hintPenalty ? 25 : 0
+  const hintAbzugPkt = summary.hintAbzug ?? (summary.hintPenalty ? HINT_ABZUG_HOTSPOTS : 0)
   const vorBonus     = Math.max(0, rows.reduce((s, r) => s + r.pkt, 0) - hintAbzugPkt)
   const boosterPkt   = summary.punkteFinal - vorBonus
   const extraZeilen  = (summary.hintPenalty ? 1 : 0) + (summary.boosterProzent > 0 && boosterPkt !== 0 ? 1 : 0)
@@ -1315,7 +1337,7 @@ function VRScoringSummaryPanel({ summary, onContinue, t }: VRScoringSummaryPanel
             const yBasis = panelH / 2 - headerH - rows.length * (rowH + rowGap)
             const zeilen: { label: string; wert: string; farbe: string }[] = []
             if (summary.hintPenalty) {
-              zeilen.push({ label: t('scoring.hinweis_genutzt'), wert: '−25', farbe: '#F0A500' })
+              zeilen.push({ label: t('scoring.hinweis_genutzt'), wert: `−${hintAbzugPkt}`, farbe: '#F0A500' })
             }
             if (summary.boosterProzent > 0 && boosterPkt !== 0) {
               zeilen.push({ label: `${t('scoring.booster')} (+${summary.boosterProzent} %)`, wert: `+${boosterPkt}`, farbe: '#1A7F1F' })
@@ -1525,7 +1547,7 @@ interface SceneContentProps {
   scene:          AppScene
   deficits:       AppDeficit[]
   foundDeficits:  FoundDeficit[]
-  hintActive:     boolean
+  hintStufe:      number
   onSphereClick:  (e: ThreeEvent<MouseEvent>) => void
   startblick?:    { theta: number; phi: number } | null
   onVRModeChange: (v: boolean) => void
@@ -1538,7 +1560,8 @@ interface SceneContentProps {
   onKategorieSelect: (k: DefizitKategorie) => void
   onKategorieCancel: () => void
   onFeedbackClose:   () => void
-  onHintRequest:     () => void
+  onHintRequest:     (stufe: 1 | 2) => void
+  hintDialogStufe:   1 | 2
   // v0.9.1: VR-Hinweis-Dialog (Bestaetigen aktiviert die Penalty, Abbrechen nicht)
   onHintConfirm:     () => void
   onHintCancel:      () => void
@@ -1564,13 +1587,13 @@ interface SceneContentProps {
 }
 
 function SceneContent({
-  scene, deficits, foundDeficits, hintActive,
+  scene, deficits, foundDeficits, hintStufe,
   onSphereClick, startblick,
   onVRModeChange,
   phase, feedbackType, progress,
   sceneName, sceneKontextLabel, elapsedSec,
   onKategorieSelect, onKategorieCancel, onFeedbackClose,
-  onHintRequest, onHintConfirm, onHintCancel, onBeenden,
+  onHintRequest, hintDialogStufe, onHintConfirm, onHintCancel, onBeenden,
   aktivePerspektiveId, aktiveBildUrl, pendingClickPos, onStandortWechsel,
   visitedPerspektiven, hauptKey,
   hitDeficit, onBewertungW, onBewertungA, onBewertungN, onBewertungCancel,
@@ -1661,7 +1684,7 @@ function SceneContent({
       {/* Hotspots: gefundene Defizite immer grün, restliche nur bei aktivem Hint */}
       {deficits.map(d => {
         const isFound = foundIds.has(d.id)
-        if (!isFound && !hintActive) return null
+        if (!isFound && hintStufe < 2) return null
         const renderPos = getHotspotPosition(d, aktivePerspektiveId)
         if (!renderPos) return null
         return <Hotspot key={d.id} position={renderPos} found={isFound} />
@@ -1681,7 +1704,7 @@ function SceneContent({
             position={pos}
             label={p.label || t('szene.standort', { nr: i + 1 })}
             status={status}
-            hintZiel={hintActive && standortHatOffeneDefizite(deficits, foundIds, p.id, aktivePerspektiveId)}
+            hintZiel={hintStufe >= 1 && standortHatOffeneDefizite(deficits, foundIds, p.id, aktivePerspektiveId)}
             onClick={() => onStandortWechsel(p.id)}
           />
         )
@@ -1705,7 +1728,7 @@ function SceneContent({
               position={pos}
               label={label}
               status={status}
-              hintZiel={hintActive && standortHatOffeneDefizite(deficits, foundIds, zielId === 'haupt' ? null : zielId, aktivePerspektiveId)}
+              hintZiel={hintStufe >= 1 && standortHatOffeneDefizite(deficits, foundIds, zielId === 'haupt' ? null : zielId, aktivePerspektiveId)}
               onClick={() => onStandortWechsel(zielId === 'haupt' ? null : zielId)}
             />
           )
@@ -1757,7 +1780,7 @@ function SceneContent({
             />
             {phase === 'exploring' && (
               <VRControlBar
-                hintActive={hintActive}
+                hintStufe={hintStufe}
                 onHint={onHintRequest}
                 onBeenden={onBeenden}
                 t={t}
@@ -1776,6 +1799,7 @@ function SceneContent({
             {phase === 'vrHintDialog' && (
               <VRHintDialog
                 hintCount={deficits.length - foundIds.size}
+                stufe={hintDialogStufe}
                 onBestätigen={onHintConfirm}
                 onAbbrechen={onHintCancel}
                 t={t}
@@ -1937,11 +1961,12 @@ function MiniReferenz({ schritt, t }: { schritt: 'w' | 'a' | 'n'; t: TFunction }
 // ── Hinweis-Dialog (Browser) ─────────────────────────────────────────────────
 interface HintDialogProps {
   hintCount:     number
+  stufe:         1 | 2
   onBestätigen: () => void
   onAbbrechen:   () => void
 }
 
-function HintDialog({ hintCount, onBestätigen, onAbbrechen }: HintDialogProps) {
+function HintDialog({ hintCount, stufe, onBestätigen, onAbbrechen }: HintDialogProps) {
   // v0.9.1: hartcodierte deutsche Strings durch bestehende i18n-Keys ersetzt
   // (HTML-Overlay ausserhalb des Canvas — useTranslation ist hier sicher).
   const { t } = useTranslation()
@@ -1964,14 +1989,14 @@ function HintDialog({ hintCount, onBestätigen, onAbbrechen }: HintDialogProps) 
         <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '14px' }}>
           <Eye size={20} style={{ color: 'var(--zh-warnung)', flexShrink: 0 }} />
           <h3 style={{ fontSize: '17px', fontWeight: 700, color: 'white', margin: 0 }}>
-            {t('szene.hint_titel')}
+            {t(stufe === 1 ? 'szene.hint1_titel' : 'szene.hint_titel')}
           </h3>
         </div>
         <p style={{ fontSize: '13px', color: 'rgba(255,255,255,0.65)', lineHeight: 1.6, marginBottom: '8px' }}>
-          {t('szene.hint_text', { count: hintCount })}
+          {t(stufe === 1 ? 'szene.hint1_text' : 'szene.hint_text', { count: hintCount })}
         </p>
         <p style={{ fontSize: '12px', color: 'rgba(255,255,255,0.40)', marginBottom: '20px' }}>
-          {t('szene.hint_dauer')}
+          {t(stufe === 1 ? 'szene.hint1_dauer' : 'szene.hint_dauer')}
         </p>
         <div style={{ display: 'flex', gap: '10px' }}>
           <button
@@ -2026,6 +2051,8 @@ export interface DeficitConfirmedPayload {
   deficit:          AppDeficit
   kategorieRichtig: boolean
   hintPenalty:      boolean
+  /** v0.10.0: Abzug der beim Fund aktiven Hinweis-Stufe (0/10/25) */
+  hintAbzug:        number
   // Bewertungs-Auswahlen aus dem Viewer-Overlay
   userWichtigkeit:  RSIDimension
   userAbweichung:   RSIDimension
@@ -2038,14 +2065,14 @@ interface Props {
   scene:              AppScene
   deficits:           AppDeficit[]
   foundDeficits:      FoundDeficit[]
-  hintActive:         boolean
+  hintStufe:          number
   // Ms-Epoch-Stamp wann die Szene gestartet wurde (aus App.tsx handleEinstiegStart).
   // Wird fuer den VR-HUD-Timer (v0.8.0) gebraucht.
   sceneStartTime:     number
   /** Wenn gesetzt, zeigt der Viewer das VR-Scoring-Summary-Panel (v0.8.2). null = kein Panel. */
   vrScoringFeedback:  VRScoringSummary | null
   onDeficitConfirmed: (payload: DeficitConfirmedPayload) => void
-  onHintActivate:     () => void
+  onHintActivate:     (stufe: 1 | 2) => void
   onBeenden:          () => void
   /** Wird aufgerufen wenn der User im VR-Scoring-Summary-Panel auf Weiter klickt. */
   onVRScoringContinue: () => void
@@ -2064,7 +2091,7 @@ type Phase =
   | 'vrScoringSummary'
 
 export default function SceneViewer({
-  scene, deficits, foundDeficits, hintActive, sceneStartTime,
+  scene, deficits, foundDeficits, hintStufe, sceneStartTime,
   vrScoringFeedback,
   onDeficitConfirmed, onHintActivate, onBeenden, onVRScoringContinue,
 }: Props) {
@@ -2331,7 +2358,8 @@ export default function SceneViewer({
     onDeficitConfirmed({
       deficit:          d,
       kategorieRichtig: hitKatRichtig.current,
-      hintPenalty:      hintActive,
+      hintPenalty:      hintStufe > 0,
+      hintAbzug:        hintStufe === 2 ? HINT_ABZUG_HOTSPOTS : hintStufe === 1 ? HINT_ABZUG_WEGWEISER : 0,
       userWichtigkeit,
       userAbweichung,
       userNacaSchwere:  n,
@@ -2341,7 +2369,7 @@ export default function SceneViewer({
     // In VR (v0.8.2): auf vrScoringSummary wechseln — Props-Effekt oben bringt
     // vrScoringFeedback nach. In Browser: exploring, View wechselt auf scoring.
     setPhase(isVR ? 'vrScoringSummary' : 'exploring')
-  }, [userWichtigkeit, userAbweichung, hintActive, onDeficitConfirmed, isVR])
+  }, [userWichtigkeit, userAbweichung, hintStufe, onDeficitConfirmed, isVR])
 
   // Abbruch einer laufenden Bewertung (v0.8.3, VR-Cancel-Buttons): verwirft den
   // Treffer und kehrt zum Erkunden zurück. Genutzt von den VR-Bewertungs-Panels.
@@ -2358,15 +2386,17 @@ export default function SceneViewer({
     onVRScoringContinue()
   }, [onVRScoringContinue])
 
-  // ── Hint aktivieren ─────────────────────────────────────────────────────────
-  const handleHintRequest = useCallback(() => {
+  // ── Hint aktivieren (v0.10.0: zweistufig) ──────────────────────────────────
+  const pendingHintStufe = useRef<1 | 2>(2)
+  const handleHintRequest = useCallback((stufe: 1 | 2) => {
     // v0.9.1: auch in VR erst bestaetigen — vorher wurde die Penalty ohne
     // Warnung scharf (Browser hatte den Dialog, VR nicht).
+    pendingHintStufe.current = stufe
     setPhase(isVR ? 'vrHintDialog' : 'hintDialog')
   }, [isVR])
 
   const handleHintBestätigen = useCallback(() => {
-    onHintActivate()
+    onHintActivate(pendingHintStufe.current)
     setPhase('exploring')
   }, [onHintActivate])
 
@@ -2448,7 +2478,7 @@ export default function SceneViewer({
             scene={scene}
             deficits={deficits}
             foundDeficits={foundDeficits}
-            hintActive={hintActive}
+            hintStufe={hintStufe}
             onSphereClick={handleSphereClick}
             startblick={aktiveStartblick}
             onVRModeChange={handleVRModeChange}
@@ -2462,6 +2492,7 @@ export default function SceneViewer({
             onKategorieCancel={handleKategorieCancel}
             onFeedbackClose={handleFeedbackClose}
             onHintRequest={handleHintRequest}
+            hintDialogStufe={pendingHintStufe.current}
             onHintConfirm={handleHintBestätigen}
             onHintCancel={handleHintAbbrechen}
             onBeenden={onBeenden}
@@ -2529,9 +2560,41 @@ export default function SceneViewer({
           display: 'flex', flexDirection: 'column', gap: '8px',
           zIndex: 50,
         }}>
-          {!hintActive && (
+          {/* v0.10.0: zweistufiger Hinweis — Wegweiser (−10) vor Hotspots (−25) */}
+          {hintStufe < 1 ? (
             <button
-              onClick={() => setPhase('hintDialog')}
+              onClick={() => handleHintRequest(1)}
+              title={t('szene.wegweiser_btn_title')}
+              style={{
+                display: 'flex', alignItems: 'center', gap: '7px',
+                padding: '9px 14px', borderRadius: '9px',
+                border: '1px solid rgba(160,180,30,0.40)',
+                background: 'rgba(160,180,30,0.15)',
+                color: '#8a9a10',
+                fontSize: '13px', fontWeight: 600,
+                cursor: 'pointer',
+                fontFamily: 'var(--zh-font)',
+                backdropFilter: 'blur(10px)',
+              }}
+            >
+              <MapPin size={14} /> {t('szene.wegweiser_btn')}
+            </button>
+          ) : (
+            <div style={{
+              display: 'flex', alignItems: 'center', gap: '6px',
+              padding: '9px 14px', borderRadius: '9px',
+              background: 'rgba(160,180,30,0.20)',
+              border: '1px solid rgba(160,180,30,0.5)',
+              color: '#8a9a10',
+              fontSize: '12px', fontWeight: 700,
+              fontFamily: 'var(--zh-font)',
+            }}>
+              <MapPin size={13} /> {t('szene.wegweiser_aktiv')}
+            </div>
+          )}
+          {hintStufe < 2 ? (
+            <button
+              onClick={() => handleHintRequest(2)}
               title={t('szene.hinweis_btn_title')}
               style={{
                 display: 'flex', alignItems: 'center', gap: '7px',
@@ -2547,8 +2610,7 @@ export default function SceneViewer({
             >
               <Eye size={14} /> {t('szene.hinweis_btn')}
             </button>
-          )}
-          {hintActive && (
+          ) : (
             <div style={{
               display: 'flex', alignItems: 'center', gap: '6px',
               padding: '9px 14px', borderRadius: '9px',
@@ -2558,7 +2620,7 @@ export default function SceneViewer({
               fontSize: '12px', fontWeight: 700,
               fontFamily: 'var(--zh-font)',
             }}>
-              <MapPin size={13} /> {t('szene.hinweis_aktiv')}
+              <Eye size={13} /> {t('szene.hinweis_aktiv')}
             </div>
           )}
           <button
@@ -2844,7 +2906,7 @@ export default function SceneViewer({
               padding: '8px 14px', borderRadius: '9px',
               border: !aktivePerspektiveId
                 ? '2px solid #0076BD'
-                : hintActive && standortHatOffeneDefizite(deficits, foundIds, null, aktivePerspektiveId)
+                : hintStufe >= 1 && standortHatOffeneDefizite(deficits, foundIds, null, aktivePerspektiveId)
                   ? '2px solid #F0A500'
                   : '1px solid rgba(255,255,255,0.18)',
               background: !aktivePerspektiveId ? 'rgba(0,118,189,0.25)' : 'rgba(0,0,0,0.55)',
@@ -2866,7 +2928,7 @@ export default function SceneViewer({
             const isActive = p.id === aktivePerspektiveId
             // v0.9.4: Hinweis-Wegweiser — orange Umrandung, wenn hinter dem
             // Standort noch unentdeckte Defizite verortet sind.
-            const hintZiel = !isActive && hintActive && standortHatOffeneDefizite(deficits, foundIds, p.id, aktivePerspektiveId)
+            const hintZiel = !isActive && hintStufe >= 1 && standortHatOffeneDefizite(deficits, foundIds, p.id, aktivePerspektiveId)
             return (
               <button
                 key={p.id}
@@ -2897,6 +2959,7 @@ export default function SceneViewer({
       {htmlVisible && phase === 'hintDialog' && (
         <HintDialog
           hintCount={deficits.filter(d => !foundIds.has(d.id)).length}
+          stufe={pendingHintStufe.current}
           onBestätigen={handleHintBestätigen}
           onAbbrechen={handleHintAbbrechen}
         />
