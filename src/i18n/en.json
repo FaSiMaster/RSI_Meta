@@ -163,7 +163,11 @@
     "pin_titel": "Admin Access",
     "pin_hinweis": "Enter PIN",
     "pin_falsch": "PIN is incorrect.",
-    "pin_bestätigen": "Sign in"
+    "pin_bestätigen": "Sign in",
+    "bestanden_titel": "Pass criterion",
+    "bestanden_pflicht": "All mandatory deficits required",
+    "bestanden_prozent": "Minimum percentage",
+    "bestanden_hinweis": "Empty = no percentage threshold. Without adjustment the default applies: all mandatory deficits and at least 60 %."
   },
   "score": {
     "points": "pts"
@@ -207,7 +211,8 @@
     "szenario": "Scenario {{nr}}",
     "defizite_count": "{{count}} deficits",
     "versuche_count": "{{count}}× played",
-    "best_prozent": "Best: {{prozent}}%"
+    "best_prozent": "Best: {{prozent}}%",
+    "bestanden_badge": "Passed"
   },
   "completion": {
     "titel": "Scene completed",
@@ -230,7 +235,11 @@
     "pkt": "pts",
     "kat_chip": "Cat. 0/25",
     "hinweis_chip": "Hotspots −25",
-    "standort_chip": "Location: {{orte}}"
+    "standort_chip": "Location: {{orte}}",
+    "bestanden": "Passed",
+    "nicht_bestanden": "Not passed",
+    "bestanden_grund_pflicht": "{{fehlt}} mandatory deficit(s) not found",
+    "bestanden_grund_prozent": "{{prozent}} % achieved – at least {{min}} % required"
   },
   "scoring": {
     "verwerfenConfirm": "Already entered assessment will be discarded. Really back to viewer?",
@@ -439,7 +448,9 @@
     "bild_hochladen": "Upload image",
     "kein_beschrieb": "No description text entered yet.",
     "defizit_info": "This scene contains {{count}} safety deficits, {{pflicht}} of which are mandatory.",
-    "booster_info": "Some deficits are boosters and grant bonus points on the assessment."
+    "booster_info": "Some deficits are boosters and grant bonus points on the assessment.",
+    "bestanden_info": "The scene is passed when all {{pflicht}} mandatory deficits are found and at least {{prozent}} % of the points are achieved.",
+    "bestanden_info_nur_pflicht": "The scene is passed when all {{pflicht}} mandatory deficits are found."
   },
   "kurs": {
     "kein": "No course — free training",

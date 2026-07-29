@@ -60,4 +60,7 @@ export interface SupabaseResult {
   prozent: number
   dauer_sekunden: number | null
   created_at: string
+  // v0.9.7: Bestanden-Kriterium. Spalte existiert erst nach der SQL-Migration
+  // (alter table rsi_results add column bestanden boolean) — deshalb optional.
+  bestanden?: boolean | null
 }

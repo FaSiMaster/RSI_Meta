@@ -163,7 +163,11 @@
     "pin_titel": "Accesso admin",
     "pin_hinweis": "Inserire il PIN",
     "pin_falsch": "Il PIN non è corretto.",
-    "pin_bestätigen": "Accedi"
+    "pin_bestätigen": "Accedi",
+    "bestanden_titel": "Criterio di superamento",
+    "bestanden_pflicht": "Tutti i deficit obbligatori necessari",
+    "bestanden_prozent": "Percentuale minima",
+    "bestanden_hinweis": "Vuoto = nessuna soglia percentuale. Senza adattamento vale lo standard: tutti i deficit obbligatori e almeno il 60 %."
   },
   "score": {
     "points": "pt"
@@ -207,7 +211,8 @@
     "szenario": "Scenario {{nr}}",
     "defizite_count": "{{count}} deficit",
     "versuche_count": "{{count}}× giocato",
-    "best_prozent": "Migliore: {{prozent}}%"
+    "best_prozent": "Migliore: {{prozent}}%",
+    "bestanden_badge": "Superata"
   },
   "completion": {
     "titel": "Scena completata",
@@ -230,7 +235,11 @@
     "pkt": "pt",
     "kat_chip": "Cat. 0/25",
     "hinweis_chip": "Hotspot −25",
-    "standort_chip": "Posizione: {{orte}}"
+    "standort_chip": "Posizione: {{orte}}",
+    "bestanden": "Superata",
+    "nicht_bestanden": "Non superata",
+    "bestanden_grund_pflicht": "{{fehlt}} deficit obbligatori non trovati",
+    "bestanden_grund_prozent": "{{prozent}} % raggiunto – almeno {{min}} % necessario"
   },
   "scoring": {
     "verwerfenConfirm": "La valutazione gia inserita verra scartata. Tornare davvero al visualizzatore?",
@@ -439,7 +448,9 @@
     "bild_hochladen": "Caricare un'immagine",
     "kein_beschrieb": "Nessun testo descrittivo inserito.",
     "defizit_info": "Questa scena contiene {{count}} deficit di sicurezza, di cui {{pflicht}} obbligatori.",
-    "booster_info": "Alcuni deficit sono booster e danno punti bonus sulla valutazione."
+    "booster_info": "Alcuni deficit sono booster e danno punti bonus sulla valutazione.",
+    "bestanden_info": "La scena è superata quando tutti i {{pflicht}} deficit obbligatori sono trovati e almeno il {{prozent}} % dei punti è raggiunto.",
+    "bestanden_info_nur_pflicht": "La scena è superata quando tutti i {{pflicht}} deficit obbligatori sono trovati."
   },
   "kurs": {
     "kein": "Nessun corso — formazione libera",

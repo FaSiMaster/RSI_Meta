@@ -163,7 +163,11 @@
     "pin_titel": "Admin-Zugang",
     "pin_hinweis": "PIN eingeben",
     "pin_falsch": "PIN ist nicht korrekt.",
-    "pin_bestätigen": "Anmelden"
+    "pin_bestätigen": "Anmelden",
+    "bestanden_titel": "Bestanden-Kriterium",
+    "bestanden_pflicht": "Alle Pflichtdefizite nötig",
+    "bestanden_prozent": "Mindest-Prozent",
+    "bestanden_hinweis": "Leer = keine Prozent-Schwelle. Ohne Anpassung gilt der Standard: alle Pflichtdefizite und mindestens 60 %."
   },
   "score": {
     "points": "Pkt."
@@ -207,7 +211,8 @@
     "szenario": "Szenario {{nr}}",
     "defizite_count": "{{count}} Defizite",
     "versuche_count": "{{count}}× gespielt",
-    "best_prozent": "Best: {{prozent}}%"
+    "best_prozent": "Best: {{prozent}}%",
+    "bestanden_badge": "Bestanden"
   },
   "completion": {
     "titel": "Szene abgeschlossen",
@@ -230,7 +235,11 @@
     "pkt": "Pkt.",
     "kat_chip": "Kat. 0/25",
     "hinweis_chip": "Hotspots −25",
-    "standort_chip": "Standort: {{orte}}"
+    "standort_chip": "Standort: {{orte}}",
+    "bestanden": "Bestanden",
+    "nicht_bestanden": "Nicht bestanden",
+    "bestanden_grund_pflicht": "{{fehlt}} Pflichtdefizit(e) nicht gefunden",
+    "bestanden_grund_prozent": "{{prozent}} % erreicht – mindestens {{min}} % nötig"
   },
   "scoring": {
     "verwerfenConfirm": "Bereits eingegebene Bewertung wird verworfen. Wirklich zurück zum Viewer?",
@@ -439,7 +448,9 @@
     "bild_hochladen": "Eigenes Bild hochladen",
     "kein_beschrieb": "Noch kein Beschreibungstext erfasst.",
     "defizit_info": "Diese Szene enthält {{count}} Sicherheitsdefizite, davon {{pflicht}} Pflichtdefizite.",
-    "booster_info": "Einzelne Defizite sind Booster und geben Bonuspunkte auf die Bewertung."
+    "booster_info": "Einzelne Defizite sind Booster und geben Bonuspunkte auf die Bewertung.",
+    "bestanden_info": "Bestanden ist die Szene, wenn alle {{pflicht}} Pflichtdefizite gefunden sind und mindestens {{prozent}} % der Punkte erreicht werden.",
+    "bestanden_info_nur_pflicht": "Bestanden ist die Szene, wenn alle {{pflicht}} Pflichtdefizite gefunden sind."
   },
   "kurs": {
     "kein": "Kein Kurs — freies Training",

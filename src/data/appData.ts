@@ -83,6 +83,10 @@ export interface AppScene {
   // Erstellungs-Zeitstempel (ms seit Epoch). Fuer Sortierung und Anzeige
   // im Admin. Optional aus Backwards-Compat-Gruenden.
   createdAt?: number
+  // Optionaler Szenen-Override des app-weiten Bestanden-Kriteriums (v0.9.7).
+  // minProzent: null = keine Prozent-Schwelle. Fehlt das Feld, gilt der
+  // Default aus bestandenKriterium.ts (alle Pflicht + 60 %).
+  bestandenKriterium?: { allePflicht?: boolean; minProzent?: number | null } | null
 }
 
 export interface AppDeficit {
@@ -178,6 +182,11 @@ export interface SceneResult {
   dauerSekunden:   number       // Gesamtdauer der Szene
   kursId:          string | null
   defizitResults:  DefizitResult[]
+  // Bestanden-Kriterium (v0.9.7): bei Szenenende berechnet und gespeichert.
+  // Optional aus Backwards-Compat-Gruenden — alte Resultate haben kein Feld.
+  pflichtGefunden?: number
+  pflichtTotal?:    number
+  bestanden?:       boolean
 }
 
 // Sterne-Berechnung (1-3 basierend auf Prozent)
@@ -667,7 +676,10 @@ function writeJSON<T>(key: string, data: T[]): void {
 // Ohne Salt waere die Re-Identifikation durch Hashen bekannter Teilnehmerlisten
 // trivial. Salt MUSS pro Deployment gesetzt werden; fehlender Salt faellt auf
 // einen leeren String zurueck und erzeugt eine Konsolen-Warnung.
-async function hashUsername(name: string): Promise<string> {
+// Exportiert seit v0.9.7: RankingView hasht den eigenen Namen clientseitig,
+// um die eigene (pseudonymisierte) Zeile im Live-Ranking zu erkennen und
+// NUR dort den Klarnamen anzuzeigen — andere bleiben anonym.
+export async function hashUsername(name: string): Promise<string> {
   const salt = (import.meta.env.VITE_USERNAME_SALT as string | undefined) ?? ''
   if (!salt && typeof console !== 'undefined') {
     logger.warn('VITE_USERNAME_SALT nicht gesetzt — Pseudonymisierung ist schwaecher als empfohlen.')
@@ -1002,15 +1014,32 @@ export function saveSceneResult(result: SceneResult): void {
   import('../lib/supabase').then(async ({ supabase, setSupabaseStatus }) => {
     if (!supabase) return
     const hashedName = await hashUsername(result.username)
-    supabase.from('rsi_results').insert({
+    const basisRow = {
       username:        hashedName,
       kurs_code:       result.kursId ?? null,
       scene_id:        result.sceneId,
       punkte:          result.punkte,
       prozent:         result.prozent,
       dauer_sekunden:  result.dauerSekunden,
+    }
+    // bestanden-Spalte (v0.9.7): existiert erst nach der SQL-Migration.
+    // Schlaegt der Insert wegen der fehlenden Spalte fehl, einmal ohne
+    // das Feld nachschreiben — sonst ginge das Resultat verloren.
+    supabase.from('rsi_results').insert({
+      ...basisRow,
+      bestanden: result.bestanden ?? null,
     }).then(({ error }) => {
-      if (error) {
+      if (error && /bestanden/i.test(error.message)) {
+        logger.warn('rsi_results ohne bestanden-Spalte (Migration ausstehend) — Insert ohne Feld')
+        supabase.from('rsi_results').insert(basisRow).then(({ error: err2 }) => {
+          if (err2) {
+            logger.warn('Supabase insert fehlgeschlagen:', err2.message)
+            setSupabaseStatus('offline')
+          } else {
+            setSupabaseStatus('live')
+          }
+        })
+      } else if (error) {
         logger.warn('Supabase insert fehlgeschlagen:', error.message)
         setSupabaseStatus('offline')
       } else {
@@ -1056,7 +1085,7 @@ export function getGesamtScore(username: string): number {
 
 // Generische Best-of-Ranking-Logik: gruppiert nach Username, nimmt pro Szene
 // das beste Resultat und summiert. Wird von Gesamt/Thema/Kurs-Ranking geteilt.
-type RankingEntryAggregat = { username: string; score: number; szenen: number; besteProzent: number }
+export type RankingEntryAggregat = { username: string; score: number; szenen: number; besteProzent: number; bestandenSzenen: number }
 
 function buildRanking(results: SceneResult[]): RankingEntryAggregat[] {
   const userMap = new Map<string, SceneResult[]>()
@@ -1069,14 +1098,18 @@ function buildRanking(results: SceneResult[]): RankingEntryAggregat[] {
   const ranking: RankingEntryAggregat[] = []
   userMap.forEach((userResults, username) => {
     const byScene = new Map<string, SceneResult>()
+    // Bestanden zaehlt pro Szene, sobald IRGENDEIN Versuch das Kriterium
+    // erfuellt hat — nicht nur der punktbeste (v0.9.7).
+    const bestandenScenes = new Set<string>()
     userResults.forEach(r => {
       const existing = byScene.get(r.sceneId)
       if (!existing || r.punkte > existing.punkte) byScene.set(r.sceneId, r)
+      if (r.bestanden === true) bestandenScenes.add(r.sceneId)
     })
     const bests = Array.from(byScene.values())
     const score = bests.reduce((s, r) => s + r.punkte, 0)
     const avgProzent = bests.length > 0 ? Math.round(bests.reduce((s, r) => s + r.prozent, 0) / bests.length) : 0
-    ranking.push({ username, score, szenen: bests.length, besteProzent: avgProzent })
+    ranking.push({ username, score, szenen: bests.length, besteProzent: avgProzent, bestandenSzenen: bestandenScenes.size })
   })
 
   return ranking.sort((a, b) => b.score - a.score)

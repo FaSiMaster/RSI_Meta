@@ -5,6 +5,7 @@
 import { Camera, Info, Target } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { ml, type AppScene, type AppTopic, type AppDeficit } from '../data/appData'
+import { kriteriumFuerSzene } from '../data/bestandenKriterium'
 
 interface Props {
   scene: AppScene
@@ -32,6 +33,7 @@ export default function TrainingEinstieg({ scene, topic, deficits, onStart, onBa
 
   const pflichtCount  = deficits.filter(d => d.isPflicht).length
   const hatBooster    = deficits.some(d => d.isBooster)
+  const kriterium     = kriteriumFuerSzene(scene)
 
   const kontextLabel = scene.kontext === 'io' ? t('einstieg.kontext_io') : t('einstieg.kontext_ao')
   const kontextColor = scene.kontext === 'io' ? 'var(--zh-blau)' : 'var(--zh-gruen)'
@@ -291,6 +293,10 @@ export default function TrainingEinstieg({ scene, topic, deficits, onStart, onBa
           }}>
             {t('einstieg.defizit_info', { count: deficits.length, pflicht: pflichtCount })}
             {hatBooster && ` ${t('einstieg.booster_info')}`}
+            {' '}
+            {kriterium.minProzent != null
+              ? t('einstieg.bestanden_info', { pflicht: pflichtCount, prozent: kriterium.minProzent })
+              : t('einstieg.bestanden_info_nur_pflicht', { pflicht: pflichtCount })}
           </p>
         </div>
       )}

@@ -11,6 +11,7 @@ import {
 } from './data/appData'
 import { MAX_PUNKTE_PRO_DEFIZIT, calcScoreFromChoices } from './data/scoreCalc'
 import { KATEGORIE_PUNKTE } from './data/scoringEngine'
+import { istBestanden, kriteriumFuerSzene } from './data/bestandenKriterium'
 import type { AppTopic, AppScene, AppDeficit, FoundDeficit, DefizitResult, SceneResult } from './data/appData'
 
 import { initSupabaseData, resetCache as resetSupabaseCache } from './data/supabaseSync'
@@ -312,6 +313,12 @@ export default function App() {
     const prozent = maxPunkte > 0 ? Math.round((sceneScore / maxPunkte) * 100) : 0
     const versuch = getVersuchAnzahl(username, currentScene.id) + 1
 
+    // Bestanden-Kriterium (v0.9.7): alle Pflichtdefizite + Prozent-Schwelle
+    const foundIdSet = new Set(foundDeficits.map(f => f.deficitId))
+    const pflichtTotal = sceneDeficits.filter(d => d.isPflicht).length
+    const pflichtGefunden = sceneDeficits.filter(d => d.isPflicht && foundIdSet.has(d.id)).length
+    const bestanden = istBestanden(prozent, pflichtGefunden, pflichtTotal, kriteriumFuerSzene(currentScene))
+
     // SceneResult speichern
     const result: SceneResult = {
       id:             `sr-${Date.now()}`,
@@ -328,6 +335,9 @@ export default function App() {
       dauerSekunden,
       kursId:         kursId ?? null,
       defizitResults: defizitResults,
+      pflichtGefunden,
+      pflichtTotal,
+      bestanden,
     }
     saveSceneResult(result)
     setLastSceneResult(result)

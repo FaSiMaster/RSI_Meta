@@ -5,7 +5,7 @@
 import { useTranslation } from 'react-i18next'
 import { ArrowLeft, MapPin, Play, Plus, Star, X } from 'lucide-react'
 import { motion } from 'motion/react'
-import { getScenes, getAllScenes, getDeficits, getBestResult, getVersuchAnzahl, berechneSterne, ml, saveScene, type AppTopic, type AppScene } from '../data/appData'
+import { getScenes, getAllScenes, getDeficits, getBestResult, getVersuchAnzahl, getSceneResultsForUser, berechneSterne, ml, saveScene, type AppTopic, type AppScene } from '../data/appData'
 import { generateSceneId } from '../data/idGenerator'
 import { useEffect, useState, useCallback } from 'react'
 
@@ -277,7 +277,7 @@ export default function SceneList({ topic, username, isAdmin = false, onBack, on
   const lang = i18n.language
   const [scenes, setScenes] = useState<AppScene[]>([])
   const [deficitCounts, setDeficitCounts] = useState<Record<string, number>>({})
-  const [sceneStats, setSceneStats] = useState<Record<string, { sterne: 0 | 1 | 2 | 3; versuche: number; prozent: number }>>({})
+  const [sceneStats, setSceneStats] = useState<Record<string, { sterne: 0 | 1 | 2 | 3; versuche: number; prozent: number; bestanden: boolean }>>({})
   const [showNeueSzeneModal, setShowNeueSzeneModal] = useState(false)
 
   // Szenen laden (auch nach Neuanlage)
@@ -285,7 +285,7 @@ export default function SceneList({ topic, username, isAdmin = false, onBack, on
     const sc = getScenes(topic.id)
     setScenes(sc)
     const counts: Record<string, number> = {}
-    const stats: Record<string, { sterne: 0 | 1 | 2 | 3; versuche: number; prozent: number }> = {}
+    const stats: Record<string, { sterne: 0 | 1 | 2 | 3; versuche: number; prozent: number; bestanden: boolean }> = {}
     sc.forEach(s => {
       counts[s.id] = getDeficits(s.id).length
       const best = getBestResult(username, s.id)
@@ -294,6 +294,8 @@ export default function SceneList({ topic, username, isAdmin = false, onBack, on
         sterne: best ? berechneSterne(best.prozent) : 0,
         versuche,
         prozent: best?.prozent ?? 0,
+        // Bestanden sobald irgendein Versuch das Kriterium erfuellt hat (v0.9.7)
+        bestanden: getSceneResultsForUser(username, s.id).some(r => r.bestanden === true),
       }
     })
     setDeficitCounts(counts)
@@ -372,9 +374,14 @@ export default function SceneList({ topic, username, isAdmin = false, onBack, on
                     <span style={{ padding: '2px 7px', borderRadius: '4px', fontSize: '9px', fontWeight: 700, background: scene.kontext === 'io' ? 'rgba(0,158,224,0.8)' : 'rgba(26,127,31,0.8)', color: 'white', textTransform: 'uppercase', letterSpacing: '0.1em' }}>
                       {scene.kontext}
                     </span>
-                    {/* Sterne rechts */}
+                    {/* Bestanden-Badge + Sterne rechts */}
+                    {stats?.bestanden && (
+                      <span style={{ marginLeft: 'auto', padding: '2px 8px', borderRadius: '4px', fontSize: '9px', fontWeight: 800, background: 'rgba(26,127,31,0.85)', color: 'white', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
+                        {t('scenes.bestanden_badge')}
+                      </span>
+                    )}
                     {stats && stats.sterne > 0 && (
-                      <div style={{ marginLeft: 'auto' }}>
+                      <div style={{ marginLeft: stats.bestanden ? '0' : 'auto' }}>
                         <SterneAnzeige sterne={stats.sterne} size={16} />
                       </div>
                     )}

@@ -1,9 +1,10 @@
 // SzenenAbschluss – Abschluss-Screen nach Szenenende
 // Zeigt Punkte, Sterne, Versuche, Best-of, Zeitstatistik
 
-import { Trophy, CheckCircle2, XCircle, ArrowLeft, ChevronRight, BarChart3, Clock, TrendingUp } from 'lucide-react'
+import { Trophy, CheckCircle2, XCircle, ArrowLeft, ChevronRight, BarChart3, Clock, TrendingUp, Award } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { ml, getBestResult, getVersuchAnzahl, berechneSterne, type AppScene, type AppDeficit, type FoundDeficit, type SceneResult } from '../data/appData'
+import { istBestanden, kriteriumFuerSzene } from '../data/bestandenKriterium'
 import { SterneAnzeige } from './SceneList'
 
 interface Props {
@@ -37,6 +38,15 @@ export default function SzenenAbschluss({
   const foundMap = new Map(foundDeficits.map(f => [f.deficitId, f]))
   const foundCount = foundDeficits.length
   const allFound = foundCount === deficits.length
+
+  // Bestanden-Kriterium (v0.9.7): live aus den Props berechnet, damit auch
+  // ohne gespeichertes Feld (Legacy-Resultate) der korrekte Stand erscheint.
+  const kriterium = kriteriumFuerSzene(scene)
+  const pflichtTotal = deficits.filter(d => d.isPflicht).length
+  const pflichtGefunden = deficits.filter(d => d.isPflicht && foundMap.has(d.id)).length
+  const prozentAktuell = sceneResult?.prozent ?? 0
+  const bestanden = istBestanden(prozentAktuell, pflichtGefunden, pflichtTotal, kriterium)
+  const pflichtFehlt = kriterium.allePflicht ? pflichtTotal - pflichtGefunden : 0
 
   // Review R-15: Standort-Vermerk für verpasste Defizite — wo wäre es
   // verortet gewesen? (Perspektiven-Ids auf Standort-Labels auflösen)
@@ -98,6 +108,29 @@ export default function SzenenAbschluss({
               <span style={{ fontSize: '12px', fontWeight: 700, color: 'var(--zh-gruen)' }}>{t('completion.neuer_bestwert')}</span>
             </div>
           )}
+
+          {/* Bestanden-Badge (v0.9.7) */}
+          <div style={{ marginTop: '10px' }}>
+            <div style={{
+              display: 'inline-flex', alignItems: 'center', gap: '6px',
+              padding: '6px 16px', borderRadius: '14px',
+              background: bestanden ? 'rgba(26,127,31,0.12)' : 'rgba(212,0,83,0.08)',
+              border: `1px solid ${bestanden ? 'rgba(26,127,31,0.4)' : 'rgba(212,0,83,0.3)'}`,
+            }}>
+              <Award size={14} style={{ color: bestanden ? 'var(--zh-gruen)' : 'var(--zh-rot)' }} />
+              <span style={{ fontSize: '13px', fontWeight: 800, color: bestanden ? 'var(--zh-gruen)' : 'var(--zh-rot)' }}>
+                {bestanden ? t('completion.bestanden') : t('completion.nicht_bestanden')}
+              </span>
+            </div>
+            {!bestanden && (
+              <p style={{ fontSize: '11px', color: 'var(--zh-color-text-muted)', marginTop: '5px' }}>
+                {pflichtFehlt > 0 && t('completion.bestanden_grund_pflicht', { fehlt: pflichtFehlt })}
+                {pflichtFehlt > 0 && kriterium.minProzent != null && prozentAktuell < kriterium.minProzent && ' · '}
+                {kriterium.minProzent != null && prozentAktuell < kriterium.minProzent &&
+                  t('completion.bestanden_grund_prozent', { prozent: prozentAktuell, min: kriterium.minProzent })}
+              </p>
+            )}
+          </div>
         </div>
 
         {/* Score-Cards */}

@@ -13,6 +13,41 @@ Versionierung nach [Semantic Versioning](https://semver.org/lang/de/).
 
 ---
 
+## [0.9.7] — 2026-07-29 — Bestanden-Kriterium + eigener Name im Live-Ranking
+
+### Hinzugefügt
+
+- **Bestanden-Kriterium (Review R-09, Entscheid Fachverantwortung):** Eine
+  Szene gilt als bestanden, wenn alle Pflichtdefizite gefunden sind UND
+  mindestens 60 % der Punkte erreicht wurden. Neues Modul
+  `src/data/bestandenKriterium.ts` (pure Functions, 11 Tests), app-weiter
+  Default mit optionalem Szenen-Override (`scene.bestandenKriterium`,
+  minProzent null = keine Prozent-Schwelle). Sterne und Punkteberechnung
+  unverändert — Bestanden läuft parallel; `scoringEngine.ts` unberührt.
+- **Sichtbarkeit:** Einstieg nennt das Kriterium; Abschluss-Screen zeigt
+  Badge Bestanden/Nicht bestanden mit Begründung (fehlende Pflichtdefizite,
+  Prozent); SceneList-Karte trägt ein Bestanden-Badge, sobald irgendein
+  Versuch bestanden war; Rangliste neu mit Bestanden-Spalte (Gesamt/Kurs/
+  Thema: «x/y Szenen», Szene: Haken pro Zeile). SceneResult speichert
+  `pflichtGefunden`/`pflichtTotal`/`bestanden`.
+- **Admin:** SzeneModal mit Override-Feldern (Checkbox «alle Pflicht»,
+  Mindest-Prozent, leer = keine Schwelle).
+- **Supabase-Migration nötig für die Ranking-Spalte:**
+  `alter table rsi_results add column if not exists bestanden boolean;`
+  (Skript: `RSI_Meta_Review/migration_bestanden_2026-07-29.sql`). Ohne
+  Migration fällt der Client beim Insert automatisch auf das alte
+  Zeilenformat zurück — kein Datenverlust.
+
+### Behoben
+
+- **Eigene Zeile im Live-Ranking war nie markiert:** Supabase speichert
+  Usernamen als SHA-256-Hash (DSGVO), der Klarname-Vergleich griff dort
+  nie. Neu hasht der Client den eigenen Namen (`hashUsername` exportiert)
+  und zeigt NUR in der eigenen Zeile den Klarnamen samt «(Du)»-Markierung
+  und blauer Hervorhebung — alle anderen bleiben pseudonymisiert.
+
+---
+
 ## [0.9.6] — 2026-07-29 — Review-Umsetzung SZ_2026_002 (Code-Teil)
 
 Umsetzung der Code-Befunde aus dem Multi-Agent-Review «Querungsstellen auf

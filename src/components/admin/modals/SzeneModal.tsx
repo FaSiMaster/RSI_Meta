@@ -181,6 +181,47 @@ export default function SzeneModal({ open, initial, isNew, onClose, onSave, onOp
           </div>
         </Section>
 
+        {/* Bestanden-Kriterium (v0.9.7): optionaler Szenen-Override des
+            app-weiten Defaults (alle Pflichtdefizite + 60 %). */}
+        <Section label={t('admin.bestanden_titel')}>
+          <div style={{ display: 'flex', gap: '16px', alignItems: 'center', flexWrap: 'wrap' }}>
+            <label style={{ display: 'flex', alignItems: 'center', gap: '7px', fontSize: '13px', color: 'var(--zh-color-text)', cursor: 'pointer' }}>
+              <input
+                type="checkbox"
+                checked={draft.bestandenKriterium?.allePflicht ?? true}
+                onChange={e => setDraft(prev => prev ? {
+                  ...prev,
+                  bestandenKriterium: { ...prev.bestandenKriterium, allePflicht: e.target.checked },
+                } : prev)}
+              />
+              {t('admin.bestanden_pflicht')}
+            </label>
+            <label style={{ display: 'flex', alignItems: 'center', gap: '7px', fontSize: '13px', color: 'var(--zh-color-text)' }}>
+              {t('admin.bestanden_prozent')}
+              <input
+                type="number"
+                min={0}
+                max={100}
+                value={draft.bestandenKriterium?.minProzent === null ? '' : (draft.bestandenKriterium?.minProzent ?? 60)}
+                placeholder="—"
+                onChange={e => {
+                  const raw = e.target.value
+                  const val = raw === '' ? null : Math.max(0, Math.min(100, Number(raw)))
+                  setDraft(prev => prev ? {
+                    ...prev,
+                    bestandenKriterium: { ...prev.bestandenKriterium, minProzent: val },
+                  } : prev)
+                }}
+                style={{ width: '70px', padding: '6px 8px', borderRadius: '6px', border: '1px solid var(--zh-color-border)', background: 'var(--zh-color-bg-secondary)', color: 'var(--zh-color-text)', fontSize: '13px', fontFamily: 'var(--zh-font)' }}
+              />
+              %
+            </label>
+          </div>
+          <p style={{ fontSize: '11px', color: 'var(--zh-color-text-disabled)', marginTop: '6px' }}>
+            {t('admin.bestanden_hinweis')}
+          </p>
+        </Section>
+
         <Section label={t('admin.merkmale_label')}>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
             {(draft.strassenmerkmale ?? []).length === 0 && (

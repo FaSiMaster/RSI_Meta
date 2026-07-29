@@ -5,7 +5,7 @@
 import { Trophy, ArrowLeft, Clock, Loader2 } from 'lucide-react'
 import {
   getGesamtRanking, getThemaRanking, getSzeneRanking, getKursRanking,
-  getTopics, getAllScenes, getKurse, berechneSterne, ml,
+  getTopics, getAllScenes, getKurse, berechneSterne, ml, hashUsername,
   type AppTopic, type AppScene, type SceneResult, type Kurs,
 } from '../data/appData'
 import { useEffect, useState, useRef } from 'react'
@@ -23,32 +23,40 @@ type RankingTab = 'gesamt' | 'kurs' | 'thema' | 'szene'
 
 // ── Hilfsfunktionen: Supabase-Resultate aggregieren ─────────────────────────
 
-function aggregateGesamt(results: SupabaseResult[]): { username: string; score: number; szenen: number; besteProzent: number }[] {
+type Aggregat = { username: string; score: number; szenen: number; besteProzent: number; bestandenSzenen: number }
+
+function aggregateGesamt(results: SupabaseResult[]): Aggregat[] {
   const userMap = new Map<string, Map<string, SupabaseResult>>()
+  // Bestanden zaehlt pro Szene, sobald irgendein Versuch bestanden war (v0.9.7)
+  const bestandenMap = new Map<string, Set<string>>()
   results.forEach(r => {
     if (!userMap.has(r.username)) userMap.set(r.username, new Map())
     const sceneMap = userMap.get(r.username)!
     const existing = sceneMap.get(r.scene_id)
     if (!existing || r.punkte > existing.punkte) sceneMap.set(r.scene_id, r)
+    if (r.bestanden === true) {
+      if (!bestandenMap.has(r.username)) bestandenMap.set(r.username, new Set())
+      bestandenMap.get(r.username)!.add(r.scene_id)
+    }
   })
-  const ranking: { username: string; score: number; szenen: number; besteProzent: number }[] = []
+  const ranking: Aggregat[] = []
   userMap.forEach((sceneMap, username) => {
     const bests = Array.from(sceneMap.values())
     const score = bests.reduce((s, r) => s + r.punkte, 0)
     const avgP = bests.length > 0 ? Math.round(bests.reduce((s, r) => s + r.prozent, 0) / bests.length) : 0
-    ranking.push({ username, score, szenen: bests.length, besteProzent: avgP })
+    ranking.push({ username, score, szenen: bests.length, besteProzent: avgP, bestandenSzenen: bestandenMap.get(username)?.size ?? 0 })
   })
   return ranking.sort((a, b) => b.score - a.score)
 }
 
-function aggregateByKurs(results: SupabaseResult[], kursCode: string): { username: string; score: number; szenen: number; besteProzent: number }[] {
+function aggregateByKurs(results: SupabaseResult[], kursCode: string): Aggregat[] {
   // Case-insensitiver Match + trim, weil Zugangscode auch manuell eingegeben
   // wird (Copy-Paste, Tippfehler bei Gross-/Kleinschreibung).
   const norm = kursCode.trim().toLowerCase()
   return aggregateGesamt(results.filter(r => (r.kurs_code ?? '').trim().toLowerCase() === norm))
 }
 
-function aggregateBySceneIds(results: SupabaseResult[], sceneIds: Set<string>): { username: string; score: number; szenen: number; besteProzent: number }[] {
+function aggregateBySceneIds(results: SupabaseResult[], sceneIds: Set<string>): Aggregat[] {
   return aggregateGesamt(results.filter(r => sceneIds.has(r.scene_id)))
 }
 
@@ -71,6 +79,7 @@ function szeneResults(results: SupabaseResult[], sceneId: string): SceneResult[]
       dauerSekunden: r.dauer_sekunden ?? 0,
       kursId: r.kurs_code,
       defizitResults: [],
+      bestanden: r.bestanden ?? undefined,
     }))
 }
 
@@ -97,6 +106,25 @@ export default function RankingView({ username, onBack }: Props) {
   const lang = i18n.language
 
   const [tab, setTab] = useState<RankingTab>('gesamt')
+
+  // Eigene Zeile im Live-Ranking erkennen (v0.9.7): Supabase speichert nur
+  // den Username-Hash — der Klarname-Vergleich griff dort nie. Der eigene
+  // Name wird clientseitig gleich gehasht; nur die eigene Zeile zeigt den
+  // Klarnamen, alle anderen bleiben pseudonymisiert.
+  const [ownHash, setOwnHash] = useState<string | null>(null)
+  useEffect(() => {
+    let cancelled = false
+    hashUsername(username).then(h => { if (!cancelled) setOwnHash(h) }).catch(() => {})
+    return () => { cancelled = true }
+  }, [username])
+
+  function isOwnRow(rowUsername: string): boolean {
+    return rowUsername === username || (ownHash != null && rowUsername === ownHash)
+  }
+  function displayName(rowUsername: string): string {
+    return isOwnRow(rowUsername) ? username : rowUsername
+  }
+
   const [topics, setTopics] = useState<AppTopic[]>([])
   const [scenes, setScenes] = useState<AppScene[]>([])
   const [selectedTopicId, setSelectedTopicId] = useState<string>('')
@@ -112,9 +140,9 @@ export default function RankingView({ username, onBack }: Props) {
   const channelRef = useRef<RealtimeChannel | null>(null)
 
   // Lokale Fallback-Daten
-  const [gesamtLocal, setGesamtLocal] = useState<{ username: string; score: number; szenen: number; besteProzent: number }[]>([])
-  const [kursLocal, setKursLocal] = useState<{ username: string; score: number; szenen: number; besteProzent: number }[]>([])
-  const [themaLocal, setThemaLocal] = useState<{ username: string; score: number; szenen: number; besteProzent: number }[]>([])
+  const [gesamtLocal, setGesamtLocal] = useState<Aggregat[]>([])
+  const [kursLocal, setKursLocal] = useState<Aggregat[]>([])
+  const [themaLocal, setThemaLocal] = useState<Aggregat[]>([])
   const [szeneLocal, setSzeneLocal] = useState<SceneResult[]>([])
 
   // Stammdaten + lokale Ranking-Daten bei jedem Mount laden. Zusaetzlich
@@ -261,13 +289,13 @@ export default function RankingView({ username, onBack }: Props) {
 
   // ── Tabellen-Renderer ──
 
-  function renderGesamtTable(data: { username: string; score: number; szenen: number; besteProzent: number }[], emptyMsg: string) {
+  function renderGesamtTable(data: Aggregat[], emptyMsg: string) {
     return (
       <div style={{ borderRadius: 'var(--zh-radius-card)', border: '1px solid var(--zh-color-border)', background: 'var(--zh-color-surface)', overflow: 'hidden', boxShadow: 'var(--zh-shadow-sm)' }}>
         <table style={{ width: '100%', borderCollapse: 'collapse' }}>
           <thead>
             <tr style={{ borderBottom: '1px solid var(--zh-color-border)', background: 'var(--zh-color-bg-secondary)' }}>
-              {['Rang', 'Name', 'Score', 'Szenen', 'Ø %'].map(h => (
+              {['Rang', 'Name', 'Score', 'Szenen', 'Bestanden', 'Ø %'].map(h => (
                 <th key={h} style={{ padding: '10px 16px', fontSize: '10px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.12em', color: 'var(--zh-color-text-muted)', textAlign: h === 'Name' ? 'left' : 'right' }}>
                   {h}
                 </th>
@@ -276,21 +304,24 @@ export default function RankingView({ username, onBack }: Props) {
           </thead>
           <tbody>
             {data.map((entry, idx) => {
-              const isOwn = entry.username === username
+              const isOwn = isOwnRow(entry.username)
               return (
                 <tr key={entry.username} style={{ borderBottom: '1px solid var(--zh-color-border)', background: isOwn ? 'rgba(0,118,189,0.08)' : 'transparent' }}>
                   <td style={{ padding: '12px 16px', fontSize: '14px', color: 'var(--zh-color-text-muted)', textAlign: 'right' }}><RangCell idx={idx} /></td>
                   <td style={{ padding: '12px 16px', fontSize: '14px', fontWeight: isOwn ? 700 : 500, color: isOwn ? 'var(--zh-blau)' : 'var(--zh-color-text)', textAlign: 'left' }}>
-                    {entry.username}{isOwn && <span style={{ marginLeft: '6px', fontSize: '10px', fontWeight: 700, color: 'var(--zh-blau)', opacity: 0.7 }}>(Du)</span>}
+                    {displayName(entry.username)}{isOwn && <span style={{ marginLeft: '6px', fontSize: '10px', fontWeight: 700, color: 'var(--zh-blau)', opacity: 0.7 }}>(Du)</span>}
                   </td>
                   <td style={{ padding: '12px 16px', fontSize: '15px', fontWeight: 800, color: 'var(--zh-blau)', textAlign: 'right' }}>{entry.score.toLocaleString('de-CH')}</td>
                   <td style={{ padding: '12px 16px', fontSize: '13px', color: 'var(--zh-color-text-muted)', textAlign: 'right' }}>{entry.szenen}</td>
+                  <td style={{ padding: '12px 16px', fontSize: '13px', fontWeight: 700, color: entry.bestandenSzenen > 0 ? 'var(--zh-gruen)' : 'var(--zh-color-text-disabled)', textAlign: 'right' }}>
+                    {entry.bestandenSzenen}/{entry.szenen}
+                  </td>
                   <td style={{ padding: '12px 16px', fontSize: '13px', fontWeight: 700, color: entry.besteProzent >= 90 ? 'var(--zh-gruen)' : entry.besteProzent >= 60 ? 'var(--zh-orange)' : 'var(--zh-color-text-muted)', textAlign: 'right' }}>{entry.besteProzent}%</td>
                 </tr>
               )
             })}
             {data.length === 0 && (
-              <tr><td colSpan={5} style={{ padding: '32px', textAlign: 'center', color: 'var(--zh-color-text-disabled)', fontSize: '13px' }}>{emptyMsg}</td></tr>
+              <tr><td colSpan={6} style={{ padding: '32px', textAlign: 'center', color: 'var(--zh-color-text-disabled)', fontSize: '13px' }}>{emptyMsg}</td></tr>
             )}
           </tbody>
         </table>
@@ -410,20 +441,25 @@ export default function RankingView({ username, onBack }: Props) {
               <table style={{ width: '100%', borderCollapse: 'collapse' }}>
                 <thead>
                   <tr style={{ borderBottom: '1px solid var(--zh-color-border)', background: 'var(--zh-color-bg-secondary)' }}>
-                    {['Rang', 'Name', 'Punkte', '%', 'Dauer', 'Sterne'].map(h => (
+                    {['Rang', 'Name', 'Punkte', '%', 'Bestanden', 'Dauer', 'Sterne'].map(h => (
                       <th key={h} style={{ padding: '10px 12px', fontSize: '10px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.1em', color: 'var(--zh-color-text-muted)', textAlign: h === 'Name' ? 'left' : 'right' }}>{h}</th>
                     ))}
                   </tr>
                 </thead>
                 <tbody>
                   {szeneData.map((r, idx) => {
-                    const isOwn = r.username === username
+                    const isOwn = isOwnRow(r.username)
                     return (
                       <tr key={r.id} style={{ borderBottom: '1px solid var(--zh-color-border)', background: isOwn ? 'rgba(0,118,189,0.08)' : 'transparent' }}>
                         <td style={{ padding: '10px 12px', textAlign: 'right' }}><RangCell idx={idx} /></td>
-                        <td style={{ padding: '10px 12px', fontWeight: isOwn ? 700 : 500, color: isOwn ? 'var(--zh-blau)' : 'var(--zh-color-text)', textAlign: 'left', fontSize: '13px' }}>{r.username}</td>
+                        <td style={{ padding: '10px 12px', fontWeight: isOwn ? 700 : 500, color: isOwn ? 'var(--zh-blau)' : 'var(--zh-color-text)', textAlign: 'left', fontSize: '13px' }}>
+                          {displayName(r.username)}{isOwn && <span style={{ marginLeft: '6px', fontSize: '10px', fontWeight: 700, color: 'var(--zh-blau)', opacity: 0.7 }}>(Du)</span>}
+                        </td>
                         <td style={{ padding: '10px 12px', fontWeight: 800, color: 'var(--zh-blau)', textAlign: 'right', fontSize: '14px' }}>{r.punkte.toLocaleString('de-CH')}</td>
                         <td style={{ padding: '10px 12px', fontWeight: 700, color: r.prozent >= 90 ? 'var(--zh-gruen)' : r.prozent >= 60 ? 'var(--zh-orange)' : 'var(--zh-color-text-muted)', textAlign: 'right' }}>{r.prozent}%</td>
+                        <td style={{ padding: '10px 12px', fontWeight: 800, textAlign: 'right', fontSize: '12px', color: r.bestanden === true ? 'var(--zh-gruen)' : r.bestanden === false ? 'var(--zh-rot)' : 'var(--zh-color-text-disabled)' }}>
+                          {r.bestanden === true ? '✓' : r.bestanden === false ? '✗' : '—'}
+                        </td>
                         <td style={{ padding: '10px 12px', color: 'var(--zh-color-text-muted)', textAlign: 'right', fontSize: '12px' }}>
                           <Clock size={11} style={{ display: 'inline', verticalAlign: '-1px', marginRight: '3px' }} />
                           {formatDauer(r.dauerSekunden)}
@@ -435,7 +471,7 @@ export default function RankingView({ username, onBack }: Props) {
                     )
                   })}
                   {szeneData.length === 0 && (
-                    <tr><td colSpan={6} style={{ padding: '32px', textAlign: 'center', color: 'var(--zh-color-text-disabled)', fontSize: '13px' }}>Keine Resultate für diese Szene.</td></tr>
+                    <tr><td colSpan={7} style={{ padding: '32px', textAlign: 'center', color: 'var(--zh-color-text-disabled)', fontSize: '13px' }}>Keine Resultate für diese Szene.</td></tr>
                   )}
                 </tbody>
               </table>
