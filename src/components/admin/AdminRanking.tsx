@@ -3,11 +3,16 @@
 // aller Einträge eines Users, eines Kurses oder komplettes Reset
 
 import { useEffect, useState } from 'react'
-import { Trash2, AlertTriangle, RefreshCw, Users, Search } from 'lucide-react'
+import { Trash2, AlertTriangle, RefreshCw, Users, Search, FileDown } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { supabase, setSupabaseStatus, type SupabaseResult } from '../../lib/supabase'
-import { getAllSceneResults } from '../../data/appData'
+import { getAllSceneResults, getAllScenes, getDeficits, ml, type DefizitResult } from '../../data/appData'
 import { deleteResultsSupabase } from '../../data/supabaseSync'
+
+/** Serverseitige Usernamen sind SHA-256-Hashes — fuer die Anzeige gekuerzt. */
+function kurzName(name: string): string {
+  return /^[0-9a-f]{64}$/i.test(name) ? `${name.slice(0, 10)}…` : name
+}
 
 // Lokaler Fallback-Typ (passt zu SceneResult-Struktur)
 interface LocalResult {
@@ -22,7 +27,7 @@ interface LocalResult {
 }
 
 export default function AdminRanking() {
-  const { t } = useTranslation()
+  const { t, i18n } = useTranslation()
   const [results, setResults] = useState<SupabaseResult[]>([])
   const [loading, setLoading] = useState(true)
   const [isOnline, setIsOnline] = useState(false)
@@ -119,6 +124,79 @@ export default function AdminRanking() {
       showFeedback(`Alle Einträge gelöscht (${n}).`)
     } catch (err) {
       showFeedback(`Fehler: ${err instanceof Error ? err.message : err}`)
+    }
+  }
+
+  // ── PDF-Export (v0.11.0) ──────────────────────────────────────────────────
+  // pdfmake wird erst beim Klick nachgeladen (eigener Chunk, rund 1 MB).
+  const [pdfBusy, setPdfBusy] = useState<string | null>(null)
+
+  const szenenNamen = new Map(getAllScenes().map(s => [s.id, ml(s.nameI18n, i18n.language)]))
+
+  async function exportKurs(kursCode: string) {
+    setPdfBusy(kursCode)
+    try {
+      const { exportKursPdf } = await import('../../utils/pdfExport')
+      const zeilen = results
+        .filter(r => r.kurs_code === kursCode)
+        .map(r => ({
+          teilnehmer:    kurzName(r.username),
+          szene:         szenenNamen.get(r.scene_id) ?? r.scene_id,
+          datumIso:      r.created_at,
+          punkte:        r.punkte,
+          maxPunkte:     r.detail?.maxPunkte ?? null,
+          prozent:       r.prozent,
+          dauerSekunden: r.dauer_sekunden,
+          bestanden:     r.bestanden ?? null,
+        }))
+      await exportKursPdf({ kursName: kursCode, zeilen, anonymisiert: isOnline }, t, i18n.language)
+    } catch (err) {
+      showFeedback(`${t('bericht.export_fehler')} ${err instanceof Error ? err.message : ''}`)
+    } finally {
+      setPdfBusy(null)
+    }
+  }
+
+  /**
+   * Einzelbericht aus einer Serverzeile. Die Befundliste kann nur gefuellt
+   * werden, wenn die Zeile die `detail`-Spalte hat (ab v0.11.0 plus Migration).
+   * Aeltere Zeilen ergeben einen Bericht mit Kopfdaten und Hinweis.
+   */
+  async function exportEinzel(r: SupabaseResult) {
+    setPdfBusy(r.id)
+    try {
+      const [{ baueDefizitListe }, { exportTeilnehmerPdf }] = await Promise.all([
+        import('../../data/berichtModel'),
+        import('../../utils/pdfExport'),
+      ])
+      const scene = getAllScenes().find(s => s.id === r.scene_id) ?? null
+      const deficits = scene ? getDeficits(scene.id) : []
+      const detail = r.detail ?? null
+      const defizitResults = (detail?.defizitResults ?? []) as DefizitResult[]
+
+      await exportTeilnehmerPdf({
+        teilnehmer:        kurzName(r.username),
+        szene:             scene ? ml(scene.nameI18n, i18n.language) : r.scene_id,
+        szeneBeschreibung: scene ? ml(scene.beschreibungI18n, i18n.language) : '',
+        thema:             null,
+        kurs:              r.kurs_code,
+        datumIso:          r.created_at,
+        dauerSekunden:     r.dauer_sekunden ?? 0,
+        versuch:           detail?.versuch ?? 1,
+        punkte:            r.punkte,
+        maxPunkte:         detail?.maxPunkte ?? 0,
+        prozent:           r.prozent,
+        bestanden:         r.bestanden ?? null,
+        gefunden:          detail?.gefunden ?? defizitResults.length,
+        total:             detail?.total ?? deficits.length,
+        pflichtGefunden:   detail?.pflichtGefunden ?? null,
+        pflichtTotal:      detail?.pflichtTotal ?? null,
+        defizite:          detail ? baueDefizitListe(deficits, defizitResults, i18n.language) : [],
+      }, t, i18n.language)
+    } catch (err) {
+      showFeedback(`${t('bericht.export_fehler')} ${err instanceof Error ? err.message : ''}`)
+    } finally {
+      setPdfBusy(null)
     }
   }
 
@@ -250,6 +328,14 @@ export default function AdminRanking() {
                   <span style={{ fontWeight: 600, color: 'var(--zh-color-text)' }}>{k}</span>
                   <span style={{ color: 'var(--zh-color-text-disabled)' }}>({count})</span>
                   <button
+                    onClick={() => exportKurs(k)}
+                    disabled={pdfBusy === k}
+                    style={{ background: 'none', border: 'none', cursor: pdfBusy === k ? 'progress' : 'pointer', color: 'var(--zh-blau)', padding: '2px', display: 'flex', alignItems: 'center', opacity: pdfBusy === k ? 0.5 : 1 }}
+                    title={t('bericht.export_kurs_btn')}
+                  >
+                    <FileDown size={12} />
+                  </button>
+                  <button
                     onClick={() => setConfirmAction({ label: `Kurs "${k}" zurücksetzen (${count} Einträge)?`, action: () => deleteByKurs(k) })}
                     style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--zh-rot)', padding: '2px', display: 'flex', alignItems: 'center' }}
                     title={`Kurs ${k} zurücksetzen`}
@@ -308,13 +394,23 @@ export default function AdminRanking() {
                   <td style={{ padding: '7px 10px', color: 'var(--zh-color-text-muted)', textAlign: 'right' }}>{r.dauer_sekunden ? `${r.dauer_sekunden}s` : '—'}</td>
                   <td style={{ padding: '7px 10px', color: 'var(--zh-color-text-disabled)', textAlign: 'right', fontSize: '11px' }}>{new Date(r.created_at).toLocaleString('de-CH', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' })}</td>
                   <td style={{ padding: '7px 10px', textAlign: 'right' }}>
-                    <button
-                      onClick={() => setConfirmAction({ label: `Eintrag von "${r.username}" (${r.punkte} Pkt.) löschen?`, action: () => deleteEntry(r.id) })}
-                      style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--zh-color-text-disabled)', padding: '2px', display: 'flex', alignItems: 'center' }}
-                      title="Eintrag löschen"
-                    >
-                      <Trash2 size={12} />
-                    </button>
+                    <div style={{ display: 'flex', gap: '4px', justifyContent: 'flex-end' }}>
+                      <button
+                        onClick={() => exportEinzel(r)}
+                        disabled={pdfBusy === r.id}
+                        style={{ background: 'none', border: 'none', cursor: pdfBusy === r.id ? 'progress' : 'pointer', color: 'var(--zh-blau)', padding: '2px', display: 'flex', alignItems: 'center', opacity: pdfBusy === r.id ? 0.5 : 1 }}
+                        title={t('bericht.export_btn')}
+                      >
+                        <FileDown size={12} />
+                      </button>
+                      <button
+                        onClick={() => setConfirmAction({ label: `Eintrag von "${r.username}" (${r.punkte} Pkt.) löschen?`, action: () => deleteEntry(r.id) })}
+                        style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--zh-color-text-disabled)', padding: '2px', display: 'flex', alignItems: 'center' }}
+                        title="Eintrag löschen"
+                      >
+                        <Trash2 size={12} />
+                      </button>
+                    </div>
                   </td>
                 </tr>
               ))}

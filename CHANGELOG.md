@@ -13,6 +13,55 @@ Versionierung nach [Semantic Versioning](https://semver.org/lang/de/).
 
 ---
 
+## [0.11.0] — 2026-07-30 — PDF-Bericht (Roadmap Phase 5)
+
+### Hinzugefügt
+
+- **PDF-Export mit pdfmake.** Ein Dokument, zwei Teile: Auswertung (Kopfdaten,
+  Bestanden-Status, Punkte, Tabelle über alle Defizite) und Befundliste im
+  RSI-Format (Kriterium, Soll- und Ist-Beurteilung mit der vollen Kette
+  Wichtigkeit → Abweichung → Relevanz SD → Unfallschwere → Unfallrisiko,
+  Normbezug). Nicht gefundene Defizite erscheinen als solche.
+- **Drei Auslösepunkte:** Teilnehmer im Szenen-Abschluss, Admin je Kurs
+  (Übersicht aller Durchläufe, Querformat), Admin je Einzelresultat.
+- **Neues Modul `src/data/berichtModel.ts`** — reine Aufbereitung ohne
+  React- oder pdfmake-Bezug, 18 Tests. `src/utils/pdfExport.ts` setzt daraus
+  das Dokument (11 Tests).
+- **i18n vollständig**: neuer `bericht`-Block plus einheitlicher `dim`-Block
+  für die Dimensionen, alle vier Sprachen.
+
+### Geändert
+
+- **`DefizitResult` speichert neu die abgegebene Beurteilung**
+  (`userWichtigkeit`, `userAbweichung`, `userUnfallschwere`). Bisher wurde nur
+  festgehalten, *ob* eine Antwort stimmte — für einen Befundbericht braucht es
+  die Antwort selbst. Felder sind optional; ältere Durchläufe erscheinen im
+  Bericht mit dem Vermerk, dass die Beurteilung nicht gespeichert wurde.
+- **`rsi_results` bekommt eine JSONB-Spalte `detail`** mit den Detaildaten je
+  Durchlauf — ohne sie kann der Admin-Export nur Kopfzahlen ausgeben, weil die
+  Befunde bisher nur im localStorage des jeweiligen Geräts lagen. Migration:
+  `supabase/migrations/2026_07_30_rsi_results_detail.sql`. Der Insert fällt
+  ohne die Spalte auf die Basisfelder zurück, es geht also nichts verloren.
+  Enthält keine Personendaten; der Username bleibt ein SHA-256-Hash.
+
+### Technik
+
+- pdfmake wird **dynamisch nachgeladen** — eigener Chunk (1'009 kB, gzip
+  361 kB), der Haupt-Chunk bleibt unverändert. Erst der Klick auf «Bericht»
+  lädt ihn.
+- **pdfmake 0.3 registriert die mitgelieferten Schriften nicht mehr selbst.**
+  Ohne die explizite `addFonts`-Zuordnung bricht das Rendern beim ersten
+  fetten Text ab. Gegen den Node-Build von pdfmake verifiziert (gültiges PDF,
+  Tabellen mit colSpan, Umlaute).
+
+### Bekannte Einschränkung
+
+- Im Admin-Bereich stammen die Namen aus Supabase und liegen dort nur als
+  Hash vor. Der Kursbericht weist sie gekürzt aus und nennt das im Dokument.
+  Ein Bericht mit Klarnamen entsteht auf dem Gerät der teilnehmenden Person.
+
+---
+
 ## [0.10.2] — 2026-07-30 — Hinweis-Stufe 1 heisst neu «Standort-Hinweis»
 
 ### Geändert

@@ -15,7 +15,7 @@
 
 | Schicht | Technologie | Version |
 |---|---|---|
-| Version | **v0.10.2** (2026-07-30) | Standort-Hinweis (Begriff), Kurs-exklusive Themen, Punkte-Ökonomie |
+| Version | **v0.11.0** (2026-07-30) | PDF-Bericht (Phase 5), Standort-Hinweis, Kurs-exklusive Themen |
 | Framework | React + Vite + TypeScript | React 18, Vite 5, TS strict |
 | Animation | Framer Motion (motion/react) | v12 |
 | i18n | react-i18next | — |
@@ -269,8 +269,9 @@ interface AppDeficit {
 - [ ] 3D-Mangel-Marker setzen
 - [ ] Floating Panel für Kategorisierung
 
-### Phase 5 – Dokumentation & Export (geplant)
-- [ ] PDF-Export (RSI-konform, KZH CD)
+### Phase 5 – Dokumentation & Export (v0.11.0, teilweise)
+- [x] PDF-Export (RSI-konform, KZH CD) — Auswertung + Befundliste, pdfmake
+      lazy geladen; Teilnehmer, Admin je Kurs, Admin je Einzelresultat
 - [ ] Session-Review im Browser
 
 ### Phase 6 – Meta Horizon Store (geplant)

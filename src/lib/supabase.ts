@@ -63,4 +63,21 @@ export interface SupabaseResult {
   // v0.9.7: Bestanden-Kriterium. Spalte existiert erst nach der SQL-Migration
   // (alter table rsi_results add column bestanden boolean) — deshalb optional.
   bestanden?: boolean | null
+  // v0.11.0: Detaildaten für den PDF-Befundbericht (JSONB). Ebenfalls erst
+  // nach der Migration vorhanden; ältere Zeilen liefern null. Ohne dieses Feld
+  // kann der Admin-Export nur die Kopfzahlen ausgeben, keine Befundliste.
+  detail?: SupabaseResultDetail | null
+}
+
+// Inhalt der JSONB-Spalte `detail`. Bewusst nur Bewertungsdaten — der
+// Username bleibt auch hier ausserhalb (in `username` als SHA-256-Hash).
+export interface SupabaseResultDetail {
+  maxPunkte:       number
+  gefunden:        number
+  total:           number
+  versuch:         number
+  pflichtGefunden: number | null
+  pflichtTotal:    number | null
+  topicId:         string
+  defizitResults:  unknown[]
 }

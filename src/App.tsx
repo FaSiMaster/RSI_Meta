@@ -229,6 +229,10 @@ export default function App() {
       wichtigkeitKorrekt: payload.userWichtigkeit === ca.wichtigkeit,
       abweichungKorrekt:  payload.userAbweichung  === ca.abweichung,
       nacaKorrekt:        payload.userNacaSchwere === ca.unfallschwere,
+      // v0.11.0: abgegebene Beurteilung fuer den PDF-Befundbericht
+      userWichtigkeit:    payload.userWichtigkeit,
+      userAbweichung:     payload.userAbweichung,
+      userUnfallschwere:  payload.userNacaSchwere,
     }
 
     setFoundDeficits(prev => [...prev, entry])
@@ -291,6 +295,10 @@ export default function App() {
       wichtigkeitKorrekt: pendingWichtigkeit === ca.wichtigkeit,
       abweichungKorrekt:  pendingAbweichung === ca.abweichung,
       nacaKorrekt:        pendingNacaSchwere === ca.unfallschwere,
+      // v0.11.0: abgegebene Beurteilung fuer den PDF-Befundbericht
+      userWichtigkeit:    pendingWichtigkeit ?? undefined,
+      userAbweichung:     pendingAbweichung ?? undefined,
+      userUnfallschwere:  pendingNacaSchwere ?? undefined,
     }
 
     const updatedFound = [...foundDeficits, entry]
@@ -536,6 +544,8 @@ export default function App() {
                 onToTopics={() => { setCurrentScene(null); setView('topics') }}
                 onToRanking={() => setView('ranking')}
                 onNextScene={nextSceneExists ? handleNextScene : null}
+                themaName={currentTopic ? ml(currentTopic.nameI18n, i18n.language) : null}
+                kursName={kursName}
               />
             </motion.div>
           )}

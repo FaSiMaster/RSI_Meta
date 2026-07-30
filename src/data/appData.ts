@@ -172,6 +172,13 @@ export interface DefizitResult {
   wichtigkeitKorrekt:  boolean
   abweichungKorrekt:   boolean
   nacaKorrekt:         boolean
+  // v0.11.0 (PDF-Bericht): die tatsächlich abgegebene Beurteilung. Vorher wurde
+  // nur festgehalten, OB die Antwort stimmte — für einen Befundbericht im
+  // RSI-Format braucht es aber die Beurteilung selbst. Optional, weil alle vor
+  // v0.11.0 gespeicherten Resultate diese Felder nicht haben.
+  userWichtigkeit?:    RSIDimension
+  userAbweichung?:     RSIDimension
+  userUnfallschwere?:  NACADimension
 }
 
 // Gesamtergebnis eines Szenen-Durchlaufs
@@ -1058,15 +1065,31 @@ export function saveSceneResult(result: SceneResult): void {
       prozent:         result.prozent,
       dauer_sekunden:  result.dauerSekunden,
     }
-    // bestanden-Spalte (v0.9.7): existiert erst nach der SQL-Migration.
-    // Schlaegt der Insert wegen der fehlenden Spalte fehl, einmal ohne
-    // das Feld nachschreiben — sonst ginge das Resultat verloren.
+    // Optionale Spalten (`bestanden` seit v0.9.7, `detail` seit v0.11.0)
+    // existieren erst nach der jeweiligen SQL-Migration. Schlaegt der Insert
+    // wegen einer fehlenden Spalte fehl, wird einmal nur mit den Basisfeldern
+    // nachgeschrieben — sonst ginge das Resultat verloren.
+    //
+    // `detail` traegt alles, was der PDF-Bericht braucht und was in den
+    // Einzelspalten nicht abgebildet ist. Enthaelt ausschliesslich
+    // Bewertungsdaten, keine Personendaten (Username bleibt gehasht).
+    const detail = {
+      maxPunkte:       result.maxPunkte,
+      gefunden:        result.gefunden,
+      total:           result.total,
+      versuch:         result.versuch,
+      pflichtGefunden: result.pflichtGefunden ?? null,
+      pflichtTotal:    result.pflichtTotal ?? null,
+      topicId:         result.topicId,
+      defizitResults:  result.defizitResults,
+    }
     supabase.from('rsi_results').insert({
       ...basisRow,
       bestanden: result.bestanden ?? null,
+      detail,
     }).then(({ error }) => {
-      if (error && /bestanden/i.test(error.message)) {
-        logger.warn('rsi_results ohne bestanden-Spalte (Migration ausstehend) — Insert ohne Feld')
+      if (error && /bestanden|detail|column/i.test(error.message)) {
+        logger.warn('rsi_results ohne Zusatzspalte (Migration ausstehend) — Insert nur mit Basisfeldern:', error.message)
         supabase.from('rsi_results').insert(basisRow).then(({ error: err2 }) => {
           if (err2) {
             logger.warn('Supabase insert fehlgeschlagen:', err2.message)

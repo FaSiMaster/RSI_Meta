@@ -1,7 +1,8 @@
 // SzenenAbschluss – Abschluss-Screen nach Szenenende
 // Zeigt Punkte, Sterne, Versuche, Best-of, Zeitstatistik
 
-import { Trophy, CheckCircle2, XCircle, ArrowLeft, ChevronRight, BarChart3, Clock, TrendingUp, Award } from 'lucide-react'
+import { useState } from 'react'
+import { Trophy, CheckCircle2, XCircle, ArrowLeft, ChevronRight, BarChart3, Clock, TrendingUp, Award, FileDown } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { ml, getBestResult, getVersuchAnzahl, berechneSterne, type AppScene, type AppDeficit, type FoundDeficit, type SceneResult } from '../data/appData'
 import { istBestanden, kriteriumFuerSzene } from '../data/bestandenKriterium'
@@ -18,6 +19,9 @@ interface Props {
   onToTopics:     () => void
   onToRanking:    () => void
   onNextScene:    (() => void) | null
+  /** Nur für den PDF-Bericht (v0.11.0) — Kopfangaben, sonst nicht verwendet. */
+  themaName?:     string | null
+  kursName?:      string | null
 }
 
 function formatDauer(sekunden: number): string {
@@ -31,9 +35,30 @@ export default function SzenenAbschluss({
   scene, deficits, foundDeficits, sceneScore, totalScore,
   sceneResult, username,
   onToTopics, onToRanking, onNextScene,
+  themaName = null, kursName = null,
 }: Props) {
   const { i18n, t } = useTranslation()
   const lang = i18n.language
+
+  // PDF-Bericht (v0.11.0): pdfmake wird erst beim Klick geladen (eigener Chunk).
+  const [pdfStatus, setPdfStatus] = useState<'idle' | 'laeuft' | 'fehler'>('idle')
+
+  async function handlePdfExport() {
+    if (!sceneResult) return
+    setPdfStatus('laeuft')
+    try {
+      const [{ baueTeilnehmerBericht }, { exportTeilnehmerPdf }] = await Promise.all([
+        import('../data/berichtModel'),
+        import('../utils/pdfExport'),
+      ])
+      const bericht = baueTeilnehmerBericht(sceneResult, scene, deficits, lang, themaName, kursName)
+      await exportTeilnehmerPdf(bericht, t, lang)
+      setPdfStatus('idle')
+    } catch {
+      setPdfStatus('fehler')
+      setTimeout(() => setPdfStatus('idle'), 4000)
+    }
+  }
 
   const foundMap = new Map(foundDeficits.map(f => [f.deficitId, f]))
   const foundCount = foundDeficits.length
@@ -302,6 +327,29 @@ export default function SzenenAbschluss({
           >
             <BarChart3 size={14} /> {t('nav.ranking')}
           </button>
+          {sceneResult && (
+            <button
+              onClick={handlePdfExport}
+              disabled={pdfStatus === 'laeuft'}
+              title={t('bericht.export_btn')}
+              style={{
+                display: 'flex', alignItems: 'center', gap: '6px',
+                padding: '10px 18px', borderRadius: '8px',
+                border: '1px solid var(--zh-color-border)',
+                background: 'var(--zh-color-surface)',
+                color: pdfStatus === 'fehler' ? 'var(--zh-rot)' : 'var(--zh-color-text-muted)',
+                fontSize: '13px', fontWeight: 600,
+                cursor: pdfStatus === 'laeuft' ? 'progress' : 'pointer',
+                opacity: pdfStatus === 'laeuft' ? 0.6 : 1,
+                fontFamily: 'var(--zh-font)',
+              }}
+            >
+              <FileDown size={14} />
+              {pdfStatus === 'laeuft' ? t('bericht.export_laeuft')
+                : pdfStatus === 'fehler' ? t('bericht.export_fehler')
+                : t('bericht.export_btn')}
+            </button>
+          )}
           {onNextScene && (
             <button
               onClick={onNextScene}
