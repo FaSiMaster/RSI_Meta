@@ -54,9 +54,11 @@ export const MAX_PUNKTE_PRO_DEFIZIT = Math.round(
 // Teil der normativen 9-Schritte-Methodik, und die Kategorien ueberlappen.
 export const KATEGORIE_TEILPUNKTE = 15
 
-// Zweistufiger Hinweis (Review R-18): Stufe 1 «Wegweiser» zeigt nur, an
+// Zweistufiger Hinweis (Review R-18): Stufe 1 «Standort-Hinweis» zeigt nur, an
 // welchen Standorten noch unentdeckte Defizite liegen (−10 pro Fund);
 // Stufe 2 «Hotspots» blendet die Marker im Bild ein (−25 pro Fund).
 // Massgebend ist die beim Fund aktive Stufe — nicht additiv.
-export const HINT_ABZUG_WEGWEISER = 10
+// Begriff v0.10.2: vorher «Wegweiser» — kollidierte mit dem Signal-Kriterium
+// «Signale / Wegweiser» (SSV/VSS), deshalb umbenannt.
+export const HINT_ABZUG_STANDORT  = 10
 export const HINT_ABZUG_HOTSPOTS  = 25

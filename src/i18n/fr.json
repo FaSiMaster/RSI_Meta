@@ -426,12 +426,12 @@
     "zoom_reset": "Vue standard",
     "zoom_out": "Dézoomer",
     "vr_start_title": "Démarrer le mode VR (Meta Quest)",
-    "wegweiser_btn": "Afficher le guidage",
-    "wegweiser_aktiv": "Guidage actif",
-    "wegweiser_btn_title": "Afficher le guidage (−10 points par déficit trouvé)",
-    "hint1_titel": "Afficher le guidage?",
-    "hint1_text": "Les boutons de site indiquent où se trouvent encore des déficits non découverts ({{count}} restants). 10 points sont déduits par déficit trouvé avec le guidage actif.",
-    "hint1_dauer": "Le guidage reste actif pour toute la scène. Les points chauds (−25) peuvent être affichés séparément plus tard."
+    "standorthinweis_btn": "Afficher l'indication de site",
+    "standorthinweis_aktiv": "Indication de site active",
+    "standorthinweis_btn_title": "Afficher l'indication de site (−10 points par déficit trouvé)",
+    "hint1_titel": "Afficher l'indication de site?",
+    "hint1_text": "Les boutons de site indiquent où se trouvent encore des déficits non découverts ({{count}} restants). 10 points sont déduits par déficit trouvé avec l'indication de site active.",
+    "hint1_dauer": "L'indication de site reste active pour toute la scène. Les points chauds (−25) peuvent être affichés séparément plus tard."
   },
   "kategorie": {
     "frage": "Qu'avez-vous identifié?",

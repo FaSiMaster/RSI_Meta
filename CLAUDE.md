@@ -15,7 +15,7 @@
 
 | Schicht | Technologie | Version |
 |---|---|---|
-| Version | **v0.9.5** (2026-07-28) | Punkte-Aufriss Browser=VR + Wegweiser nur für Neues |
+| Version | **v0.10.2** (2026-07-30) | Standort-Hinweis (Begriff), Kurs-exklusive Themen, Punkte-Ökonomie |
 | Framework | React + Vite + TypeScript | React 18, Vite 5, TS strict |
 | Animation | Framer Motion (motion/react) | v12 |
 | i18n | react-i18next | — |

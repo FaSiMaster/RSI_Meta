@@ -247,7 +247,7 @@ Screenshot zurueckmelden.
 - [ ] Panel bleibt beim Seitenwechsel an der verschobenen Position
       (gleiche Griffleiste, ID `summary`).
 
-### J. Hinweis-Wegweiser (v0.9.4)
+### J. Standort-Hinweis (v0.9.4, Begriff seit v0.10.2)
 - [ ] Hinweis in einem Nebenstandort aktivieren: Standort-Marker, hinter
       denen unentdeckte Defizite liegen, sind orange umrandet (auch der
       Rücksprung-Marker zum Hauptbild, falls dort Defizite offen sind).
@@ -294,7 +294,7 @@ Screenshot zurueckmelden.
 | G. Beenden | ? | |
 | H. Panels verschiebbar (v0.9.0) | ? | |
 | I. Ergebnis-Didaktik in VR (v0.9.1) | ? | |
-| J. Hinweis-Wegweiser (v0.9.4) | ? | |
+| J. Standort-Hinweis (v0.9.4, Begriff seit v0.10.2) | ? | |
 
 **Gesamt-Eindruck**: _(ausstehend)_
 

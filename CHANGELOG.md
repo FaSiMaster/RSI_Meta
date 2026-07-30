@@ -13,6 +13,28 @@ Versionierung nach [Semantic Versioning](https://semver.org/lang/de/).
 
 ---
 
+## [0.10.2] — 2026-07-30 — Hinweis-Stufe 1 heisst neu «Standort-Hinweis»
+
+### Geändert
+
+- **Begriff «Wegweiser» → «Standort-Hinweis»** in allen vier Sprachen.
+  Grund: «Wegweiser» ist im Strassenwesen ein Signal (SSV/VSS) und kollidiert
+  mit dem RSI-Kriterium «Signale / Wegweiser» aus der WICHTIGKEIT_TABLE —
+  im Training konnte der Begriff als Sachthema statt als Hilfsfunktion
+  gelesen werden.
+  - de «Standort-Hinweis», fr «indication de site», it «indicazione di
+    posizione», en «location hint».
+  - i18n-Keys `szene.wegweiser_*` → `szene.standorthinweis_*`;
+    `hint1_titel` / `hint1_text` / `hint1_dauer` textlich nachgeführt.
+  - Konstante `HINT_ABZUG_WEGWEISER` → `HINT_ABZUG_STANDORT`
+    (`src/data/scoreCalc.ts`), Kommentare in `App.tsx` und `SceneViewer.tsx`
+    nachgezogen, Smoke-Protokoll J in `docs/VR_SMOKE_REPORT.md` umbenannt.
+- Reine Umbenennung: **keine Änderung an Funktion, Abzug (−10 / −25) oder
+  Punkte-Berechnung**. Das Kriterium `signale_wegweiser` in
+  `scoringEngine.ts` (Sacred) bleibt unberührt — es meint das reale Signal.
+
+---
+
 ## [0.10.1] — 2026-07-29 — Kurs-exklusive Themen + Archiv-Filter-Fix
 
 ### Hinzugefügt

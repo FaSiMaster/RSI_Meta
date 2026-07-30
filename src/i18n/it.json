@@ -426,12 +426,12 @@
     "zoom_reset": "Vista standard",
     "zoom_out": "Ridurre",
     "vr_start_title": "Avviare la modalità VR (Meta Quest)",
-    "wegweiser_btn": "Mostra indicatori",
-    "wegweiser_aktiv": "Indicatori attivi",
-    "wegweiser_btn_title": "Mostra indicatori (−10 punti per deficit trovato)",
-    "hint1_titel": "Mostrare gli indicatori?",
-    "hint1_text": "I pulsanti delle posizioni indicano dove si trovano ancora deficit non scoperti ({{count}} rimanenti). Per ogni deficit trovato con indicatori attivi vengono detratti 10 punti.",
-    "hint1_dauer": "Gli indicatori restano attivi per l'intera scena. Gli hotspot (−25) possono essere mostrati separatamente in seguito."
+    "standorthinweis_btn": "Mostra indicazione di posizione",
+    "standorthinweis_aktiv": "Indicazione di posizione attiva",
+    "standorthinweis_btn_title": "Mostra indicazione di posizione (−10 punti per deficit trovato)",
+    "hint1_titel": "Mostrare l'indicazione di posizione?",
+    "hint1_text": "I pulsanti delle posizioni indicano dove si trovano ancora deficit non scoperti ({{count}} rimanenti). Per ogni deficit trovato con l'indicazione di posizione attiva vengono detratti 10 punti.",
+    "hint1_dauer": "L'indicazione di posizione resta attiva per l'intera scena. Gli hotspot (−25) possono essere mostrati separatamente in seguito."
   },
   "kategorie": {
     "frage": "Cosa hai identificato?",

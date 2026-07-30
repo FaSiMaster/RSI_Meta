@@ -24,7 +24,7 @@ import KategoriePanel from './KategoriePanel'
 import KlickFeedback, { type KlickFeedbackType } from './KlickFeedback'
 import { useTranslation } from 'react-i18next'
 import { KATEGORIE_PUNKTE, STEP_WEIGHTS, STEP_WEIGHT_UNIT, calcRelevanzSD, calcUnfallrisiko } from '../data/scoringEngine'
-import { KATEGORIE_TEILPUNKTE, HINT_ABZUG_WEGWEISER, HINT_ABZUG_HOTSPOTS } from '../data/scoreCalc'
+import { KATEGORIE_TEILPUNKTE, HINT_ABZUG_STANDORT, HINT_ABZUG_HOTSPOTS } from '../data/scoreCalc'
 import { KRITERIUM_LABELS } from '../data/kriteriumLabels'
 import { ABWEICHUNG_I18N } from '../data/abweichungLabels'
 import { buildRelevanzMatrix, buildRisikoMatrix, deriveErgebnisse, RELEVANZ_ROWS, RELEVANZ_COLS, RISIKO_ROWS, RISIKO_COLS, type MatrixModel } from '../data/ergebnisModel'
@@ -132,7 +132,8 @@ interface StandortNavMarkerProps {
   label:    string
   status:   StandortMarkerStatus
   /** v0.9.4: Hinweis aktiv + hinter diesem Standort liegen unentdeckte Defizite.
-      Der Marker wird orange umrandet — Wegweiser, ohne die Position zu verraten. */
+      Der Marker wird orange umrandet — Standort-Hinweis, ohne die Position im
+      Bild zu verraten. */
   hintZiel?: boolean
   onClick:  () => void
 }
@@ -149,7 +150,7 @@ function StandortNavMarker({ position, label, status, hintZiel = false, onClick 
       position={position}
       follow lockX={false} lockY={false} lockZ={false}
     >
-      {/* Rand-Diamant (leicht grösser, hinten) — orange als Hinweis-Wegweiser */}
+      {/* Rand-Diamant (leicht grösser, hinten) — orange als Standort-Hinweis */}
       <mesh rotation={[0, 0, Math.PI / 4]}>
         <planeGeometry args={[size + (hintZiel ? 0.9 : 0.45), size + (hintZiel ? 0.9 : 0.45)]} />
         <meshBasicMaterial color={randColor} transparent opacity={0.92} side={THREE.DoubleSide} depthTest={false} />
@@ -210,7 +211,7 @@ function getHotspotPosition(d: AppDeficit, perspektivenId: string | null = null)
 }
 
 // v0.9.4: Liegen hinter einem Ziel-Standort noch unentdeckte, dort verortete
-// Defizite? Grundlage für den Hinweis-Wegweiser: Hotspots erscheinen bewusst
+// Defizite? Grundlage für den Standort-Hinweis: Hotspots erscheinen bewusst
 // nur im Standort der Verortung (kein Fallback seit v0.4.0) — der Hinweis
 // muss deshalb den Weg zum richtigen Standort zeigen.
 // v0.9.5: Nur Defizite zählen, die am AKTUELLEN Standort NICHT sichtbar sind.
@@ -509,7 +510,7 @@ interface VRControlBarProps {
   t:          TFunction
 }
 
-// v0.10.0: zweistufiger Hinweis (R-18) — Wegweiser (−10) und Hotspots (−25)
+// v0.10.0: zweistufiger Hinweis (R-18) — Standort-Hinweis (−10) und Hotspots (−25)
 function VRControlBar({ hintStufe, onHint, onBeenden, t }: VRControlBarProps) {
   return (
     <VRHud offset={[0, -0.44, -1.5]} drag={{ id: 'controls', width: 1.38, top: 0.055 }}>
@@ -519,7 +520,7 @@ function VRControlBar({ hintStufe, onHint, onBeenden, t }: VRControlBarProps) {
       </mesh>
       {hintStufe < 1 ? (
         <VRButton
-          label={t('szene.wegweiser_btn')}
+          label={t('szene.standorthinweis_btn')}
           position={[-0.46, 0, 0.002]}
           width={0.42}
           height={0.085}
@@ -531,7 +532,7 @@ function VRControlBar({ hintStufe, onHint, onBeenden, t }: VRControlBarProps) {
         />
       ) : (
         <Text position={[-0.46, 0, 0.003]} fontSize={0.026} color="#d6e04a" anchorX="center" anchorY="middle">
-          {t('szene.wegweiser_aktiv')}
+          {t('szene.standorthinweis_aktiv')}
         </Text>
       )}
       {hintStufe < 2 ? (
@@ -2359,7 +2360,7 @@ export default function SceneViewer({
       deficit:          d,
       kategorieRichtig: hitKatRichtig.current,
       hintPenalty:      hintStufe > 0,
-      hintAbzug:        hintStufe === 2 ? HINT_ABZUG_HOTSPOTS : hintStufe === 1 ? HINT_ABZUG_WEGWEISER : 0,
+      hintAbzug:        hintStufe === 2 ? HINT_ABZUG_HOTSPOTS : hintStufe === 1 ? HINT_ABZUG_STANDORT : 0,
       userWichtigkeit,
       userAbweichung,
       userNacaSchwere:  n,
@@ -2560,11 +2561,11 @@ export default function SceneViewer({
           display: 'flex', flexDirection: 'column', gap: '8px',
           zIndex: 50,
         }}>
-          {/* v0.10.0: zweistufiger Hinweis — Wegweiser (−10) vor Hotspots (−25) */}
+          {/* v0.10.0: zweistufiger Hinweis — Standort-Hinweis (−10) vor Hotspots (−25) */}
           {hintStufe < 1 ? (
             <button
               onClick={() => handleHintRequest(1)}
-              title={t('szene.wegweiser_btn_title')}
+              title={t('szene.standorthinweis_btn_title')}
               style={{
                 display: 'flex', alignItems: 'center', gap: '7px',
                 padding: '9px 14px', borderRadius: '9px',
@@ -2577,7 +2578,7 @@ export default function SceneViewer({
                 backdropFilter: 'blur(10px)',
               }}
             >
-              <MapPin size={14} /> {t('szene.wegweiser_btn')}
+              <MapPin size={14} /> {t('szene.standorthinweis_btn')}
             </button>
           ) : (
             <div style={{
@@ -2589,7 +2590,7 @@ export default function SceneViewer({
               fontSize: '12px', fontWeight: 700,
               fontFamily: 'var(--zh-font)',
             }}>
-              <MapPin size={13} /> {t('szene.wegweiser_aktiv')}
+              <MapPin size={13} /> {t('szene.standorthinweis_aktiv')}
             </div>
           )}
           {hintStufe < 2 ? (
@@ -2926,7 +2927,7 @@ export default function SceneViewer({
           {/* Perspektiven */}
           {perspektiven.map((p, i) => {
             const isActive = p.id === aktivePerspektiveId
-            // v0.9.4: Hinweis-Wegweiser — orange Umrandung, wenn hinter dem
+            // v0.9.4: Standort-Hinweis — orange Umrandung, wenn hinter dem
             // Standort noch unentdeckte Defizite verortet sind.
             const hintZiel = !isActive && hintStufe >= 1 && standortHatOffeneDefizite(deficits, foundIds, p.id, aktivePerspektiveId)
             return (

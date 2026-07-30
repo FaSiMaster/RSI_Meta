@@ -51,7 +51,7 @@ export default function App() {
 
   // ── Viewer-Zustand ──────────────────────────────────────────────────────────
   const [foundDeficits,  setFoundDeficits]  = useState<FoundDeficit[]>([])
-  // v0.10.0: zweistufiger Hinweis — 0 = aus, 1 = Wegweiser (−10), 2 = Hotspots (−25)
+  // v0.10.0: zweistufiger Hinweis — 0 = aus, 1 = Standort-Hinweis (−10), 2 = Hotspots (−25)
   const [hintStufe,      setHintStufe]      = useState<0 | 1 | 2>(0)
   const [sceneScore,     setSceneScore]     = useState(0)
 
@@ -376,7 +376,7 @@ export default function App() {
   }
 
   // ── Hint aktivieren ────────────────────────────────────────────────────────
-  // v0.10.0: Stufe 1 (Wegweiser) oder 2 (Hotspots) aktivieren — nur aufwaerts
+  // v0.10.0: Stufe 1 (Standort-Hinweis) oder 2 (Hotspots) aktivieren — nur aufwaerts
   function handleHintActivate(stufe: 1 | 2) {
     setHintStufe(prev => (stufe > prev ? stufe : prev))
   }
