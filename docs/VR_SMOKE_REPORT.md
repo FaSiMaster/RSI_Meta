@@ -277,25 +277,29 @@ Screenshot zurueckmelden.
 
 ## 6. Ergebnis Smoke-Test (nach Stevos Test ausfuellen)
 
-**Datum**: _(ausstehend)_
+**Datum**: 2026-07-30
 
 **Tester**: Stevan Skeledzic, Meta Quest 3
 
-**Build**: v0.8.0, Vercel-Deploy `<hash>`
+**Build**: v0.10.2 (Commit `940e0b7`), Vercel-Production
 
 | Abschnitt | Status | Bemerkung |
 |---|---|---|
-| A. Session-Start | ? | |
-| B. Controller + Klick | ? | |
-| C. Standort-Wechsel | ? | |
-| D. Haptik | ? | |
-| E. HUD mit Zeit | ? | |
-| F. Farb-codierte Marker | ? | |
-| G. Beenden | ? | |
-| H. Panels verschiebbar (v0.9.0) | ? | |
-| I. Ergebnis-Didaktik in VR (v0.9.1) | ? | |
-| J. Standort-Hinweis (v0.9.4, Begriff seit v0.10.2) | ? | |
+| A. Session-Start | bestanden | |
+| B. Controller + Klick | bestanden | |
+| C. Standort-Wechsel | bestanden | |
+| D. Haptik | bestanden | |
+| E. HUD mit Zeit | bestanden | |
+| F. Farb-codierte Marker | bestanden | |
+| G. Beenden | bestanden | |
+| H. Panels verschiebbar (v0.9.0) | bestanden | |
+| I. Ergebnis-Didaktik in VR (v0.9.1) | bestanden | |
+| J. Standort-Hinweis (v0.9.4, Begriff seit v0.10.2) | bestanden | |
 
-**Gesamt-Eindruck**: _(ausstehend)_
+**Gesamt-Eindruck**: Durchgang v0.9.6–v0.10.2 am Headset ohne Beanstandung.
+Vom Tester pauschal bestaetigt («alles bestens») — keine Einzelbefunde
+protokolliert, keine Nacharbeiten ausgeloest.
 
-**Offene Punkte fuer v0.9.0**: _(ausstehend)_
+**Offene Punkte**: keine aus diesem Durchgang. Tags v0.9.0–v0.10.2 waren
+bereits vor dem Test gesetzt (bewusster Entscheid des Auftraggebers, siehe
+CHANGELOG-Release-Prozess).
