@@ -7,7 +7,7 @@
 **Pfad:** `C:\ClaudeAI\RSI_Meta`
 **Entwickler:** Stevo, Fachstelle Verkehrssicherheit (FaSi), Tiefbauamt, Kanton Zürich
 
-**Ziel:** Ein Inspektor beurteilt Strassenszenen im Browser (Phase 2) und später in VR (Meta Quest 3), markiert und dokumentiert Sicherheitsdefizite anhand der normativen 9-Schritte-RSI-Methodik. Vertrieb als PWA über den Meta Horizon Store.
+**Ziel:** Inspektorinnen und Inspektoren beurteilen Strassenszenen im Browser und in VR (Meta Quest 3), markieren und dokumentieren Sicherheitsdefizite anhand der normativen 9-Schritte-RSI-Methodik. Vertrieb als PWA über den Meta Horizon Store.
 
 ---
 
@@ -16,15 +16,22 @@
 | Schicht | Technologie | Version |
 |---|---|---|
 | Version | **v0.11.0** (2026-07-30) | PDF-Bericht (Phase 5), Standort-Hinweis, Kurs-exklusive Themen |
-| Framework | React + Vite + TypeScript | React 18, Vite 5, TS strict |
+| Framework | React + Vite + TypeScript | React 18.3, **Vite 7.3**, TS strict |
+| Styling | Tailwind CSS (`@tailwindcss/vite`) | v4.2 |
 | Animation | Framer Motion (motion/react) | v12 |
-| i18n | react-i18next | — |
-| 3D Rendering | `@react-three/fiber` | v8 |
+| i18n | react-i18next / i18next | v17 / v26 |
+| State | zustand | v4 |
+| 3D Rendering | `@react-three/fiber` + `drei` | v8 / v9 |
 | WebXR | `@react-three/xr` | v6 |
+| PDF | pdfmake (dynamisch nachgeladen) | v0.3 |
 | Icons | lucide-react | — |
-| Build | Vite 5 + vite-plugin-pwa | PWA, Service Worker |
+| Build | Vite 7 + vite-plugin-pwa | v1.2, Service Worker |
+| Tests | Vitest + Playwright | 85 Unit-Tests, 12 E2E-Specs |
 | Hosting | Vercel (Primär) | HTTPS-Pflicht für WebXR |
-| Persistenz | localStorage (rsi-v3-* Keys) | Kein Backend |
+| Persistenz | localStorage (`rsi-v3-*`) + **Supabase** | Postgres, Storage, 3 Edge Functions |
+
+**Vite bleibt auf 7.x** — ab Vite 8 greift Rolldown, mit dem `vite-plugin-pwa`
+nicht zusammenarbeitet.
 
 **Target Device:** Meta Quest 3 (Meta Horizon OS, Meta Quest Browser)
 **i18n-Sprachen:** de (Haupt), fr, it, en
@@ -36,70 +43,69 @@
 ```
 RSI_Meta/
 ├── CLAUDE.md                       # Diese Datei
-├── AUDIT_REPORT.md                 # Vollaudit Phase 2 (2026-03-28)
-├── README.md                       # Installationsanleitung, Deployment
-├── package.json
-├── vite.config.ts
-├── tsconfig.json
-├── index.html
+├── README.md · CHANGELOG.md · GLOSSAR.md
+├── ADMIN_HANDBUCH.md · BENUTZERHANDBUCH.md
+├── BACKUP.md · BROWSER.md · OFFLINE.md · META_STORE_CHECKLIST.md
+├── AUDIT_REPORT.md · REVIEW_CODE.md · REVIEW_SECURITY.md
+├── docs/VR_SMOKE_REPORT.md         # Headset-Testprotokolle (A–J)
+├── package.json · vite.config.ts · tsconfig.json · index.html
+├── .github/workflows/              # CI + Supabase-Keep-Alive
 ├── public/
-│   ├── icons/                      # PWA-Icons: icon-192.png, icon-512.png
-│   └── textures/                   # 11 Panorama-Texturen (WebP/JPG)
+│   ├── icons/ · logo/ · textures/
+│   └── impressum.html · datenschutz.html · glossar.html
+├── supabase/
+│   ├── functions/
+│   │   ├── admin-auth/             # PIN → HMAC-Token (2 h TTL)
+│   │   ├── admin-write/            # Token-geprüfte Writes (x-admin-token)
+│   │   └── kurs-auth/              # Kurspasswort serverseitig (PBKDF2 + Pepper)
+│   ├── migrations/                 # rsi_kurse, Passwort-Pfeffer, results.detail
+│   └── keepalive.sql
 ├── src/
-│   ├── main.tsx                    # React-Einstieg, i18n-Init
-│   ├── App.tsx                     # Haupt-Router (view-State), Theme, Score
+│   ├── main.tsx                    # React-Einstieg, i18n-Init, ErrorBoundary
+│   ├── App.tsx                     # Haupt-Router (view-State), Theme, Score, VR-Weiche
 │   ├── index.css                   # Reset + CSS-Design-Tokens (--zh-*)
-│   ├── xrStore.ts                  # XR-Session Singleton (createXRStore)
-│   ├── types/
-│   │   └── index.ts                # RSIDimension, NACADimension, ResultDimension, MultiLang
+│   ├── xrStore.ts                  # XR-Session Singleton (model: false!)
+│   ├── types/index.ts
 │   ├── data/
-│   │   ├── appData.ts              # localStorage CRUD, Typen, ml(), Seed-Daten, Perspektive
 │   │   ├── scoringEngine.ts        # WICHTIGKEIT_TABLE (58), Matrizen (SACRED)
-│   │   ├── scoreCalc.ts            # calcScore Pure Function
-│   │   ├── kriteriumLabels.ts      # Anzeige-Labels mit Umlauten (aus scoringEngine ausgelagert)
-│   │   └── strassenmerkmale.ts     # Dropdown-Katalog Strassenmerkmale (Funktionalität)
+│   │   ├── scoreCalc.ts            # calcScore, KATEGORIE_TEILPUNKTE, HINT_ABZUG_*
+│   │   ├── bestandenKriterium.ts   # Bestanden-Logik (Pflicht + 60 %)
+│   │   ├── ergebnisModel.ts        # Matrix-Herleitung für Browser + VR
+│   │   ├── berichtModel.ts         # Aufbereitung PDF-Bericht (rein, ohne React)
+│   │   ├── appData.ts              # localStorage CRUD, Typen, ml(), Seed
+│   │   ├── supabaseSync.ts         # Writes via Edge Function
+│   │   ├── idGenerator.ts · topicIcons.ts · regelwerkKatalog.ts
+│   │   ├── strassenmerkmale.ts
+│   │   └── kriteriumLabels.ts · abweichungLabels.ts
 │   ├── utils/
-│   │   └── sphereCoords.ts         # Sphärische Koordinaten, Trefferpruefung
+│   │   ├── pdfExport.ts            # pdfmake-Dokument (lazy import)
+│   │   ├── sphereCoords.ts         # Sphärische Koordinaten, Trefferprüfung
+│   │   └── vrHaptics.ts · vrPanelOffsets.ts
 │   ├── lib/
-│   │   └── utils.ts                # Hilfsfunktionen
-│   ├── styles/
-│   │   └── design-tokens.css       # CSS-Variablen
-│   ├── i18n/
-│   │   ├── index.ts                # i18n-Setup
-│   │   ├── de.json                 # Deutsch (Referenzsprache, ~460 Keys)
-│   │   ├── fr.json                 # Französisch (100%)
-│   │   ├── it.json                 # Italienisch (100%)
-│   │   └── en.json                 # Englisch (100%)
+│   │   ├── supabase.ts · supabaseStorage.ts
+│   │   └── sentry.ts · logger.ts · useFocusTrap.ts · utils.ts
+│   ├── styles/design-tokens.css
+│   ├── i18n/                       # index.ts + de/fr/it/en (je 600 Blatt-Keys)
 │   └── components/
-│       ├── LandingPage.tsx         # Login, Validierung, App-Reset
-│       ├── Navbar.tsx              # Navigation, Score-Pill, Avatar-Popover, Logout
-│       ├── TopicDashboard.tsx      # Topic-Grid + Schritt-Anleitung + RSI-Methodik
-│       ├── SceneList.tsx           # Szenen-Cards mit Sterne und Start-Button
-│       ├── TrainingEinstieg.tsx    # Szenen-Einführung vor dem Viewer
-│       ├── SceneViewer.tsx         # 360°-Viewer, Klick-Flow, Standort-Navigation, VR
-│       ├── ScoringFlow.tsx         # Ergebnis-Screen nach Bewertung
-│       ├── SzenenAbschluss.tsx     # Szenen-Statistik, Best-of, Zeit
-│       ├── RankingView.tsx         # 4-Ebenen-Rangliste
-│       ├── AdminDashboard.tsx      # Defizit-CRUD, WICHTIGKEIT, Auto-Recompute
-│       ├── LanguageSwitcher.tsx    # Sprachauswahl (de/fr/it/en)
-│       ├── KategoriePanel.tsx      # Kategorie-Auswahl (Browser + VR)
-│       ├── KlickFeedback.tsx       # Treffer/Fehlschlag-Anzeige
+│       ├── LandingPage.tsx · Navbar.tsx · IssiLogo.tsx
+│       ├── TopicDashboard.tsx · SceneList.tsx · TrainingEinstieg.tsx
+│       ├── SceneViewer.tsx         # 360°-Viewer, Klick-Flow, alle VR-Panels
+│       ├── ScoringFlow.tsx · LernKarte.tsx · SzenenAbschluss.tsx
+│       ├── RankingView.tsx · KategoriePanel.tsx · KlickFeedback.tsx
+│       ├── FeedbackModal.tsx · LanguageSwitcher.tsx
+│       ├── AdminDashboard.tsx      # Hülle; Modals ausgelagert (Sprint 3)
 │       └── admin/
-│           ├── BildEditor.tsx      # Canvas-Verortungs-Editor, Drag&Drop, Standorte, NavMarker
-│           └── BildUpload.tsx      # Panorama-Upload mit Komprimierung
+│           ├── BildEditor.tsx · BildUpload.tsx · AdminRanking.tsx
+│           ├── modals/             # Thema, Szene, Defizit, Kurs
+│           └── fields/             # ML-Inputs, NormRefPicker, Vorschaubild
 └── _Archiv/                        # Lokal, nicht im Git (.gitignore)
-    ├── Google_Voarbeiten/          # Altes Gemini-API-Projekt
-    ├── Normen_Ausbildung/          # RSI-Normen PDFs (Referenz)
-    ├── Export/                     # Daten-Dumps
-    ├── Bilder_Seite/               # Screenshots + HDR-Quelldateien
-    └── dead_code/                  # glossary.ts, static.ts, VRButton.tsx
 ```
 
 ---
 
 ## Code-Regeln
 
-1. **Vollständige Dateien** liefern — kein Diff, kein Snippet, immer die ganze Datei
+1. **Vollständige Dateien** liefern – kein Diff, kein Snippet, immer die ganze Datei
 2. **QA-Check** vor jeder Ausgabe: Typen, Imports, JSX-Struktur, tsc 0 Fehler
 3. **TypeScript strict** — kein `any`, alle Props typisiert
 4. **Keine `ß`** — immer `ss` (Schweizer Hochdeutsch)
@@ -221,12 +227,12 @@ interface AppDeficit {
 ## 360°-Panorama Technik
 
 - **Sphere:** radius=500, `side={THREE.BackSide}`, Kamera bei `[0,0,0.01]`
-- **Textur-Fix:** `repeat.x=-1` + `offset.x=0.75` — korrigiert BackSide-Spiegelung und 90°-UV-Offset
+- **Textur-Fix:** `repeat.x=-1` + `offset.x=0.75` – korrigiert BackSide-Spiegelung und 90°-UV-Offset
 - **Startblick:** `azimuth = -(theta * PI/180)` (OrbitControls-Konvention), rAF-Retry bei Mount
 - **Perspektiven:** Kein Fallback auf Haupt-Verortung bei aktiver Perspektive
 - **Gefundene Defizite:** Grüner Hotspot-Marker immer sichtbar (auch ohne Hints, über alle Perspektiven)
 - **Standort-Navigation:** Bidirektional via standortPosition + navMarker
-- **XR-Store:** `model: false` — Pflicht (verhindert CDN-GLTF-Download-Crash)
+- **XR-Store:** `model: false` – Pflicht (verhindert CDN-GLTF-Download-Crash)
 
 ---
 
@@ -258,16 +264,19 @@ interface AppDeficit {
 - [x] Umlaute in Kriterium-Labels (kriteriumLabels.ts)
 - [x] Themen-Sortierung im Admin funktional
 
-### Phase 3 – VR-Integration (nächster Schritt)
-- [ ] Eigene 360°-Strassenszenen (Insta360 / Ricoh Theta)
-- [ ] WebXR `immersive-vr` Session (Meta Quest 3)
-- [ ] Controller-Tracking, Teleport-Navigation
-- [ ] Räumliche Orientierungshilfen (Kompass, Distanz)
+### Phase 3 – VR-Integration (abgeschlossen, v0.8.0–v0.9.1)
+- [x] WebXR `immersive-vr` Session (Meta Quest 3)
+- [x] Controller-Tracking, Ray-Reticle, Haptik bei Treffern
+- [x] Standort-Wechsel über Diamant-Marker im Bild
+- [x] Verschiebbare VR-Panels mit persistierter Position (v0.9.0)
+- [x] Session-Lifecycle sauber (`session.end()` bei Szenenende)
+- [ ] Eigene 360°-Strassenszenen (Insta360 / Ricoh Theta) — offen, Feldarbeit
 
-### Phase 4 – VR-Mangelmarkierung (geplant)
-- [ ] Raycasting mit Controller
-- [ ] 3D-Mangel-Marker setzen
-- [ ] Floating Panel für Kategorisierung
+### Phase 4 – VR-Mangelmarkierung (abgeschlossen, v0.8.1–v0.9.1)
+- [x] Raycasting mit Controller
+- [x] Marker setzen mit Bestätigungsschritt
+- [x] Panels für Kategorie und die drei Bewertungsschritte
+- [x] Scoring-Summary in VR: Ergebnis, Matrix-Herleitung, Lernkarte
 
 ### Phase 5 – Dokumentation & Export (v0.11.0, teilweise)
 - [x] PDF-Export (RSI-konform, KZH CD) — Auswertung + Befundliste, pdfmake
@@ -312,4 +321,4 @@ npm run preview -- --host  # Build lokal testen
 
 ---
 
-*Letzte Aktualisierung: 2026-04-20 (v0.5.0)*
+*Letzte Aktualisierung: 2026-08-01 (v0.11.0, Doku-Redaktion)*

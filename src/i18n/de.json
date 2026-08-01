@@ -23,8 +23,8 @@
   },
   "dashboard": {
     "topics": "Themenbereiche",
-    "selectCategory": "Wählen Sie eine Kategorie, um spezifische Sicherheitsdefizite zu trainieren.",
-    "currentScore": "Ihr aktueller Score",
+    "selectCategory": "Wähle eine Kategorie, um gezielt Sicherheitsdefizite zu trainieren.",
+    "currentScore": "Dein aktueller Score",
     "exploreSzenen": "Szenen erkunden",
     "backToTopics": "Zurück zur Themenübersicht",
     "noScenes": "Noch keine Szenen für dieses Thema vorhanden.",
@@ -32,11 +32,11 @@
     "startTraining": "Training starten"
   },
   "training": {
-    "loading": "Lade 360° Szene...",
+    "loading": "360°-Szene wird geladen…",
     "vrStart": "VR starten",
     "foundCount": "{{found}} / {{total}} Defizite gefunden",
     "hintsActive": "Hinweise aktiv",
-    "showHints": "Defizite einblenden (−250 Pkt.)",
+    "showHints": "Defizite einblenden (−25 Pkt.)",
     "exitTraining": "Training beenden"
   },
   "assessment": {
@@ -72,7 +72,7 @@
     "topics": "Themenbereiche",
     "scenes": "Szenen",
     "deficits": "Defizite",
-    "selectTopic": "Wählen Sie ein Thema aus...",
+    "selectTopic": "Wählen Sie ein Thema aus…",
     "selectScene": "Wählen Sie eine Szene aus, um Defizite zu sehen.",
     "deficitsCount": "Defizite in dieser Szene ({{count}})",
     "noDeficits": "Keine Defizite für diese Szene definiert.",
@@ -111,7 +111,7 @@
     "merkmale_label": "Merkmal",
     "merkmale_wert": "Wert",
     "merkmale_hinzufügen": "+ Merkmal hinzufügen",
-    "panorama_phase3": "360°-Bild (Phase 3)",
+    "panorama_phase3": "360°-Bild",
     "vorschau_phase3": "Vorschaubilder",
     "szene_neu": "Neue Szene",
     "szene_bearbeiten": "Szene bearbeiten",
@@ -180,13 +180,13 @@
     "tagline2": "Bewerten.",
     "tagline3": "Priorisieren.",
     "subtitle": "Entwickeln Sie Ihren fachlichen Blick für sicherheitsrelevante Infrastrukturdefizite.",
-    "intro": "Das RSI VR Tool bildet die In-Service Safety Inspection (ISSI) digital ab — basierend auf dem TBA-Fachkurs FK RSI und den Grundlagen der bfu.",
+    "intro": "Das RSI VR Tool bildet die In-Service Safety Inspection (ISSI) digital ab – auf Grundlage des TBA-Fachkurses FK RSI und der Unterlagen der bfu.",
     "feature1": "Strukturierte RSI-Beurteilung in 9 Schritten",
     "feature2": "Konsistente Bewertungssystematik: Wichtigkeit × Abweichung × NACA",
     "feature3": "Direktes Feedback, Vergleichbarkeit und Lernfortschritt",
     "absender": "Fachstelle Verkehrssicherheit · Kanton Zürich",
     "footerInfo": "Fachstelle Verkehrssicherheit (FaSi) · Kanton Zürich",
-    "namePlaceholder": "z.B. Max Muster",
+    "namePlaceholder": "z. B. Max Muster",
     "loginLabel": "Ihr Name",
     "startBtn": "Training starten",
     "systemOnline": "System online",
@@ -194,7 +194,7 @@
     "nameRequired": "Bitte geben Sie Ihren Namen ein.",
     "resetApp": "App zurücksetzen",
     "resetConfirm": "Alle lokalen Daten und den Cache löschen? Die App startet danach komplett neu.",
-    "resetDone": "Cache gelöscht — Seite wird neu geladen...",
+    "resetDone": "Cache gelöscht – die Seite wird neu geladen…",
     "linkImpressum": "Impressum",
     "linkDatenschutz": "Datenschutz",
     "linkGlossar": "Glossar",
@@ -202,7 +202,7 @@
   },
   "topics": {
     "title": "Themenbereiche",
-    "subtitle": "Wählen Sie einen Bereich, um spezifische Sicherheitsdefizite zu trainieren.",
+    "subtitle": "Wähle einen Bereich, um gezielt Sicherheitsdefizite zu trainieren.",
     "scenesCount": "Szenen"
   },
   "scenes": {
@@ -214,12 +214,12 @@
     "szenario": "Szenario {{nr}}",
     "defizite_count": "{{count}} Defizite",
     "versuche_count": "{{count}}× gespielt",
-    "best_prozent": "Best: {{prozent}}%",
+    "best_prozent": "Best: {{prozent}} %",
     "bestanden_badge": "Bestanden"
   },
   "completion": {
     "titel": "Szene abgeschlossen",
-    "prozent_korrekt": "{{prozent}}% korrekt",
+    "prozent_korrekt": "{{prozent}} % korrekt",
     "neuer_bestwert": "Neuer Bestwert!",
     "punkte": "Punkte",
     "gefunden": "Gefunden",
@@ -265,12 +265,12 @@
     "step4Sub": "Die Relevanz SD ist berechnet.",
     "step5Sub": "Bestätigtes Zwischenergebnis.",
     "step6Sub": "Unfallschwere nach NACA-Schema einstufen.",
-    "step7Sub": "Wählen Sie den NACA-Wert (0–7).",
+    "step7Sub": "Wähle den NACA-Wert (0–7).",
     "step8Sub": "Relevanz SD × NACA-Schwere ergibt das Unfallrisiko.",
     "step9Sub": "Das Unfallrisiko ist berechnet.",
     "nextBtn": "Weiter",
     "resultTitle": "Auswertung",
-    "yourAnswer": "Ihre Antwort",
+    "yourAnswer": "Deine Antwort",
     "correctAnswer": "Korrekte Antwort",
     "pointsEarned": "Punkte erhalten",
     "saveContinue": "Speichern & weiter",
@@ -296,7 +296,7 @@
     "relevanz_titel": "Relevanz des Sicherheitsdefizits",
     "naca_titel": "Potenzielle Unfallschwere",
     "unfallrisiko_titel": "Unfallrisiko",
-    "naca_leitfrage": "Stell dir vor, ein Unfall passiert genau hier — wie schwer wären die wahrscheinlichen Verletzungen?",
+    "naca_leitfrage": "Stell dir vor, ein Unfall passiert genau hier – wie schwer wären die wahrscheinlichen Verletzungen?",
     "naca_leicht": "Leicht",
     "naca_leicht_sub": "NACA 0–1 · Keine bis geringfügige Verletzung · ambulant",
     "naca_mittel": "Mittel",
@@ -390,7 +390,7 @@
     "bestanden": "Bestanden"
   },
   "szene": {
-    "laden": "Panoramabild wird geladen...",
+    "laden": "Panoramabild wird geladen…",
     "kein_panorama": "Kein Panoramabild vorhanden.",
     "beenden": "Szene beenden",
     "weiter_suchen": "Weiter suchen",
@@ -407,7 +407,7 @@
     "kategorie_richtig": "Richtige Kategorie!",
     "kein_treffer_sub": "Versuche es an einer anderen Stelle.",
     "kategorie_falsch_sub": "Teilpunkte gutgeschrieben. Weiter zur RSI-Bewertung.",
-    "weiter_bewertung": "Weiter zur RSI-Bewertung...",
+    "weiter_bewertung": "Weiter zur RSI-Bewertung…",
     "alle_gefunden": "Alle Sicherheitsdefizite gefunden!",
     "defizit_hier": "Sicherheitsdefizit hier?",
     "bestätigen": "Bestätigen",
@@ -435,7 +435,7 @@
   },
   "kategorie": {
     "frage": "Was hast du identifiziert?",
-    "schritt_label": "Schritt 0 — Kategorisierung",
+    "schritt_label": "Schritt 0 – Kategorisierung",
     "subtitle": "Wähle die Kategorie des Sicherheitsdefizits:",
     "verkehrsfuehrung": "Verkehrsführung",
     "sicht": "Sicht",
@@ -444,22 +444,22 @@
     "strassenrand": "Strassenrand",
     "verkehrsablauf": "Verkehrsablauf",
     "baustelle": "Baustelle",
-    "def_verkehrsfuehrung": "Führung der Verkehrsströme, z.B. unklare Spurführung oder Mehrspurigkeit an Querungen",
-    "def_sicht": "Sichtweiten und Sichtbeziehungen, z.B. verdeckt durch Kuppen, Bewuchs oder parkierte Fahrzeuge",
-    "def_ausruestung": "Ausstattung der Anlage, z.B. Markierung, Signalisation, Beleuchtung oder Schutzinsel",
-    "def_zustand": "Baulicher Zustand der Verkehrsfläche, z.B. Belagsschäden oder Entwässerung",
-    "def_strassenrand": "Gestaltung des Strassenrands, z.B. Hindernisse oder fehlende Abschrankungen",
-    "def_verkehrsablauf": "Dynamik des Verkehrs, z.B. Geschwindigkeitsniveau oder Konflikte zwischen Verkehrsarten",
-    "def_baustelle": "Temporäre Situationen im Baustellenbereich, z.B. Führung und Signalisation während Bauarbeiten"
+    "def_verkehrsfuehrung": "Führung der Verkehrsströme, z. B. unklare Spurführung oder Mehrspurigkeit an Querungen",
+    "def_sicht": "Sichtweiten und Sichtbeziehungen, z. B. verdeckt durch Kuppen, Bewuchs oder parkierte Fahrzeuge",
+    "def_ausruestung": "Ausstattung der Anlage, z. B. Markierung, Signalisation, Beleuchtung oder Schutzinsel",
+    "def_zustand": "Baulicher Zustand der Verkehrsfläche, z. B. Belagsschäden oder Entwässerung",
+    "def_strassenrand": "Gestaltung des Strassenrands, z. B. Hindernisse oder fehlende Abschrankungen",
+    "def_verkehrsablauf": "Dynamik des Verkehrs, z. B. Geschwindigkeitsniveau oder Konflikte zwischen Verkehrsarten",
+    "def_baustelle": "Temporäre Situationen im Baustellenbereich, z. B. Führung und Signalisation während Bauarbeiten"
   },
   "einstieg": {
     "kontext_io": "Innerorts",
     "kontext_ao": "Ausserorts",
     "merkmale": "Strassenmerkmale",
-    "hinweis": "Suche selbständig Sicherheitsdefizite im 360°-Panorama. Hotspots sind nicht markiert. Du kannst Hinweise einblenden — mit Punktabzug.",
+    "hinweis": "Suche selbständig Sicherheitsdefizite im 360°-Panorama. Hotspots sind nicht markiert. Hinweise lassen sich einblenden, kosten aber Punkte.",
     "starten": "Training starten",
     "zurück": "Zurück",
-    "bild_phase3": "360°-Bild folgt in Phase 3",
+    "bild_phase3": "Noch kein 360°-Bild hinterlegt",
     "kein_bild": "Kein Vorschaubild erfasst",
     "aus_panorama": "Aus Panorama übernehmen",
     "bild_hochladen": "Eigenes Bild hochladen",
@@ -471,7 +471,7 @@
     "hinweis_label": "Hinweis"
   },
   "kurs": {
-    "kein": "Kein Kurs — freies Training",
+    "kein": "Kein Kurs – freies Training",
     "wählen": "Kurs auswählen (optional)",
     "passwort": "Kurs-Passwort",
     "passwort_eingeben": "Kurs-Passwort eingeben",
@@ -485,7 +485,7 @@
   },
   "login": {
     "kurs_code": "Kurs-Code (optional)",
-    "kurs_placeholder": "z.B. FK-RSI-123456",
+    "kurs_placeholder": "z. B. FK-RSI-123456",
     "kurs_ungueltig": "Kurs-Code nicht gefunden"
   },
   "popover": {
@@ -500,7 +500,7 @@
     "subtitle": "In vier Schritten vom Panorama zur RSI-Bewertung.",
     "step1_title": "Szene wählen",
     "step1_desc": "Wähle ein Thema und eine Strassenszene aus dem Katalog.",
-    "step1_detail": "Themen gruppieren Szenen nach Verkehrsart (Fuss, Velo, Knoten ...). Pro Szene gibt es eine Vorschau und Strassenmerkmale, die dir den Kontext vermitteln.",
+    "step1_detail": "Themen gruppieren Szenen nach Verkehrsart, etwa Fussverkehr, Velo oder Knoten. Pro Szene gibt es eine Vorschau und die Strassenmerkmale, die dir den Kontext vermitteln.",
     "step2_title": "Defizite suchen",
     "step2_desc": "Klicke auf Stellen im 360°-Panorama, die dir unsicher erscheinen.",
     "step2_detail": "Bewege dich frei im 360°-Bild. Bei einem Treffer öffnet sich der Kategorie-Dialog, anschliessend führt dich der 9-Schritte-Bewertungsfluss.",
@@ -509,11 +509,11 @@
     "step3_detail": "Wichtigkeit und Abweichung ergeben die Relevanz SD. Diese kombiniert mit der NACA-basierten Unfallschwere ergibt das Unfallrisiko (gering/mittel/hoch).",
     "step4_title": "Ergebnis vergleichen",
     "step4_desc": "Sieh dir dein Ergebnis an und vergleiche dich im Kurs-Ranking.",
-    "step4_detail": "Das Best-of-Punktesystem zählt deinen besten Versuch pro Szene. Sterne (1-3) basieren auf Prozent: <60% (1), 60-89% (2), 90-100% (3)."
+    "step4_detail": "Gewertet wird dein bester Versuch pro Szene. Die Sterne richten sich nach dem Prozentwert: unter 60 % ein Stern, 60 bis 89 % zwei Sterne, ab 90 % drei Sterne."
   },
   "methodik": {
     "title": "RSI 9-Schritte-Methodik",
-    "subtitle": "Bewertungsmatrizen und NACA-Skala — Nachschlagewerk",
+    "subtitle": "Bewertungsmatrizen und NACA-Skala zum Nachschlagen",
     "relevanz_title": "Relevanz-Matrix",
     "relevanz_desc": "Wichtigkeit × Abweichung ergibt die Relevanz des Sicherheitsdefizits.",
     "risiko_title": "Unfallrisiko-Matrix",
@@ -558,7 +558,7 @@
     "subjFrage": "Frage"
   },
   "datenschutz": {
-    "hinweis": "Ihr Name wird nur lokal gespeichert und anonymisiert ans Ranking übermittelt. Keine personenbezogenen Daten werden dauerhaft gespeichert."
+    "hinweis": "Dein Name bleibt auf diesem Gerät. An die Rangliste geht er pseudonymisiert als Hashwert; dort werden Ergebnis und Kurszugehörigkeit dauerhaft gespeichert. Einzelheiten stehen in der Datenschutzerklärung."
   },
   "lernkarte": {
     "titel": "Lernkarte",
@@ -571,7 +571,7 @@
   "status": {
     "live": "Live",
     "offline": "Lokal",
-    "laden": "Ranking wird geladen..."
+    "laden": "Rangliste wird geladen…"
   },
   "upload": {
     "titel": "Panoramabild laden",
@@ -587,7 +587,7 @@
     "fehler_laden": "Das Bild konnte nicht geladen werden.",
     "warnung_seitenverhältnis": "Hinweis: Panoramabilder haben üblicherweise das Seitenverhältnis 2:1. Dieses Bild weicht davon ab.",
     "abmessungen": "{{breite}} × {{hoehe}} Pixel",
-    "laden": "Bild wird geladen..."
+    "laden": "Bild wird geladen…"
   },
   "vr": {
     "bewertung_abgeschlossen": "Bewertung abgeschlossen",
@@ -610,10 +610,10 @@
     "schwer": "schwer"
   },
   "bericht": {
-    "titel": "RSI-Training — Auswertung",
+    "titel": "RSI-Training – Auswertung",
     "untertitel": "Fachstelle Verkehrssicherheit · Tiefbauamt Kanton Zürich",
-    "kurs_titel": "RSI-Training — Kursübersicht",
-    "teilnehmer": "Teilnehmer",
+    "kurs_titel": "RSI-Training – Kursübersicht",
+    "teilnehmer": "Teilnehmende Person",
     "szene": "Szene",
     "thema": "Themenbereich",
     "kurs": "Kurs",
@@ -651,9 +651,9 @@
     "anzahl_bestanden": "Bestanden",
     "schnitt": "Durchschnitt",
     "erstellt": "Erstellt am",
-    "anonym_hinweis": "Die Teilnehmernamen liegen serverseitig nur als Hashwert vor und werden gekürzt dargestellt. Ein Bericht mit Klarnamen lässt sich auf dem Gerät der teilnehmenden Person erzeugen.",
+    "anonym_hinweis": "Die Namen liegen serverseitig nur als Hashwert vor und werden gekürzt dargestellt. Ein Bericht mit Klarnamen lässt sich auf dem Gerät der teilnehmenden Person erzeugen.",
     "export_btn": "Bericht als PDF",
-    "export_laeuft": "PDF wird erstellt …",
+    "export_laeuft": "PDF wird erstellt…",
     "export_fehler": "PDF konnte nicht erstellt werden.",
     "export_kurs_btn": "Kursbericht als PDF",
     "export_einzel_btn": "PDF",

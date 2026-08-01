@@ -1,158 +1,181 @@
-# Backup-Strategie — RSI VR Tool
+# Datensicherung – RSI VR Tool
 
-> Was wird wo gesichert? Was passiert wenn etwas verloren geht? Stand v0.6.0.
-
----
-
-## 1. Was wird gespeichert?
-
-| Datenart | Ort | Speicherort | Kritisch? |
-|---|---|---|---|
-| App-Code | GitHub (`FaSiMaster/RSI_Meta`) | main-Branch + Tags | Mittel (reproduzierbar) |
-| **Panorama-Texturen (Produktiv)** | **Supabase Storage Bucket `rsi-textures`** | Cloud EU (`panoramas/{szeneId}/haupt.webp` etc.) | **Hoch** — kein automatisches Remote-Backup ausserhalb Supabase |
-| Demo-/Fallback-Texturen | Repo `/public/textures/` | Git + Vercel | Niedrig (nur Beispiele, seit v0.5.0 nicht mehr Single Source) |
-| HDRI-Quelldateien | Lokal `_Archiv/Bilder_Seite/` | Nur Stevos Gerät (`.gitignore`) | **Hoch** — kein Remote-Backup |
-| Themen/Szenen/Defizite (Konfig) | Supabase `rsi_topics`, `rsi_scenes`, `rsi_deficits` | Cloud EU | **Hoch** |
-| Ranking-Ergebnisse | Supabase `rsi_results` | Cloud EU | Mittel (wiederholbar) |
-| Lokale User-Daten | Browser `localStorage` (`rsi-v3-*`) | Jeweiliges Gerät | Niedrig (gerätegebunden) |
-| Admin-Token (Session) | Browser `sessionStorage['rsi-admin-token']` | Jeweiliges Gerät | Niedrig (2 h TTL, neu via PIN) |
-| Client-Env (Supabase-URL/Anon/Salt) | Vercel Environment | Cloud (Vercel Dashboard) | **Hoch** |
-| Supabase-Secrets (ADMIN_PIN, ADMIN_TOKEN_SECRET) | Supabase Edge Function Secrets | Cloud (Supabase Dashboard) | **Hoch** |
-
-**Wichtig seit v0.5.0:** Panorama-Bilder liegen produktiv in Supabase Storage (Bucket `rsi-textures`, public read). Das alte Vercel-`/public/textures/`-Verzeichnis ist nur noch für Demo-/Fallback-Bilder relevant. Bei Datenverlust im Bucket sind die Bilder ohne Backup weg.
+> Was liegt wo, und was ist zu tun, wenn etwas verloren geht. Stand v0.11.0.
 
 ---
 
-## 2. Bestehende Backup-Mechanismen
+## 1. Bestände
+
+| Datenart | Ort | Kritisch |
+|---|---|---|
+| Quellcode | GitHub `FaSiMaster/RSI_Meta`, Branch `main` mit Tags | mittel, reproduzierbar |
+| **Panoramen im Produktivbetrieb** | Supabase-Bucket `rsi-textures`, EU | **hoch**, keine automatische Sicherung ausserhalb von Supabase |
+| Demo- und Rückfallbilder | Repository unter `public/textures/` | niedrig, seit v0.5.0 nicht mehr die führende Quelle |
+| HDRI-Ausgangsdateien | lokal unter `_Archiv/Bilder_Seite/` | **hoch**, keine Kopie ausserhalb des Arbeitsgeräts |
+| Themen, Szenen, Defizite | Supabase-Tabellen, EU | **hoch** |
+| Kurse samt Passwort-Hashes | Supabase `rsi_kurse`, EU | **hoch** |
+| Ergebnisse der Ranglisten | Supabase `rsi_results`, EU | mittel, wiederholbar |
+| Lokale Daten der Teilnehmenden | localStorage im Browser | niedrig, gerätegebunden |
+| Admin-Token | sessionStorage, zwei Stunden gültig | niedrig, jederzeit neu erzeugbar |
+| Umgebungsvariablen des Clients | Vercel | **hoch** |
+| Secrets der Edge Functions | Supabase | **hoch** |
+
+Seit v0.5.0 liegen die Panoramen produktiv im Bucket. Geht dort etwas verloren
+und existiert keine Kopie, sind die Bilder weg.
+
+---
+
+## 2. Vorhandene Mechanismen
 
 ### 2.1 Git
-- `main`-Branch wird nach jedem Commit automatisch auf GitHub gepusht.
-- Versions-Tags (`v0.1.0` … `v0.6.0`) als Wiederherstellungspunkte.
-- Vercel deployed bei jedem Push automatisch.
-- GitHub-Actions-CI (`.github/workflows/ci.yml`, seit v0.6.0): `npm ci && tsc --noEmit && vite build` auf PR + push main.
 
-### 2.2 Supabase Database (Tabellen)
-- **Auto-Backups Free-Plan:** tägliche Snapshots, 7 Tage Aufbewahrung — Wiederherstellung nur über Support-Ticket (Self-Service-Restore ist Pro-Plan-Feature).
-- **Point-in-Time Recovery:** nur Pro-Plan (aktuell Free-Plan — PITR nicht verfügbar).
-- **Manuelle SQL-Dumps:** via Supabase Dashboard → Database → Backups oder `pg_dump` mit Connection-String (DSGVO-relevant: Dump nicht unverschlüsselt ablegen).
+Jeder Commit auf `main` landet auf GitHub, jede Version trägt ein Tag als
+Rückkehrpunkt, und Vercel baut bei jedem Push neu. Die CI prüft auf Pull Requests
+und auf `main` mit `npm ci`, `tsc --noEmit` und `vite build`.
 
-**Status prüfen:** Supabase Dashboard → Project Settings → Database → Backups. Dort ist sichtbar, welcher Plan aktiv ist und welche Snapshots vorliegen.
+### 2.2 Datenbank
 
-### 2.3 Supabase Storage (Bucket `rsi-textures`)
-- **Keine automatischen Backups auf Free-Plan.** Supabase sichert den Storage-Bucket nicht mit dem Datenbank-Backup mit.
-- **Empfehlung:** manuelle Sicherung via Supabase CLI oder Dashboard → Storage → Bucket `rsi-textures` → Download der Ordner `panoramas/` auf Netzwerkshare.
-- **Alternative:** eigener Cron-Job / lokales Skript mit `supabase storage download` vor jedem Kurs oder wöchentlich.
+Im kostenlosen Tarif erstellt Supabase tägliche Momentaufnahmen mit sieben Tagen
+Aufbewahrung; zurückspielen lässt sich eine solche nur über ein Support-Ticket,
+da die Selbstbedienung dem kostenpflichtigen Tarif vorbehalten ist. Eine
+Wiederherstellung auf einen beliebigen Zeitpunkt gibt es im kostenlosen Tarif
+nicht.
 
-### 2.4 Admin Export/Import im Tool
-- Tab **Export/Import** im Admin-Dashboard erzeugt JSON-Dump (Topics, Scenes, Deficits, Kurse, Ranking-Snapshot).
-- Version-Marker `rsi-v3`.
-- Manueller Trigger — kein automatisches Backup.
-- Panorama-Bilder sind **nicht** im JSON-Export enthalten (nur URLs/Bucket-Pfade) — Bucket muss separat gesichert werden.
+Manuelle Auszüge entstehen über das Dashboard unter Database → Backups oder mit
+`pg_dump`. Ein solcher Auszug enthält Personendaten in pseudonymisierter Form und
+gehört nicht unverschlüsselt abgelegt.
 
-### 2.5 localStorage-Export pro Gerät
-- Im Avatar-Popover → App-Reset zeigt die lokalen Daten. Für einen Device-Snapshot können die `rsi-v3-*`-Keys über DevTools → Application → Local Storage exportiert werden (technische Nutzer).
+Den aktuellen Stand zeigt das Dashboard unter Project Settings → Database →
+Backups.
+
+### 2.3 Storage
+
+**Für den Bucket gibt es im kostenlosen Tarif keine automatische Sicherung.** Die
+Datenbanksicherung schliesst ihn nicht ein.
+
+Zu sichern ist er von Hand über das Dashboard oder die CLI, indem der Ordner
+`panoramas/` auf ein Netzlaufwerk geladen wird – wöchentlich oder vor jedem Kurs.
+
+### 2.4 Export aus der Anwendung
+
+Der Administrationsbereich erzeugt unter Export und Import einen JSON-Auszug mit
+Themen, Szenen, Defiziten, Kursen und einem Stand der Rangliste, gekennzeichnet
+mit `rsi-v3`. Er wird von Hand ausgelöst und enthält **keine Bilddaten**, nur
+deren Pfade. Der Bucket ist daher getrennt zu sichern.
 
 ---
 
-## 3. Empfohlene Backup-Routine
+## 3. Empfohlene Routine
 
-### 3.1 Wöchentlich (Stevo)
-1. Admin-Dashboard → **Export/Import** → `rsi-backup-YYYY-MM-DD.json` auf lokalen Backup-Ordner sichern.
-2. Ordner: `C:\ClaudeAI\RSI_Meta\_Archiv\Export\`.
-3. Supabase Storage Bucket `rsi-textures` manuell sichern (Dashboard → Storage → Bucket auswählen → Ordner `panoramas/` downloaden).
-4. In OneDrive/Netzwerkshare synchronisieren.
+### 3.1 Wöchentlich
+
+JSON-Auszug erzeugen, als `rsi-backup-JJJJ-MM-TT.json` unter
+`_Archiv/Export/` ablegen, den Ordner `panoramas/` aus dem Bucket laden und
+beides auf das Netzlaufwerk spiegeln.
 
 ### 3.2 Vor jedem Kurs
-1. Export erzeugen (als Snapshot vor Kurs-Einsatz).
-2. Stichprobe: 1–2 Panorama-Bilder aus dem Bucket prüfen (URL in neuer Browser-Session öffnen, lädt das Bild?).
-3. Admin-PIN (Supabase Edge Function Secret `ADMIN_PIN`) und `ADMIN_TOKEN_SECRET` in Passwort-Manager (1Password / KeePass / Bitwarden) ablegen.
-4. Client-Env-Vars (`VITE_SUPABASE_URL`, `VITE_SUPABASE_ANON_KEY`, `VITE_USERNAME_SALT`) ebenfalls im Passwort-Manager.
+
+Auszug als Momentaufnahme erzeugen. Ein bis zwei Panoramen stichprobenweise
+prüfen, indem die Adresse in einer frischen Browsersitzung geöffnet wird. Prüfen,
+ob `ADMIN_PIN`, `ADMIN_TOKEN_SECRET`, `KURS_PASSWORT_PEPPER` sowie die
+Client-Variablen `VITE_SUPABASE_URL`, `VITE_SUPABASE_ANON_KEY` und
+`VITE_USERNAME_SALT` im Passwortsafe hinterlegt sind.
 
 ### 3.3 Vor grösseren Änderungen
-- Git: Feature-Branch anlegen (`git checkout -b feature/xyz`) statt direkt auf `main`.
-- Tag setzen: `git tag -a pre-refactor-YYYY-MM-DD`.
-- JSON-Export machen (Admin-Dashboard).
-- Bei Änderungen am Bucket-Inhalt: Bucket-Snapshot vorher downloaden.
+
+Auf einem eigenen Branch arbeiten statt auf `main`, ein Tag als Rückkehrpunkt
+setzen, einen JSON-Auszug erzeugen und bei Eingriffen in den Bucket vorher dessen
+Inhalt sichern.
 
 ---
 
 ## 4. Wiederherstellung
 
-### 4.1 Code-Verlust
-- Vom GitHub-Remote clonen: `git clone https://github.com/FaSiMaster/RSI_Meta.git`.
-- Vercel redeployt automatisch via Git-Integration.
+### 4.1 Quellcode
 
-### 4.2 Supabase-Daten (Tabellen) verloren
-**Szenario A:** Einzelne Einträge gelöscht
-- Supabase Dashboard → Project Settings → Database → Backups → Support-Ticket für Restore (Free-Plan) oder Self-Service (Pro-Plan).
-- Oder: Admin-Dashboard → Import → letzten lokalen JSON-Export laden.
+Vom GitHub-Remote klonen; Vercel baut über die Git-Anbindung von selbst neu.
 
-**Szenario B:** Gesamtes Supabase-Projekt gelöscht
-- Neues Supabase-Projekt anlegen.
-- RLS-Policies wieder setzen (siehe REVIEW_SECURITY.md und `src/lib/supabase.ts`).
-- Bucket `rsi-textures` neu anlegen + Policies setzen (`rsi_public_read`, ggf. Upload-Policies).
-- Edge Functions `admin-auth` und `admin-write` neu deployen (siehe ADMIN_HANDBUCH Abschnitt Edge Functions).
-- Supabase-Secrets `ADMIN_PIN` + `ADMIN_TOKEN_SECRET` setzen.
-- Neue Keys in Vercel-Env eintragen (`VITE_SUPABASE_URL`, `VITE_SUPABASE_ANON_KEY`; `VITE_USERNAME_SALT` bleibt unverändert, sonst sind bestehende Ranking-Hashes unbrauchbar).
-- Letzten JSON-Export via Admin-Dashboard importieren.
-- Panorama-Bilder aus lokalem Bucket-Backup neu hochladen (Admin → BildUpload → Tab «Hochladen»).
-- Ranking-Historie geht verloren (nur bei Szenario B ohne Backup).
+### 4.2 Einzelne Datensätze
 
-### 4.3 Supabase-Storage-Bucket verloren oder geleert
-- Neue Bucket-Struktur anlegen (`rsi-textures`, public).
-- Policies wieder setzen.
-- Lokales Backup der Ordner `panoramas/{szeneId}/` hochladen.
-- Scene-Einträge in `rsi_scenes` referenzieren weiterhin die gleichen Pfade — kein DB-Update nötig, solange Bucket-Name + Pfadstruktur identisch sind.
+Über den Support ein Zurückspielen der Momentaufnahme anfordern oder den letzten
+JSON-Auszug im Administrationsbereich importieren.
 
-### 4.4 Vercel-Deployment verloren
-- Vercel Settings → Project → Re-deploy aus Git-Historie.
-- Environment-Variablen müssen manuell wieder eingetragen werden: `VITE_SUPABASE_URL`, `VITE_SUPABASE_ANON_KEY`, `VITE_USERNAME_SALT`, optional `VITE_SENTRY_DSN`.
-- **`VITE_ADMIN_PIN` nicht mehr nötig** (seit v0.6.0 aus Client-Bundle entfernt, PIN liegt nur noch als Supabase-Secret).
+### 4.3 Gesamtes Supabase-Projekt
 
-### 4.5 HDRI-Quelldateien verloren
-- Keine Remote-Kopie. Risiko!
-- **Empfehlung:** manuelles Backup auf Netzwerkshare / OneDrive, oder `_Archiv/Bilder_Seite/` zu separatem privaten Git-Repo hinzufügen.
-- Alternativ: HDRI-Quellen bei der Verarbeitung gleich in den Supabase-Bucket hochladen (Unterordner `hdri-source/`, nicht public).
+1. Neues Projekt in der Region EU anlegen.
+2. Tabellen und RLS-Regeln setzen; die Vorgaben stehen in `REVIEW_SECURITY.md`.
+3. Migrationen aus `supabase/migrations/` einspielen, damit `rsi_kurse`, der
+   Pfeffer für Kurspasswörter und die Spalte `detail` in `rsi_results` vorhanden
+   sind.
+4. Bucket `rsi-textures` anlegen und die Leseregel setzen.
+5. Edge Functions `admin-auth`, `admin-write` und `kurs-auth` deployen.
+6. Secrets `ADMIN_PIN`, `ADMIN_TOKEN_SECRET` und `KURS_PASSWORT_PEPPER` setzen.
+   Weicht der Pfeffer vom früheren Wert ab, lassen sich bestehende
+   Kurspasswörter nicht mehr prüfen und sind neu zu vergeben.
+7. Neue Schlüssel in Vercel eintragen. `VITE_USERNAME_SALT` bleibt unverändert,
+   sonst werden die Pseudonyme der bestehenden Ranglisten unbrauchbar.
+8. Letzten JSON-Auszug importieren.
+9. Panoramen aus der lokalen Sicherung in den Bucket laden.
+
+Ohne Sicherung geht die Ranglisten-Historie verloren.
+
+### 4.4 Verlorener Bucket
+
+Bucket neu anlegen, Regeln setzen und die gesicherten Ordner
+`panoramas/{szeneId}/` hochladen. Solange Name und Pfadstruktur gleich bleiben,
+zeigen die Einträge in `rsi_scenes` weiterhin richtig; die Datenbank ist nicht
+anzupassen.
+
+### 4.5 Verlorenes Vercel-Deployment
+
+Aus der Git-Historie neu ausrollen und die Umgebungsvariablen von Hand wieder
+eintragen. `VITE_ADMIN_PIN` wird seit v0.6.0 nicht mehr gebraucht.
+
+### 4.6 Verlorene HDRI-Ausgangsdateien
+
+Eine Kopie ausserhalb des Arbeitsgeräts gibt es nicht; das ist ein offenes
+Risiko. Abhilfe schafft eine Spiegelung auf ein Netzlaufwerk oder das Ablegen der
+Ausgangsdateien in einem nicht öffentlichen Unterordner des Buckets.
 
 ---
 
 ## 5. Offene Risiken
 
-| Risiko | Wahrscheinlichkeit | Massnahme |
+| Risiko | Einschätzung | Massnahme |
 |---|---|---|
-| HDRI-Quelldateien nur lokal | Mittel | Auf Netzwerkshare spiegeln (zu tun) |
-| Supabase Free-Plan ohne PITR + kein Self-Service-Restore | Hoch (Plan ist free) | Pro-Plan evaluieren oder wöchentliche JSON-Exporte |
-| **Supabase Storage Bucket ohne Auto-Backup** | **Hoch** | Wöchentlicher manueller Download (zu tun) |
-| Keine automatischen Test-Snapshots | Mittel | GitHub Actions vorhanden seit v0.6.0, Smoke-Tests noch offen |
-| Vercel-Env-Variablen nicht extern dokumentiert | Mittel | Passwort-Manager-Eintrag anlegen (zu tun) |
-| **`ADMIN_TOKEN_SECRET` nicht separat gesichert** | **Hoch** | Passwort-Manager-Eintrag (zwingend) |
+| HDRI-Ausgangsdateien nur lokal | mittel | auf Netzlaufwerk spiegeln, offen |
+| Kostenloser Tarif ohne Selbstbedienungs-Wiederherstellung | hoch, Tarif ist gesetzt | wöchentliche Auszüge oder Tarifwechsel prüfen |
+| **Bucket ohne automatische Sicherung** | **hoch** | wöchentlicher Download, offen |
+| Umgebungsvariablen nirgends ausserhalb von Vercel dokumentiert | mittel | Eintrag im Passwortsafe, offen |
+| **`ADMIN_TOKEN_SECRET` und `KURS_PASSWORT_PEPPER` nicht separat gesichert** | **hoch** | Eintrag im Passwortsafe, zwingend |
 
 ---
 
-## 6. Disaster-Recovery-Test (empfohlen vor Pilot)
+## 6. Übung zur Wiederherstellung
 
-1. Neues Supabase-Test-Projekt anlegen.
-2. Bucket `rsi-textures` + Policies + Edge Functions (`admin-auth`, `admin-write`) deployen.
-3. Aktuellen Prod-JSON-Export importieren.
-4. Lokales Bucket-Backup in neues Bucket hochladen.
-5. Neuen Vercel-Preview-Deploy mit Test-Keys (Branch `disaster-test`).
-6. Funktionalität prüfen: Login, Szene starten (Panorama lädt?), Admin-PIN, Defizit bewerten, Ranking-Eintrag.
-7. Ergebnis dokumentieren — stimmt Recovery-Prozedur?
+Empfohlen vor dem breiten Einsatz: ein Testprojekt anlegen, Bucket, Regeln und
+alle drei Edge Functions einrichten, den aktuellen Auszug importieren, die
+gesicherten Bilder hochladen und über einen Vorschau-Deploy mit Testschlüsseln
+prüfen, ob Anmeldung, Szenenstart, Bildanzeige, Administrationszugang, Bewertung
+und Ranglisteneintrag funktionieren. Das Ergebnis gehört protokolliert.
 
-Letzter Recovery-Test: _(noch nicht durchgeführt)_
+Letzte Übung: noch nicht durchgeführt.
 
 ---
 
-## 7. Geheimnisse-Rotation (Secrets Hygiene)
+## 7. Umgang mit Geheimnissen
 
-Seit v0.6.0 gilt folgende Trennung:
-
-| Secret | Ort | Rotation |
+| Geheimnis | Ort | Wechsel |
 |---|---|---|
-| `ADMIN_PIN` | Supabase Edge Function Secret | Vor jedem Kurs (aktuell `5004`) |
-| `ADMIN_TOKEN_SECRET` | Supabase Edge Function Secret | Einmalig gesetzt, Rotation macht Sessions ungültig (akzeptabel, zwingt Admins zu Re-Login) |
-| `VITE_USERNAME_SALT` | Vercel Env | **Nie rotieren** — bestehende Ranking-Hashes würden unbrauchbar |
-| `VITE_SUPABASE_ANON_KEY` | Vercel Env | Nur bei Key-Leak, zusammen mit neuem Supabase-Projekt |
-| `VITE_SENTRY_DSN` | Vercel Env (optional) | Bei Sentry-Projekt-Wechsel |
+| `ADMIN_PIN` | Supabase-Secret | vor jedem Kurs; danach `admin-auth` neu deployen |
+| `ADMIN_TOKEN_SECRET` | Supabase-Secret | einmalig; ein Wechsel entwertet alle offenen Sitzungen |
+| `KURS_PASSWORT_PEPPER` | Supabase-Secret | **nicht wechseln**, sonst sind bestehende Kurspasswörter nicht mehr prüfbar |
+| `VITE_USERNAME_SALT` | Vercel | **nicht wechseln**, sonst werden bestehende Pseudonyme unbrauchbar |
+| `VITE_SUPABASE_ANON_KEY` | Vercel | nur bei Abfluss, zusammen mit einem neuen Projekt |
+| `VITE_SENTRY_DSN` | Vercel, optional | bei Wechsel des Sentry-Projekts |
 
-**Nach Rotation von `ADMIN_PIN`:** Edge Function `admin-auth` muss redeployt werden (neuer Secret-Wert), ausgegebene Tokens bleiben 2 h gültig (TTL läuft ab).
+Die Werte selbst gehören in den Passwortsafe der Fachstelle und nicht in dieses
+Repository.
+
+Nach einem Wechsel der PIN ist `admin-auth` neu zu deployen; bereits ausgegebene
+Tokens bleiben bis zu zwei Stunden gültig.

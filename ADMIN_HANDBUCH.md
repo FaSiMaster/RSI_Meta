@@ -1,451 +1,527 @@
-# Admin-Handbuch — RSI VR Tool
+# Admin-Handbuch – RSI VR Tool
 
-> Für Kursleitung / Fachstelle. Stand v0.6.0.
-> Voraussetzung: Admin-PIN (4-stellig) als Supabase-Secret gesetzt, Edge Functions `admin-auth` + `admin-write` deployed.
+> Für Kursleitung und Fachstelle. Stand v0.11.0.
+> Voraussetzung: Admin-PIN als Supabase-Secret gesetzt, Edge Functions
+> `admin-auth`, `admin-write` und `kurs-auth` deployt.
 
 ---
 
 ## 1. Zugang
 
-1. Auf LandingPage → oben rechts **Admin**-Button (Schloss-Icon).
-2. PIN eingeben (4 Stellen, aktuell `5004`).
-3. Der Client schickt die PIN an die Supabase Edge Function `admin-auth`. Bei korrekter PIN erhält er ein HMAC-signiertes Token (2 h TTL), das in `sessionStorage['rsi-admin-token']` gespeichert wird.
-4. Authentifizierung gilt nur für die laufende Browser-Session. Token läuft nach 2 h ab → automatischer Logout beim nächsten 401.
+1. Auf der Startseite oben rechts den **Admin**-Button mit dem Schloss-Symbol
+   wählen.
+2. PIN eingeben.
+3. Der Client schickt die PIN an die Edge Function `admin-auth`. Stimmt sie,
+   erhält er ein HMAC-signiertes Token mit zwei Stunden Gültigkeit, das in
+   `sessionStorage['rsi-admin-token']` liegt.
+4. Die Anmeldung gilt nur für die laufende Browser-Sitzung. Nach Ablauf des
+   Tokens meldet der nächste 401 den Client automatisch ab.
 
-**Sicherheit seit v0.6.0:** Die PIN ist **nicht mehr** im Client-Bundle. Sie liegt ausschliesslich als Supabase Edge Function Secret (`ADMIN_PIN`). Der Client sieht die PIN nur für die Dauer des HTTPS-Requests und vergisst sie nach dem Token-Austausch. Rotieren Sie die PIN vor jedem Kurs-Einsatz über das Supabase Dashboard und redeployen die `admin-auth`-Function.
+Die PIN steckt seit v0.6.0 nicht mehr im Client-Bundle, sondern ausschliesslich
+im Secret `ADMIN_PIN` der Edge Function. Der Client kennt sie nur für die Dauer
+des HTTPS-Requests und verwirft sie nach dem Tausch gegen das Token.
 
-### 1.1 Token-Flow (v0.6.0)
+**Der PIN-Wert gehört nicht in dieses Repository.** Er wird im Passwortsafe der
+Fachstelle geführt und im Supabase-Dashboard gesetzt.
+
+### 1.1 Token-Fluss
 
 ```
-User gibt PIN ein
+PIN-Eingabe
        ↓
 Client → POST /functions/v1/admin-auth { pin }
        ↓
-Edge Function prüft PIN gegen Secret ADMIN_PIN (timing-safe-compare)
+Edge Function prüft die PIN gegen das Secret ADMIN_PIN (timing-safe)
        ↓
-Erzeugt Token: <expires>.<base64-hmac>
-   - expires  = now + 2h (Epoch-ms)
-   - hmac     = HMAC-SHA256(ADMIN_TOKEN_SECRET, expires)
+Token: <expires>.<base64-hmac>
+   - expires = jetzt + 2 h (Epoch-ms)
+   - hmac    = HMAC-SHA256(ADMIN_TOKEN_SECRET, expires)
        ↓
-Client speichert Token in sessionStorage['rsi-admin-token']
+Client legt das Token in sessionStorage['rsi-admin-token'] ab
        ↓
-Alle Admin-Writes (supabaseSync.ts): Header x-admin-token
+Alle Schreibzugriffe (supabaseSync.ts) senden den Header x-admin-token
        ↓
-admin-write verifiziert Token (timing-safe, prüft expires > now)
+admin-write verifiziert das Token timing-safe und prüft expires > jetzt
        ↓
-Bei 401: Token + Auth-Flag werden geräumt, User muss neu PIN eingeben
+Bei 401: Token und Auth-Flag werden geräumt, die PIN ist neu einzugeben
 ```
 
-### 1.2 Environment-Variablen
+### 1.2 Umgebungsvariablen
 
-Für den Produktivbetrieb müssen folgende Variablen gesetzt sein — getrennt nach **Client (Vercel)** und **Server (Supabase Edge Function Secrets)**.
+Für den Produktivbetrieb sind die folgenden Variablen nötig, getrennt nach
+Client und Server.
 
-#### Client (Vercel + lokale `.env.local`)
+#### Client (Vercel und lokale `.env.local`)
 
 | Variable | Zweck | Pflicht |
 |---|---|---|
-| `VITE_SUPABASE_URL` | Supabase-Endpoint für Sync | ja |
-| `VITE_SUPABASE_ANON_KEY` | Supabase-Anon-Key (öffentlich, RLS schützt) | ja |
-| `VITE_USERNAME_SALT` | Geheimes Salt für Username-Hashing (DSGVO) — verhindert Rainbow-Table-Preimage auf dem Supabase-Dump. **Muss pro Deployment einmalig gesetzt werden und sollte nicht rotiert werden**, sonst werden Hashes bestehender Rankings unbrauchbar. | ja (sonst Konsolen-Warnung) |
-| `VITE_SENTRY_DSN` | Sentry-DSN für Error-Tracking | nein (leer = Sentry aus, im Pilot leer) |
+| `VITE_SUPABASE_URL` | Supabase-Endpunkt für die Synchronisation | ja |
+| `VITE_SUPABASE_ANON_KEY` | Öffentlicher Anon-Key; geschützt wird über RLS | ja |
+| `VITE_USERNAME_SALT` | Salt für das Hashing der Benutzernamen. Verhindert, dass sich aus einem Datenbank-Auszug per Rainbow-Table Klarnamen gewinnen lassen. **Einmalig pro Deployment setzen und nicht rotieren**, sonst werden die Hashes bestehender Ranglisten unbrauchbar. | ja, sonst Warnung in der Konsole |
+| `VITE_SENTRY_DSN` | DSN für das Fehler-Monitoring | nein; leer bedeutet Sentry aus, im Pilot leer |
 
-**Entfernt in v0.6.0:** `VITE_ADMIN_PIN` wird nicht mehr gelesen. Falls die Variable noch in Vercel steht, kann sie ersatzlos gelöscht werden.
+Seit v0.6.0 liest die App `VITE_ADMIN_PIN` nicht mehr. Steht die Variable noch in
+Vercel, kann sie ersatzlos weg.
 
 #### Server (Supabase Edge Function Secrets)
 
 | Variable | Zweck | Pflicht |
 |---|---|---|
-| `ADMIN_PIN` | 4-stelliger Admin-PIN (aktuell `5004`), vor jedem Kurs rotieren | ja |
-| `ADMIN_TOKEN_SECRET` | 32 hex bytes (64 Zeichen) für HMAC-Signatur der Admin-Tokens. **Einmalig setzen, nicht rotieren** (sonst werden alle aktiven Sessions ungültig). | ja |
+| `ADMIN_PIN` | PIN für den Administrationsbereich | ja |
+| `ADMIN_TOKEN_SECRET` | 32 Byte hexadezimal für die HMAC-Signatur der Admin-Tokens. **Einmalig setzen, nicht rotieren**, sonst werden alle aktiven Sitzungen ungültig. | ja |
+| `KURS_PASSWORT_PEPPER` | Serverseitiger Pfeffer für die Kurspasswörter, verwendet von `kurs-auth`. **Einmalig setzen, nicht rotieren**, sonst lassen sich bestehende Kurspasswörter nicht mehr prüfen. | ja, sobald Kurse mit Passwort im Einsatz sind |
 
-Setzen via Dashboard: Supabase → Project → Edge Functions → Secrets, oder CLI:
+Gesetzt werden sie im Dashboard unter Project → Edge Functions → Secrets oder
+über die CLI:
 
 ```bash
-supabase secrets set ADMIN_PIN=5004
+supabase secrets set ADMIN_PIN=<wert aus dem Passwortsafe>
 supabase secrets set ADMIN_TOKEN_SECRET=$(openssl rand -hex 32)
+supabase secrets set KURS_PASSWORT_PEPPER=$(openssl rand -hex 32)
 ```
 
-**Salt-Erzeugung** (Client, einmalig beim Deployment-Aufbau):
+Das Salt für den Client entsteht einmalig beim Aufbau des Deployments:
 
 ```bash
-# Zufälligen 32-Zeichen-Salt generieren:
 openssl rand -hex 16
-# Ergebnis z.B.: 2f8a9c1b7e4d3a06f9b8e7c6d5a4b3c2
 ```
 
-Diesen Wert in Vercel → Settings → Environment Variables als `VITE_USERNAME_SALT` speichern und **dauerhaft** dort behalten. Backup in einem Passwort-Manager (nicht im Git-Repo!).
+Der Wert gehört in Vercel unter Settings → Environment Variables als
+`VITE_USERNAME_SALT` und muss dort dauerhaft bleiben. Eine Sicherung gehört in
+den Passwortsafe, nicht ins Repository.
 
 ---
 
-## 2. Edge Functions (seit v0.6.0)
+## 2. Edge Functions
 
 ### 2.1 Überblick
 
-Zwei Deno-basierte Supabase Edge Functions bilden die Server-Seite:
+Drei Deno-Funktionen bilden die Serverseite:
 
 | Function | Zweck | Aufgerufen von |
 |---|---|---|
-| `admin-auth` | Tauscht PIN gegen HMAC-signiertes Token (2 h TTL) | LandingPage Admin-Login |
-| `admin-write` | Nimmt Writes (upsert/delete) auf `rsi_topics`, `rsi_scenes`, `rsi_deficits` entgegen, validiert Token + Payload, schreibt mit `service_role`-Key | Admin-Dashboard via `supabaseSync.ts` |
+| `admin-auth` | Tauscht die PIN gegen ein HMAC-Token mit zwei Stunden Gültigkeit | Admin-Anmeldung auf der Startseite |
+| `admin-write` | Nimmt Schreib- und Löschvorgänge auf `rsi_topics`, `rsi_scenes`, `rsi_deficits`, `rsi_kurse` und `rsi_results` entgegen, prüft Token und Nutzlast und schreibt mit dem `service_role`-Key | Administrationsbereich über `supabaseSync.ts` |
+| `kurs-auth` | Prüft das Kurspasswort serverseitig gegen den gepfefferten Hash | Kursauswahl auf der Startseite |
 
-Source: `supabase/functions/admin-auth/index.ts` und `supabase/functions/admin-write/index.ts`.
+Quellen liegen unter `supabase/functions/<name>/index.ts`, je mit eigener
+README.
 
 ### 2.2 Schutzmechanismen in `admin-write`
 
-- **Token-Verifikation** (timing-safe HMAC-Compare, 128er-Padding gegen Length-Leak)
-- **CORS-Whitelist** statt `*`: Vercel-Production-URL + `localhost:5173/5174`
-- **Payload-Schema-Validation** pro Tabelle (Whitelist zulässiger Felder, Typ-Checks)
-- **256-KB-Row-Size-Limit** pro Zeile
-- **max 200 Rows** pro Upsert-Request
-- Schreibt mit `service_role` (umgeht RLS) — deshalb ist saubere Payload-Validation zwingend
+Das Token wird timing-safe verglichen, mit Auffüllung auf 128 Zeichen, damit die
+Länge nichts verrät. Statt eines offenen CORS steht eine Whitelist mit der
+Vercel-Produktionsadresse und `localhost:5173/5174`. Jede Nutzlast durchläuft
+eine Schema-Prüfung je Tabelle mit erlaubten Feldern und Typprüfung, begrenzt auf
+256 KB je Zeile und 200 Zeilen je Anfrage. Weil die Funktion mit `service_role`
+schreibt und damit RLS umgeht, ist diese Prüfung zwingend.
 
-### 2.3 Deploy-Anleitung (Dashboard-UI)
+Für `rsi_results` gilt eine Sonderregel: Die Tabelle ist dort **nur zum Löschen**
+freigegeben, mit genau einem Filter je Aufruf – Eintrag, Benutzer, Kurs oder
+alles. Upserts sind ausgeschlossen.
 
-1. Supabase Dashboard → Project → Edge Functions → **Deploy a new function**.
-2. Name: `admin-auth` (bzw. `admin-write`).
-3. **Wichtig:** Checkbox «Enforce JWT verification» → **deaktivieren** (`verify_jwt: false`). Die Functions nutzen eigene PIN/Token-Logik, kein Supabase-Auth-JWT.
-4. Quellcode aus `supabase/functions/{name}/index.ts` einfügen und deployen.
-5. Secrets (`ADMIN_PIN`, `ADMIN_TOKEN_SECRET`) müssen gesetzt sein (siehe 1.2).
-6. Test: `curl -X POST https://<project>.supabase.co/functions/v1/admin-auth -H 'Content-Type: application/json' -d '{"pin":"5004"}'` → muss Token liefern.
+### 2.3 Deployment über das Dashboard
 
-### 2.4 Deploy via CLI (alternativ)
+1. Supabase-Dashboard → Project → Edge Functions → **Deploy a new function**.
+2. Namen setzen: `admin-auth`, `admin-write` oder `kurs-auth`.
+3. **Wichtig:** «Enforce JWT verification» deaktivieren. Die Funktionen bringen
+   ihre eigene PIN- und Token-Logik mit und nutzen kein Supabase-Auth-JWT.
+4. Quelltext aus `supabase/functions/<name>/index.ts` einfügen und deployen.
+5. Die Secrets aus Abschnitt 1.2 müssen gesetzt sein.
+6. Prüfen mit einem POST auf `/functions/v1/admin-auth` und der PIN als
+   Nutzlast; die Antwort muss ein Token enthalten.
+
+### 2.4 Deployment über die CLI
 
 ```bash
 # einmalig: supabase login && supabase link --project-ref <ref>
 supabase functions deploy admin-auth --no-verify-jwt
 supabase functions deploy admin-write --no-verify-jwt
-supabase secrets set ADMIN_PIN=5004
-supabase secrets set ADMIN_TOKEN_SECRET=$(openssl rand -hex 32)
+supabase functions deploy kurs-auth  --no-verify-jwt
 ```
 
-### 2.5 PIN-Rotations-Prozess (seit v0.6.0)
+Wird an einer Funktion etwas geändert, muss genau diese Funktion neu deployt
+werden. Solange das aussteht, laufen die betroffenen Aktionen in einen Fehler.
 
-1. Neue PIN wählen (4 Stellen, nicht `0000`/`1234`/ähnliche Trivia).
-2. Supabase Dashboard → Edge Functions → Secrets → `ADMIN_PIN` ändern.
-3. **Edge Function `admin-auth` redeployen** (Dashboard → Function `admin-auth` → Deploy).
-4. Alte Tokens bleiben bis zu 2 h gültig (TTL) — akzeptabel, da sie nur Schreibrechte haben und ausgegeben sind.
-5. Keine Vercel-Änderung nötig, kein App-Redeploy.
-6. Alte PIN sicher verwerfen (Passwort-Manager-Eintrag archivieren).
+### 2.5 PIN wechseln
 
-Im Gegensatz zu v0.5.x **kein Vercel-Redeploy mehr nötig** — die PIN liegt nicht mehr im Client-Bundle.
+1. Neue PIN wählen, keine triviale Folge wie `0000` oder `1234`.
+2. Dashboard → Edge Functions → Secrets → `ADMIN_PIN` ändern.
+3. Funktion `admin-auth` neu deployen.
+4. Ausgegebene Tokens bleiben bis zu zwei Stunden gültig. Das ist vertretbar, da
+   sie nur Schreibrechte tragen.
+5. Kein Vercel-Redeploy nötig, die PIN liegt nicht im Bundle.
+6. Alte PIN im Passwortsafe archivieren.
 
 ### 2.6 Fehlerbilder
 
-- **401 beim Admin-Login trotz korrekter PIN:** `admin-auth` prüft PIN timing-safe. Meist Tippfehler oder `ADMIN_PIN`-Secret nicht gesetzt / falsch deployed. Supabase → Logs prüfen.
-- **401 bei Admin-Write kurz nach Login:** Token expired (2 h). Admin muss neu PIN eingeben. Der Client räumt `sessionStorage['rsi-admin-token']` + `rsi-admin-auth` automatisch beim 401.
-- **CORS-Fehler im Browser:** Origin ist nicht in der Whitelist der Edge Function. Bei neuer Vercel-Preview-URL muss die Whitelist in `admin-auth/index.ts` + `admin-write/index.ts` erweitert + redeployed werden.
+**401 bei der Anmeldung trotz richtiger PIN.** Meist ein Tippfehler, ein nicht
+gesetztes Secret oder eine nicht neu deployte Funktion. Die Logs von
+`admin-auth` geben Auskunft.
+
+**401 kurz nach der Anmeldung.** Das Token ist abgelaufen. Der Client räumt
+`rsi-admin-token` und `rsi-admin-auth` selbst, die PIN ist neu einzugeben.
+
+**CORS-Fehler im Browser.** Der Ursprung fehlt in der Whitelist. Bei einer neuen
+Vorschau-Adresse von Vercel muss sie in `admin-auth/index.ts` und
+`admin-write/index.ts` ergänzt und neu deployt werden.
 
 ---
 
-## 3. Tabs-Übersicht
-
-Das Admin-Dashboard hat vier Haupt-Tabs:
+## 3. Aufbau des Administrationsbereichs
 
 | Tab | Inhalt |
 |---|---|
-| **Inhalte** | Themen, Szenen, Defizite (CRUD) |
-| **Kurse** | Kurs-Anlage, Zugangscodes, Themen-Auswahl |
-| **Rangliste** | AdminRanking — User/Kurs-Einträge verwalten |
-| **Export / Import** | JSON-Dump der gesamten Datenbasis |
+| **Inhalte** | Themen, Szenen, Defizite anlegen, ändern, löschen |
+| **Kurse** | Kurse, Zugangscodes, Themenzuteilung |
+| **Rangliste** | Einträge nach Benutzer und Kurs verwalten |
+| **Export / Import** | Vollständiger JSON-Auszug der Datenbasis |
 
 ---
 
-## 4. Themen-Verwaltung
+## 4. Themen
 
 ### 4.1 Struktur
-- **Oberthema** → Beispiel: «Verkehrsführung»
-- **Unterthema (Gruppe)** → Beispiel: «Linienführung»
-- **Szene** → konkrete Verkehrssituation (ID-Format `SZ_YYYY_NNN`)
-- **Defizite** → pro Szene (ID-Format `SD_NNNN`)
+
+Ein Oberthema wie «Verkehrsführung» enthält Unterthemen wie «Linienführung»,
+darunter liegen die Szenen mit der Kennung `SZ_YYYY_NNN` und je Szene die
+Defizite mit der Kennung `SD_NNNN`.
 
 ### 4.2 Aktionen
-- **Neues Oberthema / neue Gruppe:** Button rechts oben
-- **Umsortieren:** Pfeile rauf/runter (sortOrder)
-- **Umbenennen:** Inline-Edit
-- **Archivieren:** `isActive: false` — Szenen bleiben erhalten, sind aber für Teilnehmer nicht sichtbar
-- **Löschen (Oberthema):** seit v0.6.0 mit expliziter Confirm-Bestätigung, die den Kaskaden-Umfang nennt (X Untergruppen, Y Szenen inkl. aller Defizite).
 
-### 4.3 Piktogramm-Katalog (seit v0.5.0)
-Jedes Oberthema kann ein Piktogramm aus dem Katalog (23 Lucide-Icons) erhalten, Picker-UI im Admin. Bei Neuanlage wird automatisch ein Vorschlag aus dem Themennamen abgeleitet (`suggestIconKey`).
+Neue Oberthemen und Gruppen entstehen über den Button rechts oben, die
+Reihenfolge ändern die Pfeile, Umbenennen geschieht direkt in der Liste.
+Archivieren setzt `isActive` auf `false`: Die Szenen bleiben erhalten,
+erscheinen aber im Trainingspfad nicht mehr. Das Löschen eines Oberthemas
+verlangt eine Bestätigung, die den Umfang der Kaskade nennt, also die Zahl der
+betroffenen Gruppen und Szenen samt Defiziten.
 
-### 4.4 Mehrsprachigkeit
-Alle Titel/Beschreibungen als `MultiLang`-Objekt (de/fr/it/en). **Deutsch ist Pflicht**, andere Sprachen werden bei Fehlen automatisch mit DE befüllt.
+### 4.3 Sichtbarkeit je Kurs
+
+Jedes Thema trägt das Flag «Nur für zugewiesene Kurse sichtbar». Ist es gesetzt,
+sehen das Thema ausschliesslich jene, die sich mit einem Kurscode angemeldet
+haben, in dem es angehakt ist; im freien Training bleibt es verborgen. Kurse ohne
+angehakte Themen zeigen weiterhin die freie Auswahl, damit bestehende Kurse
+unverändert funktionieren.
+
+Das ist eine Steuerung der Sichtbarkeit im Client, keine Zugriffssicherung. Die
+Inhalte selbst bleiben in Supabase anonym lesbar.
+
+### 4.4 Piktogramme
+
+Jedes Oberthema kann ein Piktogramm aus einem Katalog von 23 Icons erhalten. Bei
+der Neuanlage schlägt die App eines aus dem Themennamen vor.
+
+### 4.5 Mehrsprachigkeit
+
+Titel und Beschreibungen sind mehrsprachige Objekte für Deutsch, Französisch,
+Italienisch und Englisch. Deutsch ist Pflicht; fehlt eine andere Sprache, wird
+sie mit dem deutschen Text gefüllt.
 
 ---
 
-## 5. Szenen-Verwaltung
+## 5. Szenen
 
 ### 5.1 Neue Szene
-1. Unterthema wählen.
-2. **Neue Szene** → Modal öffnet sich.
-3. Eingeben:
-   - **Titel** (mehrsprachig)
-   - **Kontext-Beschreibung** (Einführungs-Text, mehrsprachig)
-   - **Merkmale** (Funktionalität, Geschwindigkeit, Geometrie — Dropdown-Katalog oder frei)
-   - **Trainer-Hinweis** (optional, seit v0.5.0) — wird im TrainingEinstieg als gelber Hinweis-Block gezeigt
-4. **Speichern** → Szene wird mit ID `SZ_YYYY_NNN` erstellt.
-5. Panorama separat über **BildUpload** hochladen (siehe 6).
 
-### 5.2 Vorschaubilder
-Bis zu 2 Bilder für die Szenen-Liste. Wird automatisch auf 400 px komprimiert (JPEG 70 %), aus dem Haupt-Panorama oder per Upload.
+Unterthema wählen, **Neue Szene**, dann Titel, Kontextbeschreibung, Merkmale zu
+Funktionalität, Geschwindigkeit und Geometrie sowie wahlweise einen
+Trainerhinweis erfassen, der im Einstieg gelb hinterlegt erscheint. Nach dem
+Speichern trägt die Szene die Kennung `SZ_YYYY_NNN`; das Panorama kommt separat
+über den Bild-Upload dazu.
 
-### 5.3 Szene-Reihenfolge
-Pfeile in der Liste (innerhalb des Unterthemas).
+### 5.2 Bestanden-Kriterium
+
+Voreingestellt gilt eine Szene als bestanden, wenn alle Pflichtdefizite gefunden
+sind und mindestens 60 % der Punkte erreicht wurden. Im Szenen-Dialog lässt sich
+das je Szene überschreiben: Die Checkbox steuert die Pflichtdefizite, ein leeres
+Prozentfeld hebt die Punkteschwelle auf.
+
+### 5.3 Vorschaubilder
+
+Bis zu zwei Bilder je Szene, automatisch auf 400 Pixel und JPEG mit 70 % Qualität
+verkleinert, entweder aus dem Panorama abgeleitet oder hochgeladen.
 
 ---
 
-## 6. Panorama-Bilder (BildUpload, seit v0.5.0)
+## 6. Panorama-Bilder
 
 ### 6.1 Speicherort
-Panorama-Bilder liegen produktiv in **Supabase Storage**, Bucket `rsi-textures` (public read).
-Pfad-Konvention: `panoramas/{szeneId}/{haupt|persp_NNN_<label>}.webp`.
 
-Das alte Vercel-`/public/textures/`-Verzeichnis ist nur noch für Demo-/Fallback-Bilder (`DEFAULT_SCENES.panoramaBildUrl: null`).
+Produktiv liegen die Panoramen im Supabase-Bucket `rsi-textures` mit
+öffentlichem Lesezugriff, nach dem Muster
+`panoramas/{szeneId}/{haupt|persp_NNN_<label>}.webp`. Das Verzeichnis
+`public/textures/` dient nur noch Demo- und Rückfallbildern.
 
-### 6.2 BildUpload-Oberfläche
-Die Komponente `BildUpload.tsx` hat zwei Tabs:
+### 6.2 Bedienung
 
-- **Bibliothek:** Akkordeon nach Szene, listet alle bereits hochgeladenen Bilder im Bucket. Auswahl per Klick.
-- **Hochladen:** Drag & Drop oder File-Picker. Pfad wird automatisch nach `panoramas/{szeneId}/{filename}` aufgelöst.
+Der Upload-Dialog hat zwei Register. «Bibliothek» listet je Szene die bereits
+vorhandenen Bilder zur Auswahl, «Hochladen» nimmt Dateien per Drag-and-drop oder
+Dateiauswahl entgegen und legt den Pfad selbst an.
 
 ### 6.3 Empfohlene Spezifikation
-- Format: **WebP** (beste Kompression, alle Zielbrowser unterstützen es)
-- Auflösung: **4096 × 2048** (equirectangulär, Verhältnis 2:1)
-- Dateigrösse: ≤ 5 MB
-- JPG/PNG werden akzeptiert, erzeugen aber grössere Downloads
+
+WebP, equirektangulär im Verhältnis 2 : 1, 4096 × 2048 Pixel, höchstens 5 MB.
+JPG und PNG werden angenommen, erzeugen aber grössere Downloads.
 
 ---
 
-## 7. Defizit-Katalog
+## 7. Defizite
 
-### 7.1 Defizit anlegen
-1. Szene wählen → Defizit-Liste rechts.
-2. **Neues Defizit** → Modal (ID-Format `SD_NNNN`).
-3. **Pflichtfelder:**
-   - Name (mehrsprachig)
-   - Beschreibung (mehrsprachig)
-   - **Kategorie** (seit v0.5.0 vor Kriterium positioniert)
-   - **Kriterium** aus `WICHTIGKEIT_TABLE` (Dropdown, 58 Einträge)
-   - **Kontext:** io (innerorts) oder ao (ausserorts)
-   - **Korrekte Bewertung:**
-     - Wichtigkeit (gross/mittel/klein)
-     - Abweichung (gross/mittel/klein)
-     - NACA-Raw (0–7)
-   - Die restlichen Felder (Relevanz SD, Unfallschwere, Unfallrisiko) berechnen sich automatisch aus den drei Eingaben.
+### 7.1 Anlegen
 
-### 7.2 Optionale Felder
-- **Feedback-Text** — Fachliche Begründung, wird in LernKarte gezeigt
-- **Massnahmenlogik** — Empfohlene Korrekturmassnahmen
-- **Normbezüge** (`normRefs`) — seit v0.5.0 Autocomplete-Dropdown mit 32 VSS/SN-Normen aus `regelwerkKatalog.ts`, Tag-System für Mehrfach-Auswahl
-- **Pflicht-Flag** — muss gefunden werden für Szenen-Vollständigkeit
-- **Booster-Flag mit %-Bonus** (seit v0.5.0): Radio-Auswahl +10 % / +20 % statt nur Boolean
+Szene wählen, **Neues Defizit**. Pflicht sind Name und Beschreibung
+mehrsprachig, die Kategorie, das Kriterium aus der WICHTIGKEIT_TABLE mit ihren
+58 Einträgen, der Kontext innerorts oder ausserorts sowie die richtige
+Beurteilung mit Wichtigkeit, Abweichung und NACA-Wert. Relevanz SD,
+Unfallschwere und Unfallrisiko rechnet die App aus diesen drei Angaben.
 
-### 7.3 Defizit-Verortung
-Siehe Abschnitt **8. BildEditor**.
+### 7.2 Weitere Felder
+
+Der Feedback-Text liefert die fachliche Begründung für die Lernkarte, die
+Massnahmenlogik die empfohlene Korrektur. Normbezüge kommen aus einem Katalog von
+32 VSS- und SN-Normen mit Autovervollständigung und Mehrfachauswahl. Das
+Pflicht-Flag macht ein Defizit für die Vollständigkeit der Szene erforderlich,
+das Booster-Flag hebt die Punkte um 10 oder 20 %.
 
 ---
 
-## 8. BildEditor (Verortungs-Editor)
+## 8. Verortungs-Editor
 
-### 8.1 Öffnen
-In der Szene → Button **Verortungs-Editor öffnen**.
+### 8.1 Aufbau
 
-### 8.2 Oberfläche
-- **Panorama-Anzeige** (zentral, equirectangulär)
-- **Seitenleiste rechts:** Liste der Defizite, Standort-Positionen, Navigation
-- **Toolbar oben:** Bucket-Auswahl (Bibliothek), Modus-Buttons
-- **Zoom-Toolbar unten:** −/+/Reset, Mausrad-Zoom, Tasten +/−/0
+Geöffnet wird er in der Szene über **Verortungs-Editor öffnen**. In der Mitte
+steht das equirektanguläre Panorama, rechts die Liste der Defizite, Standorte und
+die Navigation, oben die Auswahl des Buckets und die Modusschalter, unten die
+Zoomleiste.
 
-### 8.3 Verortungs-Modi
+### 8.2 Modi
+
 | Modus | Aktion |
 |---|---|
-| **Startblick** | Klick setzt Startblick-Fadenkreuz (θ, φ) |
-| **Punkt** | Klick setzt runden Marker mit Toleranzradius (einstellbar 5–30°) |
-| **Polygon** | Mehrere Klicks → Eckpunkte; Doppelklick schliesst Polygon |
-| **Gruppe** | Mehrere Defizit-Verortungen zu einer kombinierten Fläche zusammenfassen |
+| **Startblick** | Klick setzt das Fadenkreuz für die Anfangsblickrichtung |
+| **Punkt** | Klick setzt einen Marker mit Toleranzradius, einstellbar von 5 bis 30 Grad |
+| **Polygon** | Mehrere Klicks setzen Eckpunkte, ein Doppelklick schliesst die Fläche |
+| **Gruppe** | Fasst mehrere Verortungen zu einer Fläche zusammen |
 
-### 8.4 Drag & Drop
-Alle Marker (Punkt, Polygon-Ecken, Startblick, Standort-Diamanten) per Maus verschiebbar.
+### 8.3 Bedienung
 
-### 8.5 Zoom + Pan
-- **Mausrad:** Zoom (cursor-zentriert, 1.0× bis 5.0×)
-- **Tasten:** `+` / `−` / `0` (Reset)
-- **Pan:** linke Maustaste auf leerer Canvas-Fläche ziehen (Cursor wird `grab`)
+Alle Marker lassen sich mit der Maus verschieben. Das Mausrad zoomt
+cursorzentriert von einfacher bis fünffacher Vergrösserung, die Tasten `+`, `−`
+und `0` tun dasselbe; gezogen wird mit der linken Maustaste auf freier Fläche.
 
-### 8.6 Perspektiven
-Eine Szene kann mehrere 360°-Standorte haben:
-1. In der Szenen-Bearbeitung → Perspektive hinzufügen → Label.
-2. Bild für Perspektive über BildUpload in den Bucket laden (Pfad `panoramas/{szeneId}/persp_NNN_<label>.webp`).
-3. Im BildEditor: Perspektiven-Button oben → Standort-Bild laden.
-4. Verortungen sind **pro Perspektive separat** — kein Fallback auf Haupt-Verortung.
+### 8.4 Perspektiven und Standort-Navigation
 
-### 8.7 Standort-Navigation
-Bidirektionale Verknüpfung zwischen Haupt-Panorama und Perspektiven:
-1. Im Haupt-Panorama: **Standort-Position** für jede Perspektive als Diamant markieren.
-2. In einer Perspektive: **NavMarker** zu anderen Standorten (inkl. Haupt-Panorama) markieren.
-3. Im Viewer klickt der User diese Marker → springt.
+Eine Szene kann mehrere 360°-Standorte führen. Dazu in der Szenenbearbeitung eine
+Perspektive mit Bezeichnung anlegen, das zugehörige Bild in den Bucket laden und
+im Editor über den Perspektiven-Button auswählen. Verortungen gelten je
+Perspektive; einen Rückfall auf die Verortung des Haupt-Panoramas gibt es
+bewusst nicht, weil sonst Marker an falscher Stelle erscheinen.
+
+Für den Wechsel im Viewer wird im Haupt-Panorama je Perspektive eine
+Standortposition als Raute gesetzt und in jeder Perspektive ein Marker zurück
+zum Haupt-Panorama sowie zu den übrigen Standorten.
 
 ---
 
-## 9. Kurs-Verwaltung
+## 9. Kurse
 
-### 9.1 Neuer Kurs
-1. Tab **Kurse** → **Neuer Kurs**.
-2. Eingeben:
-   - **Kursname** (z.B. «FK RSI 2026-Q2»)
-   - **Datum** (gültig von / bis)
-   - **Zugangscode** (automatisch generiert oder manuell)
-   - **Optionales Passwort** (SHA-256-Hash mit `kp:`-Prefix, seit v0.3.1)
-   - **Themen-Auswahl** — Kursteilnehmer sehen nur die markierten Themen
+### 9.1 Anlegen
 
-### 9.2 Kurs-Lifecycle
-- **Aktiv:** Innerhalb von/bis, sichtbar auf LandingPage
-- **Deaktivieren:** Button — Kurs bleibt erhalten, aber nicht wählbar
-- **Löschen:** entfernt Kurs + zugehörige Ranking-Einträge
+Im Register **Kurse** über **Neuer Kurs**: Name wie «FK RSI 2026-Q2»,
+Gültigkeitsdauer, Zugangscode automatisch oder von Hand, wahlweise ein Passwort
+und die Auswahl der Themen.
 
-### 9.3 Teilnehmer-Ansicht
-Teilnehmer sehen auf LandingPage nur zeitlich aktive Kurse. Passwort-geschützte Kurse sind sichtbar, aber brauchen den Code zum Start.
+Das Kurspasswort wird nicht im Klartext gespeichert. Die Prüfung läuft über die
+Edge Function `kurs-auth` gegen einen mit `KURS_PASSWORT_PEPPER` gepfefferten
+Hash.
 
----
+### 9.2 Lebenszyklus
 
-## 10. Ranking-Verwaltung (AdminRanking)
+Innerhalb der Gültigkeitsdauer erscheint ein Kurs auf der Startseite.
+Deaktivieren nimmt ihn aus der Auswahl, ohne ihn zu löschen. Das Löschen
+entfernt den Kurs samt zugehörigen Ranglisteneinträgen.
 
-### 10.1 Gesamt-Übersicht
-Alle Einträge in `rsi_results`: User-Pseudonym, Kurs, Szene, Punkte, Prozent, Dauer, Zeitstempel.
+### 9.3 Teilnehmendenansicht
 
-### 10.2 Filter
-- Nach User, Kurs, Szene, Datum
-- Sortierung auf allen Spalten
-
-### 10.3 Aktionen
-- **User-Einträge löschen:** alle Scores eines User-Hashes
-- **Kurs-Einträge löschen:** alle Scores eines Kurses
-- **Einzel-Eintrag löschen:** pro Zeile
-
-**Achtung:** Löschung ist sofort wirksam und erfolgt auch in Supabase. Kein Undo.
-
-**Sicherheit seit v0.6.0:** `rsi_results.DELETE` für anon ist gesperrt — Löschungen laufen über den Admin-Dashboard-Flow (Token-gesichert). Das Ranking ist nicht mehr frei manipulierbar.
+Sichtbar sind nur zeitlich aktive Kurse. Passwortgeschützte Kurse erscheinen,
+verlangen aber das Passwort zum Start.
 
 ---
 
-## 11. Export / Import
+## 10. Ranglisten-Verwaltung
 
-### 11.1 Export
-- Tab **Export** → **JSON exportieren**
-- Datei enthält: Topics, Scenes, Deficits, Kurse, Ranking-Snapshot
-- Version-Feld: `rsi-v3`
-- Panorama-Bilder (Bucket-Pfade) sind als URL im JSON enthalten; die eigentlichen Bilddaten werden nicht mit exportiert — siehe BACKUP.md Abschnitt 2.3.
+Die Übersicht führt alle Einträge aus `rsi_results` mit Pseudonym, Kurs, Szene,
+Punkten, Prozentwert, Dauer, Bestanden-Status und Zeitstempel; filtern und
+sortieren lässt sich über alle Spalten.
 
-### 11.2 Import
-- Tab **Import** → JSON-Datei wählen
-- Schema-Check (Version-Feld, ID-Format, MultiLang, Base64-Bildgrössen)
-- **Achtung:** Import überschreibt bestehende Datensätze mit gleichen IDs (kein Merge).
-- **Sicherheitshinweis:** Nur aus vertrauenswürdiger Quelle importieren.
+Löschen ist möglich je Einzeleintrag, je Benutzer-Hash und je Kurs. Der Vorgang
+wirkt sofort auch in Supabase und lässt sich nicht rückgängig machen.
 
-### 11.3 Einsatz-Szenarien
-- Backup vor grösserer Änderung
-- Transfer zwischen Dev- und Prod-Deployment
-- Archivierung abgeschlossener Kurse
+Seit v0.9.9 laufen diese Löschungen über die Edge Function `admin-write` mit
+`service_role`. Der Grund: Die RLS-Regel von `rsi_results` erlaubt anonym nur
+Lesen und Einfügen, weshalb die früheren direkten Löschversuche von Postgres
+verworfen wurden, ohne dass die Oberfläche es gemerkt hätte. Die Anzeige nennt
+jetzt die Zahl der tatsächlich gelöschten Zeilen.
+
+Damit ist auch die Rangliste nicht mehr frei manipulierbar.
 
 ---
 
-## 12. Supabase-Sync
+## 11. Berichte
 
-### 12.1 Tabellen (mit RLS seit v0.4.0/v0.6.0)
-- `rsi_topics` — JSONB pro Topic (anon: nur SELECT)
-- `rsi_scenes` — JSONB pro Scene (anon: nur SELECT)
-- `rsi_deficits` — JSONB pro Defizit (anon: nur SELECT)
-- `rsi_results` — Einzel-Ergebnisse (anon: SELECT + INSERT, **kein DELETE**)
+Im Administrationsbereich lassen sich zwei PDF-Berichte erzeugen: je Kurs eine
+Übersicht aller Durchläufe im Querformat und je Einzelresultat der vollständige
+Bericht mit Auswertung und Befundliste.
 
-### 12.2 Sync-Verhalten
-- Bei jedem Admin-Save: Aufruf von `admin-write` mit `x-admin-token`-Header. Edge Function validiert Token + Payload, schreibt mit `service_role`.
-- Bei App-Start: Lesen aus Supabase via anon-Key (RLS erlaubt SELECT), Cache im Modul-Memory (`supabaseSync.ts`).
-- Bei leerem Supabase: Seed aus localStorage (einmaliger Vorgang, consent-gated seit v0.3.1).
-- Bei 401 (Token expired): Auto-Cleanup von `sessionStorage['rsi-admin-token']` + `rsi-admin-auth`, User muss neu PIN eingeben.
-
-### 12.3 Manuelle Cache-Invalidierung
-App-Reset-Button (Avatar-Popover oder LandingPage-Footer) erzwingt vollständigen Reload.
+Die Namen stammen dort aus Supabase und liegen nur als Hash vor. Der Kursbericht
+weist sie gekürzt aus und hält das im Dokument fest. Ein Bericht mit Klarnamen
+entsteht ausschliesslich auf dem Gerät der teilnehmenden Person.
 
 ---
 
-## 13. Troubleshooting
+## 12. Export und Import
 
-**Admin-Login funktioniert nicht (401).**
-→ PIN falsch? Supabase → Edge Functions → Logs von `admin-auth` prüfen. `ADMIN_PIN`-Secret gesetzt? Function redeployed nach Änderung?
+Der Export liefert Themen, Szenen, Defizite, Kurse und einen Stand der Rangliste
+als JSON mit dem Versionsfeld `rsi-v3`. Die Bildpfade sind enthalten, die
+Bilddaten selbst nicht; dazu siehe `BACKUP.md`.
 
-**Admin-Writes schlagen nach einiger Zeit fehl (401).**
-→ Token abgelaufen (2 h TTL). Neu PIN eingeben. Bei wiederkehrenden Problemen `ADMIN_TOKEN_SECRET` prüfen (darf nicht neu rotiert worden sein).
+Der Import prüft Version, Kennungsformat, Mehrsprachigkeit und Bildgrössen.
+**Er überschreibt bestehende Datensätze mit gleicher Kennung, ohne zu
+verschmelzen.** Importiert wird nur aus vertrauenswürdiger Quelle.
 
-**CORS-Fehler im Browser.**
-→ Vercel-URL ist nicht in der Whitelist der Edge Function. `admin-auth/index.ts` + `admin-write/index.ts` anpassen und redeployen.
-
-**Änderungen werden nicht gespeichert.**
-→ Netzwerk prüfen, Browser-Console auf Supabase-/Edge-Function-Fehler. Als Fallback: Export → Import auf anderem Device.
-
-**Daten erscheinen doppelt.**
-→ Cache nicht zurückgesetzt. App-Reset durchführen.
-
-**PIN ist bekannt geworden.**
-→ Supabase → Edge Functions → Secrets → `ADMIN_PIN` ändern → Edge Function `admin-auth` redeployen. Kein Vercel-Redeploy nötig.
-
-**Panorama-Bild lädt nicht.**
-→ Supabase → Storage → Bucket `rsi-textures` prüfen: Datei vorhanden? Public-Read-Policy aktiv? CSP im Browser prüfen (`img-src` muss `https://*.supabase.co` enthalten).
+Sinnvoll ist der Export vor grösseren Änderungen, beim Transfer zwischen
+Entwicklungs- und Produktivstand und für die Archivierung abgeschlossener Kurse.
 
 ---
 
-## 14. Normative Pflege
+## 13. Supabase
 
-Die Datei `src/data/scoringEngine.ts` (WICHTIGKEIT_TABLE + Matrizen) ist **normativ geschützt** und darf nur nach Verifikation gegen TBA-Fachkurs FK RSI V 16.09.2020 verändert werden. Alle anderen Labels/Beschreibungen (z.B. in `kriteriumLabels.ts`) sind frei anpassbar.
+### 13.1 Tabellen
 
----
+| Tabelle | Inhalt | Rechte für anonym |
+|---|---|---|
+| `rsi_topics` | Themen als JSONB | nur lesen |
+| `rsi_scenes` | Szenen als JSONB | nur lesen |
+| `rsi_deficits` | Defizite als JSONB | nur lesen |
+| `rsi_kurse` | Kurse; das Passwortfeld ist gegen Lesen gesperrt | eingeschränkt lesen |
+| `rsi_results` | Einzelergebnisse | lesen und einfügen, kein Löschen |
 
-## 15. Test- vs. Produktivdaten
+Die Migrationen liegen unter `supabase/migrations/`. Sie legen die Kurstabelle
+an, führen den Pfeffer für Kurspasswörter ein und ergänzen `rsi_results` um die
+JSONB-Spalte `detail` mit den Angaben je Durchlauf. Ohne diese Spalte fällt der
+Client auf die Kopfdaten zurück, und der Bericht im Administrationsbereich bleibt
+auf Kennzahlen beschränkt.
 
-Aktueller Ansatz: **ein einziges Supabase-Projekt, Trennung über Kurse.**
+### 13.2 Ablauf
 
-- Für Test-/Demo-Inhalte einen eigenen Kurs anlegen (z.B. `FK RSI TEST`), zeitlich begrenzen und nach Abschluss löschen.
-- Topics/Scenes/Deficits sind global — Änderungen im Admin wirken sofort auf alle Kurse. Vor grösseren Umbauten: Export-Dump als Snapshot sichern (siehe BACKUP.md).
-- Separater Prod/Test-Supabase würde doppelte Pflege bedeuten; der Aufwand rechtfertigt den zusätzlichen Nutzen für die aktuelle Kursgrösse nicht.
+Bei jedem Speichern im Administrationsbereich geht der Aufruf mit dem Header
+`x-admin-token` an `admin-write`, das Token und Nutzlast prüft und mit
+`service_role` schreibt. Beim Start liest die App über den Anon-Key und hält das
+Ergebnis im Modulspeicher. Ist Supabase leer, wird einmalig aus dem localStorage
+befüllt, nach ausdrücklicher Zustimmung. Bei einem 401 räumt der Client Token und
+Auth-Flag.
 
-Falls später ein zweites Supabase-Projekt nötig wird (z.B. Staging vor Produktiv-Rollout): siehe BACKUP.md Abschnitt "Wiederherstellung Szenario B" für die Einrichtung (inkl. Edge-Function-Deploy + Secrets).
+### 13.3 Cache leeren
 
----
-
-## 16. Fehler-Monitoring (Sentry)
-
-Fehler auf User-Geräten werden in Sentry protokolliert, sofern `VITE_SENTRY_DSN` in Vercel-Env gesetzt ist. Ohne DSN: kein Monitoring, keine Datenübertragung (Pilot-Stand: leer).
-
-**Zugang:** Sentry-Projekt-Dashboard (Login über separates Sentry-Konto der Fachstelle).
-
-**Was wird erfasst:**
-- Unbehandelte JavaScript-Fehler mit Stacktrace
-- Performance-Traces (10 % Sampling)
-- Session Replays nur bei Fehler (30 %), Text maskiert, Medien blockiert
-
-**Was NICHT erfasst wird:**
-- Klartext-Benutzernamen (werden in `beforeSend` entfernt)
-- Panorama-Bildinhalte (Medien blockiert)
-- Eingabetexte in Formularen (`maskAllText: true` im Replay)
-
-**Sentry deaktivieren:** `VITE_SENTRY_DSN` in Vercel entfernen + Redeploy.
+Der Punkt «App zurücksetzen» im Avatar-Menü oder im Fuss der Startseite erzwingt
+einen vollständigen Neuaufbau.
 
 ---
 
-## 17. Accessibility (WCAG 2.1 AA)
+## 14. Störungsbehebung
 
-Seit v0.4.0/v0.5.0/v0.6.0 umgesetzt:
-- Globaler Fokus-Ring (`:focus-visible`)
-- Touch-Targets **44 × 44 px** in Navbar (Theme-Toggle, Avatar) und LanguageSwitcher (WCAG 2.5.5)
-- Focus-Trap in allen Modalen (Tab/Shift+Tab cycelt, Initial-Fokus, Restore beim Schliessen, WCAG 2.4.3)
-- ESC schliesst alle Modale (WCAG 2.1.2)
-- `aria-label` / `aria-pressed` / `aria-expanded` auf Icon-only-Buttons
-- Kontrastschwellen WCAG-AA-konform (Text-Disabled auf `#737373` angehoben)
+**Anmeldung schlägt fehl (401).** PIN prüfen, Logs von `admin-auth` ansehen,
+Secret gesetzt und Funktion neu deployt?
+
+**Schreibzugriffe schlagen nach einiger Zeit fehl (401).** Token abgelaufen, PIN
+neu eingeben. Bei wiederkehrenden Fällen prüfen, ob `ADMIN_TOKEN_SECRET`
+zwischenzeitlich gewechselt wurde.
+
+**CORS-Fehler.** Adresse fehlt in der Whitelist der Edge Functions; ergänzen und
+neu deployen.
+
+**Änderungen werden nicht gespeichert.** Netz prüfen, Browser-Konsole auf Fehler
+von Supabase oder den Edge Functions ansehen. Als Ausweg Export und Import auf
+einem anderen Gerät.
+
+**Daten erscheinen doppelt.** Cache nicht zurückgesetzt; App zurücksetzen.
+
+**Lösch-Buttons der Rangliste bleiben wirkungslos oder melden einen Fehler.**
+`admin-write` ist nicht in der aktuellen Fassung deployt.
+
+**PIN ist bekannt geworden.** Secret `ADMIN_PIN` ändern und `admin-auth` neu
+deployen. Ein Vercel-Redeploy ist nicht nötig.
+
+**Kurspasswort wird nicht akzeptiert.** Prüfen, ob `kurs-auth` deployt und
+`KURS_PASSWORT_PEPPER` gesetzt ist. Wurde der Pfeffer gewechselt, lassen sich
+bestehende Passwörter nicht mehr prüfen; sie sind neu zu setzen.
+
+**Panorama lädt nicht.** Bucket `rsi-textures` prüfen: Datei vorhanden,
+Leseregel aktiv? Im Browser muss die Content-Security-Policy `img-src` für
+`https://*.supabase.co` zulassen.
 
 ---
 
-## 18. Kontakt
+## 15. Normative Pflege
 
-**Fachstelle Verkehrssicherheit**
-Stevan Skeledzic — Leiter Verkehrssicherheit
+Die Datei `src/data/scoringEngine.ts` mit der WICHTIGKEIT_TABLE und den Matrizen
+ist normativ geschützt und darf nur nach Verifikation gegen den TBA-Fachkurs
+FK RSI V 16.09.2020 geändert werden. Ein Hook blockiert Änderungen daran.
+
+Frei anpassbar sind die Anzeigetexte, etwa in `kriteriumLabels.ts` und
+`abweichungLabels.ts`, ebenso die Punkte-Ökonomie in `scoreCalc.ts`, also
+Teilpunkte und Hinweis-Abzüge. Diese Trennung ist Absicht: Normlogik und
+didaktische Setzung sollen nicht in derselben Datei stehen.
+
+---
+
+## 16. Test- und Produktivdaten
+
+Es gibt ein einziges Supabase-Projekt; getrennt wird über Kurse. Für Test- und
+Demozwecke einen eigenen, zeitlich begrenzten Kurs anlegen und danach löschen.
+
+Themen, Szenen und Defizite gelten global, Änderungen wirken sofort auf alle
+Kurse. Vor grösseren Umbauten empfiehlt sich ein Export als Momentaufnahme. Ein
+zweites Supabase-Projekt würde doppelte Pflege bedeuten; für die derzeitige
+Kursgrösse lohnt sich das nicht.
+
+Wird später ein Staging-Projekt nötig, beschreibt `BACKUP.md` unter
+«Wiederherstellung Szenario B» die Einrichtung samt Edge Functions und Secrets.
+
+---
+
+## 17. Fehler-Monitoring
+
+Fehler auf den Geräten der Teilnehmenden gehen an Sentry, sofern
+`VITE_SENTRY_DSN` gesetzt ist. Ohne DSN findet keine Übertragung statt; im Pilot
+ist das Feld leer.
+
+Erfasst werden unbehandelte JavaScript-Fehler mit Aufrufliste,
+Performance-Messungen mit 10 % Stichprobe und Sitzungsaufzeichnungen nur im
+Fehlerfall mit 30 % Stichprobe, dabei Text maskiert und Medien blockiert.
+
+Nicht erfasst werden Klarnamen, die vor dem Versand entfernt werden, Bildinhalte
+der Panoramen und Eingaben in Formularen.
+
+Abschalten lässt sich das Monitoring, indem `VITE_SENTRY_DSN` in Vercel entfernt
+und neu deployt wird.
+
+---
+
+## 18. Barrierefreiheit
+
+Umgesetzt sind ein globaler Fokus-Ring über `:focus-visible`, Bedienelemente von
+mindestens 44 × 44 Pixel in Navigationsleiste und Sprachauswahl, eine Fokusfalle
+in allen Dialogen mit Rücksprung zum auslösenden Element, ESC zum Schliessen,
+`aria-label`, `aria-pressed` und `aria-expanded` auf Buttons ohne Beschriftung
+sowie Kontraste nach WCAG AA.
+
+---
+
+## 19. Kontakt
+
+Fachstelle Verkehrssicherheit
+Stevan Skeledzic, Leiter Verkehrssicherheit
 Tiefbauamt, Baudirektion, Kanton Zürich
 sicherheit.tba@bd.zh.ch · +41 43 259 31 20

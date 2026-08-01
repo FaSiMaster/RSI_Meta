@@ -1,22 +1,25 @@
-# Edge Function: `admin-auth`
+# Edge Function `admin-auth`
 
-Tauscht den Admin-PIN gegen ein kurzlebiges HMAC-signiertes Token. Damit
-kann der PIN aus dem Client-Bundle entfernt werden — der Client hält nur
-noch das Token in sessionStorage.
+Tauscht die Admin-PIN gegen ein kurzlebiges, HMAC-signiertes Token. Damit muss
+die PIN nicht mehr im Client-Bundle liegen; der Client hält nur noch das Token im
+sessionStorage.
 
-## Deploy
+## Deployment
 
 Dashboard → Edge Functions → Deploy new function:
+
 - **Name:** `admin-auth`
 - **Verify JWT:** aus
 - **Code:** Inhalt von `index.ts` einfügen
 - **Secrets** (Project Settings → Edge Functions → Secrets):
-  - `ADMIN_PIN` = aktueller 4-stelliger PIN (identisch mit admin-write)
-  - `ADMIN_TOKEN_SECRET` = 32 hex bytes, einmalig erzeugt, geheim halten.
-    Generieren z.B. mit `openssl rand -hex 32` oder PowerShell
+  - `ADMIN_PIN` – die aktuelle PIN, identisch mit der in `admin-write`
+    hinterlegten. Der Wert gehört in den Passwortsafe der Fachstelle, nicht in
+    dieses Repository.
+  - `ADMIN_TOKEN_SECRET` – 32 Byte hexadezimal, einmalig erzeugt und geheim zu
+    halten. Erzeugen etwa mit `openssl rand -hex 32` oder unter PowerShell mit
     `-join ((1..32) | %{ '{0:x2}' -f (Get-Random -Max 256) })`
 
-## Request
+## Anfrage
 
 ```http
 POST /functions/v1/admin-auth
@@ -24,10 +27,10 @@ content-type: application/json
 apikey: <anon-key>
 authorization: Bearer <anon-key>
 
-{ "pin": "5004" }
+{ "pin": "<pin>" }
 ```
 
-## Response
+## Antwort
 
 ```json
 {
@@ -36,19 +39,21 @@ authorization: Bearer <anon-key>
 }
 ```
 
-Token-Format: `<expires_at_ms>.<base64-hmac-sha256>`. Signiert mit
-`ADMIN_TOKEN_SECRET`. TTL 2 Stunden (hartcodiert).
+Das Token hat die Form `<expires_at_ms>.<base64-hmac-sha256>` und ist mit
+`ADMIN_TOKEN_SECRET` signiert. Die Gültigkeit beträgt fest zwei Stunden.
 
 ## Sicherheitsmodell
 
-- PIN nur noch Server-seitig (Supabase Secret)
-- PIN-Vergleich via Padding-Timing-Safe-Compare (64-Byte-Padding verhindert
-  Length-Leak)
-- Token signiert mit separatem Secret (nicht dem PIN)
-- CORS-Whitelist: Vercel-Produktion + lokaler Dev-Server
-- Keine Rate-Limits in der Function selbst (DB-basiert im Post-Pilot-Backlog)
+Die PIN liegt ausschliesslich auf der Serverseite als Supabase-Secret. Verglichen
+wird sie zeitkonstant, mit Auffüllung auf 64 Byte, damit die Länge nichts
+verrät. Signiert wird das Token mit einem eigenen Secret, nicht mit der PIN
+selbst. Statt eines offenen CORS gilt eine Whitelist mit der Produktionsadresse
+und dem lokalen Entwicklungsserver.
 
-## Token-Verifikation in admin-write
+Eine Begrenzung der Anfragerate enthält die Funktion nicht; eine
+datenbankgestützte Lösung steht auf der Liste für die Zeit nach dem Pilot.
+
+## Prüfung des Tokens in `admin-write`
 
 ```ts
 // Extrahiert aus admin-write:

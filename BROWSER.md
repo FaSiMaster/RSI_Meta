@@ -1,135 +1,150 @@
-# Browser-Kompatibilitäts-Matrix — RSI VR Tool
+# Browser-Kompatibilität – RSI VR Tool
 
-> Stand v0.6.0. Zu erwartende Unterschiede zwischen Geräten / Browsern und dokumentierte Tests.
+> Stand v0.11.0. Erwartbare Unterschiede zwischen Geräten und Browsern sowie der
+> Stand der Prüfungen.
 
 ---
 
 ## 1. Unterstützte Browser
 
-### 1.1 Desktop (Browser-Modus ohne VR)
+### 1.1 Arbeitsplatz, ohne VR
 
-| Browser | Minimalversion | Status | Anmerkung |
+| Browser | ab Version | Status | Anmerkung |
 |---|---|---|---|
-| **Chrome** (Chromium) | 120+ | voll unterstützt | primäre Entwicklungsplattform |
-| **Edge** | 120+ | voll unterstützt | Chromium-basiert |
-| **Firefox** | 115+ | voll unterstützt | getestet, keine bekannten Probleme |
-| **Safari** (macOS) | 17+ | voll unterstützt | WebGL-Kontext stabil |
-| **Opera** | 105+ | erwartet OK | nicht systematisch getestet |
+| **Chrome** | 120 | voll unterstützt | primäre Entwicklungsplattform |
+| **Edge** | 120 | voll unterstützt | ebenfalls Chromium |
+| **Firefox** | 115 | voll unterstützt | geprüft, keine bekannten Probleme |
+| **Safari** unter macOS | 17 | voll unterstützt | WebGL-Kontext stabil |
+| **Opera** | 105 | erwartet lauffähig | nicht systematisch geprüft |
 
-### 1.2 Mobile
+### 1.2 Mobil
 
 | Plattform | Browser | Status | Anmerkung |
 |---|---|---|---|
-| **iOS** | Safari 17+ | voll unterstützt | PWA installierbar (Teilen → Zum Home-Bildschirm) |
-| **iOS** | Chrome/Firefox | WebGL ja, PWA-Install nein | iOS-Policy: nur Safari kann installieren |
-| **Android** | Chrome 120+ | voll unterstützt | PWA-Installation via "Add to Home Screen" |
-| **Android** | Firefox | unterstützt | PWA eingeschränkt |
-| **Android** | Samsung Internet | voll unterstützt | Chromium-basiert |
+| **iOS** | Safari 17+ | voll unterstützt | Installation über Teilen → Zum Home-Bildschirm |
+| **iOS** | Chrome, Firefox | WebGL ja, Installation nein | unter iOS kann nur Safari installieren |
+| **Android** | Chrome 120+ | voll unterstützt | Installation über das Browsermenü |
+| **Android** | Firefox | unterstützt | Installation eingeschränkt |
+| **Android** | Samsung Internet | voll unterstützt | ebenfalls Chromium |
 
-### 1.3 VR (WebXR)
+### 1.3 VR
 
 | Gerät | Browser | Status | Anmerkung |
 |---|---|---|---|
-| **Meta Quest 3** | Meta Horizon OS Browser | **primäres Zielgerät** | WebXR `immersive-vr` Session, Controller-Tracking |
-| **Meta Quest 2** | Meta Horizon OS Browser | erwartet OK | niedrigere GPU-Leistung, bisher nicht getestet |
-| **Apple Vision Pro** | Safari VisionOS | teilweise | `immersive-vr` nicht standardmässig — `immersive-ar` nötig, Anpassung offen |
-| **Pico 4** | Pico Browser | erwartet OK | WebXR unterstützt, nicht getestet |
-| **Browser-Emulator** | Chrome "Immersive Web Emulator" | **Dev-Modus** | für Entwicklung ohne Headset |
+| **Meta Quest 3** | Browser des Horizon OS | **Zielgerät** | immersive Sitzung, Controller-Tracking, protokolliert in `docs/VR_SMOKE_REPORT.md` |
+| **Meta Quest 2** | Browser des Horizon OS | erwartet lauffähig | schwächere Grafikleistung, nicht geprüft |
+| **Apple Vision Pro** | Safari unter visionOS | teilweise | `immersive-vr` ist dort nicht der Regelfall; die nötige Anpassung steht aus |
+| **Pico 4** | Pico Browser | erwartet lauffähig | WebXR vorhanden, nicht geprüft |
+| **Emulator** | Chrome-Erweiterung «Immersive Web Emulator» | Entwicklung | Arbeiten ohne Headset |
 
 ---
 
-## 2. Feature-Matrix
+## 2. Funktionen im Vergleich
 
-| Feature | Chrome | Firefox | Safari | Quest Browser |
+| Funktion | Chrome | Firefox | Safari | Quest |
 |---|---|---|---|---|
-| WebGL 2.0 | ✓ | ✓ | ✓ | ✓ |
-| WebXR `immersive-vr` | ✓ (nur HTTPS) | ✓ | — | ✓ |
-| Service Worker | ✓ | ✓ | ✓ | ✓ |
-| IndexedDB | ✓ | ✓ | ✓ | ✓ |
-| localStorage | ✓ | ✓ | ✓ | ✓ |
-| PWA Install | ✓ | teilweise | ✓ (iOS Safari) | ✓ |
-| `crypto.subtle.digest` (SHA-256) | ✓ | ✓ | ✓ | ✓ |
-| WebP-Texturen | ✓ | ✓ | ✓ | ✓ |
-| Canvas 2D / OffscreenCanvas | ✓ | ✓ | teilweise | ✓ |
+| WebGL 2.0 | ja | ja | ja | ja |
+| WebXR `immersive-vr` | ja, nur über HTTPS | siehe Hinweis unten | nein | ja |
+| Service Worker | ja | ja | ja | ja |
+| IndexedDB | ja | ja | ja | ja |
+| localStorage | ja | ja | ja | ja |
+| Installation als App | ja | teilweise | ja, über Safari | ja |
+| `crypto.subtle.digest` | ja | ja | ja | ja |
+| WebP-Texturen | ja | ja | ja | ja |
+| Canvas 2D und OffscreenCanvas | ja | ja | teilweise | ja |
+
+`[Widerspruch prüfen]` Zur Unterstützung von `immersive-vr` in Firefox auf dem
+Arbeitsplatz liegt keine belastbare Quelle vor. Die frühere Angabe, WebXR sei
+dort seit Firefox 98 stabil, ist nicht belegt und für den Kursbetrieb ohne
+Bedeutung, weil geprüft wird auf Chrome mit Emulator und auf der Quest 3. Vor
+einer Empfehlung an Teilnehmende ist der Punkt zu verifizieren.
 
 ---
 
-## 3. Bekannte Eigenheiten
+## 3. Eigenheiten einzelner Umgebungen
 
-### 3.1 Meta Quest Browser
-- **Service-Worker-Cache** ist aggressiv — ein Update braucht oft einen Browser-Neustart. Deshalb: `skipWaiting: true` + `clientsClaim: true` in `vite.config.ts` und `cleanupOutdatedCaches: true`.
-- **GLTF-Modelle dürfen nicht per CDN geladen werden** (Crash-Risiko) → `xrStore` wird mit `model: false` initialisiert.
-- **Panorama-Textur-Spiegelung:** `repeat.x = -1` + `offset.x = 0.75` auf `@react-three/fiber` BackSide-Sphere, sonst spiegelverkehrte Anzeige nur im Quest Browser.
+### 3.1 Browser der Meta Quest
 
-### 3.2 iOS Safari
-- **WebXR nicht unterstützt** — VR-Modus auf iPhone/iPad nicht möglich. Nur Browser-Modus.
-- **`fullscreen` API eingeschränkt** — kein echter Vollbildmodus ohne User-Interaktion.
-- **localStorage-Limit:** ca. 5 MB — grosse Panorama-Vorschaubilder gehen, aber mehr als ~10 komprimierte Bilder pro Gerät ist knapp.
+Der Cache des Service Workers ist hartnäckig; nach einer neuen Fassung braucht es
+oft einen Neustart des Browsers. Deshalb stehen `skipWaiting`, `clientsClaim` und
+`cleanupOutdatedCaches` in `vite.config.ts` alle auf aktiv.
 
-### 3.3 Chrome/Edge Desktop
-- **WebXR nur mit HTTPS** — localhost ist Ausnahme
-- **DevTools WebXR-Emulator** (Chrome Extension "Immersive Web Emulator" von Meta) erlaubt Dev ohne Headset
+GLTF-Modelle dürfen nicht über ein CDN geladen werden, weil das den Browser zum
+Absturz bringen kann. Der XR-Store wird darum mit `model: false` initialisiert.
 
-### 3.4 Firefox Desktop
-- WebXR seit Firefox 98 stabil, aber langsamere Performance bei grossen Panoramen gegenüber Chrome
+Die Panorama-Textur braucht `repeat.x = -1` und `offset.x = 0.75` auf der Sphäre
+mit `BackSide`. Ohne diese Korrektur erscheint das Bild ausschliesslich auf der
+Quest spiegelverkehrt.
+
+### 3.2 Safari unter iOS
+
+WebXR fehlt, ein VR-Betrieb auf iPhone und iPad ist damit ausgeschlossen; es
+bleibt der gewöhnliche Browser-Modus. Der Vollbildmodus ist ohne Zutun der
+nutzenden Person eingeschränkt. Der localStorage fasst rund 5 MB, was für etwa
+zehn komprimierte Vorschaubilder je Gerät reicht.
+
+### 3.3 Chrome und Edge am Arbeitsplatz
+
+WebXR verlangt HTTPS; `localhost` ist die Ausnahme. Für die Entwicklung ohne
+Headset dient die Erweiterung «Immersive Web Emulator» von Meta.
 
 ---
 
-## 4. Getestete Szenarien
+## 4. Geprüfte Abläufe
 
-| Test | Chrome Desktop | Firefox Desktop | Safari iPadOS | Quest 3 Browser |
+| Prüfung | Chrome | Firefox | Safari iPadOS | Quest 3 |
 |---|---|---|---|---|
-| Login + Rangliste | ✓ | ✓ | ✓ | ✓ |
-| 360°-Panorama laden + Orbit | ✓ | ✓ | ✓ | ✓ |
-| Defizit-Klick + Bewertungsflow | ✓ | ✓ | ✓ | ✓ |
-| Perspektiven-Wechsel via Diamant | ✓ | ✓ | ✓ | ✓ |
-| PWA Installation | ✓ | teilweise | ✓ | ✓ (via 3-Punkte-Menü) |
-| Offline nach Install | teilweise | n/a | teilweise | teilweise |
-| Admin-Dashboard | ✓ | ✓ | ✓ | ✓ (klein auf Quest) |
-| BildEditor (Canvas + Zoom + Pan) | ✓ | ✓ | ✓ | nicht relevant |
-| WebXR VR-Session | ✓ (mit Emulator) | ✓ (mit Emulator) | n/a | ✓ |
+| Anmeldung und Rangliste | ja | ja | ja | ja |
+| Panorama laden und drehen | ja | ja | ja | ja |
+| Defizit anklicken und bewerten | ja | ja | ja | ja |
+| Standort wechseln | ja | ja | ja | ja |
+| Installation als App | ja | teilweise | ja | ja, über das Browsermenü |
+| Betrieb ohne Netz nach Installation | teilweise | entfällt | teilweise | teilweise |
+| Administrationsbereich | ja | ja | ja | ja, klein auf der Quest |
+| Verortungs-Editor | ja | ja | ja | nicht vorgesehen |
+| Immersive Sitzung | ja, mit Emulator | siehe Hinweis oben | entfällt | ja |
+
+Die Prüfungen auf dem Headset sind je Version in `docs/VR_SMOKE_REPORT.md`
+protokolliert.
 
 ---
 
-## 5. Minimalanforderungen für Kursteilnehmer
+## 5. Mindestanforderungen für Teilnehmende
 
-### 5.1 Empfohlen
-- **Gerät:** Notebook/Desktop oder Meta Quest 3
-- **Browser:** Chrome 120+ oder Quest Browser
-- **Bildschirm:** mindestens 1280×720 (Browser-Modus)
-- **Netz:** mind. 10 Mbit/s für Panorama-Laden
+Empfohlen sind ein Notebook oder eine Meta Quest 3, Chrome ab Version 120 oder
+der Browser der Quest, eine Auflösung ab 1280 × 720 im Browser-Modus und eine
+Verbindung ab 10 Mbit/s für das Laden der Panoramen.
 
-### 5.2 Akzeptabel
-- iPad mit Safari 17+
-- Neueres Android-Smartphone mit Chrome
-- Desktop-PC mit beliebigem aktuellen Browser
+Ausreichend sind auch ein iPad mit Safari ab Version 17, ein neueres
+Android-Gerät mit Chrome oder ein Arbeitsplatzrechner mit einem aktuellen
+Browser.
 
-### 5.3 Nicht unterstützt
-- Internet Explorer (alle Versionen)
-- Chrome < 90, Firefox < 110, Safari < 15
-- Handys älter als 3 Jahre (WebGL-Performance zu gering)
+Nicht unterstützt sind der Internet Explorer, Chrome vor Version 90, Firefox vor
+110, Safari vor 15 sowie Mobiltelefone, die älter als drei Jahre sind, weil die
+Grafikleistung nicht reicht.
 
 ---
 
-## 6. Troubleshooting
+## 6. Störungsbehebung
 
-**Panorama lädt nicht.**
-→ WebGL prüfen unter [get.webgl.org](https://get.webgl.org). Falls Fehler: Grafikkartentreiber aktualisieren.
+**Das Panorama lädt nicht.** WebGL unter [get.webgl.org](https://get.webgl.org)
+prüfen; bei einem Fehler den Grafiktreiber aktualisieren.
 
-**VR-Button erscheint nicht auf dem Quest.**
-→ WebXR-Flag im Quest Browser aktiv? Einstellungen → Developer → WebXR aktiviert.
+**Auf der Quest fehlt der VR-Button.** Im Browser der Quest unter Einstellungen →
+Developer prüfen, ob WebXR aktiv ist.
 
-**PWA kann nicht installiert werden.**
-→ HTTPS nötig. Adressleiste prüfen, "http://" statt "https://" ist der häufigste Grund.
+**Die App lässt sich nicht installieren.** Dafür braucht es HTTPS. Der häufigste
+Grund ist eine Adresse, die mit `http://` beginnt.
 
-**Nach Update sehe ich noch alte Version.**
-→ Browser-Cache leeren, oder in der App Footer → "App zurücksetzen".
+**Nach einer Aktualisierung erscheint die alte Fassung.** Browser-Cache leeren
+oder in der App «App zurücksetzen» wählen.
 
 ---
 
-## 7. Zukünftige Browser-Targets
+## 7. Künftige Ziele
 
-- **iPadOS WebXR (sobald Apple freischaltet)** — aktuell kein öffentlicher Zeitplan
-- **Chrome Android mit Cardboard** — niedrige Priorität, nicht im Schulungs-Setup
+Sobald Apple WebXR unter iPadOS freischaltet, kommt die Plattform hinzu; einen
+öffentlichen Zeitplan gibt es nicht. Chrome unter Android mit Cardboard hat
+niedrige Priorität und ist im Schulungsbetrieb nicht vorgesehen.
 
-*Browser-Kompatibilität wird vor jedem Major-Release neu validiert.*
+*Die Kompatibilität wird vor jedem grösseren Release neu geprüft.*

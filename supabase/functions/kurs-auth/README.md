@@ -1,7 +1,7 @@
-# Edge Function: `kurs-auth`
+# Edge Function `kurs-auth`
 
-Verifiziert ein Kurs-Passwort serverseitig — seit v0.7.0 (Sprint 3, Server-
-Salt-Pfeffern, Hard-Cutover).
+Prüft ein Kurspasswort serverseitig. Eingeführt mit v0.7.0 im Rahmen des
+Server-Pfefferns, als harter Wechsel ohne Übergangsfrist.
 
 ## Ablauf
 
@@ -24,28 +24,31 @@ Client                               kurs-auth (Edge)              Supabase DB
   │◀──────────────────────────────────────┤                              │
 ```
 
-## Deploy
+## Deployment
 
 Supabase Dashboard → Edge Functions → Deploy new:
+
 - **Name:** `kurs-auth`
 - **Verify JWT:** aus
-- **Code:** Inhalt von `index.ts` einfuegen
+- **Code:** Inhalt von `index.ts` einfügen
 - **Secrets** (Project Settings → Edge Functions → Secrets):
-  - `SUPABASE_URL` — automatisch gesetzt
-  - `SUPABASE_SERVICE_ROLE_KEY` — automatisch gesetzt
-  - `KURS_PASSWORT_PEPPER` — 32 hex bytes, einmalig generieren:
-    - Linux/Mac: `openssl rand -hex 32`
-    - PowerShell: `-join ((1..32) | %{ '{0:x2}' -f (Get-Random -Max 256) })`
-    - **Pepper NIE rotieren, ohne alle Kurs-Passwoerter neu zu setzen** —
-      sonst werden bestehende Hashes ungueltig.
+  - `SUPABASE_URL` – wird automatisch gesetzt
+  - `SUPABASE_SERVICE_ROLE_KEY` – wird automatisch gesetzt
+  - `KURS_PASSWORT_PEPPER` – 32 Byte hexadezimal, einmalig erzeugen:
+    - unter Linux und macOS mit `openssl rand -hex 32`
+    - unter PowerShell mit
+      `-join ((1..32) | %{ '{0:x2}' -f (Get-Random -Max 256) })`
+    - **Den Pfeffer nie wechseln, ohne alle Kurspasswörter neu zu setzen**,
+      sonst werden die bestehenden Hashes ungültig.
 
 ## Voraussetzungen
 
-1. Migration `2026_04_24_kurs_passwort_pfeffer.sql` ausgefuehrt
-   (Spalte `passwort_hash`, Column-Level-Grants)
-2. `admin-write` v0.7.0 deployed (hasht Passwoerter beim Upsert serverseitig)
+Die Migration `2026_04_24_kurs_passwort_pfeffer.sql` muss ausgeführt sein; sie
+legt die Spalte `passwort_hash` an und entzieht das Leserecht darauf. Ausserdem
+muss `admin-write` mindestens in der Fassung v0.7.0 deployt sein, weil dort die
+Passwörter beim Upsert serverseitig gehasht werden.
 
-## Request
+## Anfrage
 
 ```http
 POST /functions/v1/kurs-auth
@@ -56,35 +59,45 @@ authorization: Bearer <anon-key>
 { "zugangscode": "FK-RSI-123456", "passwort": "meinPasswort" }
 ```
 
-## Response
+## Antwort
 
 ```json
 { "ok": true }   // Passwort korrekt
 { "ok": false }  // Passwort falsch ODER Kurs nicht gefunden (kein Info-Leak)
 ```
 
-Fehler-Responses: 400 (missing/invalid fields), 500 (server misconfigured,
-DB error, Hash-Format-Fehler).
+Dass ein falsches Passwort und ein unbekannter Kurs dieselbe Antwort erhalten,
+ist Absicht: Andernfalls liesse sich über die Antwort ermitteln, welche
+Zugangscodes existieren.
 
-## Format `passwort_hash`
+Fehler werden mit 400 beantwortet, wenn Felder fehlen oder unbrauchbar sind, und
+mit 500 bei fehlender Konfiguration, Datenbankfehlern oder einem unerwarteten
+Format des Hashs.
+
+## Format von `passwort_hash`
 
 ```
 kp:v2:<salt_hex_32>:<hash_hex_64>
 ```
 
-- `kp:v2:` — Marker + Versionsprefix (v1 war client-seitiges SHA-256, entfernt)
-- Salt: 16 Bytes (32 Hex-Zeichen), per Kurs zufaellig
-- Hash: PBKDF2-HMAC-SHA256(passwort + pepper, salt, 100'000 iter, 32 Byte Output)
+Der Marker `kp:v2:` nennt die Version; v1 war ein SHA-256 im Client und ist
+entfernt. Das Salz umfasst 16 Byte und wird je Kurs zufällig gezogen. Der Hash
+entsteht aus PBKDF2-HMAC-SHA256 über Passwort und Pfeffer, mit dem Salz, 100'000
+Iterationen und 32 Byte Ausgabe.
 
 ## Sicherheitsmodell
 
-- **Pepper** (Server-Secret) verhindert Offline-Brute-Force auch bei Hash-Leak:
-  ohne Kenntnis des Peppers sind alle Kandidaten unbenutzbar.
-- **Salt** (pro Kurs) verhindert Rainbow-Tables und Equal-Password-Detection.
-- **PBKDF2 100k Iter** bremst GPU-Brute-Force von ~10^9/s auf ~10^3/s.
-- **Column-Grant** verhindert, dass anon SELECT den Hash lesen kann —
-  Angreifer muss erst einen DB-Admin- oder SERVICE_ROLE-Breach schaffen.
-- **Timing-safe Compare** via Padding-Trick verhindert Side-Channel auf den
-  Hash.
-- **Rate-Limits** (Post-Pilot): aktuell keine in der Function. Missbrauch
-  ueber das Web-UI wird zudem durch Admin-Kurs-Verwaltung begrenzt.
+Der Pfeffer liegt als Secret auf dem Server und macht ein Durchprobieren auch
+dann unbrauchbar, wenn die Hashes abfliessen: Ohne ihn führt kein Kandidat zum
+Ziel. Das Salz je Kurs verhindert vorberechnete Tabellen und verrät nicht, dass
+zwei Kurse dasselbe Passwort tragen. Die 100'000 Iterationen bremsen ein
+Durchprobieren auf der Grafikkarte um mehrere Grössenordnungen.
+
+Weil das Leserecht auf die Spalte entzogen ist, kommt ein anonymer Zugriff nicht
+an den Hash; dafür bräuchte es zuerst Zugang zur Datenbank oder zum
+Service-Role-Schlüssel. Verglichen wird zeitkonstant, damit die Dauer der Antwort
+nichts über den Hash verrät.
+
+Eine Begrenzung der Anfragerate enthält die Funktion nicht; sie ist für die Zeit
+nach dem Pilot vorgesehen. Der Missbrauch über die Oberfläche wird dadurch
+begrenzt, dass Kurse nur im Administrationsbereich entstehen.

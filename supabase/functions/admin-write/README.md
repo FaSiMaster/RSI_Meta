@@ -1,58 +1,81 @@
-# Edge Function: `admin-write`
+# Edge Function `admin-write`
 
-Proxy für Admin-Schreibzugriffe auf die Content-Tabellen `rsi_topics`,
-`rsi_scenes`, `rsi_deficits`. Prüft den Admin-PIN (Header `x-admin-pin`)
-gegen das Supabase-Secret `ADMIN_PIN` und schreibt mit dem
-`SUPABASE_SERVICE_ROLE_KEY` direkt in die DB — die RLS-Policies können
-damit auf **anon SELECT only** verschärft werden.
+Nimmt alle schreibenden Zugriffe des Administrationsbereichs entgegen und führt
+sie mit dem `SUPABASE_SERVICE_ROLE_KEY` aus. Weil die Funktion damit an RLS
+vorbei schreibt, können die Regeln der Tabellen auf reines Lesen für anonyme
+Zugriffe verschärft werden.
 
-## Deploy
+Zugelassen sind `rsi_topics`, `rsi_scenes`, `rsi_deficits`, `rsi_kurse` und
+`rsi_results`. Für `rsi_results` gilt eine Sonderregel: Die Tabelle ist seit
+v0.9.9 **nur zum Löschen** freigegeben, mit genau einem Filter je Aufruf, weil
+die RLS anonym nur Lesen und Einfügen erlaubt und direkte Löschversuche aus dem
+Client von Postgres verworfen wurden.
 
-### Variante A — Supabase Dashboard (ohne CLI)
+## Authentifizierung
 
-1. **Dashboard** → Projekt `gtweaesunpvwjlttyaab` → **Edge Functions** → **Deploy a new function**
+Die Funktion prüft **kein** PIN, sondern das Token aus `admin-auth`. Der Client
+schickt es im Header `x-admin-token`; verifiziert wird zeitkonstant gegen
+`ADMIN_TOKEN_SECRET`, samt Ablaufzeit. Der Weg über die PIN im Header stammt aus
+der Zeit vor v0.6.0 und besteht nicht mehr.
+
+## Deployment
+
+### Über das Dashboard
+
+1. Dashboard → Projekt → **Edge Functions** → **Deploy a new function**
 2. **Function name:** `admin-write`
-3. **Verify JWT:** **aus** (Schalter)
-4. Inhalt von `index.ts` komplett in den Editor kopieren → **Deploy**
-5. **Settings → Edge Functions → Secrets** → `ADMIN_PIN` = `5004` hinzufügen
+3. **Verify JWT:** aus
+4. Inhalt von `index.ts` in den Editor kopieren und deployen
+5. Unter Settings → Edge Functions → Secrets muss `ADMIN_TOKEN_SECRET` gesetzt
+   sein, mit demselben Wert wie bei `admin-auth`
 
-### Variante B — Supabase CLI
+### Über die CLI
 
 ```bash
 supabase functions deploy admin-write --no-verify-jwt
-supabase secrets set ADMIN_PIN=5004
 ```
 
-## Test
+## Prüfung
+
+Zuerst über `admin-auth` ein Token beziehen, dann:
 
 ```bash
 curl -X POST \
-  -H "x-admin-pin: 5004" \
+  -H "x-admin-token: <token aus admin-auth>" \
   -H "content-type: application/json" \
   -d '{"table":"rsi_topics","op":"upsert","rows":[{"id":"test","data":{}}]}' \
-  https://gtweaesunpvwjlttyaab.supabase.co/functions/v1/admin-write
+  https://<project-ref>.supabase.co/functions/v1/admin-write
 ```
 
-Erwartet: `{"ok":true,"table":"rsi_topics","op":"upsert","count":1}`
+Erwartet wird `{"ok":true,"table":"rsi_topics","op":"upsert","count":1}`.
 
 ## Sicherheitsmodell
 
-- `ADMIN_PIN` ist Server-seitig (Supabase Secret, nicht im Client-Bundle)
-- PIN-Vergleich via Timing-Safe-Compare
-- Whitelist auf Tables + Operations (kein SQL-Injection möglich)
-- Row-Limit 200 pro Upsert gegen Flood
-- `verify_jwt=false` ist OK, weil der PIN als Shared Secret dient
+Das Token wird zeitkonstant verglichen und trägt seine Ablaufzeit mit sich. Für
+Tabellen und Operationen gilt eine Whitelist, für jede Zeile eine Schemaprüfung
+mit erlaubten Feldern; damit sind eingeschleuste Anweisungen ausgeschlossen. Je
+Anfrage sind höchstens 200 Zeilen und je Zeile 256 KB zugelassen. Die abgeschaltete
+JWT-Prüfung ist vertretbar, weil die Funktion ihre eigene Tokenprüfung mitbringt.
 
-## Bekannte Grenzen (Pilot)
+Kurspasswörter werden beim Upsert auf `rsi_kurse` serverseitig gehasht; der
+Klartext verlässt den Client nur über HTTPS und wird nicht gespeichert.
 
-- **Kein per-IP-Rate-Limit** in der Function selbst. Supabase Edge Functions
-  laufen auf mehreren Deno-Instanzen, ein In-Memory-Counter wäre wirkungslos.
-  Zuverlässiger Schutz erfordert DB-basierten Limiter (Backlog Post-Pilot).
-- Supabase/Cloudflare-Gateway enforct aber ein globales per-IP-Limit
-  (~1000 req/10 s) — Brute-Force ist damit langsam, aber nicht unmöglich.
-- 4-stelliger PIN = 10'000 Kombinationen. Akzeptiertes Pilot-Risiko, weil
-  die App keine sensiblen personenbezogenen, finanziellen oder DSGVO-
-  relevanten Daten enthält. Worst-Case = Inhalts-Zerstörung, aus lokalen
-  Kopien + Git rekonstruierbar.
-- Für Produktion: PIN auf 6+ Stellen, DB-Rate-Limit, ggf. Supabase-Auth mit
-  Rollen (Backlog, siehe CHANGELOG-Eintrag unter "Sicherheit — Post-Pilot").
+## Bekannte Grenzen im Pilotbetrieb
+
+Eine Begrenzung je IP enthält die Funktion nicht. Edge Functions laufen auf
+mehreren Instanzen, ein Zähler im Arbeitsspeicher bliebe wirkungslos; verlässlich
+wäre nur eine datenbankgestützte Lösung, die nach dem Pilot vorgesehen ist. Das
+vorgelagerte Gateway begrenzt die Rate global je IP, was Rateversuche verlangsamt,
+aber nicht ausschliesst.
+
+Eine vierstellige PIN ergibt 10'000 Möglichkeiten. Das ist als Pilotrisiko
+bewusst in Kauf genommen; im schlimmsten Fall werden Inhalte zerstört, die sich
+aus Git und den lokalen Kopien wiederherstellen lassen. Für den Regelbetrieb
+vorgesehen sind eine längere PIN, eine Ratenbegrenzung in der Datenbank und
+gegebenenfalls die Rechteverwaltung von Supabase.
+
+`[Widerspruch prüfen]` Die frühere Fassung begründete das akzeptierte Risiko
+damit, die Anwendung enthalte keine datenschutzrelevanten Daten. Gespeichert
+werden pseudonymisierte Namen, Punktestände und Kurszugehörigkeiten; das
+Datenschutzgesetz ist damit einschlägig, auch wenn die Angaben nicht besonders
+schützenswert sind. Die Risikoeinschätzung ist von der Fachstelle zu bestätigen.

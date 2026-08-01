@@ -3,9 +3,13 @@
 **Road Safety Inspection – Immersive Training**
 Fachstelle Verkehrssicherheit (FaSi), Tiefbauamt, Kanton Zürich
 
-Stand: v0.6.0 (2026-04-20) · Live: [rsi-meta.vercel.app](https://rsi-meta.vercel.app)
+Stand: v0.11.0 (30. Juli 2026) · Live: [rsi-meta.vercel.app](https://rsi-meta.vercel.app)
 
-Ein browser-basiertes Trainingstool für die normative 9-Schritte RSI-Beurteilungsmethodik. Inspektoren üben die Einstufung von Strassenszenen anhand von Wichtigkeit, Abweichung, Relevanz SD, NACA-Skala und Unfallrisiko — mit direktem Normenbezug (TBA FK RSI V 16.09.2020, bfu-Bericht 73, SN 641 723).
+Ein Trainingswerkzeug für die normative 9-Schritte-Methodik der Road Safety
+Inspection. Inspektorinnen und Inspektoren beurteilen Strassenszenen im
+360°-Panorama nach Wichtigkeit, Abweichung, Relevanz SD, NACA-Skala und
+Unfallrisiko, im Browser oder in VR auf der Meta Quest 3. Grundlage sind der
+TBA-Fachkurs FK RSI V 16.09.2020, der bfu-Bericht 73 und SN 641 723.
 
 ---
 
@@ -18,7 +22,8 @@ npm run dev
 
 Öffnet unter `http://localhost:5173`.
 
-Lokale `.env.local` anlegen (siehe ADMIN_HANDBUCH.md Abschnitt 1.2 für alle Env-Vars):
+Lokale `.env.local` anlegen; alle Variablen erklärt Abschnitt 1.2 des
+Admin-Handbuchs:
 
 ```
 VITE_SUPABASE_URL=https://<project>.supabase.co
@@ -27,146 +32,162 @@ VITE_USERNAME_SALT=<einmalig via openssl rand -hex 16>
 # VITE_SENTRY_DSN=<optional>
 ```
 
+Weitere Skripte: `npm run build` erzeugt den Produktionsbuild, `npm test` führt
+die Unit-Tests aus, `npm run preview -- --host` prüft den Build im Netz, etwa vom
+Headset aus.
+
 ---
 
-## Tech Stack
+## Tech-Stack
 
 | Schicht | Technologie |
 |---|---|
-| Framework | React 18 + Vite 8 + TypeScript (strict) |
-| Animation | Framer Motion (motion/react v12) |
+| Framework | React 18.3 + Vite 7.3 + TypeScript strict |
+| Styling | Tailwind CSS 4.2 (`@tailwindcss/vite`) + CSS Custom Properties |
+| Animation | Framer Motion (`motion` 12) |
 | Icons | lucide-react |
-| i18n | react-i18next (de/fr/it/en) — je 473 Keys, 0 Diff |
-| Persistenz (Client) | localStorage (`rsi-v3-*` Keys) |
-| Backend | Supabase (Postgres + Storage + Edge Functions) |
-| PWA | vite-plugin-pwa v0.19 (Service Worker, Manifest) |
-| Design | ZH Corporate Design (CSS Custom Properties) |
-| 3D / XR | @react-three/fiber v8 + @react-three/xr v6 (Phase 3+) |
-| CI | GitHub Actions (`npm ci && tsc --noEmit && vite build` auf PR + main) |
+| i18n | react-i18next 17 / i18next 26 – de, fr, it, en zu je 600 Schlüsseln |
+| State | zustand |
+| 3D / XR | `@react-three/fiber` 8 + `@react-three/xr` 6 + `@react-three/drei` 9 + three 0.169 |
+| PDF | pdfmake 0.3, dynamisch nachgeladen |
+| Persistenz (Client) | localStorage mit Präfix `rsi-v3-` |
+| Backend | Supabase: Postgres, Storage, Edge Functions |
+| Fehler-Monitoring | Sentry (optional, ohne DSN inaktiv) |
+| PWA | vite-plugin-pwa 1.2 (Service Worker, Manifest) |
+| Tests | Vitest + Playwright |
+| CI | GitHub Actions: `npm ci && tsc --noEmit && vite build` auf PR und main |
+
+**Vite bleibt auf 7.x.** Ab Vite 8 kommt Rolldown zum Einsatz, mit dem
+`vite-plugin-pwa` derzeit nicht zusammenarbeitet.
 
 ---
 
-## Funktionsumfang (Phase 2)
+## Funktionsumfang
 
-### RSI-Beurteilungsfluss (9 Schritte)
-
-Der Kern der Applikation: Jedes Defizit wird in 9 normativen Schritten beurteilt.
+### Der Beurteilungsfluss
 
 | Schritt | Art | Inhalt |
 |---|---|---|
-| 1 | Eingabe | Wichtigkeit (io/ao aus WICHTIGKEIT_TABLE) |
-| 2 | Automatisch | Wichtigkeit in Relevanz-Matrix |
+| 1 | Eingabe | Wichtigkeit aus der WICHTIGKEIT_TABLE (io/ao) |
+| 2 | Automatisch | Wichtigkeit in die Relevanz-Matrix |
 | 3 | Eingabe | Abweichung beurteilen |
-| 4 | Automatisch | Abweichung in Relevanz-Matrix |
-| 5 | Automatisch | Relevanz SD = Ergebnis |
-| 6 | Automatisch | Relevanz SD in Unfallrisiko-Matrix |
-| 7 | Eingabe | NACA-Einstufung (0–7, bfu-Bericht 73) |
-| 8 | Automatisch | Unfallschwere in Unfallrisiko-Matrix |
-| 9 | Automatisch | Unfallrisiko = Gesamtergebnis |
+| 4 | Automatisch | Abweichung in die Relevanz-Matrix |
+| 5 | Automatisch | Relevanz SD |
+| 6 | Automatisch | Relevanz SD in die Unfallrisiko-Matrix |
+| 7 | Eingabe | NACA-Einstufung 0–7 nach bfu-Bericht 73 |
+| 8 | Automatisch | Unfallschwere in die Unfallrisiko-Matrix |
+| 9 | Automatisch | Unfallrisiko als Gesamtergebnis |
 
-Quelle: TBA-Fachkurs FK RSI, V 16.09.2020 / SN 641 723 Abb. 2
+Quelle: TBA-Fachkurs FK RSI V 16.09.2020 und SN 641 723 Abb. 2.
 
-### Weitere Features (Stand v0.6.0)
+### Training
 
-- **Themen & Szenen** mit ID-Format `SZ_YYYY_NNN`, Defizite `SD_NNNN`
-- **Admin-Dashboard** (Token-gesichert via Supabase Edge Function) mit Defizit-CRUD, automatischer Neuberechnung von Relevanz SD und Unfallrisiko
-- **Panorama-Bilder in Supabase Storage** (Bucket `rsi-textures`), BildUpload mit Tabs «Bibliothek» + «Hochladen»
-- **Piktogramm-Katalog** (23 Lucide-Icons) für Oberthemen
-- **Norm-Suchfeld** mit 32 VSS/SN-Normen, Autocomplete + Tag-System
-- **Trainer-Hinweis pro Szene**, **Booster mit +10 % / +20 %-Bonus**
-- **4-Ebenen-Ranking** (Gesamt, Thema, Kurs, persönlich)
-- **Gamification:** Gewichtete Punkte pro Schritt, Sterne, Zeiterfassung, Best-of-Prinzip
-- **Dark / Light Mode** mit Toggle auf LandingPage und Avatar-Popover
-- **Mehrsprachig** in de/fr/it/en (Hero, FeedbackModal, ScoringFlow, Navbar, alle User-Strings)
-- **WCAG 2.1 AA:** 44×44 Touch-Targets, Focus-Trap in Modalen, ESC-Handler, globaler Fokus-Ring
-- **Branding:** TBA ISSI-Ausbildungslogo + Wortmarke «RSI VR Tool» (IssiLogo.tsx)
+Themen und Szenen tragen die Kennungen `SZ_YYYY_NNN` und `SD_NNNN`. Eine Szene
+kann mehrere 360°-Standorte haben, zwischen denen Marker im Bild hin und zurück
+führen; Verortungen gelten je Standort, ohne Rückfall auf das Haupt-Panorama.
+
+Die Hilfestellung arbeitet zweistufig: Der Standort-Hinweis zeigt für 10 Punkte
+je Fund, wo noch etwas offen ist, die Hotspot-Stufe für 25 Punkte auch die genaue
+Stelle. Massgebend ist die beim Fund aktive Stufe.
+
+Je Defizit sind 100 Punkte erreichbar: 25 für die Kategorie – 15, wenn das
+Defizit gefunden, aber falsch einsortiert wurde – und je 25 für die Schritte 1, 3
+und 7. Booster-Defizite geben einen prozentualen Zuschlag. Gewertet wird der
+beste Durchgang; die Sterne richten sich nach dem Prozentwert.
+
+Bestanden ist eine Szene, wenn alle Pflichtdefizite gefunden sind und mindestens
+60 % der Punkte erreicht wurden, wahlweise mit Abweichung je Szene.
+
+Die Rangliste gibt es gesamthaft, je Thema, je Kurs und als persönlichen
+Fortschritt, durchwegs pseudonymisiert. Nur die eigene Zeile zeigt den Klarnamen.
+
+### VR
+
+In der immersiven Sitzung auf der Meta Quest 3 läuft der vollständige Ablauf
+inklusive Kategorie, Bewertung, Auswertung, Matrix-Herleitung und Lernkarte. Die
+Panels lassen sich mit dem Controller verschieben; ihre Position bleibt je Panel
+gespeichert. Treffer werden haptisch quittiert.
+
+### Bericht
+
+Der PDF-Bericht enthält die Auswertung und die Befundliste im RSI-Format, je
+Defizit mit Kriterium, Soll- und Ist-Beurteilung über die ganze Kette und
+Normbezug. Auslösen lässt er sich im Szenen-Abschluss, im Administrationsbereich
+je Kurs und je Einzelresultat.
+
+### Verwaltung
+
+Der Administrationsbereich ist über eine Edge Function token-gesichert und
+umfasst die Pflege von Themen, Szenen und Defiziten samt automatischer
+Neuberechnung von Relevanz SD und Unfallrisiko, den Verortungs-Editor, den
+Bild-Upload in den Supabase-Bucket `rsi-textures`, einen Piktogramm-Katalog aus
+23 Icons, ein Normfeld mit 32 VSS- und SN-Einträgen samt Autovervollständigung,
+die Kursverwaltung mit optionaler Themen-Exklusivität sowie Export und Import der
+gesamten Datenbasis als JSON.
+
+### Zugänglichkeit und Gestaltung
+
+Ausrichtung auf WCAG 2.1 AA mit Bedienelementen ab 44 × 44 Pixel, Fokusfalle in
+Dialogen, ESC-Behandlung und durchgehendem Fokus-Ring. Helles und dunkles
+Erscheinungsbild nach dem Corporate Design des Kantons Zürich, dazu das
+ISSI-Ausbildungslogo des TBA.
 
 ---
 
-## Projektstruktur (Stand v0.6.0)
+## Projektstruktur
 
 ```
 RSI_Meta/
-├── CLAUDE.md                       # Projekt-Regeln für Claude Code
-├── CHANGELOG.md
-├── README.md                       # Diese Datei
-├── AUDIT_REPORT.md
-├── ADMIN_HANDBUCH.md
-├── BENUTZERHANDBUCH.md
-├── BACKUP.md
-├── BROWSER.md
-├── OFFLINE.md
-├── META_STORE_CHECKLIST.md
-├── REVIEW_CODE.md / REVIEW_SECURITY.md
-├── GLOSSAR.md
-├── package.json / vite.config.ts / tsconfig.json / index.html
-├── .github/workflows/ci.yml        # tsc + vite build auf PR + push main
+├── CLAUDE.md · CHANGELOG.md · README.md
+├── ADMIN_HANDBUCH.md · BENUTZERHANDBUCH.md · GLOSSAR.md
+├── BACKUP.md · BROWSER.md · OFFLINE.md · META_STORE_CHECKLIST.md
+├── AUDIT_REPORT.md · REVIEW_CODE.md · REVIEW_SECURITY.md
+├── docs/VR_SMOKE_REPORT.md      # Headset-Testprotokolle
+├── .github/workflows/           # CI + Supabase-Keep-Alive
 ├── public/
-│   ├── icons/                      # PWA-Icons 192/512
-│   ├── logo/
-│   │   ├── issi-logo_hell.png      # TBA ISSI für hellen Hintergrund
-│   │   └── issi-logo_dunkel.png    # TBA ISSI für dunklen Hintergrund
-│   ├── textures/                   # Demo-/Fallback-Panoramen
-│   ├── impressum.html / datenschutz.html / glossar.html
+│   ├── icons/ · logo/ · textures/
+│   ├── impressum.html · datenschutz.html · glossar.html
 │   └── manifest.webmanifest
 ├── supabase/
-│   └── functions/
-│       ├── admin-auth/             # PIN → HMAC-Token (2 h TTL)
-│       │   └── index.ts
-│       └── admin-write/            # Token-verifizierte Admin-Writes
-│           └── index.ts
+│   ├── functions/
+│   │   ├── admin-auth/          # PIN gegen HMAC-Token, 2 h gültig
+│   │   ├── admin-write/         # token-geprüfte Schreibzugriffe
+│   │   └── kurs-auth/           # Kurspasswort serverseitig prüfen
+│   ├── migrations/              # rsi_kurse, Kurspasswort-Pfeffer, results.detail
+│   └── keepalive.sql
 └── src/
-    ├── main.tsx                    # React-Einstieg, i18n-Init
-    ├── App.tsx                     # Haupt-Router, Theme, Score
-    ├── index.css
-    ├── xrStore.ts                  # XR-Session Singleton
+    ├── App.tsx · main.tsx · xrStore.ts · index.css
     ├── types/index.ts
     ├── data/
-    │   ├── appData.ts              # localStorage CRUD, Typen, Seed
-    │   ├── scoringEngine.ts        # WICHTIGKEIT_TABLE (Sacred File)
-    │   ├── scoreCalc.ts            # calcScore Pure Function
-    │   ├── kriteriumLabels.ts      # Anzeige-Labels mit Umlauten
-    │   ├── strassenmerkmale.ts     # Dropdown-Katalog Merkmale
-    │   ├── idGenerator.ts          # SZ_YYYY_NNN / SD_NNNN (v0.5.0)
-    │   ├── topicIcons.ts           # 23 Lucide-Icons (v0.5.0)
-    │   ├── regelwerkKatalog.ts     # 32 VSS/SN-Normen (v0.5.0)
-    │   └── supabaseSync.ts         # Admin-Writes via Edge Function
+    │   ├── scoringEngine.ts     # WICHTIGKEIT_TABLE + Matrizen (Sacred File)
+    │   ├── scoreCalc.ts         # Punkte, Teilpunkte, Hinweis-Abzüge
+    │   ├── bestandenKriterium.ts
+    │   ├── ergebnisModel.ts     # Matrix-Herleitung für Browser und VR
+    │   ├── berichtModel.ts      # Aufbereitung für den PDF-Bericht
+    │   ├── appData.ts           # localStorage-CRUD, Typen, Seed
+    │   ├── supabaseSync.ts · idGenerator.ts · topicIcons.ts
+    │   ├── regelwerkKatalog.ts · strassenmerkmale.ts
+    │   └── kriteriumLabels.ts · abweichungLabels.ts
+    ├── utils/
+    │   ├── pdfExport.ts · sphereCoords.ts
+    │   └── vrHaptics.ts · vrPanelOffsets.ts
     ├── lib/
-    │   ├── supabase.ts             # Supabase-Client
-    │   ├── supabaseStorage.ts      # Bucket upload/list/delete (v0.5.0)
-    │   ├── sentry.ts               # Sentry-Setup (optional)
-    │   ├── useFocusTrap.ts         # Focus-Trap-Hook (v0.5.0)
-    │   └── utils.ts
-    ├── styles/
-    │   └── design-tokens.css
-    ├── i18n/
-    │   ├── index.ts
-    │   ├── de.json                 # Referenzsprache
-    │   └── fr.json / it.json / en.json   # 100% synchron (v0.6.0)
+    │   ├── supabase.ts · supabaseStorage.ts
+    │   └── sentry.ts · logger.ts · useFocusTrap.ts · utils.ts
+    ├── i18n/                    # index.ts + de/fr/it/en
     └── components/
-        ├── LandingPage.tsx         # Login, Theme-Toggle, Hero, Admin
-        ├── Navbar.tsx              # IssiLogo, Score-Pill, Avatar, 44×44
-        ├── IssiLogo.tsx            # TBA ISSI + Wortmarke (v0.6.0)
-        ├── TopicDashboard.tsx      # Sektionen, Tooltips, Quellen
-        ├── SceneList.tsx
-        ├── TrainingEinstieg.tsx    # Trainer-Hinweis gelb
-        ├── SceneViewer.tsx         # 360°-Viewer, Klick-Flow, VR
-        ├── ScoringFlow.tsx         # 9-Schritte, «Ändern»-Link
-        ├── SzenenAbschluss.tsx
-        ├── RankingView.tsx
-        ├── AdminDashboard.tsx      # Inhalte/Kurse/Rangliste/Export
-        ├── FeedbackModal.tsx       # Vollständig i18n
-        ├── LernKarte.tsx
-        ├── LanguageSwitcher.tsx    # 44×44, aria-pressed
-        ├── KategoriePanel.tsx
-        ├── KlickFeedback.tsx
+        ├── LandingPage.tsx · Navbar.tsx · IssiLogo.tsx
+        ├── TopicDashboard.tsx · SceneList.tsx · TrainingEinstieg.tsx
+        ├── SceneViewer.tsx      # 360°-Viewer, Klick-Flow, VR-Panels
+        ├── ScoringFlow.tsx · LernKarte.tsx · SzenenAbschluss.tsx
+        ├── RankingView.tsx · KategoriePanel.tsx · KlickFeedback.tsx
+        ├── FeedbackModal.tsx · LanguageSwitcher.tsx
+        ├── AdminDashboard.tsx
         └── admin/
-            ├── BildEditor.tsx      # Canvas-Verortungs-Editor
-            ├── BildUpload.tsx      # Tabs Bibliothek + Hochladen (v0.5.0)
-            └── AdminRanking.tsx    # User/Kurs-Verwaltung
+            ├── BildEditor.tsx · BildUpload.tsx · AdminRanking.tsx
+            ├── modals/          # Thema, Szene, Defizit, Kurs
+            └── fields/          # Mehrsprachige Eingabefelder
 ```
-
-Entfernt (nicht mehr im Repo): `src/data/glossary.ts` (war in `_Archiv/dead_code/`).
 
 ---
 
@@ -174,91 +195,111 @@ Entfernt (nicht mehr im Repo): `src/data/glossary.ts` (war in `_Archiv/dead_code
 
 | Quelle | Rolle im Tool |
 |---|---|
-| TBA-Fachkurs FK RSI, V 16.09.2020 | WICHTIGKEIT_TABLE (58 Kriterien), 9-Schritte-Methodik, Matrizen |
-| bfu-Bericht 73 | NACA-Skala (0–7), Verletzungsschwere |
+| TBA-Fachkurs FK RSI, V 16.09.2020 | WICHTIGKEIT_TABLE mit 58 Kriterien, 9-Schritte-Methodik, Matrizen |
+| bfu-Bericht 73 | NACA-Skala 0–7, Verletzungsschwere |
 | VSS SN 641 723, Abb. 2 | Normative Unfallrisiko-Matrix |
-| VSS 41 722 / bfu-Werkzeugkasten | Weitere Normbezüge im `regelwerkKatalog.ts` |
+| VSS 41 722 / bfu-Werkzeugkasten | Weitere Normbezüge in `regelwerkKatalog.ts` |
 
-Die Berechnungsmatrizen (`calcRelevanzSD`, `calcUnfallrisiko`) wurden gegen die Originalfolien des TBA-Fachkurses verifiziert (Audit 2026-03-28, AUDIT_REPORT.md).
+Die Matrizen `calcRelevanzSD` und `calcUnfallrisiko` wurden gegen die
+Originalfolien des Fachkurses geprüft; der Befund steht im `AUDIT_REPORT.md` vom
+28. März 2026. Unit-Tests pinnen alle 18 Zellwerte gegen die Engine.
 
 ---
 
 ## Deployment
 
-### Vercel (Primär)
+### Vercel
 
-1. Vercel-Projekt auf `FaSiMaster/RSI_Meta` linken (`base: '/'` in `vite.config.ts`).
-2. Environment-Variablen setzen (Client-Seite, siehe ADMIN_HANDBUCH 1.2):
-   - `VITE_SUPABASE_URL`
-   - `VITE_SUPABASE_ANON_KEY`
-   - `VITE_USERNAME_SALT` (einmalig via `openssl rand -hex 16`)
-   - `VITE_SENTRY_DSN` (optional)
-3. Push auf `main` → Vercel baut + deployt automatisch.
+1. Vercel-Projekt auf `FaSiMaster/RSI_Meta` verbinden, `base: '/'` in
+   `vite.config.ts`.
+2. Umgebungsvariablen setzen: `VITE_SUPABASE_URL`, `VITE_SUPABASE_ANON_KEY`,
+   `VITE_USERNAME_SALT` sowie wahlweise `VITE_SENTRY_DSN`.
+3. Push auf `main` löst Build und Deployment aus.
 
-### Supabase (Backend)
+### Supabase
 
-1. Projekt auf supabase.com anlegen (Region: EU).
-2. **Tabellen:** `rsi_topics`, `rsi_scenes`, `rsi_deficits`, `rsi_results` mit RLS (anon: nur SELECT auf Content, SELECT+INSERT auf `rsi_results`, **kein DELETE** auf `rsi_results`).
-3. **Storage-Bucket `rsi-textures`** (public read) mit Policies (`rsi_public_read`).
-4. **Edge Functions deployen** (siehe ADMIN_HANDBUCH Abschnitt 2):
-   - `supabase/functions/admin-auth/index.ts` (verify_jwt aus)
-   - `supabase/functions/admin-write/index.ts` (verify_jwt aus)
-5. **Secrets setzen:**
-   - `ADMIN_PIN` (4-stellig, aktuell `5004`)
-   - `ADMIN_TOKEN_SECRET` (einmalig via `openssl rand -hex 32`)
+1. Projekt in der Region EU anlegen.
+2. Tabellen `rsi_topics`, `rsi_scenes`, `rsi_deficits`, `rsi_kurse` und
+   `rsi_results` mit RLS: anonym nur lesend auf Inhalte, auf `rsi_results` lesend
+   und einfügend, ohne Löschrecht.
+3. Storage-Bucket `rsi-textures` mit öffentlichem Lesezugriff.
+4. Edge Functions `admin-auth`, `admin-write` und `kurs-auth` deployen, jeweils
+   ohne JWT-Prüfung; Einzelheiten in Abschnitt 2 des Admin-Handbuchs.
+5. Secrets setzen: `ADMIN_PIN`, `ADMIN_TOKEN_SECRET` und
+   `KURS_PASSWORT_PEPPER`. Die Werte gehören in den Passwortsafe der Fachstelle,
+   nicht in dieses Repository.
+6. Migrationen aus `supabase/migrations/` einspielen.
 
-### Meta Quest (lokales Testen)
+### Meta Quest
 
 ```bash
 npm run dev
-# Im selben WLAN: http://[lokale-IP]:5173
+# im selben WLAN: http://[lokale-IP]:5173
 ```
 
-Meta Quest Browser unterstützt WebXR `immersive-vr` nativ. Für Desktop-Test: Chrome Extension "Immersive Web Emulator" (Meta).
+Der Browser der Quest unterstützt `immersive-vr` von Haus aus. Am Arbeitsplatz
+leistet die Chrome-Erweiterung «Immersive Web Emulator» von Meta dieselben
+Dienste.
 
 ---
 
-## Build-Informationen
+## Build
+
+Stand vom 1. August 2026, gemessen mit `npm run build`:
 
 ```
-Bundle: ~450 kB (~140 kB gzip)
-CSS:    ~50 kB (~9 kB gzip)
-PWA:    Service Worker + Manifest (Precache App-Shell, NetworkFirst für /impressum|datenschutz|glossar.html)
-CI:     npm ci + tsc --noEmit + vite build auf PR + push main
+3'434 Module transformiert
+JS   2'137 kB (gzip 599 kB)
+CSS     18 kB (gzip   5 kB)
+Dauer  ~23 s
 ```
+
+pdfmake bildet einen eigenen Chunk und wird erst beim Klick auf «Bericht»
+geladen. Der Service Worker legt die App-Shell vorab in den Cache und holt
+`impressum.html`, `datenschutz.html` und `glossar.html` bevorzugt aus dem Netz.
+Die Precache-Grenze steht in `vite.config.ts` auf 3 MiB, weil der Hauptchunk die
+voreingestellten 2 MiB überschreitet.
+
+Gates zum selben Stand: `tsc --noEmit` ohne Fehler, 85 Unit-Tests in 9 Dateien
+grün.
 
 ---
 
 ## Entwicklungshinweise
 
-- **Kein `ß`** — immer `ss` (Schweizer Hochdeutsch)
-- **Echte Umlaute** (ä, ö, ü) statt ae/oe/ue — Ausnahme: Code-Identifier und JSON-Keys
-- **localStorage Keys** immer mit `rsi-v3-`-Prefix
-- **sessionStorage Keys:** `rsi-admin-token` (Admin-Token, 2 h TTL), `rsi-admin-auth` (Auth-Flag)
-- **correctAssessment** in AppDeficit muss normativ korrekt sein — `recompute()` in AdminDashboard hilft
-- **Neue Kriterien** in WICHTIGKEIT_TABLE immer gegen TBA FK RSI V 16.09.2020 verifizieren (Sacred File)
-- **Panorama-Bilder** produktiv in Supabase Storage, nicht in `/public/textures/`
-- Offene Probleme: siehe `AUDIT_REPORT.md` und `CHANGELOG.md` Abschnitt «Noch offen»
+Geschrieben wird Schweizer Hochdeutsch: `ss` statt `ß`, echte Umlaute statt
+`ae`/`oe`/`ue`. Ausgenommen sind Bezeichner im Code und Schlüssel in JSON.
 
----
+Schlüssel im localStorage tragen das Präfix `rsi-v3-`. Im sessionStorage liegen
+`rsi-admin-token` mit zwei Stunden Gültigkeit und das Flag `rsi-admin-auth`.
 
-## Lizenz
+`correctAssessment` eines Defizits muss normativ stimmen; die Neuberechnung im
+Administrationsbereich hilft dabei. Neue Einträge in der WICHTIGKEIT_TABLE sind
+gegen den Fachkurs zu verifizieren – `scoringEngine.ts` ist ein Sacred File und
+durch einen Hook geschützt.
 
-Internes Tool der Fachstelle Verkehrssicherheit, Tiefbauamt, Kanton Zürich.
-Nicht für die öffentliche Verbreitung bestimmt.
+Panorama-Bilder liegen produktiv in Supabase Storage, nicht unter
+`public/textures/`. Offene Punkte stehen im `AUDIT_REPORT.md` und im
+`CHANGELOG.md`.
 
 ---
 
 ## Supabase Keep-Alive
 
-Supabase pausiert Free-Tier-Projekte nach rund einer Woche Inaktivität. Der
-GitHub-Actions-Workflow `.github/workflows/supabase-keepalive.yml` verhindert
-die Suspendierung durch regelmässige Leseabfragen auf die Tabelle
-`public.keepalive` (Setup-SQL: `supabase/keepalive.sql`).
+Supabase pausiert Projekte im kostenlosen Tarif nach rund einer Woche ohne
+Zugriff. Der Workflow `.github/workflows/supabase-keepalive.yml` verhindert das
+mit regelmässigen Leseabfragen auf die Tabelle `public.keepalive`; das Setup-SQL
+liegt unter `supabase/keepalive.sql`.
 
-- **Zeitplan:** Montag und Donnerstag, 06:00 UTC
-- **Benötigte GitHub Secrets:** `SUPABASE_URL`, `SUPABASE_ANON_KEY`
-  (Repo → Settings → Secrets and variables → Actions)
-- **Protokoll:** Jeder erfolgreiche Lauf schreibt einen Zeitstempel in
-  `keepalive.log` (bewusst versioniert, der Workflow committet die Datei)
-- **Manueller Testlauf:** Actions-Tab → «Supabase Keep-Alive» → «Run workflow»
+Der Lauf ist auf Montag und Donnerstag, 06.00 Uhr UTC, gelegt und braucht die
+Repository-Secrets `SUPABASE_URL` und `SUPABASE_ANON_KEY`. Jeder erfolgreiche
+Lauf schreibt einen Zeitstempel in `keepalive.log`, den der Workflow bewusst
+mitcommittet. Von Hand lässt sich der Lauf im Actions-Tab über «Supabase
+Keep-Alive» auslösen.
+
+---
+
+## Lizenz
+
+Internes Werkzeug der Fachstelle Verkehrssicherheit, Tiefbauamt, Kanton Zürich.
+Nicht für die öffentliche Verbreitung bestimmt.

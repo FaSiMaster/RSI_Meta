@@ -1,102 +1,114 @@
-# Offline-Verhalten — RSI VR Tool
+# Offline-Verhalten – RSI VR Tool
 
-> Was funktioniert ohne Netz, was nicht? Stand v0.6.0 — **Offline-Flow noch nicht systematisch getestet.**
-
----
-
-## 1. Architektur-Überblick
-
-Die App ist eine Progressive Web App mit Service Worker (vite-plugin-pwa / Workbox):
-
-- **Statische Assets** (JS-Bundle, CSS, Fonts, Icons, Panorama-Texturen) werden gecacht
-- **Supabase-Aufrufe** (Lesen/Schreiben) brauchen Netz — sonst Fallback auf localStorage
+> Was ohne Netz funktioniert und was nicht. Stand v0.11.0.
+> **Der Offline-Betrieb ist weiterhin nicht systematisch geprüft**; die Tabelle
+> gibt den Stand aus Architektur und Quellcode wieder, nicht aus Messungen.
 
 ---
 
-## 2. Was funktioniert offline?
+## 1. Aufbau
 
-| Feature | Offline-fähig? | Anmerkung |
+Die App ist eine Progressive Web App mit Service Worker auf Basis von
+`vite-plugin-pwa` und Workbox. Die statischen Bestandteile – JavaScript, CSS,
+Schriften, Icons und mitgelieferte Texturen – liegen im Cache. Alle Zugriffe auf
+Supabase brauchen dagegen eine Verbindung; ohne sie greift der Rückfall auf den
+localStorage.
+
+---
+
+## 2. Was ohne Netz funktioniert
+
+| Funktion | Offline | Anmerkung |
 |---|---|---|
-| Login mit gespeichertem Namen | ✓ | `getSession()` aus localStorage |
-| Themen-Dashboard | **teilweise** | lädt aus localStorage-Cache — aber nur die Themen, die beim letzten Online-Start synchronisiert wurden |
-| Szenen-Liste | **teilweise** | wie oben |
-| 360°-Viewer (bestehende Szenen) | ✓ | falls Panorama-Textur bereits gecacht ist |
-| 9-Schritt-Bewertung | ✓ | rein client-seitig |
-| Lernkarte | ✓ | aus localStorage |
-| Ranking — lokale Werte ansehen | ✓ | aus localStorage |
-| Ranking — globale Live-Daten | ✗ | Supabase-Request schlägt fehl |
-| Admin-Panel öffnen | ✓ | PIN-Check ist client-seitig |
-| Admin CRUD (Themen, Szenen, Defizite) | **teilweise** | localStorage-Update geht; Supabase-Sync schlägt fehl → Daten sind nicht auf anderen Geräten sichtbar, bis Netz wieder da |
-| Panorama-Upload | **teilweise** | base64 in localStorage ok; bei URL-Upload kein Netzzugriff |
-| Score ans Ranking senden | ✗ | `saveResult` zu `rsi_results` schlägt fehl — lokal gespeichert, aber **kein automatisches Retry** aktuell |
-| Export (JSON) | ✓ | rein lokal |
-| Import | ✓ | rein lokal |
-| Sprache wechseln | ✓ | i18n-Bundles sind gecacht |
-| Theme wechseln | ✓ | CSS-Variable toggle |
+| Anmeldung mit gespeichertem Namen | ja | Sitzung kommt aus dem localStorage |
+| Themen-Dashboard | teilweise | nur die beim letzten Start synchronisierten Themen |
+| Szenenliste | teilweise | wie oben |
+| 360°-Viewer bestehender Szenen | ja | sofern das Panorama bereits im Cache liegt |
+| Bewertung nach den 9 Schritten | ja | rechnet vollständig im Client |
+| Lernkarte | ja | aus dem localStorage |
+| PDF-Bericht | ja | pdfmake wird beim ersten Aufruf nachgeladen und ist danach im Cache |
+| Rangliste, lokale Werte | ja | aus dem localStorage |
+| Rangliste, Live-Daten | nein | braucht Supabase |
+| Anmeldung im Administrationsbereich | **nein** | die PIN prüft seit v0.6.0 die Edge Function `admin-auth`, nicht mehr der Client |
+| Pflege von Themen, Szenen, Defiziten | nein | Schreibzugriffe laufen über `admin-write` |
+| Panorama hochladen | **nein** | Ziel ist der Supabase-Bucket `rsi-textures` |
+| Ergebnis an die Rangliste senden | nein | wird lokal gehalten, **ohne automatischen zweiten Versuch** |
+| Export und Import als JSON | ja | rein lokal |
+| Sprache wechseln | ja | die Sprachdateien sind im Bundle |
+| Erscheinungsbild wechseln | ja | reine CSS-Umschaltung |
 
 ---
 
-## 3. Cache-Strategien (Workbox)
+## 3. Cache-Verhalten
 
-In `vite.config.ts`:
-- **`cleanupOutdatedCaches: true`** → alte Bundles werden entfernt
-- **`skipWaiting: true`** → neuer SW übernimmt sofort
-- **`clientsClaim: true`** → alle Tabs bekommen den neuen SW ohne Reload
+In `vite.config.ts` sind gesetzt: `cleanupOutdatedCaches` räumt alte Bundles weg,
+`skipWaiting` lässt einen neuen Service Worker sofort übernehmen, `clientsClaim`
+gibt ihn allen offenen Tabs ohne Neuladen. Die Precache-Grenze steht auf 3 MiB,
+weil der Hauptchunk die voreingestellten 2 MiB überschreitet.
 
-**Aktuell ist die runtime-Caching-Strategie nicht explizit konfiguriert.** Workbox-Default: Precache alle Assets aus dem Manifest, sonst Network-First. Das heisst: Supabase-Requests sind Network-Only (richtig), Panorama-Texturen aus `/textures/` werden beim ersten Besuch gecacht (gut).
+Eine eigene Laufzeitstrategie ist bis auf die drei statischen Rechtsseiten nicht
+konfiguriert. Es gilt die Voreinstellung von Workbox: Was im Manifest steht, wird
+vorab geladen, alles Übrige zuerst aus dem Netz geholt. Für Supabase ist das
+richtig, und Panoramen landen beim ersten Betrachten im Cache.
 
 ---
 
 ## 4. Bekannte Lücken
 
-### 4.1 Keine Retry-Queue für Score-Uploads
-Wenn ein User offline spielt und dann das Netz zurückkommt, werden die Scores **nicht automatisch** nachträglich an Supabase gesendet. Empfehlung: Background Sync API (experimentell) oder eigene Retry-Logik im `useEffect` mit Online-Listener.
+**Kein zweiter Sendeversuch für Ergebnisse.** Wer offline übt, dessen Punkte
+gehen beim Wiederverbinden nicht von selbst an Supabase. Abhilfe wäre eine
+eigene Wiederholungslogik, ausgelöst über einen Online-Listener; die Background
+Sync API ist dafür nur eingeschränkt verfügbar.
 
-### 4.2 Neue Szenen beim ersten Besuch
-Wenn ein User zum ersten Mal online geht, aber gerade keine Netzverbindung hat, sieht er keine Szenen (localStorage ist leer). Nur Seed-Daten sind vorhanden, sofern das App-Bundle einmal geladen wurde.
+**Erster Start ohne Netz.** Wer die App zum ersten Mal ohne Verbindung öffnet,
+sieht keine Szenen, weil der localStorage leer ist. Vorhanden sind dann
+ausschliesslich die mitgelieferten Startdaten.
 
-### 4.3 Supabase-Fehler nicht immer sichtbar
-Ein fehlgeschlagener Supabase-Request wird in `supabaseSync.ts` zwar ge-catched, aber nicht immer dem User angezeigt. Der User denkt, alles sei gespeichert — ist es aber nur lokal.
-
----
-
-## 5. Test-Szenarien (manuell durchzuspielen)
-
-### Test 1 — Kalter Offline-Start
-1. App im Chrome öffnen, einloggen, eine Szene spielen (online).
-2. DevTools → Application → Service Workers → "Offline" aktivieren.
-3. App neu laden.
-4. **Erwartet:** Login-State erhalten, Szenen-Liste sichtbar, zuletzt gespielte Szene ladbar.
-5. **Test-Ergebnis:** _(noch nicht durchgeführt)_
-
-### Test 2 — Offline-Score
-1. Offline, Szene starten, Defizit markieren, bewerten, abschliessen.
-2. **Erwartet:** Score lokal gespeichert, "Senden an Ranking" zeigt Offline-Hinweis.
-3. **Test-Ergebnis:** _(offene Frage: gibt es diese Anzeige überhaupt?)_
-
-### Test 3 — Wiederverbindung
-1. Schritt 2 durchführen, dann wieder Online gehen.
-2. **Erwartet:** Score wird automatisch nachgesendet.
-3. **Aktuell:** nein (siehe 4.1).
-
-### Test 4 — PWA Install + Offline
-1. App als PWA installieren (Desktop Chrome oder Android).
-2. WLAN deaktivieren.
-3. App aus dem Homescreen starten.
-4. **Erwartet:** App öffnet, gecachte Szenen sind spielbar.
+**Fehler bleiben unsichtbar.** Ein fehlgeschlagener Supabase-Aufruf wird in
+`supabaseSync.ts` abgefangen, aber nicht durchgehend angezeigt. Damit kann der
+Eindruck entstehen, etwas sei gespeichert, obwohl es nur lokal liegt.
 
 ---
 
-## 6. To-Do (Verbesserungen)
+## 5. Prüfszenarien
 
-- [ ] Runtime-Caching-Konfiguration für Panorama-Texturen explizit: Stale-While-Revalidate
-- [ ] Retry-Queue für Supabase-Writes (Background Sync oder custom)
-- [ ] Offline-Indikator in Navbar (Punkt rot wenn offline)
-- [ ] User-Feedback bei nicht synchronisierten Scores
-- [ ] Systematischer Offline-Testplan mit protokollierten Ergebnissen
+Die folgenden Abläufe sind von Hand durchzuspielen und zu protokollieren.
+
+**Kalter Start ohne Netz.** App online öffnen, anmelden, eine Szene spielen. In
+den Entwicklerwerkzeugen unter Application → Service Workers den Offline-Modus
+setzen und neu laden. Erwartet: Anmeldung bleibt, Szenenliste erscheint, die
+zuletzt gespielte Szene lädt. Ergebnis: noch offen.
+
+**Ergebnis ohne Netz.** Offline eine Szene spielen und abschliessen. Erwartet:
+Das Ergebnis liegt lokal, und ein Hinweis nennt den fehlenden Versand. Offen ist,
+ob es diesen Hinweis überhaupt gibt.
+
+**Wiederverbindung.** Nach dem vorigen Schritt wieder online gehen. Erwartet
+wäre ein Nachsenden; nach Abschnitt 4 findet es nicht statt.
+
+**Installierte App ohne Netz.** App installieren, WLAN abschalten, vom
+Startbildschirm öffnen. Erwartet: Die App startet, gecachte Szenen sind spielbar.
 
 ---
 
-## 7. Empfehlung für Kursleitung
+## 6. Offene Punkte
 
-Teilnehmer sollten die App **einmal online** vollständig geladen haben (alle gewünschten Szenen mindestens einmal angeklickt), bevor sie in eine Offline-Schulung gehen. Am sichersten: die App am Tag vor dem Kurs im Schulungsraum an jedem Gerät einmal öffnen, um den Precache zu befüllen.
+- Laufzeitstrategie für Panoramen ausdrücklich auf «stale while revalidate»
+  setzen
+- Wiederholungslogik für Schreibzugriffe auf Supabase
+- Anzeige des Verbindungszustands in der Navigationsleiste
+- Rückmeldung bei Ergebnissen, die noch nicht übertragen sind
+- Prüfplan mit protokollierten Ergebnissen
+
+---
+
+## 7. Empfehlung für die Kursleitung
+
+Die Geräte sollten die App einmal vollständig online geladen haben, alle
+vorgesehenen Szenen eingeschlossen, bevor eine Schulung ohne Netz stattfindet.
+Am sichersten ist es, die App am Vortag im Schulungsraum auf jedem Gerät einmal
+zu öffnen und die Szenen kurz anzusteuern, damit der Cache gefüllt ist.
+
+Die Pflege von Inhalten und die Anmeldung im Administrationsbereich brauchen in
+jedem Fall eine Verbindung. Vorbereitende Arbeiten gehören deshalb vor den
+Kurstag.

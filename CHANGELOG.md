@@ -9,7 +9,60 @@ Versionierung nach [Semantic Versioning](https://semver.org/lang/de/).
 
 ## [Unreleased]
 
-—
+### Dokumentation
+
+Redaktionelle Überarbeitung der gesamten Anwender- und Betriebsdokumentation auf
+Schweizer Hochdeutsch nach den Schreibweisungen der Bundeskanzlei sowie
+Nachführung auf den Stand v0.11.0. Betroffen sind README, ADMIN_HANDBUCH,
+BENUTZERHANDBUCH, GLOSSAR, BACKUP, BROWSER, OFFLINE, META_STORE_CHECKLIST, die
+drei READMEs der Edge Functions sowie CLAUDE.md. Die Handbücher standen zuvor
+auf «Stand v0.6.0».
+
+### Behoben — Sachfehler in der Dokumentation
+
+- **`admin-write/README.md` beschrieb die Authentifizierung falsch:** dokumentiert
+  war der Header `x-admin-pin` gegen `ADMIN_PIN`, tatsächlich prüft die Funktion
+  seit v0.6.0 `x-admin-token` gegen `ADMIN_TOKEN_SECRET`. Ebenso fehlten
+  `rsi_kurse` und die delete-only-Regel für `rsi_results`.
+- **Admin-PIN stand im Klartext** in README, ADMIN_HANDBUCH, BACKUP und zwei
+  Function-READMEs. Ersetzt durch einen Verweis auf den Passwortsafe.
+- **`OFFLINE.md` führte Admin-Anmeldung und Bild-Upload als offline-fähig:**
+  beides läuft seit v0.5.0 beziehungsweise v0.6.0 serverseitig.
+- **`GLOSSAR.md` nannte überholte Abzüge:** «Kategorie falsch −10 %» statt
+  15 von 25 Kategorie-Punkten und «Hinweis −25 pro Szene» statt der
+  zweistufigen Regel −10 / −25 je gefundenes Defizit. Der Booster war als
+  «noch nicht aktiv im Scoring» geführt, obwohl er seit v0.9.5 aufgerechnet wird.
+- **`META_STORE_CHECKLIST.md` führte Phase 3 als ausstehend**, obwohl die
+  immersive Sitzung mit v0.8.0 bis v0.9.1 umgesetzt wurde.
+- **README nannte falsche Versionen:** Vite 8 statt 7.3, vite-plugin-pwa 0.19
+  statt 1.2, 473 statt 600 i18n-Schlüssel; `kurs-auth` fehlte als dritte Edge
+  Function, ebenso das Secret `KURS_PASSWORT_PEPPER` in der
+  Wiederherstellungsanleitung.
+- **CLAUDE.md** führte Vite 5 und «Kein Backend», obwohl Supabase mit drei Edge
+  Functions im Einsatz ist; Projektstruktur und Roadmap nachgeführt.
+
+### Behoben — Benutzertexte (de)
+
+- **`datenschutz.hinweis` auf der Startseite war unzutreffend.** Der Text sagte,
+  es würden keine personenbezogenen Daten dauerhaft gespeichert und der Name
+  werde anonymisiert übermittelt. Tatsächlich wird der Name als gesalzener
+  SHA-256-Hash pseudonymisiert und dauerhaft in `rsi_results` abgelegt — genau
+  dafür existiert `VITE_USERNAME_SALT`. Neu benennt der Hinweis Pseudonymisierung
+  und dauerhafte Speicherung und verweist auf die Datenschutzerklärung.
+  **Die Formulierung ist vor dem nächsten Kurs fachlich freizugeben.**
+- `training.showHints` nannte einen Abzug von 250 Punkten; real sind es 25. Der
+  Schlüssel wird derzeit nicht gerendert.
+- Typografie nach Bundeskanzlei: Halbgeviertstrich statt Geviertstrich,
+  Auslassungszeichen als ein Zeichen, geschütztes Muster «z. B.», Leerzeichen
+  vor dem Prozentzeichen.
+- Anrede im Trainingspfad auf die Du-Form vereinheitlicht (Dashboard,
+  Themenübersicht, Bewertung); Administration, Feedback und Startseite bleiben
+  bei der Sie-Form. `scoring` enthielt beide Formen nebeneinander.
+- «Teilnehmer» durch geschlechtsneutrale Bezeichnungen ersetzt.
+- Veraltete Platzhalter «Phase 3» aus zwei Schlüsseln entfernt.
+
+fr, it und en sind **nicht** nachgeführt; die Schlüsselstruktur bleibt
+deckungsgleich (600 Blatt-Schlüssel je Sprache).
 
 ---
 
@@ -462,13 +515,13 @@ bleibt bewusst fix.
 
 - **Patch-Releases** (`0.8.x`): VR-Iterationen und Hotfixes.
   Jeder VR-Release bekommt eine **VR-Iter-Nummer** im Titel.
-- **Minor-Bump auf `0.9.0`**: reserviert fuer das groessere Feature
+- **Minor-Bump auf `0.9.0`**: reserviert für das grössere Feature
   "VR-Panels verschiebbar machen" + weitere Architektur-Arbeit.
 
 Aktuelle VR-Iterationen:
 - `v0.8.0` = VR-Iter 1 — Smoke-Ready (Haptik, HUD-Timer, Farb-Marker)
-- `v0.8.1` = VR-Iter 2 — Bewertungs-Panels, Ray-Reticle, groesserer Hover
-- `v0.8.2` = VR-Iter 3 — Scoring-in-VR, Fadenkreuz-Vergroesserung
+- `v0.8.1` = VR-Iter 2 — Bewertungs-Panels, Ray-Reticle, grösserer Hover
+- `v0.8.2` = VR-Iter 3 — Scoring-in-VR, Fadenkreuz-Vergrösserung
 - `v0.8.3` = VR-Iter 4 — Review-Fixe (XR-Session-Lifecycle, VR-i18n, UX)
 
 ---
@@ -537,8 +590,8 @@ Gates: tsc 0, vitest 24/24, Production-Build grün. Keine Sacred-File-Änderung.
 - **VR-Session wurde nach der Bewertung beendet.** `handleDeficitConfirmed`
   in App.tsx schaltete auf `view='scoring'` und rief
   `xrStore.session.end()` — der User flog aus der Immersion raus und
-  musste ueber den 2D-HTML-ScoringFlow wieder zurueck ins Headset.
-- Fix: Weichenlogik. In VR wird der volle ScoringFlow uebersprungen.
+  musste über den 2D-HTML-ScoringFlow wieder zurück ins Headset.
+- Fix: Weichenlogik. In VR wird der volle ScoringFlow übersprungen.
   Stattdessen berechnet App.tsx die Punkte direkt (analog zu
   `ScoringFlow.renderResult`) und liefert ein neues
   `vrScoringFeedback`-Payload an den SceneViewer.
@@ -546,12 +599,12 @@ Gates: tsc 0, vitest 24/24, Production-Build grün. Keine Sacred-File-Änderung.
   (Kategorie, Wichtigkeit, Abweichung, Unfallschwere) + Punkte-Resultat
   + Weiter-Button. User bleibt durchgehend in der XR-Session.
 - Der volle ScoringFlow mit Matrix-Drilldown bleibt im Browser
-  erreichbar — im VR-Kontext bewusst reduziert fuer schnelles
+  erreichbar — im VR-Kontext bewusst reduziert für schnelles
   Durcharbeiten vieler Defizite.
 
 ### Geaendert
 
-- **Fadenkreuz vergroessert**: Reticle-Ring `0.70/0.95 → 1.4/1.75`,
+- **Fadenkreuz vergrössert**: Reticle-Ring `0.70/0.95 → 1.4/1.75`,
   Innenpunkt `0.18 → 0.35`. Feedback von Stevo: war vorher zu dezent.
 
 ### Hinzugefuegt
@@ -559,7 +612,7 @@ Gates: tsc 0, vitest 24/24, Production-Build grün. Keine Sacred-File-Änderung.
 - `App.tsx` Export `VrScoringFeedback`-Interface.
 - `SceneViewer` Export `VRScoringSummary`-Interface.
 - Neue Phase `vrScoringSummary` in SceneViewer.
-- Neue Props fuer SceneViewer: `vrScoringFeedback`, `onVRScoringContinue`.
+- Neue Props für SceneViewer: `vrScoringFeedback`, `onVRScoringContinue`.
 
 ### Gates
 
@@ -567,7 +620,7 @@ Gates: tsc 0, vitest 24/24, Production-Build grün. Keine Sacred-File-Änderung.
 - `vitest`: 24/24 passed
 - `playwright`: 12/12 passed in 7.8 s
 
-### Offen fuer v0.9.0 (aus Stevos Feedback)
+### Offen für v0.9.0 (aus Stevos Feedback)
 
 - **VR-Panels verschiebbar** (Grab-and-drop oder Stick-Drag). Grosser
   Scope, separates Release — rechtfertigt den Minor-Bump.
@@ -596,9 +649,9 @@ Gates: tsc 0, vitest 24/24, Production-Build grün. Keine Sacred-File-Änderung.
 - **VR-Ray-Reticle** (Orientierungshilfe): kleiner weisser Ziel-Ring mit
   Punkt am Hit-Punkt des Controller-Rays auf der Panorama-Sphere.
   Sichtbar nur in VR, nur waehrend Phase `exploring`. `PanoramaSphere`
-  bekam `onPointerMove` + `onPointerOut` Handler dafuer.
-- **Standort-Marker-Hover groesser**: von `3.2` auf `4.5` — Feedback
-  nach Stevos Rueckmeldung, dass die Vergroesserung zu dezent war.
+  bekam `onPointerMove` + `onPointerOut` Handler dafür.
+- **Standort-Marker-Hover grösser**: von `3.2` auf `4.5` — Feedback
+  nach Stevos Rückmeldung, dass die Vergrösserung zu dezent war.
 
 ### Gates
 
@@ -606,7 +659,7 @@ Gates: tsc 0, vitest 24/24, Production-Build grün. Keine Sacred-File-Änderung.
 - `vitest`: 24/24 passed
 - `playwright`: 12/12 passed in 7.7 s
 
-### Offen fuer v0.9.0 (aus Stevos Feedback)
+### Offen für v0.9.0 (aus Stevos Feedback)
 
 - VR-Panels verschiebbar machen (Grab-and-drop oder Pre-Set-Positionen).
 - Zweiter Headset-Test nach diesem Hotfix — neues Feedback wieder in
@@ -635,20 +688,20 @@ Gates: tsc 0, vitest 24/24, Production-Build grün. Keine Sacred-File-Änderung.
 ### Geaendert
 
 - `SceneViewer` akzeptiert neue Props `sceneStartTime: number` (aus
-  App.tsx) fuer den HUD-Timer.
+  App.tsx) für den HUD-Timer.
 - `StandortNavMarker` hat neue Pflicht-Prop `status: 'unbesucht' | 'besucht'`.
 
 ### Dokumentation
 
-- `docs/VR_SMOKE_REPORT.md` neu — strukturierter Test-Plan fuer den
+- `docs/VR_SMOKE_REPORT.md` neu — strukturierter Test-Plan für den
   physischen Meta-Quest-Smoke-Test. Inventar der bestehenden
-  VR-Komponenten, offene Punkte, Test-Checkliste A-G fuer Stevo.
+  VR-Komponenten, offene Punkte, Test-Checkliste A-G für Stevo.
 
 ### Nicht umgesetzt (bewusst verschoben)
 
 - Teleport-Pointer — im 360°-Panorama nicht sinnvoll, bleibt
   `teleportPointer: false`.
-- Kompass, Distanz-Indikator, Audio-Cues, Head-Reset — Ideen 2/5/6 fuer
+- Kompass, Distanz-Indikator, Audio-Cues, Head-Reset — Ideen 2/5/6 für
   v0.9.0, brauchen weiteren Scope-Entscheid.
 
 ### Gates
@@ -675,7 +728,7 @@ nachtragen, dann v0.9.0-Scope entscheiden.
   VorschaubildEditor) liegen jetzt in eigenen Dateien unter
   `src/components/admin/{modals,fields,utils}/`.
 - Jedes Modal haelt **eigenen Draft-State** und liefert bei Save das
-  fertige Objekt zurueck. Persistenz (saveDeficit / saveScene / saveTopic
+  fertige Objekt zurück. Persistenz (saveDeficit / saveScene / saveTopic
   / saveKurs) bleibt im Parent.
 - Verhaltensneutral — Norm-Hook, Focus-Trap und ESC-Handling pro Modal
   bleiben erhalten.
@@ -684,7 +737,7 @@ nachtragen, dann v0.9.0-Scope entscheiden.
 
 - **12 Playwright-Specs** (landing, admin, sceneviewer) in 6.7 s lokal.
   Absichern des Modal-Splits und der zentralen User-Journeys.
-- Neue Infrastruktur: `playwright.config.ts`, Fixtures fuer
+- Neue Infrastruktur: `playwright.config.ts`, Fixtures für
   localStorage-Seed, Supabase-Stub und `reducedMotion`-Overrides.
 - `.github/workflows/e2e.yml` — Chromium in CI auf Push/PR.
 - `src/App.tsx`: `MotionConfig reducedMotion="user"` damit Framer-Motion
@@ -702,7 +755,7 @@ nachtragen, dann v0.9.0-Scope entscheiden.
 - **Deploy-Reihenfolge** (Stevo, vor Release):
   1. SQL-Migration `supabase/migrations/2026_04_24_kurs_passwort_pfeffer.sql`
      im Supabase-Dashboard ausfuehren. Fuegt Spalte `passwort_hash` hinzu,
-     entzieht anon SELECT-Recht fuer diese Spalte, entfernt bestehende
+     entzieht anon SELECT-Recht für diese Spalte, entfernt bestehende
      `data.passwort`-Eintraege.
   2. Supabase-Secret `KURS_PASSWORT_PEPPER` setzen (32 hex bytes,
      `openssl rand -hex 32`). **Niemals rotieren** ohne alle Hashes zu
@@ -710,7 +763,7 @@ nachtragen, dann v0.9.0-Scope entscheiden.
   3. Edge Function `admin-write` mit v0.7.0-Code redeployen (hasht
      serverseitig, schreibt `passwort_hash`).
   4. Neue Edge Function `kurs-auth` deployen (PBKDF2-Vergleich, gibt
-     `{ ok: true | false }` zurueck).
+     `{ ok: true | false }` zurück).
   5. Client-Release.
 - **Rollback**: `ALTER TABLE rsi_kurse DROP COLUMN passwort_hash`,
   `GRANT SELECT ON rsi_kurse TO anon`. Alle neu gesetzten Passwoerter
@@ -725,7 +778,7 @@ nachtragen, dann v0.9.0-Scope entscheiden.
 - `Kurs.passwort?: string | null` wird jetzt als **Intent**-Feld
   interpretiert: non-empty string = hashen, null = entfernen, undefined =
   unveraendert lassen.
-- Unit-Tests fuer `pruefeKursPasswort` gegen Fetch-Mock (8 Szenarien).
+- Unit-Tests für `pruefeKursPasswort` gegen Fetch-Mock (8 Szenarien).
 
 ### Entfernt
 
@@ -789,9 +842,9 @@ nachtragen, dann v0.9.0-Scope entscheiden.
   substanziell; ohne dedizierte Browser-Verifikation (Focus-Trap, ESC,
   i18n, Tab-Order) waere das Regression-Risiko hoch. Gestaffelt in
   eigenem Sprint: ThemaModal → KursModal → SzeneModal → DefizitModal.
-- **Server-seitiges Salt-Pfeffern** fuer Username-Hash (Post-Pilot).
+- **Server-seitiges Salt-Pfeffern** für Username-Hash (Post-Pilot).
 - **PIN 4 → 6+ Stellen + DB-Rate-Limiter** (bewusst verschoben vom User).
-- **E2E-Tests (Playwright)** fuer Kern-Flow Login → Szene → Ranking.
+- **E2E-Tests (Playwright)** für Kern-Flow Login → Szene → Ranking.
 
 ---
 

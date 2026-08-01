@@ -1,160 +1,171 @@
-# Meta Horizon Store — Einreichungs-Checkliste
+# Meta Horizon Store – Checkliste für die Einreichung
 
-> Vorbereitung für Phase 6. Stand v0.6.0 — noch keine Einreichung erfolgt.
+> Vorbereitung der Roadmap-Phase 6. Stand v0.11.0, noch keine Einreichung
+> erfolgt.
 
 ---
 
 ## 1. Technische Voraussetzungen
 
-### 1.1 PWA Basis (vorhanden ✓)
-- [x] PWA-Manifest (`manifest.webmanifest`)
-- [x] Service Worker (vite-plugin-pwa)
-- [x] Icons 192×192 und 512×512 in `/public/icons/`
-- [x] HTTPS (via Vercel automatisch)
-- [x] Offline-Grundfähigkeit
+### 1.1 Grundlagen der PWA
 
-### 1.2 Bubblewrap (offen)
-- [ ] [Bubblewrap CLI](https://github.com/GoogleChromeLabs/bubblewrap) installieren
+- [x] Manifest `manifest.webmanifest`
+- [x] Service Worker über `vite-plugin-pwa`
+- [x] Icons in 192 × 192 und 512 × 512 unter `public/icons/`
+- [x] HTTPS über Vercel
+- [x] Grundfähigkeit ohne Netz
+
+### 1.2 Bubblewrap
+
+- [ ] [Bubblewrap CLI](https://github.com/GoogleChromeLabs/bubblewrap)
+      einrichten
 - [ ] `bubblewrap init --manifest=https://rsi-meta.vercel.app/manifest.webmanifest`
-- [ ] Android-APK/AAB generieren
-- [ ] Signieren mit Java Keystore
-- [ ] Test auf echtem Quest 3
+- [ ] Paket für Android erzeugen
+- [ ] Mit Java-Keystore signieren
+- [ ] Auf einer Quest 3 prüfen
 
-### 1.3 Meta Quest-spezifisch
-- [ ] WebXR `immersive-vr` Session funktionsfähig ← aktuell **Phase 3 ausstehend**
-- [ ] Controller-Tracking getestet
-- [ ] Performance: stabile 72 FPS auf Quest 3 (GPU-Profiling)
-- [ ] Keine externen CDN-Downloads (GLTF/Textures) zur Laufzeit
-- [ ] Service Worker mit `skipWaiting` (vorhanden)
+### 1.3 Anforderungen der Quest
+
+- [x] Immersive Sitzung lauffähig, umgesetzt in den Versionen v0.8.0 bis v0.9.1
+- [x] Controller-Tracking geprüft, protokolliert in `docs/VR_SMOKE_REPORT.md`
+- [x] Keine Downloads von fremden Servern zur Laufzeit; der XR-Store wird mit
+      `model: false` initialisiert
+- [x] Service Worker mit `skipWaiting`
+- [ ] Bildrate von 72 Hz auf der Quest 3 messen und belegen
 
 ---
 
-## 2. Store-Metadaten
+## 2. Angaben für den Store
 
 ### 2.1 Identität
-- [ ] **App-Name:** RSI VR Tool (aktuelle Wortmarke seit v0.6.0, zu bestätigen)
-- [ ] **Kurzbeschreibung (max. 80 Z.):** "Immersive Schulung für Strassensicherheit — Road Safety Inspection in VR."
-- [ ] **Lange Beschreibung (max. 4000 Z.):** vollständiger Text über Zweck, Zielgruppe, Fachkurs-Basis
-- [ ] **Kategorie:** Education / Productivity / Training
-- [ ] **Entwicklername:** Kanton Zürich / Tiefbauamt
-- [ ] **Website-URL:** https://rsi-meta.vercel.app
-- [ ] **Support-URL:** Link zu Impressum/Kontakt
 
-### 2.2 Lokalisierung
-- [ ] Store-Listing in Deutsch (Primär)
-- [ ] Französisch, Italienisch, Englisch (app-intern bereits vorhanden, für Store-Einreichung zusätzlich)
+- [ ] Name: RSI VR Tool, seit v0.6.0 als Wortmarke im Einsatz, noch zu bestätigen
+- [ ] Kurzbeschreibung bis 80 Zeichen: «Immersive Schulung für
+      Strassenverkehrssicherheit – Road Safety Inspection in VR.»
+- [ ] Ausführliche Beschreibung bis 4000 Zeichen zu Zweck, Zielgruppe und
+      Kursgrundlage
+- [ ] Kategorie: Bildung oder Training
+- [ ] Anbieter: Kanton Zürich, Tiefbauamt
+- [ ] Adresse der Anwendung und Adresse für Unterstützung
 
-### 2.3 Visual Assets
-- [ ] **App-Icon:** 1024×1024 PNG (KZH-blau mit Shield-Symbol)
-- [ ] **Store-Banner:** Meta-Spezifikationen beachten (vermutlich 1920×1080)
-- [ ] **Screenshots:** 5–10 Stück
-  - [ ] Landing Page
-  - [ ] Themen-Dashboard
-  - [ ] 360°-Viewer mit Panorama
-  - [ ] 9-Schritt-Bewertung
-  - [ ] Ranking
-  - [ ] Lernkarte
-- [ ] **Video-Teaser:** 30–60 s, Format nach Meta-Spezifikation
+### 2.2 Sprachen
+
+- [ ] Eintrag auf Deutsch als Hauptsprache
+- [ ] Französisch, Italienisch und Englisch; in der Anwendung sind alle vier
+      Sprachen vollständig gepflegt
+
+### 2.3 Bildmaterial
+
+- [ ] Symbol in 1024 × 1024
+- [ ] Banner nach den Vorgaben von Meta
+- [ ] Fünf bis zehn Bildschirmfotos: Startseite, Themenübersicht, Panorama,
+      Bewertung, Rangliste, Lernkarte, PDF-Bericht
+- [ ] Kurzvideo von 30 bis 60 Sekunden
 
 ---
 
-## 3. Rechtliche Anforderungen
+## 3. Rechtliches
 
-### 3.1 Pflicht-Dokumente
-- [x] Impressum (`/impressum.html`)
-- [x] Datenschutzerklärung (`/datenschutz.html`)
-- [ ] **Terms of Service / AGB** — noch zu erstellen
-- [ ] **Einwilligungs-Flow** falls erweiterte Daten gesammelt werden (aktuell nicht nötig)
+### 3.1 Pflichtdokumente
+
+- [x] Impressum unter `/impressum.html`
+- [x] Datenschutzerklärung unter `/datenschutz.html`
+- [ ] Nutzungsbedingungen, noch zu erstellen
 
 ### 3.2 Altersfreigabe
-- [ ] IARC-Fragebogen (International Age Rating Coalition) beantworten
-- [ ] Erwartet: **PEGI 3 / ESRB Everyone / USK 0** — rein didaktisches Fach-Tool, keine Gewalt, keine In-App-Käufe
-- [ ] Keine Gamification-Elemente die Suchtpotenzial haben
 
-### 3.3 Datenschutz-Meta
-- [ ] "App erhebt Daten?" — **Ja** (Pseudonym-Hash, Score, Kurs)
-- [ ] Data Safety Declaration in Meta-Console: welche Kategorien, Zweck, Dritt-Weitergabe
+- [ ] Fragebogen der IARC ausfüllen
+- [ ] Erwartet wird die niedrigste Stufe: fachliches Lernwerkzeug, keine
+      Gewaltdarstellung, keine Käufe in der Anwendung
 
-### 3.4 Marken / Urheberrecht
-- [ ] Verwendung des KZH-Wappens: Genehmigung einholen (Staatskanzlei ZH)
-- [ ] "Road Safety Inspection" ist generischer Fachbegriff, kein Markenschutz
-- [ ] FaSi / TBA-Branding: intern abgestimmt
+### 3.3 Angaben zum Datenschutz
 
----
+- [ ] Erhebung bejahen: Pseudonym als Hash, Punktestand, Kurszugehörigkeit
+- [ ] Erklärung zur Datensicherheit in der Konsole von Meta ausfüllen, mit
+      Kategorien, Zweck und der Feststellung, dass keine Weitergabe an Dritte
+      erfolgt
 
-## 4. Content-Review
+### 3.4 Kennzeichen und Urheberrecht
 
-- [ ] Alle 360°-Aufnahmen sind KZH-eigen oder Lizenz vorhanden
-- [ ] Keine Kennzeichen / Personen erkennbar (DSGVO vor Ort-Einsatz)
-- [ ] Seed-Daten (Zugangscode `FaSi4safety`) entfernen oder anonymisieren (siehe REVIEW_SECURITY.md N-3)
+- [ ] Verwendung des Kantonswappens durch die Staatskanzlei genehmigen lassen
+- [ ] Road Safety Inspection ist ein Fachbegriff ohne Markenschutz
+- [ ] Auftritt von Fachstelle und Tiefbauamt ist intern abgestimmt
 
 ---
 
-## 5. Meta-Specific Policies
+## 4. Inhaltliche Prüfung
 
-- [ ] [Meta Quest Store Content Policies](https://developer.oculus.com/policy/) gelesen
-- [ ] App verstösst nicht gegen: Hassrede, Cybersecurity, Irreführung, Malware
-- [ ] Keine Tracking-Pixel / fingerprinting (bestätigt)
-- [ ] User kann Daten löschen (App-Reset-Funktion vorhanden ✓)
-
----
-
-## 6. Test-Distribution vor Store
-
-### 6.1 App Lab (interner Test)
-- [ ] Meta Developer Account
-- [ ] Organisation in Developer Dashboard einrichten
-- [ ] APK via Meta Developer Hub hochladen
-- [ ] Testgruppe (Kursleitung + ausgewählte Teilnehmer) einladen
-- [ ] Feedback-Runde durchführen
-
-### 6.2 Release Candidate
-- [ ] Smoke-Tests auf 3+ physischen Quest-3-Geräten
-- [ ] Performance-Test mit 10+ parallel angemeldeten Usern
-- [ ] Offline-Funktionalität (siehe OFFLINE.md Tests)
+- [ ] Alle Aufnahmen stammen vom Kanton oder sind lizenziert
+- [ ] Keine Kennzeichen und keine erkennbaren Personen im Bildmaterial
+- [ ] Startdaten bereinigen; der voreingestellte Zugangscode ist vor der
+      Veröffentlichung zu entfernen oder zu ersetzen, siehe `REVIEW_SECURITY.md`
 
 ---
 
-## 7. Post-Launch
+## 5. Vorgaben von Meta
 
-### 7.1 Monitoring
-- [ ] Fehler-Monitoring aktiv (Sentry oder Vercel) — siehe Task 14
-- [ ] Crash-Reports vom Quest Browser einsehbar
-- [ ] Ranking-Daten-Backup-Rhythmus (siehe BACKUP.md)
+- [ ] Inhaltsrichtlinien des Quest Store gelesen
+- [ ] Keine Verstösse gegen die Vorgaben zu Hassrede, Sicherheit, Irreführung
+      und Schadsoftware
+- [x] Kein Tracking und kein Fingerprinting
+- [x] Daten lassen sich löschen, die Anwendung bringt dafür eine Funktion mit
 
-### 7.2 Update-Strategie
-- [ ] Patch-Releases via Service Worker (sofort wirksam)
-- [ ] Major-Releases: neue Bubblewrap-Build + Store-Einreichung
-- [ ] Release-Notes in deutscher Sprache für Meta-Store-Listing
+---
 
-### 7.3 Support
-- [ ] E-Mail-Adresse: sicherheit.tba@bd.zh.ch (aktuell)
-- [ ] FAQ-Link im Store-Listing
-- [ ] Bug-Report-Kanal definiert (siehe Task 15)
+## 6. Verteilung vor der Veröffentlichung
+
+### 6.1 Interner Test
+
+- [ ] Entwicklerkonto und Organisation einrichten
+- [ ] Paket hochladen
+- [ ] Kursleitung und ausgewählte Teilnehmende einladen
+- [ ] Rückmeldungen auswerten
+
+### 6.2 Freigabekandidat
+
+- [ ] Prüfläufe auf mindestens drei Geräten
+- [ ] Belastungstest mit mindestens zehn gleichzeitig angemeldeten Personen
+- [ ] Verhalten ohne Netz nach `OFFLINE.md` prüfen
+
+---
+
+## 7. Nach der Veröffentlichung
+
+Das Fehler-Monitoring ist über Sentry vorbereitet und wird mit dem Setzen von
+`VITE_SENTRY_DSN` aktiv. Absturzberichte aus dem Browser der Quest sind
+einzusehen, und für die Sicherung der Ranglistendaten gilt `BACKUP.md`.
+
+Kleinere Aktualisierungen erreichen die Geräte über den Service Worker und
+wirken sofort. Grössere Sprünge verlangen ein neues Paket und eine erneute
+Einreichung. Die Versionshinweise für den Eintrag entstehen auf Deutsch.
+
+Für Rückfragen dient die Adresse der Fachstelle; ein Verweis auf die häufigen
+Fragen gehört in den Eintrag.
 
 ---
 
 ## 8. Offene Entscheidungen
 
-| Punkt | Verantwortlich | Deadline |
+| Punkt | Zuständig | Termin |
 |---|---|---|
-| App-Name "RSI VR Tool" final bestätigen (seit v0.6.0 in Navbar aktiv) | FaSi / KZH-Kommunikation | vor Einreichung |
-| KZH-Wappen-Nutzung | Staatskanzlei | vor Einreichung |
-| Store-Sprache (nur DE oder alle 4) | FaSi | vor Einreichung |
-| Altersfreigabe-Ziel | FaSi | bei IARC-Fragebogen |
-| App Lab vs. direkt Meta Store | Tiefbauamt-Leitung | vor Bubblewrap |
+| Name «RSI VR Tool» bestätigen | Fachstelle und Kommunikation | vor der Einreichung |
+| Nutzung des Kantonswappens | Staatskanzlei | vor der Einreichung |
+| Sprachen des Eintrags | Fachstelle | vor der Einreichung |
+| Angestrebte Altersfreigabe | Fachstelle | beim Ausfüllen des Fragebogens |
+| Interner Test oder direkte Einreichung | Amtsleitung | vor Bubblewrap |
 
 ---
 
-## 9. Zeitlicher Ablauf (grobe Schätzung)
+## 9. Zeitlicher Rahmen
 
-| Phase | Aufwand | Voraussetzung |
+| Schritt | Aufwand | Voraussetzung |
 |---|---|---|
-| WebXR-Integration (Phase 3) | 4–8 Wochen | aktuell offen |
-| Eigene VR-Szenen + Controller | 4–6 Wochen | 360°-Kamera-Aufnahmen |
-| Bubblewrap + Meta Developer Setup | 1 Woche | Phase 3 abgeschlossen |
-| App Lab Distribution | 2 Wochen | APK signiert, Testgruppe |
-| Meta Store Review | 1–3 Wochen | Meta-Review-Zyklus |
-| Launch | — | nach Approval |
+| Immersive Sitzung | erledigt mit v0.8.0 bis v0.9.1 | – |
+| Eigene Aufnahmen für weitere Szenen | 4 bis 6 Wochen | 360°-Kamera im Feld |
+| Bubblewrap und Entwicklerkonto | 1 Woche | – |
+| Interne Verteilung | 2 Wochen | signiertes Paket, Testgruppe |
+| Prüfung durch Meta | 1 bis 3 Wochen | Einreichung |
 
-**Frühest-Termin Store-Launch:** Q3/Q4 2026, realistisch Q4 2026/Q1 2027.
+Die verbleibenden Schritte hängen an den eigenen Aufnahmen und an den offenen
+Entscheidungen aus Abschnitt 8. Ein Termin für die Veröffentlichung lässt sich
+daraus noch nicht ableiten.
