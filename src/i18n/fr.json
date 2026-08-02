@@ -559,7 +559,7 @@
     "subjFrage": "Question"
   },
   "datenschutz": {
-    "hinweis": "Votre nom est stocké localement et transmis de manière anonyme au classement. Aucune donnée personnelle n'est conservée."
+    "hinweis": "Votre nom reste sur cet appareil. Il est transmis au classement sous forme pseudonymisée, comme valeur de hachage; le résultat et l'appartenance au cours y sont conservés durablement. Les détails figurent dans la déclaration de protection des données."
   },
   "lernkarte": {
     "titel": "Fiche d'apprentissage",

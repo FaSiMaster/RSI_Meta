@@ -559,7 +559,7 @@
     "subjFrage": "Domanda"
   },
   "datenschutz": {
-    "hinweis": "Il vostro nome viene memorizzato localmente e trasmesso in forma anonima alla classifica. Nessun dato personale viene conservato."
+    "hinweis": "Il vostro nome rimane su questo dispositivo. Viene trasmesso alla classifica in forma pseudonimizzata, come valore hash; il risultato e l'appartenenza al corso vi sono conservati in modo duraturo. I dettagli figurano nell'informativa sulla protezione dei dati."
   },
   "lernkarte": {
     "titel": "Scheda di apprendimento",

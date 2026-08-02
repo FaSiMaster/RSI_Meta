@@ -9,6 +9,22 @@ Versionierung nach [Semantic Versioning](https://semver.org/lang/de/).
 
 ## [Unreleased]
 
+### Behoben — Datenschutzhinweis in fr/it/en
+
+Der Hinweis unter dem Namensfeld sagte auf Französisch, Italienisch und Englisch
+weiterhin «anonym» und «keine personenbezogenen Daten werden dauerhaft
+gespeichert». Real geht der Name als gesalzener SHA-256-Hash an Supabase und
+bleibt dort. Die deutsche Fassung war am 2026-08-01 bereits korrigiert worden,
+die drei anderen Sprachen nicht — damit widersprachen sie der eigenen
+Datenschutzerklärung, die ausdrücklich von Pseudonymisierung spricht. Alle drei
+Fassungen sind jetzt sinngleich zur deutschen.
+
+Freigabevorlage für die Fachstelle mit dem belegten Datenfluss und fünf
+Entscheidpunkten: `RSI_Meta_Review/Datenschutz_Freigabe_2026-08-02.md`
+(ausserhalb des Repos). Offen darin unter anderem, dass die
+Datenschutzerklärung die seit v0.11.0 zentral gespeicherten Befund-Details noch
+nicht aufführt.
+
 ---
 
 ## [0.11.1] — 2026-08-02

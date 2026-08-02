@@ -559,7 +559,7 @@
     "subjFrage": "Question"
   },
   "datenschutz": {
-    "hinweis": "Your name is stored locally only and transmitted anonymously to the ranking. No personal data is permanently stored."
+    "hinweis": "Your name stays on this device. It is sent to the ranking in pseudonymised form, as a hash value; your result and course assignment are stored there permanently. Details are set out in the privacy notice."
   },
   "lernkarte": {
     "titel": "Learning Card",
