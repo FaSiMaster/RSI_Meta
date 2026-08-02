@@ -1,11 +1,12 @@
 // SceneList – Szenen eines Topics als Cards
 // Sterne-Anzeige (1-3) basierend auf bestem Resultat
 // Neue Szene: Inline-Modal mit Name, Kontext, Beschreibung
+// v0.11.1: Bericht des besten Versuchs direkt von der Szenenkarte abrufbar
 
 import { useTranslation } from 'react-i18next'
-import { ArrowLeft, MapPin, Play, Plus, Star, X } from 'lucide-react'
+import { ArrowLeft, FileDown, MapPin, Play, Plus, Star, X } from 'lucide-react'
 import { motion } from 'motion/react'
-import { getScenes, getAllScenes, getDeficits, getBestResult, getVersuchAnzahl, getSceneResultsForUser, berechneSterne, ml, saveScene, type AppTopic, type AppScene } from '../data/appData'
+import { getScenes, getAllScenes, getDeficits, getBestResult, getVersuchAnzahl, getSceneResultsForUser, getSession, berechneSterne, ml, saveScene, type AppTopic, type AppScene, type SceneResult } from '../data/appData'
 import { generateSceneId } from '../data/idGenerator'
 import { useEffect, useState, useCallback } from 'react'
 
@@ -272,20 +273,33 @@ function NeueSzeneModal({ topicId, onSave, onClose }: NeueSzeneModalProps) {
 
 // ── Haupt-Komponente ────────────────────────────────────────────────────────
 
+type SzenenStats = {
+  sterne: 0 | 1 | 2 | 3
+  versuche: number
+  prozent: number
+  bestanden: boolean
+  /** Bestes eigenes Resultat – Grundlage fuer den nachtraeglichen PDF-Bericht. */
+  best: SceneResult | null
+}
+
+type PdfStatus = 'idle' | 'laeuft' | 'fehler'
+
 export default function SceneList({ topic, username, isAdmin = false, onBack, onSelectScene }: Props) {
   const { i18n, t } = useTranslation()
   const lang = i18n.language
   const [scenes, setScenes] = useState<AppScene[]>([])
   const [deficitCounts, setDeficitCounts] = useState<Record<string, number>>({})
-  const [sceneStats, setSceneStats] = useState<Record<string, { sterne: 0 | 1 | 2 | 3; versuche: number; prozent: number; bestanden: boolean }>>({})
+  const [sceneStats, setSceneStats] = useState<Record<string, SzenenStats>>({})
   const [showNeueSzeneModal, setShowNeueSzeneModal] = useState(false)
+  // Export-Status je Szene (v0.11.1) – pdfmake wird erst beim Klick geladen.
+  const [pdfStatus, setPdfStatus] = useState<Record<string, PdfStatus>>({})
 
   // Szenen laden (auch nach Neuanlage)
   const loadScenes = useCallback(() => {
     const sc = getScenes(topic.id)
     setScenes(sc)
     const counts: Record<string, number> = {}
-    const stats: Record<string, { sterne: 0 | 1 | 2 | 3; versuche: number; prozent: number; bestanden: boolean }> = {}
+    const stats: Record<string, SzenenStats> = {}
     sc.forEach(s => {
       counts[s.id] = getDeficits(s.id).length
       const best = getBestResult(username, s.id)
@@ -296,6 +310,7 @@ export default function SceneList({ topic, username, isAdmin = false, onBack, on
         prozent: best?.prozent ?? 0,
         // Bestanden sobald irgendein Versuch das Kriterium erfuellt hat (v0.9.7)
         bestanden: getSceneResultsForUser(username, s.id).some(r => r.bestanden === true),
+        best,
       }
     })
     setDeficitCounts(counts)
@@ -309,6 +324,36 @@ export default function SceneList({ topic, username, isAdmin = false, onBack, on
   function handleNeueSzeneGespeichert() {
     setShowNeueSzeneModal(false)
     loadScenes()
+  }
+
+  /**
+   * Bericht des besten Versuchs erzeugen (v0.11.1).
+   * Grundlage ist das lokal gespeicherte SceneResult – der Bericht ist deshalb
+   * nur auf dem Geraet abrufbar, auf dem die Szene absolviert wurde.
+   */
+  async function handlePdfExport(scene: AppScene) {
+    const best = sceneStats[scene.id]?.best
+    if (!best) return
+    setPdfStatus(s => ({ ...s, [scene.id]: 'laeuft' }))
+    try {
+      const [{ baueTeilnehmerBericht }, { exportTeilnehmerPdf }] = await Promise.all([
+        import('../data/berichtModel'),
+        import('../utils/pdfExport'),
+      ])
+      const bericht = baueTeilnehmerBericht(
+        best,
+        scene,
+        getDeficits(scene.id),
+        lang,
+        ml(topic.nameI18n, lang) || null,
+        getSession().kursName ?? null,
+      )
+      await exportTeilnehmerPdf(bericht, t, lang)
+      setPdfStatus(s => ({ ...s, [scene.id]: 'idle' }))
+    } catch {
+      setPdfStatus(s => ({ ...s, [scene.id]: 'fehler' }))
+      setTimeout(() => setPdfStatus(s => ({ ...s, [scene.id]: 'idle' })), 4000)
+    }
   }
 
   return (
@@ -350,6 +395,8 @@ export default function SceneList({ topic, username, isAdmin = false, onBack, on
           {scenes.map((scene, i) => {
             const count = deficitCounts[scene.id] ?? 0
             const stats = sceneStats[scene.id]
+            const status = pdfStatus[scene.id] ?? 'idle'
+            const kannBericht = !!stats?.best
             return (
               <motion.div
                 key={scene.id}
@@ -409,13 +456,43 @@ export default function SceneList({ topic, username, isAdmin = false, onBack, on
                       </>
                     )}
                   </div>
-                  <button
-                    onClick={() => onSelectScene(scene)}
-                    className="w-full flex items-center justify-center gap-2 font-bold text-white transition-all hover:scale-[1.02]"
-                    style={{ padding: '10px', borderRadius: 'var(--zh-radius-btn)', background: 'var(--zh-dunkelblau)', fontSize: '14px', border: 'none', cursor: 'pointer' }}
-                  >
-                    <Play size={15} fill="white" /> {stats && stats.versuche > 0 ? t('scenes.retryBtn') : t('scenes.startBtn')}
-                  </button>
+                  <div style={{ display: 'flex', gap: '8px', alignItems: 'stretch' }}>
+                    <button
+                      onClick={() => onSelectScene(scene)}
+                      className="flex items-center justify-center gap-2 font-bold text-white transition-all hover:scale-[1.02]"
+                      style={{ flex: 1, padding: '10px', borderRadius: 'var(--zh-radius-btn)', background: 'var(--zh-dunkelblau)', fontSize: '14px', border: 'none', cursor: 'pointer' }}
+                    >
+                      <Play size={15} fill="white" /> {stats && stats.versuche > 0 ? t('scenes.retryBtn') : t('scenes.startBtn')}
+                    </button>
+                    {/* Bericht des besten Versuchs – erscheint erst nach dem ersten Durchlauf */}
+                    {kannBericht && (
+                      <button
+                        onClick={() => handlePdfExport(scene)}
+                        disabled={status === 'laeuft'}
+                        title={t('scenes.bericht_titel')}
+                        aria-label={t('scenes.bericht_titel')}
+                        style={{
+                          display: 'flex', alignItems: 'center', justifyContent: 'center',
+                          padding: '10px 14px',
+                          borderRadius: 'var(--zh-radius-btn)',
+                          border: '1px solid var(--zh-color-border)',
+                          background: 'var(--zh-color-surface)',
+                          color: status === 'fehler' ? 'var(--zh-rot)' : 'var(--zh-color-text-muted)',
+                          cursor: status === 'laeuft' ? 'progress' : 'pointer',
+                          opacity: status === 'laeuft' ? 0.6 : 1,
+                          fontFamily: 'var(--zh-font)',
+                          flexShrink: 0,
+                        }}
+                      >
+                        <FileDown size={15} />
+                      </button>
+                    )}
+                  </div>
+                  {status === 'fehler' && (
+                    <p style={{ fontSize: '11px', color: 'var(--zh-rot)', marginTop: '6px' }}>
+                      {t('bericht.export_fehler')}
+                    </p>
+                  )}
                 </div>
               </motion.div>
             )

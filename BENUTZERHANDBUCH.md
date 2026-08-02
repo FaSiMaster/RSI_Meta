@@ -193,6 +193,14 @@ RSI-Format. Es führt je Defizit das Kriterium sowie Soll- und Ist-Beurteilung
 gefundene Defizite als solche aus. Durchgänge aus Versionen vor v0.11.0 tragen
 den Vermerk, dass die abgegebene Beurteilung nicht gespeichert wurde.
 
+Der Bericht lässt sich auch später abrufen: In der Szenenübersicht trägt jede
+Szene, die Sie bereits absolviert haben, neben dem Startknopf ein Symbol mit
+Pfeil nach unten. Es erzeugt den Bericht Ihres besten Versuchs. Das Symbol
+erscheint erst nach dem ersten Durchgang. Grundlage sind die auf diesem Gerät
+gespeicherten Ergebnisse — auf einem anderen Gerät, in einem anderen Browser
+oder nach einem Zurücksetzen der App ist der nachträgliche Bericht nicht mehr
+verfügbar. Wer ihn sicher braucht, erzeugt ihn direkt nach der Szene.
+
 ---
 
 ## 8. Rangliste

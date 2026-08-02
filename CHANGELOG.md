@@ -9,6 +9,21 @@ Versionierung nach [Semantic Versioning](https://semver.org/lang/de/).
 
 ## [Unreleased]
 
+---
+
+## [0.11.1] — 2026-08-02
+
+### Hinzugefügt
+
+- **Bericht nachträglich abrufbar:** In der Szenenübersicht trägt jede bereits
+  absolvierte Szene neben dem Startknopf ein Symbol, das den PDF-Bericht des
+  besten eigenen Versuchs erzeugt. Es erscheint erst, wenn ein Resultat
+  vorliegt. Bisher liess sich der Bericht nur unmittelbar nach dem Durchgang
+  auslösen. `pdfmake` wird weiterhin erst beim Klick nachgeladen.
+  Grundlage sind die lokal gespeicherten Resultate (`rsi-v3-scene-results`);
+  der Abruf funktioniert daher nur auf dem Gerät, auf dem trainiert wurde.
+  Neuer Schlüssel `scenes.bericht_titel` in de/fr/it/en.
+
 ### Dokumentation
 
 Redaktionelle Überarbeitung der gesamten Anwender- und Betriebsdokumentation auf

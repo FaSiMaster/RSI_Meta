@@ -15,7 +15,7 @@
 
 | Schicht | Technologie | Version |
 |---|---|---|
-| Version | **v0.11.0** (2026-07-30) | PDF-Bericht (Phase 5), Standort-Hinweis, Kurs-exklusive Themen |
+| Version | **v0.11.1** (2026-08-02) | Bericht auch nachträglich über die Szenenkarte abrufbar |
 | Framework | React + Vite + TypeScript | React 18.3, **Vite 7.3**, TS strict |
 | Styling | Tailwind CSS (`@tailwindcss/vite`) | v4.2 |
 | Animation | Framer Motion (motion/react) | v12 |
@@ -281,6 +281,7 @@ interface AppDeficit {
 ### Phase 5 – Dokumentation & Export (v0.11.0, teilweise)
 - [x] PDF-Export (RSI-konform, KZH CD) — Auswertung + Befundliste, pdfmake
       lazy geladen; Teilnehmer, Admin je Kurs, Admin je Einzelresultat
+- [x] Bericht nachträglich abrufbar über die Szenenkarte (bester Versuch, v0.11.1)
 - [ ] Session-Review im Browser
 
 ### Phase 6 – Meta Horizon Store (geplant)
@@ -321,4 +322,4 @@ npm run preview -- --host  # Build lokal testen
 
 ---
 
-*Letzte Aktualisierung: 2026-08-01 (v0.11.0, Doku-Redaktion)*
+*Letzte Aktualisierung: 2026-08-02 (v0.11.1, Bericht über Szenenkarte)*

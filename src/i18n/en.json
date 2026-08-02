@@ -215,7 +215,8 @@
     "defizite_count": "{{count}} deficits",
     "versuche_count": "{{count}}× played",
     "best_prozent": "Best: {{prozent}}%",
-    "bestanden_badge": "Passed"
+    "bestanden_badge": "Passed",
+    "bericht_titel": "Report of best attempt as PDF"
   },
   "completion": {
     "titel": "Scene completed",
