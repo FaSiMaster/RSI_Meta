@@ -9,6 +9,21 @@ Versionierung nach [Semantic Versioning](https://semver.org/lang/de/).
 
 ## [Unreleased]
 
+### Geändert — Datenschutzerklärung nachgeführt (Freigabe P1/P2 vom 2026-08-02)
+
+Die Fachstelle hat entschieden, dass die seit v0.11.0 zentral gespeicherten
+Befund-Details gewollt sind, und die Ergänzung der Erklärung freigegeben.
+`public/datenschutz.html`: Tabelle in Abschnitt 3 um «Bewertung je Defizit»
+und «Bestanden ja/nein» ergänzt, Zweckliste in Abschnitt 2 um den persönlichen
+Lernbericht erweitert, erläuternder Absatz mit der Zusage, dass ausserhalb des
+Kurses keine Leistungsbeurteilung stattfindet. Stand neu 2026-08-02.
+
+Weiterhin offen und in der Freigabevorlage dokumentiert: die Erklärung erscheint
+unabhängig von der gewählten Sprache auf Deutsch (P3), die Rechtsgrundlage nennt
+revDSG Art. 31 statt kantonales Recht (P4, Prüfung durch Rechtsabteilung oder
+Datenschutzbeauftragten nötig), und die Löschfrist «Kurs plus 12 Monate» hat
+keinen automatischen Ablauf (P5).
+
 ### Behoben — Datenschutzhinweis in fr/it/en
 
 Der Hinweis unter dem Namensfeld sagte auf Französisch, Italienisch und Englisch
