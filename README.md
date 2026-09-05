@@ -302,7 +302,12 @@ Keep-Alive» auslösen.
 ## Lizenz
 
 Privates Werkzeug von Stevan Skeledzic. Alle Rechte vorbehalten, keine offene
-Lizenz; nicht für die öffentliche Verbreitung bestimmt.
+Lizenz.
+
+Die Anwendung steht zur Nutzung offen: Sie richtet sich an ausgebildetes
+Inspektionspersonal und an alle, welche die Methode erlernt haben und sie
+anwenden möchten. Quellcode und Inhalte dürfen ohne vorherige schriftliche
+Zustimmung weder vervielfältigt noch weiterverbreitet oder bearbeitet werden.
 
 Die Wichtigkeits-Tabelle und die beiden Bewertungsmatrizen stammen aus dem
 TBA-Fachkurs FK RSI (V 16.09.2020), die NACA-Einstufung aus dem bfu-Bericht 73.

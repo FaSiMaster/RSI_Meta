@@ -44,6 +44,25 @@ lit. a und f DSGVO. Der bisherige Verweis auf Art. 31 Abs. 2 lit. a DSG war
 sachlich unzutreffend — diese Bestimmung betrifft Vertragspartner, nicht
 Schulungen (belegt am Gesetzestext, Fedlex-Stand 7. Juli 2025).
 
+### Geändert — Nutzungsbereich geöffnet
+
+Der Nutzungsbereich im Impressum richtete sich an Inspektionspersonal und
+Teilnehmende des FK RSI und hielt fest, die Nutzung durch Dritte sei nicht
+vorgesehen. Neu richtet sich das Werkzeug an ausgebildetes
+Inspektionspersonal sowie an alle, welche die Methode erlernt haben und sie
+anwenden möchten; die Nutzung durch Dritte ist vorgesehen und erwünscht.
+
+Zwei Folgestellen gaben danach das Gegenteil an und sind nachgezogen: Der
+Lizenzabschnitt im README sagte «nicht für die öffentliche Verbreitung
+bestimmt», und der Urheberrechtsabschnitt stellte jede «Nutzung ausserhalb
+des Schulungskontexts» unter Zustimmungsvorbehalt. Beide trennen neu
+zwischen der Anwendung, die offen steht, und den Inhalten, deren
+Vervielfältigung, Weiterverbreitung und Bearbeitung weiterhin die
+schriftliche Zustimmung braucht.
+
+Im Impressum wechselten «Tool» und «Werkzeug» für dieselbe Sache; der Text
+führt neu durchgehend «Werkzeug».
+
 ### Hinzugefügt
 
 - Wächter `src/test/keine-affiliation.test.ts`: prüft Quellbaum **und** das
