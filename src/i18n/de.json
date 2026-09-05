@@ -197,6 +197,7 @@
     "linkImpressum": "Impressum",
     "linkDatenschutz": "Datenschutz",
     "linkGlossar": "Glossar",
+    "linkNutzung": "Nutzungsbedingungen",
     "linkFeedback": "Feedback"
   },
   "topics": {
@@ -658,5 +659,8 @@
     "export_kurs_btn": "Kursbericht als PDF",
     "export_einzel_btn": "PDF",
     "keine_details": "Für diesen Durchlauf liegen keine Detaildaten vor. Er stammt aus einer Version vor 0.11.0 oder wurde vor der Datenbank-Migration gespeichert. Die Kopfzahlen oben sind vollständig."
+  },
+  "footer": {
+    "nutzungsbedingungen": "Nutzungsbedingungen"
   }
 }

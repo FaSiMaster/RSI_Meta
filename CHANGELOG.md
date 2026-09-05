@@ -63,6 +63,37 @@ schriftliche Zustimmung braucht.
 Im Impressum wechselten «Tool» und «Werkzeug» für dieselbe Sache; der Text
 führt neu durchgehend «Werkzeug».
 
+### Hinzugefügt — Nutzungsbedingungen (v0.13.0)
+
+Neue Seite `public/nutzungsbedingungen.html`, verlinkt im Footer der
+Startseite, im Menü der Kopfleiste und in den drei übrigen Rechtsseiten.
+Dreizehn Abschnitte: Geltungsbereich, Anbieter, erlaubte Nutzung, untersagte
+Nutzung, Rechte an Anwendung und Inhalten, didaktischer Charakter,
+Verfügbarkeit, Gewährleistung und Haftung, Nutzung im VR-Headset,
+Personendaten, Änderungen, anwendbares Recht, weitere Dokumente.
+
+**Keine Lizenz, sondern Nutzungsbedingungen.** Eine Lizenz regelt, was
+jemand mit einer Kopie darf; das Werkzeug wird als Dienst betrieben und gibt
+keine Kopie heraus. Eingeräumt wird ein einfaches, nicht übertragbares und
+widerrufliches Recht zur Nutzung; weitergehende Rechte bleiben beim Urheber
+(Art. 16 Abs. 2 URG).
+
+Art. 17 URG (Rechte an Programmen im Arbeitsverhältnis) greift nach Angabe
+des Urhebers nicht: Das Werkzeug entstand in der Freizeit, ohne dienstlichen
+Auftrag und ohne Mittel des Arbeitgebers. Die Bestimmung verlangt beides
+kumulativ — Ausübung dienstlicher Tätigkeiten und Erfüllung vertraglicher
+Pflichten.
+
+**Beim Schreiben korrigiert:** Der Vorbehalt zugunsten des Eigengebrauchs
+war zunächst pauschal auf Art. 19 URG gestützt. Artikel 19 Absatz 4 URG
+hält jedoch fest: «Dieser Artikel findet keine Anwendung auf
+Computerprogramme.» Der Vorbehalt unterscheidet neu zwischen den Inhalten,
+für die der Eigengebrauch gilt — einschliesslich der Werkverwendung der
+Lehrperson für den Unterricht in der Klasse nach Art. 19 Abs. 1 lit. b URG —
+und dem Programmcode, für den er nicht gilt.
+
+Alle Artikelzitate am Gesetzestext geprüft, Fedlex-Stand 1. Juli 2025.
+
 ### Hinzugefügt
 
 - Wächter `src/test/keine-affiliation.test.ts`: prüft Quellbaum **und** das

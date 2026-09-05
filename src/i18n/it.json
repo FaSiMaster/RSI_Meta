@@ -197,6 +197,7 @@
     "linkImpressum": "Impressum",
     "linkDatenschutz": "Privacy",
     "linkGlossar": "Glossario",
+    "linkNutzung": "Condizioni d'uso",
     "linkFeedback": "Feedback"
   },
   "topics": {
@@ -658,5 +659,8 @@
     "export_kurs_btn": "Rapporto del corso in PDF",
     "export_einzel_btn": "PDF",
     "keine_details": "Per questa sessione non sono disponibili dati di dettaglio. Proviene da una versione precedente alla 0.11.0 oppure è stata salvata prima della migrazione della banca dati. I dati riepilogativi qui sopra sono completi."
+  },
+  "footer": {
+    "nutzungsbedingungen": "Condizioni d'uso"
   }
 }

@@ -197,6 +197,7 @@
     "linkImpressum": "Mentions légales",
     "linkDatenschutz": "Confidentialité",
     "linkGlossar": "Glossaire",
+    "linkNutzung": "Conditions d'utilisation",
     "linkFeedback": "Retour"
   },
   "topics": {
@@ -658,5 +659,8 @@
     "export_kurs_btn": "Rapport de cours en PDF",
     "export_einzel_btn": "PDF",
     "keine_details": "Aucune donnée détaillée n'est disponible pour ce parcours. Il provient d'une version antérieure à 0.11.0 ou a été enregistré avant la migration de la base de données. Les chiffres ci-dessus sont complets."
+  },
+  "footer": {
+    "nutzungsbedingungen": "Conditions d'utilisation"
   }
 }

@@ -197,6 +197,7 @@
     "linkImpressum": "Imprint",
     "linkDatenschutz": "Privacy",
     "linkGlossar": "Glossary",
+    "linkNutzung": "Terms of use",
     "linkFeedback": "Feedback"
   },
   "topics": {
@@ -658,5 +659,8 @@
     "export_kurs_btn": "Course report as PDF",
     "export_einzel_btn": "PDF",
     "keine_details": "No detailed data is available for this run. It comes from a version before 0.11.0 or was stored before the database migration. The summary figures above are complete."
+  },
+  "footer": {
+    "nutzungsbedingungen": "Terms of use"
   }
 }

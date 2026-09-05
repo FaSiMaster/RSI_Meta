@@ -385,6 +385,10 @@ export default function LandingPage({ theme, onToggleTheme, onStart, onAdmin }: 
             {t('landing.linkGlossar')}
           </a>
           <span className="text-[10px]" style={{ color: 'var(--rsi-color-border)' }}>|</span>
+          <a href={`/nutzungsbedingungen.html?lang=${i18n.language}`} target="_blank" rel="noopener noreferrer" className="text-[10px] font-semibold hover:underline" style={{ color: 'var(--rsi-color-text-disabled)' }}>
+            {t('landing.linkNutzung')}
+          </a>
+          <span className="text-[10px]" style={{ color: 'var(--rsi-color-border)' }}>|</span>
           <button
             onClick={() => setShowFeedback(true)}
             className="flex items-center gap-1 text-[10px] font-semibold transition-colors"

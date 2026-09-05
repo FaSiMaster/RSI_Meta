@@ -2,7 +2,7 @@
 // Links: Logo | Mitte: Nav-Links | Rechts: Score + Live + Sprache + Dark-Toggle + Avatar
 // Avatar-Klick öffnet User-Popover (Name, Kurs, Score, Abmelden, Reset)
 
-import { LayoutDashboard, BarChart3, Settings, Sun, Moon, Trophy, LogOut, RotateCcw, MessageSquare, FileText, ShieldCheck, ShieldOff, BookOpen } from 'lucide-react'
+import { LayoutDashboard, BarChart3, Settings, Sun, Moon, Trophy, LogOut, RotateCcw, MessageSquare, FileText, ShieldCheck, ShieldOff, BookOpen, Scale } from 'lucide-react'
 import { useState, useEffect, useRef } from 'react'
 import LanguageSwitcher from './LanguageSwitcher'
 import FeedbackModal from './FeedbackModal'
@@ -352,6 +352,22 @@ export default function Navbar({ view, username, score, theme, kursName, onNavig
                 >
                   <BookOpen size={13} aria-hidden="true" />
                   {t('footer.glossar', 'Glossar')}
+                </a>
+                <a
+                  href="/nutzungsbedingungen.html"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  style={{
+                    display: 'flex', alignItems: 'center', gap: '10px', width: '100%',
+                    padding: '8px', borderRadius: '6px',
+                    fontSize: '12px', fontWeight: 500, color: 'var(--rsi-color-text-muted)',
+                    textDecoration: 'none',
+                  }}
+                  onMouseEnter={e => { e.currentTarget.style.background = 'var(--rsi-color-bg-secondary)' }}
+                  onMouseLeave={e => { e.currentTarget.style.background = 'none' }}
+                >
+                  <Scale size={13} aria-hidden="true" />
+                  {t('footer.nutzungsbedingungen', 'Nutzungsbedingungen')}
                 </a>
               </div>
             )}
