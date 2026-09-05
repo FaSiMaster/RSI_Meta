@@ -18,7 +18,7 @@ test('Flow: Landing → Topics → Scenes → Einstieg', async ({ page }) => {
   await page.goto('/')
 
   // 1. Name eingeben + starten
-  await page.getByPlaceholder('z.B. Max Muster').fill('E2E Tester')
+  await page.getByPlaceholder(/Max Muster/).fill('E2E Tester')
   await page.getByRole('button', { name: /Training starten/ }).click()
 
   // 2. TopicDashboard: Seed-Thema anklicken
@@ -31,7 +31,7 @@ test('Flow: Landing → Topics → Scenes → Einstieg', async ({ page }) => {
 
 test('SceneList zeigt geseedete Szene mit Defizit-Hinweis', async ({ page }) => {
   await page.goto('/')
-  await page.getByPlaceholder('z.B. Max Muster').fill('E2E Tester')
+  await page.getByPlaceholder(/Max Muster/).fill('E2E Tester')
   await page.getByRole('button', { name: /Training starten/ }).click()
 
   await page.getByText('E2E-Thema').first().click()

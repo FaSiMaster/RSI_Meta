@@ -13,7 +13,7 @@ test.beforeEach(async ({ page }) => {
   await seedLocalStorage(page)
 })
 
-test('LandingPage rendert mit Logo, Taglines und Login-Card', async ({ page }) => {
+test('LandingPage rendert mit Wortmarke, Taglines und Login-Card', async ({ page }) => {
   await page.goto('/')
 
   // Kern-Branding sichtbar
@@ -21,7 +21,7 @@ test('LandingPage rendert mit Logo, Taglines und Login-Card', async ({ page }) =
   await expect(page.getByText('Willkommen.')).toBeVisible()
 
   // Name-Input + Start-Button vorhanden
-  await expect(page.getByPlaceholder('z.B. Max Muster')).toBeVisible()
+  await expect(page.getByPlaceholder(/Max Muster/)).toBeVisible()
   await expect(page.getByRole('button', { name: /Training starten/ })).toBeVisible()
 })
 
@@ -36,7 +36,7 @@ test('Start ohne Namen zeigt Fehlermeldung', async ({ page }) => {
 test('Start mit Namen ohne Kurs fuehrt ins TopicDashboard', async ({ page }) => {
   await page.goto('/')
 
-  await page.getByPlaceholder('z.B. Max Muster').fill('E2E Tester')
+  await page.getByPlaceholder(/Max Muster/).fill('E2E Tester')
   await page.getByRole('button', { name: /Training starten/ }).click()
 
   // TopicDashboard: das geseedete Thema muss sichtbar sein.
