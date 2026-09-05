@@ -13,9 +13,7 @@ Schulungsunterlagen: Wo dieselbe Sache gemeint ist, steht dieselbe Bezeichnung.
 | Kürzel | Bedeutung | Kontext |
 |---|---|---|
 | **RSI** | Road Safety Inspection | Strasseninspektion nach normativem 9-Schritte-Verfahren |
-| **FaSi** | Fachstelle Verkehrssicherheit | Organisationseinheit im Tiefbauamt Kanton Zürich |
-| **KZH / KTZH** | Kanton Zürich | Auftraggeber und Herausgeber des Tools |
-| **TBA** | Tiefbauamt | Teil der Baudirektion des Kantons Zürich |
+| **TBA** | Tiefbauamt | Herausgeber des Fachkurses FK RSI (Quellenangabe) |
 | **FK RSI** | Fachkurs Road Safety Inspection | Schulungsreferenz V 16.09.2020 |
 | **bfu** | Beratungsstelle für Unfallverhütung | Schweizer Kompetenzstelle für Unfallprävention |
 | **ASTRA** | Bundesamt für Strassen | Oberbehörde für Nationalstrassen und Strassenverkehr |
@@ -29,7 +27,6 @@ Schulungsunterlagen: Wo dieselbe Sache gemeint ist, steht dieselbe Bezeichnung.
 | **WCAG** | Web Content Accessibility Guidelines | W3C-Richtlinien zur Barrierefreiheit |
 | **WebXR** | Web Extended Reality | Browser-Schnittstelle für VR und AR |
 | **PWA** | Progressive Web App | Installierbare, offlinefähige Web-Anwendung |
-| **CD** | Corporate Design | Gestaltungsrichtlinien, hier des Kantons Zürich |
 | **CI** | Continuous Integration | Automatisierte Test- und Build-Kette |
 | **PIN** | Persönliche Identifikationsnummer | Zugang zum Administrationsbereich |
 | **RLS** | Row Level Security | Zugriffsrechte auf Zeilenebene in Supabase |

@@ -1,5 +1,5 @@
 // Vordefinierte Strassenmerkmale für RSI-Szenen
-// Kategorien und Auswahloptionen nach TBA-Praxis
+// Kategorien und Auswahloptionen nach Inspektionspraxis
 
 export interface MerkmalDefinition {
   id: string

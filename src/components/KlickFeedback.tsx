@@ -86,7 +86,7 @@ export default function KlickFeedback({ type, onClose }: Props) {
         boxShadow:   '0 8px 32px rgba(0,0,0,0.5)',
         zIndex:      200,
         pointerEvents: 'none',
-        fontFamily:  'var(--zh-font)',
+        fontFamily:  'var(--rsi-font)',
       }}
     >
       <div style={{ flexShrink: 0, marginTop: '1px' }}>{cfg.icon}</div>

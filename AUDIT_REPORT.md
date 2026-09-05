@@ -273,7 +273,7 @@ Alle normativen Berechnungen (calcRelevanzSD, calcUnfallrisiko, WICHTIGKEIT_TABL
 
 ---
 
-*Audit durchgeführt: 2026-03-28 | RSI VR Tool Phase 2 | Fachstelle Verkehrssicherheit, Tiefbauamt Kanton Zürich*
+*Audit durchgeführt: 2026-03-28 | RSI VR Tool Phase 2*
 
 ---
 

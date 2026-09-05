@@ -20,7 +20,7 @@ interface Props {
 
 // Sterne-Anzeige (1-3)
 function SterneAnzeige({ sterne, size = 14 }: { sterne: 0 | 1 | 2 | 3; size?: number }) {
-  const colors = ['#CCCCCC', 'var(--zh-orange)', '#949494', 'var(--zh-gruen)']
+  const colors = ['#CCCCCC', 'var(--rsi-orange)', '#949494', 'var(--rsi-gruen)']
   // 0 = keine Sterne (nicht gespielt), 1-3 = Sterne
   if (sterne === 0) return null
   return (
@@ -30,7 +30,7 @@ function SterneAnzeige({ sterne, size = 14 }: { sterne: 0 | 1 | 2 | 3; size?: nu
           key={i}
           size={size}
           fill={i <= sterne ? colors[sterne] : 'none'}
-          style={{ color: i <= sterne ? colors[sterne] : 'var(--zh-color-text-disabled)' }}
+          style={{ color: i <= sterne ? colors[sterne] : 'var(--rsi-color-text-disabled)' }}
         />
       ))}
     </div>
@@ -91,11 +91,11 @@ function NeueSzeneModal({ topicId, onSave, onClose }: NeueSzeneModalProps) {
     width: '100%',
     padding: '10px 14px',
     borderRadius: '8px',
-    border: '1px solid var(--zh-color-border)',
-    background: 'var(--zh-color-bg-secondary)',
-    color: 'var(--zh-color-text)',
+    border: '1px solid var(--rsi-color-border)',
+    background: 'var(--rsi-color-bg-secondary)',
+    color: 'var(--rsi-color-text)',
     fontSize: '14px',
-    fontFamily: 'var(--zh-font)',
+    fontFamily: 'var(--rsi-font)',
     boxSizing: 'border-box',
     outline: 'none',
   }
@@ -105,7 +105,7 @@ function NeueSzeneModal({ topicId, onSave, onClose }: NeueSzeneModalProps) {
     fontWeight: 700,
     textTransform: 'uppercase',
     letterSpacing: '0.12em',
-    color: 'var(--zh-color-text-muted)',
+    color: 'var(--rsi-color-text-muted)',
     display: 'block',
     marginBottom: '6px',
   }
@@ -127,24 +127,24 @@ function NeueSzeneModal({ topicId, onSave, onClose }: NeueSzeneModalProps) {
       <div
         onClick={e => e.stopPropagation()}
         style={{
-          background: 'var(--zh-color-bg)',
-          borderRadius: 'var(--zh-radius-card)',
-          border: '1px solid var(--zh-color-border)',
+          background: 'var(--rsi-color-bg)',
+          borderRadius: 'var(--rsi-radius-card)',
+          border: '1px solid var(--rsi-color-border)',
           padding: '28px 32px',
           maxWidth: '480px',
           width: '100%',
-          boxShadow: 'var(--zh-shadow-lg)',
-          fontFamily: 'var(--zh-font)',
+          boxShadow: 'var(--rsi-shadow-lg)',
+          fontFamily: 'var(--rsi-font)',
         }}
       >
         {/* Header */}
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '24px' }}>
-          <h2 style={{ fontSize: '18px', fontWeight: 700, color: 'var(--zh-color-text)', margin: 0 }}>
+          <h2 style={{ fontSize: '18px', fontWeight: 700, color: 'var(--rsi-color-text)', margin: 0 }}>
             {t('admin.szene_neu')}
           </h2>
           <button
             onClick={onClose}
-            style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--zh-color-text-muted)', padding: '4px', display: 'flex', alignItems: 'center' }}
+            style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--rsi-color-text-muted)', padding: '4px', display: 'flex', alignItems: 'center' }}
           >
             <X size={18} />
           </button>
@@ -163,12 +163,12 @@ function NeueSzeneModal({ topicId, onSave, onClose }: NeueSzeneModalProps) {
             placeholder="z.B. Innerorts – Gehweg mit Querung"
             style={{
               ...inputStyle,
-              border: validationError ? '1px solid var(--zh-rot)' : '1px solid var(--zh-color-border)',
+              border: validationError ? '1px solid var(--rsi-rot)' : '1px solid var(--rsi-color-border)',
             }}
             autoFocus
           />
           {validationError && (
-            <p style={{ fontSize: '12px', color: 'var(--zh-rot)', marginTop: '4px' }}>
+            <p style={{ fontSize: '12px', color: 'var(--rsi-rot)', marginTop: '4px' }}>
               Name (DE) ist ein Pflichtfeld.
             </p>
           )}
@@ -189,13 +189,13 @@ function NeueSzeneModal({ topicId, onSave, onClose }: NeueSzeneModalProps) {
                   gap: '8px',
                   padding: '8px 16px',
                   borderRadius: '8px',
-                  border: kontext === k ? '2px solid var(--zh-color-accent)' : '1px solid var(--zh-color-border)',
-                  background: kontext === k ? 'rgba(0,118,189,0.08)' : 'var(--zh-color-bg-secondary)',
+                  border: kontext === k ? '2px solid var(--rsi-color-accent)' : '1px solid var(--rsi-color-border)',
+                  background: kontext === k ? 'rgba(0,118,189,0.08)' : 'var(--rsi-color-bg-secondary)',
                   cursor: 'pointer',
                   fontSize: '14px',
                   fontWeight: kontext === k ? 700 : 500,
-                  color: kontext === k ? 'var(--zh-color-accent)' : 'var(--zh-color-text)',
-                  fontFamily: 'var(--zh-font)',
+                  color: kontext === k ? 'var(--rsi-color-accent)' : 'var(--rsi-color-text)',
+                  fontFamily: 'var(--rsi-font)',
                   flex: 1,
                   justifyContent: 'center',
                 }}
@@ -237,14 +237,14 @@ function NeueSzeneModal({ topicId, onSave, onClose }: NeueSzeneModalProps) {
             onClick={onClose}
             style={{
               padding: '10px 20px',
-              borderRadius: 'var(--zh-radius-btn)',
-              border: '1px solid var(--zh-color-border)',
+              borderRadius: 'var(--rsi-radius-btn)',
+              border: '1px solid var(--rsi-color-border)',
               background: 'transparent',
-              color: 'var(--zh-color-text-muted)',
+              color: 'var(--rsi-color-text-muted)',
               fontSize: '14px',
               fontWeight: 600,
               cursor: 'pointer',
-              fontFamily: 'var(--zh-font)',
+              fontFamily: 'var(--rsi-font)',
             }}
           >
             {t('admin.cancelBtn')}
@@ -253,14 +253,14 @@ function NeueSzeneModal({ topicId, onSave, onClose }: NeueSzeneModalProps) {
             onClick={handleSubmit}
             style={{
               padding: '10px 20px',
-              borderRadius: 'var(--zh-radius-btn)',
-              background: 'var(--zh-dunkelblau)',
+              borderRadius: 'var(--rsi-radius-btn)',
+              background: 'var(--rsi-dunkelblau)',
               color: 'white',
               fontSize: '14px',
               fontWeight: 700,
               cursor: 'pointer',
               border: 'none',
-              fontFamily: 'var(--zh-font)',
+              fontFamily: 'var(--rsi-font)',
             }}
           >
             {t('admin.saveBtn')}
@@ -357,29 +357,29 @@ export default function SceneList({ topic, username, isAdmin = false, onBack, on
   }
 
   return (
-    <div className="max-w-5xl mx-auto w-full" style={{ padding: 'var(--zh-padding-page)' }}>
+    <div className="max-w-5xl mx-auto w-full" style={{ padding: 'var(--rsi-padding-page)' }}>
       {/* Header */}
       <div className="mb-8">
         <button
           onClick={onBack}
-          style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '14px', color: 'var(--zh-color-text-muted)', fontWeight: 500, marginBottom: '20px', background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}
+          style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '14px', color: 'var(--rsi-color-text-muted)', fontWeight: 500, marginBottom: '20px', background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}
         >
           <ArrowLeft size={15} /> {t('scenes.back')}
         </button>
 
         <div className="flex items-end justify-between">
           <div>
-            <h1 style={{ fontSize: '28px', fontWeight: 700, color: 'var(--zh-color-text)', marginBottom: '4px' }}>
+            <h1 style={{ fontSize: '28px', fontWeight: 700, color: 'var(--rsi-color-text)', marginBottom: '4px' }}>
               {ml(topic.nameI18n, lang)}
             </h1>
-            <p style={{ fontSize: '14px', color: 'var(--zh-color-text-muted)' }}>
+            <p style={{ fontSize: '14px', color: 'var(--rsi-color-text-muted)' }}>
               {ml(topic.beschreibungI18n, lang)}
             </p>
           </div>
           {isAdmin && (
             <button
               onClick={() => setShowNeueSzeneModal(true)}
-              style={{ display: 'flex', alignItems: 'center', gap: '6px', padding: '8px 16px', borderRadius: 'var(--zh-radius-btn)', background: 'var(--zh-dunkelblau)', color: 'white', fontWeight: 700, fontSize: '13px', border: 'none', cursor: 'pointer', fontFamily: 'var(--zh-font)', flexShrink: 0 }}
+              style={{ display: 'flex', alignItems: 'center', gap: '6px', padding: '8px 16px', borderRadius: 'var(--rsi-radius-btn)', background: 'var(--rsi-dunkelblau)', color: 'white', fontWeight: 700, fontSize: '13px', border: 'none', cursor: 'pointer', fontFamily: 'var(--rsi-font)', flexShrink: 0 }}
             >
               <Plus size={14} /> {t('admin.szene_neu')}
             </button>
@@ -389,7 +389,7 @@ export default function SceneList({ topic, username, isAdmin = false, onBack, on
 
       {/* Szenen-Grid */}
       {scenes.length === 0 ? (
-        <p style={{ fontSize: '14px', color: 'var(--zh-color-text-disabled)', fontStyle: 'italic' }}>{t('dashboard.noScenes')}</p>
+        <p style={{ fontSize: '14px', color: 'var(--rsi-color-text-disabled)', fontStyle: 'italic' }}>{t('dashboard.noScenes')}</p>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
           {scenes.map((scene, i) => {
@@ -404,10 +404,10 @@ export default function SceneList({ topic, username, isAdmin = false, onBack, on
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: i * 0.08 }}
                 className="overflow-hidden"
-                style={{ borderRadius: 'var(--zh-radius-card)', border: '1px solid var(--zh-color-border)', background: 'var(--zh-color-surface)', boxShadow: 'var(--zh-shadow-sm)' }}
+                style={{ borderRadius: 'var(--rsi-radius-card)', border: '1px solid var(--rsi-color-border)', background: 'var(--rsi-color-surface)', boxShadow: 'var(--rsi-shadow-sm)' }}
               >
                 {/* Szenen-Vorschaubild */}
-                <div className="relative h-36 flex items-end" style={{ background: 'var(--zh-color-bg-tertiary)', overflow: 'hidden' }}>
+                <div className="relative h-36 flex items-end" style={{ background: 'var(--rsi-color-bg-tertiary)', overflow: 'hidden' }}>
                   {(() => {
                     const imgUrl = scene.vorschauBild1 === 'panorama' ? scene.panoramaBildUrl : scene.vorschauBild1
                     return imgUrl ? (
@@ -416,7 +416,7 @@ export default function SceneList({ topic, username, isAdmin = false, onBack, on
                   })()}
                   <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
                   <div className="relative flex items-center gap-2 p-4 w-full">
-                    <MapPin size={13} style={{ color: 'var(--zh-color-accent)' }} />
+                    <MapPin size={13} style={{ color: 'var(--rsi-color-accent)' }} />
                     <span className="text-white font-bold text-xs uppercase tracking-wider">Szenario {i + 1}</span>
                     <span style={{ padding: '2px 7px', borderRadius: '4px', fontSize: '9px', fontWeight: 700, background: scene.kontext === 'io' ? 'rgba(0,158,224,0.8)' : 'rgba(26,127,31,0.8)', color: 'white', textTransform: 'uppercase', letterSpacing: '0.1em' }}>
                       {scene.kontext}
@@ -436,21 +436,21 @@ export default function SceneList({ topic, username, isAdmin = false, onBack, on
                 </div>
 
                 <div style={{ padding: '16px 20px' }}>
-                  <p style={{ fontSize: '14px', color: 'var(--zh-color-text)', fontWeight: 500, marginBottom: '4px', lineHeight: 1.4 }}>
+                  <p style={{ fontSize: '14px', color: 'var(--rsi-color-text)', fontWeight: 500, marginBottom: '4px', lineHeight: 1.4 }}>
                     {ml(scene.nameI18n, lang)}
                   </p>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '16px' }}>
-                    <span style={{ fontSize: '12px', color: 'var(--zh-color-text-muted)' }}>
+                    <span style={{ fontSize: '12px', color: 'var(--rsi-color-text-muted)' }}>
                       {t('scenes.defizite_count', { count })}
                     </span>
                     {stats && stats.versuche > 0 && (
                       <>
-                        <span style={{ fontSize: '10px', color: 'var(--zh-color-text-disabled)' }}>·</span>
-                        <span style={{ fontSize: '12px', color: 'var(--zh-color-text-muted)' }}>
+                        <span style={{ fontSize: '10px', color: 'var(--rsi-color-text-disabled)' }}>·</span>
+                        <span style={{ fontSize: '12px', color: 'var(--rsi-color-text-muted)' }}>
                           {t('scenes.versuche_count', { count: stats.versuche })}
                         </span>
-                        <span style={{ fontSize: '10px', color: 'var(--zh-color-text-disabled)' }}>·</span>
-                        <span style={{ fontSize: '12px', fontWeight: 700, color: stats.prozent >= 90 ? 'var(--zh-gruen)' : stats.prozent >= 60 ? 'var(--zh-orange)' : 'var(--zh-color-text-muted)' }}>
+                        <span style={{ fontSize: '10px', color: 'var(--rsi-color-text-disabled)' }}>·</span>
+                        <span style={{ fontSize: '12px', fontWeight: 700, color: stats.prozent >= 90 ? 'var(--rsi-gruen)' : stats.prozent >= 60 ? 'var(--rsi-orange)' : 'var(--rsi-color-text-muted)' }}>
                           {t('scenes.best_prozent', { prozent: stats.prozent })}
                         </span>
                       </>
@@ -460,7 +460,7 @@ export default function SceneList({ topic, username, isAdmin = false, onBack, on
                     <button
                       onClick={() => onSelectScene(scene)}
                       className="flex items-center justify-center gap-2 font-bold text-white transition-all hover:scale-[1.02]"
-                      style={{ flex: 1, padding: '10px', borderRadius: 'var(--zh-radius-btn)', background: 'var(--zh-dunkelblau)', fontSize: '14px', border: 'none', cursor: 'pointer' }}
+                      style={{ flex: 1, padding: '10px', borderRadius: 'var(--rsi-radius-btn)', background: 'var(--rsi-dunkelblau)', fontSize: '14px', border: 'none', cursor: 'pointer' }}
                     >
                       <Play size={15} fill="white" /> {stats && stats.versuche > 0 ? t('scenes.retryBtn') : t('scenes.startBtn')}
                     </button>
@@ -474,13 +474,13 @@ export default function SceneList({ topic, username, isAdmin = false, onBack, on
                         style={{
                           display: 'flex', alignItems: 'center', justifyContent: 'center',
                           padding: '10px 14px',
-                          borderRadius: 'var(--zh-radius-btn)',
-                          border: '1px solid var(--zh-color-border)',
-                          background: 'var(--zh-color-surface)',
-                          color: status === 'fehler' ? 'var(--zh-rot)' : 'var(--zh-color-text-muted)',
+                          borderRadius: 'var(--rsi-radius-btn)',
+                          border: '1px solid var(--rsi-color-border)',
+                          background: 'var(--rsi-color-surface)',
+                          color: status === 'fehler' ? 'var(--rsi-rot)' : 'var(--rsi-color-text-muted)',
                           cursor: status === 'laeuft' ? 'progress' : 'pointer',
                           opacity: status === 'laeuft' ? 0.6 : 1,
-                          fontFamily: 'var(--zh-font)',
+                          fontFamily: 'var(--rsi-font)',
                           flexShrink: 0,
                         }}
                       >
@@ -489,7 +489,7 @@ export default function SceneList({ topic, username, isAdmin = false, onBack, on
                     )}
                   </div>
                   {status === 'fehler' && (
-                    <p style={{ fontSize: '11px', color: 'var(--zh-rot)', marginTop: '6px' }}>
+                    <p style={{ fontSize: '11px', color: 'var(--rsi-rot)', marginTop: '6px' }}>
                       {t('bericht.export_fehler')}
                     </p>
                   )}

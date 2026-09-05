@@ -1,9 +1,9 @@
 # RSI VR Tool
 
 **Road Safety Inspection – Immersive Training**
-Fachstelle Verkehrssicherheit (FaSi), Tiefbauamt, Kanton Zürich
+Privates Projekt von Stevan Skeledzic
 
-Stand: v0.11.0 (30. Juli 2026) · Live: [rsi-meta.vercel.app](https://rsi-meta.vercel.app)
+Stand: v0.12.0 (5. September 2026) · Live: [rsi-meta.vercel.app](https://rsi-meta.vercel.app)
 
 Ein Trainingswerkzeug für die normative 9-Schritte-Methodik der Road Safety
 Inspection. Inspektorinnen und Inspektoren beurteilen Strassenszenen im
@@ -129,8 +129,8 @@ gesamten Datenbasis als JSON.
 
 Ausrichtung auf WCAG 2.1 AA mit Bedienelementen ab 44 × 44 Pixel, Fokusfalle in
 Dialogen, ESC-Behandlung und durchgehendem Fokus-Ring. Helles und dunkles
-Erscheinungsbild nach dem Corporate Design des Kantons Zürich, dazu das
-ISSI-Ausbildungslogo des TBA.
+Erscheinungsbild in einem hellen und einem dunklen Farbschema; die Anwendung
+führt keine Bildmarke.
 
 ---
 
@@ -176,7 +176,7 @@ RSI_Meta/
     │   └── sentry.ts · logger.ts · useFocusTrap.ts · utils.ts
     ├── i18n/                    # index.ts + de/fr/it/en
     └── components/
-        ├── LandingPage.tsx · Navbar.tsx · IssiLogo.tsx
+        ├── LandingPage.tsx · Navbar.tsx
         ├── TopicDashboard.tsx · SceneList.tsx · TrainingEinstieg.tsx
         ├── SceneViewer.tsx      # 360°-Viewer, Klick-Flow, VR-Panels
         ├── ScoringFlow.tsx · LernKarte.tsx · SzenenAbschluss.tsx
@@ -226,8 +226,8 @@ Originalfolien des Fachkurses geprüft; der Befund steht im `AUDIT_REPORT.md` vo
 4. Edge Functions `admin-auth`, `admin-write` und `kurs-auth` deployen, jeweils
    ohne JWT-Prüfung; Einzelheiten in Abschnitt 2 des Admin-Handbuchs.
 5. Secrets setzen: `ADMIN_PIN`, `ADMIN_TOKEN_SECRET` und
-   `KURS_PASSWORT_PEPPER`. Die Werte gehören in den Passwortsafe der Fachstelle,
-   nicht in dieses Repository.
+   `KURS_PASSWORT_PEPPER`. Die Werte gehören in einen Passwortsafe, nicht in
+   dieses Repository.
 6. Migrationen aus `supabase/migrations/` einspielen.
 
 ### Meta Quest
@@ -301,5 +301,10 @@ Keep-Alive» auslösen.
 
 ## Lizenz
 
-Internes Werkzeug der Fachstelle Verkehrssicherheit, Tiefbauamt, Kanton Zürich.
-Nicht für die öffentliche Verbreitung bestimmt.
+Privates Werkzeug von Stevan Skeledzic. Alle Rechte vorbehalten, keine offene
+Lizenz; nicht für die öffentliche Verbreitung bestimmt.
+
+Die Wichtigkeits-Tabelle und die beiden Bewertungsmatrizen stammen aus dem
+TBA-Fachkurs FK RSI (V 16.09.2020), die NACA-Einstufung aus dem bfu-Bericht 73.
+Die Rechte an diesen fachlichen Grundlagen liegen bei den jeweiligen Urhebern
+und werden als Quelle ausgewiesen.

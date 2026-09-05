@@ -5,7 +5,7 @@
 **Name:** RSI VR Tool (Road Safety Inspection – Immersive VR)
 **Repo:** FaSiMaster/RSI_Meta
 **Pfad:** `C:\ClaudeAI\RSI_Meta`
-**Entwickler:** Stevo, Fachstelle Verkehrssicherheit (FaSi), Tiefbauamt, Kanton Zürich
+**Entwickler:** Stevan Skeledzic (Stevo) — privates Projekt
 
 **Ziel:** Inspektorinnen und Inspektoren beurteilen Strassenszenen im Browser und in VR (Meta Quest 3), markieren und dokumentieren Sicherheitsdefizite anhand der normativen 9-Schritte-RSI-Methodik. Vertrieb als PWA über den Meta Horizon Store.
 
@@ -15,7 +15,7 @@
 
 | Schicht | Technologie | Version |
 |---|---|---|
-| Version | **v0.11.1** (2026-08-02) | Bericht auch nachträglich über die Szenenkarte abrufbar |
+| Version | **v0.12.0** (2026-09-05) | Rückbau aller Behördenbezüge, privates Projekt |
 | Framework | React + Vite + TypeScript | React 18.3, **Vite 7.3**, TS strict |
 | Styling | Tailwind CSS (`@tailwindcss/vite`) | v4.2 |
 | Animation | Framer Motion (motion/react) | v12 |
@@ -87,7 +87,7 @@ RSI_Meta/
 │   ├── styles/design-tokens.css
 │   ├── i18n/                       # index.ts + de/fr/it/en (je 600 Blatt-Keys)
 │   └── components/
-│       ├── LandingPage.tsx · Navbar.tsx · IssiLogo.tsx
+│       ├── LandingPage.tsx · Navbar.tsx
 │       ├── TopicDashboard.tsx · SceneList.tsx · TrainingEinstieg.tsx
 │       ├── SceneViewer.tsx         # 360°-Viewer, Klick-Flow, alle VR-Panels
 │       ├── ScoringFlow.tsx · LernKarte.tsx · SzenenAbschluss.tsx
@@ -115,7 +115,7 @@ RSI_Meta/
 8. **Schweizer Zahlenformat:** `toLocaleString('de-CH')` für Anzeige
 9. **Design-Token CSS-Variablen** für alle Farben (kein Hartcoding ausser RSI-spezifische)
 10. **localStorage-Keys** immer mit Prefix `rsi-v3-` (bestehende Keys nicht ändern)
-11. **Primärfarbe KZH:** `--zh-dunkelblau: #00407C`, `--zh-blau: #0076BD`
+11. **Primärfarben:** `--rsi-dunkelblau: #00407C`, `--rsi-blau: #0076BD`
 12. **i18n:** User-facing Strings über `t()`, dynamische Daten über `ml()`
 
 ---
@@ -251,7 +251,7 @@ interface AppDeficit {
 - [x] 4-Ebenen-Ranking, ESC-Taste
 - [x] Admin-Dashboard (Defizit-CRUD, BildEditor mit Drag&Drop)
 - [x] i18n (de/fr/it/en) 100%, alle Labels via t()
-- [x] Dark/Light Theme, ZH Corporate Design
+- [x] Dark/Light Theme
 - [x] Panorama-Textur Spiegelung korrigiert
 - [x] App-Reset (SW + Cache + localStorage)
 - [x] Avatar-Popover (Abmelden, Reset)
@@ -279,7 +279,7 @@ interface AppDeficit {
 - [x] Scoring-Summary in VR: Ergebnis, Matrix-Herleitung, Lernkarte
 
 ### Phase 5 – Dokumentation & Export (v0.11.0, teilweise)
-- [x] PDF-Export (RSI-konform, KZH CD) — Auswertung + Befundliste, pdfmake
+- [x] PDF-Export (RSI-konform) — Auswertung + Befundliste, pdfmake
       lazy geladen; Teilnehmer, Admin je Kurs, Admin je Einzelresultat
 - [x] Bericht nachträglich abrufbar über die Szenenkarte (bester Versuch, v0.11.1)
 - [ ] Session-Review im Browser
@@ -318,8 +318,8 @@ npm run preview -- --host  # Build lokal testen
 
 ## Skill
 
-`/fasi-check` — FaSi-Qualitätscheck für Visualisierungen und Texte
+`/fasi-check` — Qualitätscheck für Visualisierungen und Texte
 
 ---
 
-*Letzte Aktualisierung: 2026-08-02 (v0.11.1, Bericht über Szenenkarte)*
+*Letzte Aktualisierung: 2026-09-05 (v0.12.0, Rückbau der Behördenbezüge)*

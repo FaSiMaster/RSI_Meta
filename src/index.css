@@ -18,11 +18,11 @@ body,
   /* overflow: auto ist nötig für Scroll auf allen Seiten */
   overflow-x: hidden;
   overflow-y: auto;
-  background: var(--zh-color-bg);
-  color: var(--zh-color-text);
-  font-family: var(--zh-font);
-  font-feature-settings: var(--zh-font-features);
-  font-size: var(--zh-font-min);
+  background: var(--rsi-color-bg);
+  color: var(--rsi-color-text);
+  font-family: var(--rsi-font);
+  font-feature-settings: var(--rsi-font-features);
+  font-size: var(--rsi-font-min);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
@@ -37,18 +37,10 @@ select:focus-visible,
 textarea:focus-visible,
 [role="button"]:focus-visible,
 [tabindex]:focus-visible {
-  outline: 2px solid var(--zh-blau);
+  outline: 2px solid var(--rsi-blau);
   outline-offset: 2px;
   border-radius: 4px;
 }
-
-/* TBA ISSI-Logo: auto-switch hell/dunkel nach data-theme.
-   Light-Theme: dunkle Variante (auf hellem Grund lesbar).
-   Dark-Theme: helle Variante (auf dunklem Grund lesbar).
-   !important nötig, weil Tailwind-Preflight img auf display:block setzt. */
-.issi-logo { display: none !important; }
-[data-theme="dark"] .issi-logo--on-dark { display: block !important; }
-html:not([data-theme="dark"]) .issi-logo--on-light { display: block !important; }
 
 /* Screen-Reader-only Text — visuell versteckt, für Assistive-Tech lesbar */
 .sr-only {

@@ -269,8 +269,8 @@ Nein. Für jedes Defizit gilt der Abzug jener Stufe, die beim Fund aktiv war.
 
 **Wie lange bleiben meine Daten gespeichert?**
 Lokal bis zum Zurücksetzen der App oder bis der Browser-Cache geleert wird. In
-Supabase dauerhaft und pseudonymisiert. Ein Löschgesuch richten Sie per E-Mail an
-die Fachstelle.
+Supabase dauerhaft und pseudonymisiert. Ein Löschgesuch richten Sie per E-Mail
+an die im Impressum genannte Adresse.
 
 **Warum sehe ich weniger Themen als jemand anderes?**
 Themen können einem Kurs vorbehalten sein. Wer ohne Kurscode übt, sieht nur die
@@ -298,7 +298,7 @@ Barrieren melden Sie bitte an die unten genannte Adresse.
 
 ## 13. Support
 
-Fachstelle Verkehrssicherheit, Tiefbauamt, Kanton Zürich
-sicherheit.tba@bd.zh.ch · +41 43 259 31 20
+Stevan Skeledzic
+info@skeledzic.ch
 
 *Der ausführliche Schulungsleitfaden folgt im Kursskript zum FK RSI.*

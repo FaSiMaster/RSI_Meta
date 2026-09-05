@@ -1,6 +1,6 @@
 // RSI VR Tool – App-Orchestrator Phase 2+
 // Views: landing | topics | scenes | einstieg | viewer | scoring | szenenabschluss | admin | ranking
-// FaSi Kanton Zürich · ZH Corporate Design
+// RSI VR Tool
 
 import { useState, useEffect, useMemo, useRef } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -424,9 +424,9 @@ export default function App() {
       className="flex flex-col"
       style={{
         minHeight: '100dvh',
-        background: 'var(--zh-color-bg)',
-        color: 'var(--zh-color-text)',
-        fontFamily: 'var(--zh-font)',
+        background: 'var(--rsi-color-bg)',
+        color: 'var(--rsi-color-text)',
+        fontFamily: 'var(--rsi-font)',
       }}
     >
       {view !== 'landing' && view !== 'viewer' && (

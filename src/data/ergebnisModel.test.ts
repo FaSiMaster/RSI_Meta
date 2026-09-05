@@ -1,6 +1,6 @@
 // Tests für das gemeinsame Ergebnis-/Matrix-Modell (v0.9.1 — VR-Iter 5)
 //
-// Die Zellwerte-Pins entsprechen den normativen Matrizen aus dem TBA-Fachkurs
+// Die Zellwerte-Pins entsprechen den normativen Matrizen aus dem Fachkurs FK RSI
 // FK RSI V 16.09.2020 (dokumentiert in CLAUDE.md, implementiert in
 // scoringEngine.ts). Ändert sich die Sacred-Engine, schlagen diese Tests an.
 

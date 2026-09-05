@@ -1,10 +1,11 @@
-// scoringEngine.ts – FaSi/bfu-Bewertungslogik (TBA-Fachkurs FK RSI, V 16.09.2020)
+// scoringEngine.ts – Bewertungslogik nach TBA-Fachkurs FK RSI (V 16.09.2020)
+// und bfu-Werkzeugkasten
 // Normativ: Keine Abweichungen von den Matrizen erlaubt.
 
 import type { RSIDimension, NACADimension, ResultDimension } from '../types'
 
 // ── Wichtigkeitstabelle (Schritt 1) ──
-// Quelle: TBA-Fachkurs FK RSI, Folie 2 — massgebend für Kanton ZH
+// Quelle: TBA-Fachkurs FK RSI, Folie 2
 export type WichtigkeitWert = RSIDimension | ''
 export const WICHTIGKEIT_TABLE: Record<string, { io: WichtigkeitWert; ao: WichtigkeitWert }> = {
   // Verkehrsfuehrung

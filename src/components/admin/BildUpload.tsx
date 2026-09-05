@@ -180,39 +180,39 @@ export default function BildUpload({
   // ── Stile ──
   const inputStyle: React.CSSProperties = {
     padding: '7px 10px', borderRadius: '6px',
-    border: '1px solid var(--zh-color-border)', background: 'var(--zh-color-bg-secondary)',
-    color: 'var(--zh-color-text)', fontSize: '13px', fontFamily: 'var(--zh-font)',
+    border: '1px solid var(--rsi-color-border)', background: 'var(--rsi-color-bg-secondary)',
+    color: 'var(--rsi-color-text)', fontSize: '13px', fontFamily: 'var(--rsi-font)',
   }
 
   const btnPrimaerStyle: React.CSSProperties = {
     padding: '8px 16px', borderRadius: '6px',
-    background: 'var(--zh-dunkelblau)', color: 'white',
+    background: 'var(--rsi-dunkelblau)', color: 'white',
     fontSize: '13px', fontWeight: 700, border: 'none', cursor: 'pointer',
-    fontFamily: 'var(--zh-font)', whiteSpace: 'nowrap',
+    fontFamily: 'var(--rsi-font)', whiteSpace: 'nowrap',
   }
 
   const btnSekundaerStyle: React.CSSProperties = {
     padding: '8px 16px', borderRadius: '6px',
-    background: 'transparent', color: 'var(--zh-color-text-muted)',
+    background: 'transparent', color: 'var(--rsi-color-text-muted)',
     fontSize: '13px', fontWeight: 600,
-    border: '1px solid var(--zh-color-border)', cursor: 'pointer',
-    fontFamily: 'var(--zh-font)', whiteSpace: 'nowrap',
+    border: '1px solid var(--rsi-color-border)', cursor: 'pointer',
+    fontFamily: 'var(--rsi-font)', whiteSpace: 'nowrap',
   }
 
   const tabStyle = (aktiv: boolean): React.CSSProperties => ({
     padding: '6px 14px', borderRadius: '6px',
     fontSize: '12px', fontWeight: 600,
-    border: aktiv ? 'none' : '1px solid var(--zh-color-border)',
-    background: aktiv ? 'var(--zh-dunkelblau)' : 'transparent',
-    color: aktiv ? 'white' : 'var(--zh-color-text-muted)',
-    cursor: 'pointer', fontFamily: 'var(--zh-font)',
+    border: aktiv ? 'none' : '1px solid var(--rsi-color-border)',
+    background: aktiv ? 'var(--rsi-dunkelblau)' : 'transparent',
+    color: aktiv ? 'white' : 'var(--rsi-color-text-muted)',
+    cursor: 'pointer', fontFamily: 'var(--rsi-font)',
     display: 'flex', alignItems: 'center', gap: '5px',
   })
 
   // ── Phase: Laden ──
   if (phase === 'laden') {
     return (
-      <div style={{ padding: '32px', textAlign: 'center', color: 'var(--zh-color-text-disabled)', fontSize: '13px', border: '1px dashed var(--zh-color-border)', borderRadius: '8px' }}>
+      <div style={{ padding: '32px', textAlign: 'center', color: 'var(--rsi-color-text-disabled)', fontSize: '13px', border: '1px dashed var(--rsi-color-border)', borderRadius: '8px' }}>
         {statusText ?? 'Panorama-Bild wird geladen...'}
       </div>
     )
@@ -222,7 +222,7 @@ export default function BildUpload({
   if (phase === 'fehler') {
     return (
       <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-        <div role="alert" aria-live="polite" style={{ padding: '14px 16px', background: 'rgba(212,0,83,0.07)', border: '1px solid rgba(212,0,83,0.25)', borderRadius: '8px', color: 'var(--zh-rot)', fontSize: '13px' }}>
+        <div role="alert" aria-live="polite" style={{ padding: '14px 16px', background: 'rgba(212,0,83,0.07)', border: '1px solid rgba(212,0,83,0.25)', borderRadius: '8px', color: 'var(--rsi-rot)', fontSize: '13px' }}>
           {fehlerText}
         </div>
         <button onClick={() => { setPhase('auswahl'); setFehlerText(null) }} style={btnSekundaerStyle}>
@@ -236,21 +236,21 @@ export default function BildUpload({
   if (phase === 'vorschau' && vorschauUrl) {
     return (
       <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-        <div style={{ border: '1px solid var(--zh-color-border)', borderRadius: '8px', overflow: 'hidden', background: '#111', display: 'flex', alignItems: 'center', justifyContent: 'center', maxHeight: '200px' }}>
+        <div style={{ border: '1px solid var(--rsi-color-border)', borderRadius: '8px', overflow: 'hidden', background: '#111', display: 'flex', alignItems: 'center', justifyContent: 'center', maxHeight: '200px' }}>
           <img src={vorschauUrl} alt="Vorschau" style={{ maxHeight: '200px', width: '100%', objectFit: 'contain' }} />
         </div>
 
         {pixelText && (
-          <p style={{ fontSize: '12px', color: 'var(--zh-color-text-muted)', margin: 0 }}>{pixelText}</p>
+          <p style={{ fontSize: '12px', color: 'var(--rsi-color-text-muted)', margin: 0 }}>{pixelText}</p>
         )}
 
         {vorschauPath && (
           <div style={{ display: 'flex', flexDirection: 'column', gap: '2px', fontFamily: 'monospace' }}>
-            <span style={{ fontSize: '12px', color: istStorage ? 'var(--zh-gruen)' : 'var(--zh-orange)' }}>
+            <span style={{ fontSize: '12px', color: istStorage ? 'var(--rsi-gruen)' : 'var(--rsi-orange)' }}>
               {istStorage ? 'Supabase' : 'Extern'}: {vorschauPath}
             </span>
             {vorschauSzene && vorschauSzene !== szeneId && (
-              <span style={{ fontSize: '11px', color: 'var(--zh-orange)' }}>
+              <span style={{ fontSize: '11px', color: 'var(--rsi-orange)' }}>
                 Hinweis: Bild gehoert zu Szene «{vorschauSzene}», nicht zur aktuellen ({szeneId}).
               </span>
             )}
@@ -258,13 +258,13 @@ export default function BildUpload({
         )}
 
         {!istStorage && vorschauUrl && (
-          <div style={{ padding: '10px 14px', background: 'rgba(184,115,0,0.08)', border: '1px solid rgba(184,115,0,0.3)', borderRadius: '6px', fontSize: '12px', color: 'var(--zh-orange)', lineHeight: 1.5 }}>
+          <div style={{ padding: '10px 14px', background: 'rgba(184,115,0,0.08)', border: '1px solid rgba(184,115,0,0.3)', borderRadius: '6px', fontSize: '12px', color: 'var(--rsi-orange)', lineHeight: 1.5 }}>
             Hinweis: Diese URL liegt nicht im Supabase-Bucket. Empfehlung: ueber «Hochladen» in die Bibliothek bringen, damit alle Bilder zentral verwaltet sind.
           </div>
         )}
 
         {zeigeVerhältnisWarnung && (
-          <div style={{ padding: '10px 14px', background: 'rgba(184,115,0,0.08)', border: '1px solid rgba(184,115,0,0.3)', borderRadius: '6px', fontSize: '12px', color: 'var(--zh-orange)', lineHeight: 1.5 }}>
+          <div style={{ padding: '10px 14px', background: 'rgba(184,115,0,0.08)', border: '1px solid rgba(184,115,0,0.3)', borderRadius: '6px', fontSize: '12px', color: 'var(--rsi-orange)', lineHeight: 1.5 }}>
             Hinweis: Panorama-Bilder haben ueblicherweise das Seitenverhaeltnis 2:1. Dieses Bild weicht davon ab.
           </div>
         )}
@@ -303,27 +303,27 @@ export default function BildUpload({
         <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
 
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '8px' }}>
-            <p style={{ fontSize: '11px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.1em', color: 'var(--zh-color-text-disabled)', margin: 0 }}>
+            <p style={{ fontSize: '11px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.1em', color: 'var(--rsi-color-text-disabled)', margin: 0 }}>
               Bilder im Bucket {bibliothek.length > 0 && `(${bibliothek.length})`}
             </p>
             <button
               onClick={ladeBibliothek}
               disabled={bibLaedt}
               title="Bibliothek neu laden"
-              style={{ display: 'flex', alignItems: 'center', gap: '4px', padding: '4px 8px', borderRadius: '6px', border: '1px solid var(--zh-color-border)', background: 'var(--zh-color-bg-secondary)', fontSize: '11px', color: 'var(--zh-color-text-muted)', cursor: bibLaedt ? 'wait' : 'pointer', opacity: bibLaedt ? 0.5 : 1 }}
+              style={{ display: 'flex', alignItems: 'center', gap: '4px', padding: '4px 8px', borderRadius: '6px', border: '1px solid var(--rsi-color-border)', background: 'var(--rsi-color-bg-secondary)', fontSize: '11px', color: 'var(--rsi-color-text-muted)', cursor: bibLaedt ? 'wait' : 'pointer', opacity: bibLaedt ? 0.5 : 1 }}
             >
               <RefreshCw size={10} /> Aktualisieren
             </button>
           </div>
 
           {bibLaedt && (
-            <div style={{ padding: '24px', textAlign: 'center', color: 'var(--zh-color-text-disabled)', fontSize: '13px', border: '1px dashed var(--zh-color-border)', borderRadius: '8px' }}>
+            <div style={{ padding: '24px', textAlign: 'center', color: 'var(--rsi-color-text-disabled)', fontSize: '13px', border: '1px dashed var(--rsi-color-border)', borderRadius: '8px' }}>
               Bibliothek wird geladen...
             </div>
           )}
 
           {!bibLaedt && bibliothek.length === 0 && (
-            <div style={{ padding: '24px', textAlign: 'center', color: 'var(--zh-color-text-muted)', fontSize: '13px', border: '1px dashed var(--zh-color-border)', borderRadius: '8px', lineHeight: 1.6 }}>
+            <div style={{ padding: '24px', textAlign: 'center', color: 'var(--rsi-color-text-muted)', fontSize: '13px', border: '1px dashed var(--rsi-color-border)', borderRadius: '8px', lineHeight: 1.6 }}>
               Noch keine Bilder im Bucket.<br />
               Wechsle zu <strong>Hochladen</strong>, um das erste Panorama fuer
               Szene <code style={{ fontFamily: 'monospace' }}>{szeneId}</code> zu speichern.
@@ -338,43 +338,43 @@ export default function BildUpload({
                 const isCurrent = szene === szeneId
                 const label = szene === '_legacy' ? 'Bilder ohne Szenen-Zuordnung' : szene
                 return (
-                  <div key={szene} style={{ border: `1px solid ${isCurrent ? 'var(--zh-blau)' : 'var(--zh-color-border)'}`, borderRadius: '8px', overflow: 'hidden' }}>
+                  <div key={szene} style={{ border: `1px solid ${isCurrent ? 'var(--rsi-blau)' : 'var(--rsi-color-border)'}`, borderRadius: '8px', overflow: 'hidden' }}>
                     <button
                       onClick={() => toggleFolder(szene)}
                       style={{
                         width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-                        padding: '8px 12px', background: isCurrent ? 'rgba(0,118,189,0.08)' : 'var(--zh-color-bg-secondary)',
-                        border: 'none', cursor: 'pointer', fontFamily: 'var(--zh-font)',
+                        padding: '8px 12px', background: isCurrent ? 'rgba(0,118,189,0.08)' : 'var(--rsi-color-bg-secondary)',
+                        border: 'none', cursor: 'pointer', fontFamily: 'var(--rsi-font)',
                       }}
                     >
                       <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
                         {isOpen ? <ChevronDown size={14} /> : <ChevronRight size={14} />}
-                        <span style={{ fontSize: '12px', fontWeight: 700, color: isCurrent ? 'var(--zh-blau)' : 'var(--zh-color-text)', fontFamily: 'monospace' }}>
+                        <span style={{ fontSize: '12px', fontWeight: 700, color: isCurrent ? 'var(--rsi-blau)' : 'var(--rsi-color-text)', fontFamily: 'monospace' }}>
                           {label}
                         </span>
                         {isCurrent && (
-                          <span style={{ fontSize: '10px', fontWeight: 700, padding: '2px 6px', borderRadius: '4px', background: 'var(--zh-blau)', color: 'white', textTransform: 'uppercase', letterSpacing: '0.06em' }}>
+                          <span style={{ fontSize: '10px', fontWeight: 700, padding: '2px 6px', borderRadius: '4px', background: 'var(--rsi-blau)', color: 'white', textTransform: 'uppercase', letterSpacing: '0.06em' }}>
                             aktuell
                           </span>
                         )}
                       </div>
-                      <span style={{ fontSize: '11px', color: 'var(--zh-color-text-disabled)' }}>
+                      <span style={{ fontSize: '11px', color: 'var(--rsi-color-text-disabled)' }}>
                         {files.length} {files.length === 1 ? 'Bild' : 'Bilder'}
                       </span>
                     </button>
                     {isOpen && (
-                      <div style={{ padding: '8px', display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(140px, 1fr))', gap: '8px', background: 'var(--zh-color-bg)' }}>
+                      <div style={{ padding: '8px', display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(140px, 1fr))', gap: '8px', background: 'var(--rsi-color-bg)' }}>
                         {files.map(img => (
                           <div
                             key={img.name}
                             style={{
-                              border: '1px solid var(--zh-color-border)', borderRadius: '6px', overflow: 'hidden',
-                              background: 'var(--zh-color-bg-secondary)',
+                              border: '1px solid var(--rsi-color-border)', borderRadius: '6px', overflow: 'hidden',
+                              background: 'var(--rsi-color-bg-secondary)',
                               display: 'flex', flexDirection: 'column', cursor: 'pointer',
                               transition: 'border-color 0.15s, transform 0.15s',
                             }}
-                            onMouseEnter={e => { e.currentTarget.style.borderColor = 'var(--zh-blau)'; e.currentTarget.style.transform = 'translateY(-1px)' }}
-                            onMouseLeave={e => { e.currentTarget.style.borderColor = 'var(--zh-color-border)'; e.currentTarget.style.transform = 'translateY(0)' }}
+                            onMouseEnter={e => { e.currentTarget.style.borderColor = 'var(--rsi-blau)'; e.currentTarget.style.transform = 'translateY(-1px)' }}
+                            onMouseLeave={e => { e.currentTarget.style.borderColor = 'var(--rsi-color-border)'; e.currentTarget.style.transform = 'translateY(0)' }}
                             onClick={() => handleBibliothekWahl(img)}
                             title={`${img.name}\n${formatStorageDate(img.createdAt)}\n${formatStorageSize(img.size)}`}
                           >
@@ -382,18 +382,18 @@ export default function BildUpload({
                               <img src={img.url} alt={img.fileName} loading="lazy" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                             </div>
                             <div style={{ padding: '6px 8px', display: 'flex', flexDirection: 'column', gap: '2px' }}>
-                              <span style={{ fontSize: '11px', fontWeight: 600, color: 'var(--zh-color-text)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                              <span style={{ fontSize: '11px', fontWeight: 600, color: 'var(--rsi-color-text)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                                 {img.fileName}
                               </span>
                               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '4px' }}>
-                                <span style={{ fontSize: '10px', color: 'var(--zh-color-text-disabled)' }}>
+                                <span style={{ fontSize: '10px', color: 'var(--rsi-color-text-disabled)' }}>
                                   {formatStorageSize(img.size)}
                                 </span>
                                 <button
                                   onClick={e => { e.stopPropagation(); handleBibliothekDelete(img) }}
                                   title="Aus Bucket loeschen"
                                   aria-label={`Bild ${img.fileName} loeschen`}
-                                  style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--zh-rot)', padding: '2px', display: 'flex', alignItems: 'center' }}
+                                  style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--rsi-rot)', padding: '2px', display: 'flex', alignItems: 'center' }}
                                 >
                                   <Trash2 size={11} />
                                 </button>
@@ -415,8 +415,8 @@ export default function BildUpload({
       {modus === 'hochladen' && (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
 
-          <div style={{ padding: '10px 14px', background: 'rgba(0,118,189,0.07)', border: '1px solid rgba(0,118,189,0.2)', borderRadius: '6px', fontSize: '12px', color: 'var(--zh-color-text-muted)', lineHeight: 1.6 }}>
-            Pfad: <code style={{ color: 'var(--zh-blau)', fontFamily: 'monospace' }}>
+          <div style={{ padding: '10px 14px', background: 'rgba(0,118,189,0.07)', border: '1px solid rgba(0,118,189,0.2)', borderRadius: '6px', fontSize: '12px', color: 'var(--rsi-color-text-muted)', lineHeight: 1.6 }}>
+            Pfad: <code style={{ color: 'var(--rsi-blau)', fontFamily: 'monospace' }}>
               panoramas/{szeneId}/{defaultRole === 'haupt'
                 ? 'haupt.<ext>'
                 : `persp_${String(perspektivenNr ?? 1).padStart(3, '0')}${labelInput.trim() ? '_' + labelInput.trim().replace(/[^a-zA-Z0-9_-]/g, '_') : ''}.<ext>`}
@@ -425,7 +425,7 @@ export default function BildUpload({
 
           {defaultRole === 'perspektive' && (
             <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
-              <label style={{ fontSize: '11px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.1em', color: 'var(--zh-color-text-disabled)' }}>
+              <label style={{ fontSize: '11px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.1em', color: 'var(--rsi-color-text-disabled)' }}>
                 Label-Suffix (optional, sprechend)
               </label>
               <input
@@ -437,7 +437,7 @@ export default function BildUpload({
             </div>
           )}
 
-          <label style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '12px', color: 'var(--zh-color-text-muted)' }}>
+          <label style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '12px', color: 'var(--rsi-color-text-muted)' }}>
             <input
               type="checkbox"
               checked={upsert}
@@ -458,14 +458,14 @@ export default function BildUpload({
             onDragOver={e => { e.preventDefault(); setIsDragOver(true) }}
             onDragLeave={() => setIsDragOver(false)}
             onDrop={e => { e.preventDefault(); setIsDragOver(false); const d = e.dataTransfer.files[0]; if (d) handleDatei(d) }}
-            style={{ height: '160px', border: `2px dashed ${isDragOver ? 'var(--zh-blau)' : 'var(--zh-color-border)'}`, borderRadius: '8px', background: isDragOver ? 'rgba(0,118,189,0.06)' : 'var(--zh-color-bg-secondary)', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '8px', cursor: 'pointer', transition: 'border-color 0.15s, background 0.15s' }}
+            style={{ height: '160px', border: `2px dashed ${isDragOver ? 'var(--rsi-blau)' : 'var(--rsi-color-border)'}`, borderRadius: '8px', background: isDragOver ? 'rgba(0,118,189,0.06)' : 'var(--rsi-color-bg-secondary)', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '8px', cursor: 'pointer', transition: 'border-color 0.15s, background 0.15s' }}
             onClick={() => fileInputRef.current?.click()}
           >
-            <Upload size={28} color={isDragOver ? 'var(--zh-blau)' : 'var(--zh-color-text-disabled)'} />
-            <span style={{ fontSize: '13px', fontWeight: 600, color: isDragOver ? 'var(--zh-blau)' : 'var(--zh-color-text-muted)' }}>
+            <Upload size={28} color={isDragOver ? 'var(--rsi-blau)' : 'var(--rsi-color-text-disabled)'} />
+            <span style={{ fontSize: '13px', fontWeight: 600, color: isDragOver ? 'var(--rsi-blau)' : 'var(--rsi-color-text-muted)' }}>
               Datei hierher ziehen oder klicken
             </span>
-            <span style={{ fontSize: '11px', color: 'var(--zh-color-text-disabled)' }}>
+            <span style={{ fontSize: '11px', color: 'var(--rsi-color-text-disabled)' }}>
               JPG, PNG, WEBP · max. 25 MB · Empfohlen: 4096×2048 (2:1)
             </span>
           </div>

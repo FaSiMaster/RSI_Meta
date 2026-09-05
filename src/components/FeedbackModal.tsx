@@ -6,7 +6,7 @@ import { useTranslation } from 'react-i18next'
 import { X, Send, MessageSquare } from 'lucide-react'
 import { useFocusTrap } from '../lib/useFocusTrap'
 
-const SUPPORT_EMAIL = 'sicherheit.tba@bd.zh.ch'
+const SUPPORT_EMAIL = 'info@skeledzic.ch'
 
 interface Props {
   open: boolean
@@ -92,10 +92,10 @@ export default function FeedbackModal({ open, onClose, context }: Props) {
         style={{
           width: '100%', maxWidth: '520px',
           borderRadius: '14px',
-          background: 'var(--zh-color-surface)',
-          border: '1px solid var(--zh-color-border)',
-          boxShadow: 'var(--zh-shadow-lg)',
-          fontFamily: 'var(--zh-font)',
+          background: 'var(--rsi-color-surface)',
+          border: '1px solid var(--rsi-color-border)',
+          boxShadow: 'var(--rsi-shadow-lg)',
+          fontFamily: 'var(--rsi-font)',
           overflow: 'hidden',
         }}
       >
@@ -103,18 +103,18 @@ export default function FeedbackModal({ open, onClose, context }: Props) {
         <div style={{
           display: 'flex', alignItems: 'center', justifyContent: 'space-between',
           padding: '14px 18px',
-          borderBottom: '1px solid var(--zh-color-border)',
-          background: 'var(--zh-color-bg-secondary)',
+          borderBottom: '1px solid var(--rsi-color-border)',
+          background: 'var(--rsi-color-bg-secondary)',
         }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <MessageSquare size={16} style={{ color: 'var(--zh-blau)' }} />
-            <h2 id="feedback-modal-title" style={{ margin: 0, fontSize: '15px', fontWeight: 800, color: 'var(--zh-color-text)' }}>
+            <MessageSquare size={16} style={{ color: 'var(--rsi-blau)' }} />
+            <h2 id="feedback-modal-title" style={{ margin: 0, fontSize: '15px', fontWeight: 800, color: 'var(--rsi-color-text)' }}>
               {t('feedback.title')}
             </h2>
           </div>
           <button
             onClick={onClose}
-            style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--zh-color-text-muted)', padding: '4px' }}
+            style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--rsi-color-text-muted)', padding: '4px' }}
             aria-label={t('feedback.closeAria')}
           >
             <X size={18} />
@@ -123,12 +123,12 @@ export default function FeedbackModal({ open, onClose, context }: Props) {
 
         {/* Body */}
         <div style={{ padding: '18px' }}>
-          <p style={{ fontSize: '12px', color: 'var(--zh-color-text-muted)', marginTop: 0, marginBottom: '14px' }}>
+          <p style={{ fontSize: '12px', color: 'var(--rsi-color-text-muted)', marginTop: 0, marginBottom: '14px' }}>
             {t('feedback.intro')}
           </p>
 
           {/* Kategorie */}
-          <label style={{ display: 'block', fontSize: '11px', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.08em', color: 'var(--zh-color-text-muted)', marginBottom: '6px' }}>
+          <label style={{ display: 'block', fontSize: '11px', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.08em', color: 'var(--rsi-color-text-muted)', marginBottom: '6px' }}>
             {t('feedback.katLabel')}
           </label>
           <div style={{ display: 'flex', gap: '6px', marginBottom: '14px' }}>
@@ -142,11 +142,11 @@ export default function FeedbackModal({ open, onClose, context }: Props) {
                 onClick={() => setKategorie(key)}
                 style={{
                   flex: 1, padding: '8px 10px', borderRadius: '8px',
-                  border: kategorie === key ? '2px solid var(--zh-blau)' : '1px solid var(--zh-color-border)',
-                  background: kategorie === key ? 'rgba(0,118,189,0.12)' : 'var(--zh-color-bg-secondary)',
-                  color: kategorie === key ? 'var(--zh-blau)' : 'var(--zh-color-text-muted)',
+                  border: kategorie === key ? '2px solid var(--rsi-blau)' : '1px solid var(--rsi-color-border)',
+                  background: kategorie === key ? 'rgba(0,118,189,0.12)' : 'var(--rsi-color-bg-secondary)',
+                  color: kategorie === key ? 'var(--rsi-blau)' : 'var(--rsi-color-text-muted)',
                   fontSize: '12px', fontWeight: 700, cursor: 'pointer',
-                  fontFamily: 'var(--zh-font)',
+                  fontFamily: 'var(--rsi-font)',
                 }}
               >
                 {label}
@@ -155,7 +155,7 @@ export default function FeedbackModal({ open, onClose, context }: Props) {
           </div>
 
           {/* Betreff */}
-          <label style={{ display: 'block', fontSize: '11px', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.08em', color: 'var(--zh-color-text-muted)', marginBottom: '6px' }}>
+          <label style={{ display: 'block', fontSize: '11px', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.08em', color: 'var(--rsi-color-text-muted)', marginBottom: '6px' }}>
             {t('feedback.betreffLabel')}
           </label>
           <input
@@ -165,16 +165,16 @@ export default function FeedbackModal({ open, onClose, context }: Props) {
             style={{
               width: '100%', padding: '9px 11px', marginBottom: '14px',
               borderRadius: '8px',
-              border: '1px solid var(--zh-color-border)',
-              background: 'var(--zh-color-surface)',
-              color: 'var(--zh-color-text)',
-              fontSize: '13px', fontFamily: 'var(--zh-font)',
+              border: '1px solid var(--rsi-color-border)',
+              background: 'var(--rsi-color-surface)',
+              color: 'var(--rsi-color-text)',
+              fontSize: '13px', fontFamily: 'var(--rsi-font)',
               outline: 'none',
             }}
           />
 
           {/* Beschreibung */}
-          <label style={{ display: 'block', fontSize: '11px', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.08em', color: 'var(--zh-color-text-muted)', marginBottom: '6px' }}>
+          <label style={{ display: 'block', fontSize: '11px', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.08em', color: 'var(--rsi-color-text-muted)', marginBottom: '6px' }}>
             {t('feedback.beschreibungLabel')}
           </label>
           <textarea
@@ -185,16 +185,16 @@ export default function FeedbackModal({ open, onClose, context }: Props) {
             style={{
               width: '100%', padding: '9px 11px',
               borderRadius: '8px',
-              border: '1px solid var(--zh-color-border)',
-              background: 'var(--zh-color-surface)',
-              color: 'var(--zh-color-text)',
-              fontSize: '13px', fontFamily: 'var(--zh-font)',
+              border: '1px solid var(--rsi-color-border)',
+              background: 'var(--rsi-color-surface)',
+              color: 'var(--rsi-color-text)',
+              fontSize: '13px', fontFamily: 'var(--rsi-font)',
               outline: 'none', resize: 'vertical', minHeight: '80px',
             }}
           />
 
           {context && (
-            <p style={{ fontSize: '11px', color: 'var(--zh-color-text-disabled)', marginTop: '10px', marginBottom: 0 }}>
+            <p style={{ fontSize: '11px', color: 'var(--rsi-color-text-disabled)', marginTop: '10px', marginBottom: 0 }}>
               {t('feedback.kontextLabel')} <em>{context}</em>
             </p>
           )}
@@ -204,17 +204,17 @@ export default function FeedbackModal({ open, onClose, context }: Props) {
         <div style={{
           display: 'flex', justifyContent: 'flex-end', gap: '8px',
           padding: '12px 18px',
-          borderTop: '1px solid var(--zh-color-border)',
-          background: 'var(--zh-color-bg-secondary)',
+          borderTop: '1px solid var(--rsi-color-border)',
+          background: 'var(--rsi-color-bg-secondary)',
         }}>
           <button
             onClick={onClose}
             style={{
               padding: '8px 16px', borderRadius: '8px',
-              border: '1px solid var(--zh-color-border)',
-              background: 'transparent', color: 'var(--zh-color-text-muted)',
+              border: '1px solid var(--rsi-color-border)',
+              background: 'transparent', color: 'var(--rsi-color-text-muted)',
               fontSize: '12px', fontWeight: 600, cursor: 'pointer',
-              fontFamily: 'var(--zh-font)',
+              fontFamily: 'var(--rsi-font)',
             }}
           >
             {t('feedback.abbrechen')}
@@ -225,11 +225,11 @@ export default function FeedbackModal({ open, onClose, context }: Props) {
             style={{
               display: 'flex', alignItems: 'center', gap: '6px',
               padding: '8px 18px', borderRadius: '8px',
-              background: beschreibung.trim() ? 'var(--zh-dunkelblau)' : 'var(--zh-color-bg-tertiary)',
-              color: beschreibung.trim() ? 'white' : 'var(--zh-color-text-disabled)',
+              background: beschreibung.trim() ? 'var(--rsi-dunkelblau)' : 'var(--rsi-color-bg-tertiary)',
+              color: beschreibung.trim() ? 'white' : 'var(--rsi-color-text-disabled)',
               border: 'none', fontSize: '12px', fontWeight: 700,
               cursor: beschreibung.trim() ? 'pointer' : 'not-allowed',
-              fontFamily: 'var(--zh-font)',
+              fontFamily: 'var(--rsi-font)',
             }}
           >
             <Send size={13} /> {t('feedback.senden')}

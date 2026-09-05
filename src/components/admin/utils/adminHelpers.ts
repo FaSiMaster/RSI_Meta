@@ -16,9 +16,9 @@ import type { RSIDimension } from '../../../types'
 // Alpha 0x22 = 13% Opazitaet. color-mix() bindet an das Token, damit der
 // Badge-Hintergrund im Dark-Mode automatisch mit der Token-Variante wechselt.
 export function riskBg(w: RSIDimension): { bg: string; color: string; label: string } {
-  if (w === 'gross')  return { bg: 'color-mix(in srgb, var(--zh-rot) 13%, transparent)',    color: 'var(--zh-rot)',    label: 'N' }
-  if (w === 'mittel') return { bg: 'color-mix(in srgb, var(--zh-orange) 13%, transparent)', color: 'var(--zh-orange)', label: 'A' }
-  return { bg: 'color-mix(in srgb, var(--zh-gruen) 13%, transparent)', color: 'var(--zh-gruen)', label: 'W' }
+  if (w === 'gross')  return { bg: 'color-mix(in srgb, var(--rsi-rot) 13%, transparent)',    color: 'var(--rsi-rot)',    label: 'N' }
+  if (w === 'mittel') return { bg: 'color-mix(in srgb, var(--rsi-orange) 13%, transparent)', color: 'var(--rsi-orange)', label: 'A' }
+  return { bg: 'color-mix(in srgb, var(--rsi-gruen) 13%, transparent)', color: 'var(--rsi-gruen)', label: 'W' }
 }
 
 export function emptyDeficit(sceneId: string, topicId: string): AppDeficit {

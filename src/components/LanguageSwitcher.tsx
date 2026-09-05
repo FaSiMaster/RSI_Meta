@@ -34,8 +34,8 @@ export default function LanguageSwitcher({ className }: { className?: string }) 
             className={cn(
               'inline-flex items-center justify-center rounded-md text-[12px] font-bold uppercase tracking-widest transition-all',
               aktiv
-                ? 'bg-[var(--zh-color-accent)] text-white'
-                : 'text-[var(--zh-color-text-muted)] hover:text-[var(--zh-color-text)] hover:bg-[var(--zh-color-bg-tertiary)]',
+                ? 'bg-[var(--rsi-color-accent)] text-white'
+                : 'text-[var(--rsi-color-text-muted)] hover:text-[var(--rsi-color-text)] hover:bg-[var(--rsi-color-bg-tertiary)]',
             )}
             style={{
               minWidth: '44px',

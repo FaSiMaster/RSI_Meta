@@ -1922,7 +1922,7 @@ function MiniReferenz({ schritt, t }: { schritt: 'w' | 'a' | 'n'; t: TFunction }
         style={{
           background: 'none', border: 'none', cursor: 'pointer', padding: '2px 0',
           fontSize: '11px', fontWeight: 600, color: 'rgba(120,190,255,0.90)',
-          fontFamily: 'var(--zh-font)',
+          fontFamily: 'var(--rsi-font)',
         }}
       >
         {open ? '▾' : '▸'} {t('scoring.referenz_btn')}
@@ -1985,10 +1985,10 @@ function HintDialog({ hintCount, stufe, onBestätigen, onAbbrechen }: HintDialog
         padding: '28px 32px',
         maxWidth: '400px',
         width: '90%',
-        fontFamily: 'var(--zh-font)',
+        fontFamily: 'var(--rsi-font)',
       }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '14px' }}>
-          <Eye size={20} style={{ color: 'var(--zh-warnung)', flexShrink: 0 }} />
+          <Eye size={20} style={{ color: 'var(--rsi-warnung)', flexShrink: 0 }} />
           <h3 style={{ fontSize: '17px', fontWeight: 700, color: 'white', margin: 0 }}>
             {t(stufe === 1 ? 'szene.hint1_titel' : 'szene.hint_titel')}
           </h3>
@@ -2002,13 +2002,13 @@ function HintDialog({ hintCount, stufe, onBestätigen, onAbbrechen }: HintDialog
         <div style={{ display: 'flex', gap: '10px' }}>
           <button
             onClick={onAbbrechen}
-            style={{ flex: 1, padding: '10px', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.12)', background: 'transparent', color: 'rgba(255,255,255,0.55)', fontSize: '14px', cursor: 'pointer', fontFamily: 'var(--zh-font)' }}
+            style={{ flex: 1, padding: '10px', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.12)', background: 'transparent', color: 'rgba(255,255,255,0.55)', fontSize: '14px', cursor: 'pointer', fontFamily: 'var(--rsi-font)' }}
           >
             {t('scoring.abbrechen')}
           </button>
           <button
             onClick={onBestätigen}
-            style={{ flex: 1, padding: '10px', borderRadius: '8px', border: 'none', background: 'var(--zh-warnung)', color: '#1a1400', fontSize: '14px', fontWeight: 700, cursor: 'pointer', fontFamily: 'var(--zh-font)' }}
+            style={{ flex: 1, padding: '10px', borderRadius: '8px', border: 'none', background: 'var(--rsi-warnung)', color: '#1a1400', fontSize: '14px', fontWeight: 700, cursor: 'pointer', fontFamily: 'var(--rsi-font)' }}
           >
             {t('szene.hint_bestätigen')}
           </button>
@@ -2029,7 +2029,7 @@ function AllFoundBanner({ onBeenden }: { onBeenden: () => void }) {
       borderRadius: '12px',
       padding: '14px 24px',
       display: 'flex', alignItems: 'center', gap: '16px',
-      fontFamily: 'var(--zh-font)',
+      fontFamily: 'var(--rsi-font)',
       zIndex: 100,
       boxShadow: '0 8px 32px rgba(0,0,0,0.5)',
     }}>
@@ -2038,7 +2038,7 @@ function AllFoundBanner({ onBeenden }: { onBeenden: () => void }) {
       </span>
       <button
         onClick={onBeenden}
-        style={{ padding: '8px 18px', borderRadius: '6px', border: 'none', background: 'white', color: '#1A7F1F', fontSize: '13px', fontWeight: 700, cursor: 'pointer', fontFamily: 'var(--zh-font)' }}
+        style={{ padding: '8px 18px', borderRadius: '6px', border: 'none', background: 'white', color: '#1A7F1F', fontSize: '13px', fontWeight: 700, cursor: 'pointer', fontFamily: 'var(--rsi-font)' }}
       >
         {t('szene.beenden')}
       </button>
@@ -2446,11 +2446,11 @@ export default function SceneViewer({
             padding: '20px 24px',
             maxWidth: '460px',
             color: 'white',
-            fontFamily: 'var(--zh-font)',
+            fontFamily: 'var(--rsi-font)',
             textAlign: 'center',
             pointerEvents: 'auto',
           }}>
-            <p style={{ fontSize: '11px', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.14em', color: 'var(--zh-warnung)', marginBottom: '8px' }}>
+            <p style={{ fontSize: '11px', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.14em', color: 'var(--rsi-warnung)', marginBottom: '8px' }}>
               Kein Panorama-Bild
             </p>
             <p style={{ fontSize: '14px', fontWeight: 600, marginBottom: '6px' }}>
@@ -2524,7 +2524,7 @@ export default function SceneViewer({
           backdropFilter: 'blur(12px)',
           borderRadius: '10px',
           padding: '10px 16px',
-          fontFamily: 'var(--zh-font)',
+          fontFamily: 'var(--rsi-font)',
           zIndex: 50,
           maxWidth: '280px',
         }}>
@@ -2574,7 +2574,7 @@ export default function SceneViewer({
                 color: '#8a9a10',
                 fontSize: '13px', fontWeight: 600,
                 cursor: 'pointer',
-                fontFamily: 'var(--zh-font)',
+                fontFamily: 'var(--rsi-font)',
                 backdropFilter: 'blur(10px)',
               }}
             >
@@ -2588,7 +2588,7 @@ export default function SceneViewer({
               border: '1px solid rgba(160,180,30,0.5)',
               color: '#8a9a10',
               fontSize: '12px', fontWeight: 700,
-              fontFamily: 'var(--zh-font)',
+              fontFamily: 'var(--rsi-font)',
             }}>
               <MapPin size={13} /> {t('szene.standorthinweis_aktiv')}
             </div>
@@ -2602,10 +2602,10 @@ export default function SceneViewer({
                 padding: '9px 14px', borderRadius: '9px',
                 border: '1px solid rgba(240,165,0,0.35)',
                 background: 'rgba(240,165,0,0.15)',
-                color: 'var(--zh-warnung)',
+                color: 'var(--rsi-warnung)',
                 fontSize: '13px', fontWeight: 600,
                 cursor: 'pointer',
-                fontFamily: 'var(--zh-font)',
+                fontFamily: 'var(--rsi-font)',
                 backdropFilter: 'blur(10px)',
               }}
             >
@@ -2617,9 +2617,9 @@ export default function SceneViewer({
               padding: '9px 14px', borderRadius: '9px',
               background: 'rgba(240,165,0,0.20)',
               border: '1px solid rgba(240,165,0,0.45)',
-              color: 'var(--zh-warnung)',
+              color: 'var(--rsi-warnung)',
               fontSize: '12px', fontWeight: 700,
-              fontFamily: 'var(--zh-font)',
+              fontFamily: 'var(--rsi-font)',
             }}>
               <Eye size={13} /> {t('szene.hinweis_aktiv')}
             </div>
@@ -2641,7 +2641,7 @@ export default function SceneViewer({
               color: 'rgba(255,255,255,0.70)',
               fontSize: '13px', fontWeight: 600,
               cursor: 'pointer',
-              fontFamily: 'var(--zh-font)',
+              fontFamily: 'var(--rsi-font)',
               backdropFilter: 'blur(10px)',
             }}
           >
@@ -2693,7 +2693,7 @@ export default function SceneViewer({
               color: 'rgba(255,255,255,0.75)',
               fontSize: '14px', fontWeight: 600,
               cursor: 'pointer',
-              fontFamily: 'var(--zh-font)',
+              fontFamily: 'var(--rsi-font)',
             }}
           >
             <X size={15} /> {t('szene.beenden')}
@@ -2721,7 +2721,7 @@ export default function SceneViewer({
           borderRadius: '12px', padding: '10px 16px',
           border: '1px solid rgba(255,255,255,0.20)',
           boxShadow: '0 8px 32px rgba(0,0,0,0.5)',
-          zIndex: 200, fontFamily: 'var(--zh-font)',
+          zIndex: 200, fontFamily: 'var(--rsi-font)',
         }}>
           <span style={{ fontSize: '13px', color: 'rgba(255,255,255,0.70)' }}>
             {t('szene.defizit_hier')}
@@ -2732,7 +2732,7 @@ export default function SceneViewer({
               padding: '8px 18px', borderRadius: '8px', border: 'none',
               background: '#1A7F1F', color: 'white',
               fontSize: '13px', fontWeight: 700, cursor: 'pointer',
-              fontFamily: 'var(--zh-font)',
+              fontFamily: 'var(--rsi-font)',
             }}
           >
             {t('szene.bestätigen')}
@@ -2743,7 +2743,7 @@ export default function SceneViewer({
               padding: '8px 12px', borderRadius: '8px',
               border: '1px solid rgba(255,255,255,0.15)', background: 'transparent',
               color: 'rgba(255,255,255,0.50)',
-              fontSize: '13px', cursor: 'pointer', fontFamily: 'var(--zh-font)',
+              fontSize: '13px', cursor: 'pointer', fontFamily: 'var(--rsi-font)',
             }}
           >
             <X size={14} />
@@ -2768,7 +2768,7 @@ export default function SceneViewer({
             background: 'rgba(0,0,0,0.90)', backdropFilter: 'blur(16px)',
             borderRadius: '14px', border: '1px solid rgba(255,255,255,0.12)',
             padding: '24px 28px', width: '380px', maxWidth: '92vw',
-            boxShadow: '0 16px 48px rgba(0,0,0,0.7)', zIndex: 300, fontFamily: 'var(--zh-font)',
+            boxShadow: '0 16px 48px rgba(0,0,0,0.7)', zIndex: 300, fontFamily: 'var(--rsi-font)',
           }}>
             <p style={{ fontSize: '10px', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.16em', color: 'rgba(255,255,255,0.45)', marginBottom: '3px' }}>
               {t('scoring.bewertung_schritt', { nr: 1 })} · {t('scoring.methodik_schritt', { schritt: 1 })} — {t('scoring.phase_a')}
@@ -2788,7 +2788,7 @@ export default function SceneViewer({
                     textAlign: 'left', padding: '11px 16px', borderRadius: '8px',
                     border: '1px solid rgba(255,255,255,0.10)', background: 'rgba(255,255,255,0.05)',
                     color: 'white', fontSize: '14px', fontWeight: 600,
-                    cursor: 'pointer', fontFamily: 'var(--zh-font)',
+                    cursor: 'pointer', fontFamily: 'var(--rsi-font)',
                   }}
                   onMouseEnter={e => { e.currentTarget.style.background = 'rgba(0,118,189,0.45)'; e.currentTarget.style.borderColor = 'rgba(0,118,189,0.6)' }}
                   onMouseLeave={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.05)'; e.currentTarget.style.borderColor = 'rgba(255,255,255,0.10)' }}
@@ -2808,7 +2808,7 @@ export default function SceneViewer({
           background: 'rgba(0,0,0,0.90)', backdropFilter: 'blur(16px)',
           borderRadius: '14px', border: '1px solid rgba(255,255,255,0.12)',
           padding: '24px 28px', width: '380px', maxWidth: '92vw',
-          boxShadow: '0 16px 48px rgba(0,0,0,0.7)', zIndex: 300, fontFamily: 'var(--zh-font)',
+          boxShadow: '0 16px 48px rgba(0,0,0,0.7)', zIndex: 300, fontFamily: 'var(--rsi-font)',
         }}>
           <p style={{ fontSize: '10px', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.16em', color: 'rgba(255,255,255,0.45)', marginBottom: '3px' }}>
             {t('scoring.bewertung_schritt', { nr: 2 })} · {t('scoring.methodik_schritt', { schritt: 3 })} — {t('scoring.phase_b')}
@@ -2825,7 +2825,7 @@ export default function SceneViewer({
                   textAlign: 'left', padding: '11px 16px', borderRadius: '8px',
                   border: '1px solid rgba(255,255,255,0.10)', background: 'rgba(255,255,255,0.05)',
                   color: 'white', fontSize: '14px', fontWeight: 600,
-                  cursor: 'pointer', fontFamily: 'var(--zh-font)',
+                  cursor: 'pointer', fontFamily: 'var(--rsi-font)',
                 }}
                 onMouseEnter={e => { e.currentTarget.style.background = 'rgba(0,118,189,0.45)'; e.currentTarget.style.borderColor = 'rgba(0,118,189,0.6)' }}
                 onMouseLeave={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.05)'; e.currentTarget.style.borderColor = 'rgba(255,255,255,0.10)' }}
@@ -2845,7 +2845,7 @@ export default function SceneViewer({
           background: 'rgba(0,0,0,0.90)', backdropFilter: 'blur(16px)',
           borderRadius: '14px', border: '1px solid rgba(255,255,255,0.12)',
           padding: '24px 28px', width: '380px', maxWidth: '92vw',
-          boxShadow: '0 16px 48px rgba(0,0,0,0.7)', zIndex: 300, fontFamily: 'var(--zh-font)',
+          boxShadow: '0 16px 48px rgba(0,0,0,0.7)', zIndex: 300, fontFamily: 'var(--rsi-font)',
         }}>
           <p style={{ fontSize: '10px', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.16em', color: 'rgba(255,255,255,0.45)', marginBottom: '3px' }}>
             {t('scoring.bewertung_schritt', { nr: 3 })} · {t('scoring.methodik_schritt', { schritt: 7 })} — {t('scoring.phase_d')}
@@ -2871,7 +2871,7 @@ export default function SceneViewer({
                   textAlign: 'left', padding: '11px 16px', borderRadius: '8px',
                   border: '1px solid rgba(255,255,255,0.10)', background: 'rgba(255,255,255,0.05)',
                   color: 'white', fontSize: '14px', fontWeight: 600,
-                  cursor: 'pointer', fontFamily: 'var(--zh-font)',
+                  cursor: 'pointer', fontFamily: 'var(--rsi-font)',
                 }}
                 onMouseEnter={e => { e.currentTarget.style.background = `${g.color}55`; e.currentTarget.style.borderColor = `${g.color}88` }}
                 onMouseLeave={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.05)'; e.currentTarget.style.borderColor = 'rgba(255,255,255,0.10)' }}
@@ -2915,7 +2915,7 @@ export default function SceneViewer({
               color: !aktivePerspektiveId ? 'white' : 'rgba(255,255,255,0.70)',
               fontSize: '13px', fontWeight: !aktivePerspektiveId ? 700 : 500,
               cursor: !aktivePerspektiveId ? 'default' : 'pointer',
-              fontFamily: 'var(--zh-font)',
+              fontFamily: 'var(--rsi-font)',
               transition: 'all 0.15s',
               minWidth: '140px',
               textAlign: 'left',
@@ -2943,7 +2943,7 @@ export default function SceneViewer({
                   color: isActive ? 'white' : hintZiel ? '#F0A500' : 'rgba(255,255,255,0.70)',
                   fontSize: '13px', fontWeight: isActive ? 700 : 500,
                   cursor: isActive ? 'default' : 'pointer',
-                  fontFamily: 'var(--zh-font)',
+                  fontFamily: 'var(--rsi-font)',
                   transition: 'all 0.15s',
                   minWidth: '140px',
                   textAlign: 'left',

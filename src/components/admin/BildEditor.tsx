@@ -713,13 +713,13 @@ export default function BildEditor({ scene, deficits, onSave, onClose, initialDe
     return {
       padding: '5px 10px',
       borderRadius: '6px',
-      border: aktiv ? '2px solid var(--zh-blau)' : '1px solid var(--zh-color-border)',
-      background: aktiv ? 'rgba(0,118,189,0.12)' : 'var(--zh-color-bg-secondary)',
-      color: aktiv ? 'var(--zh-blau)' : 'var(--zh-color-text-muted)',
+      border: aktiv ? '2px solid var(--rsi-blau)' : '1px solid var(--rsi-color-border)',
+      background: aktiv ? 'rgba(0,118,189,0.12)' : 'var(--rsi-color-bg-secondary)',
+      color: aktiv ? 'var(--rsi-blau)' : 'var(--rsi-color-text-muted)',
       fontSize: '11px',
       fontWeight: 700,
       cursor: 'pointer',
-      fontFamily: 'var(--zh-font)',
+      fontFamily: 'var(--rsi-font)',
       whiteSpace: 'nowrap' as const,
     }
   }
@@ -736,14 +736,14 @@ export default function BildEditor({ scene, deficits, onSave, onClose, initialDe
       <div style={{
         width: '960px', maxWidth: '98vw',
         height: '700px', maxHeight: '94vh',
-        borderRadius: 'var(--zh-radius-card)',
-        border: '1px solid var(--zh-color-border)',
-        background: 'var(--zh-color-surface)',
-        boxShadow: 'var(--zh-shadow-lg)',
+        borderRadius: 'var(--rsi-radius-card)',
+        border: '1px solid var(--rsi-color-border)',
+        background: 'var(--rsi-color-surface)',
+        boxShadow: 'var(--rsi-shadow-lg)',
         display: 'flex',
         flexDirection: 'column',
         overflow: 'hidden',
-        fontFamily: 'var(--zh-font)',
+        fontFamily: 'var(--rsi-font)',
       }}>
 
         {/* verstecktes img-Element */}
@@ -760,8 +760,8 @@ export default function BildEditor({ scene, deficits, onSave, onClose, initialDe
         <div style={{
           padding: '6px 12px',
           display: 'flex', alignItems: 'center', gap: '6px',
-          borderBottom: '1px solid var(--zh-color-border)',
-          background: 'var(--zh-color-bg-secondary)',
+          borderBottom: '1px solid var(--rsi-color-border)',
+          background: 'var(--rsi-color-bg-secondary)',
           flexShrink: 0,
           flexWrap: 'wrap',
         }}>
@@ -777,10 +777,10 @@ export default function BildEditor({ scene, deficits, onSave, onClose, initialDe
             }}
             style={{
               padding: '4px 6px', borderRadius: '4px',
-              border: '1px solid var(--zh-color-border)',
-              background: 'var(--zh-color-bg-secondary)',
-              color: 'var(--zh-color-text)',
-              fontSize: '11px', fontFamily: 'var(--zh-font)',
+              border: '1px solid var(--rsi-color-border)',
+              background: 'var(--rsi-color-bg-secondary)',
+              color: 'var(--rsi-color-text)',
+              fontSize: '11px', fontFamily: 'var(--rsi-font)',
               cursor: 'pointer', flexShrink: 0,
             }}
           >
@@ -797,17 +797,17 @@ export default function BildEditor({ scene, deficits, onSave, onClose, initialDe
             placeholder="/textures/panorama.webp"
             style={{
               flex: 1, padding: '4px 8px', borderRadius: '4px',
-              border: '1px solid var(--zh-color-border)',
-              background: 'var(--zh-color-surface)',
-              color: 'var(--zh-color-text)',
-              fontSize: '12px', fontFamily: 'var(--zh-font)',
+              border: '1px solid var(--rsi-color-border)',
+              background: 'var(--rsi-color-surface)',
+              color: 'var(--rsi-color-text)',
+              fontSize: '12px', fontFamily: 'var(--rsi-font)',
               minWidth: '120px',
             }}
             onKeyDown={e => { if (e.key === 'Enter') handleLaden() }}
           />
           <button onClick={handleLaden} style={modusBtnStyle(false)}>Laden</button>
 
-          <div style={{ width: '1px', background: 'var(--zh-color-border)', height: '24px', flexShrink: 0 }} />
+          <div style={{ width: '1px', background: 'var(--rsi-color-border)', height: '24px', flexShrink: 0 }} />
 
           {/* Modus-Buttons */}
           <button onClick={() => setModus(modus === 'startblick' ? 'idle' : 'startblick')}
@@ -835,11 +835,11 @@ export default function BildEditor({ scene, deficits, onSave, onClose, initialDe
             Gruppe
           </button>
 
-          <div style={{ width: '1px', background: 'var(--zh-color-border)', height: '24px', flexShrink: 0 }} />
+          <div style={{ width: '1px', background: 'var(--rsi-color-border)', height: '24px', flexShrink: 0 }} />
 
           {/* Toleranzradius */}
           <div style={{ display: 'flex', alignItems: 'center', gap: '4px', flexShrink: 0 }}>
-            <span style={{ fontSize: '10px', color: 'var(--zh-color-text-muted)', whiteSpace: 'nowrap' }}>
+            <span style={{ fontSize: '10px', color: 'var(--rsi-color-text-muted)', whiteSpace: 'nowrap' }}>
               Tol: {toleranz}°
             </span>
             <input type="range" min={5} max={30} step={1} value={toleranz}
@@ -858,7 +858,7 @@ export default function BildEditor({ scene, deficits, onSave, onClose, initialDe
 
           {/* Schliessen */}
           <button onClick={onClose}
-            style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--zh-color-text-muted)', padding: '4px', marginLeft: 'auto', flexShrink: 0 }}>
+            style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--rsi-color-text-muted)', padding: '4px', marginLeft: 'auto', flexShrink: 0 }}>
             <X size={18} />
           </button>
         </div>
@@ -868,12 +868,12 @@ export default function BildEditor({ scene, deficits, onSave, onClose, initialDe
           <div style={{
             padding: '5px 12px',
             display: 'flex', alignItems: 'center', gap: '6px',
-            borderBottom: '1px solid var(--zh-color-border)',
-            background: aktivePerspektiveId ? 'rgba(0,118,189,0.04)' : 'var(--zh-color-bg-secondary)',
+            borderBottom: '1px solid var(--rsi-color-border)',
+            background: aktivePerspektiveId ? 'rgba(0,118,189,0.04)' : 'var(--rsi-color-bg-secondary)',
             flexShrink: 0,
           }}>
-            <MapPin size={14} style={{ color: 'var(--zh-blau)', flexShrink: 0 }} />
-            <span style={{ fontSize: '10px', fontWeight: 700, color: 'var(--zh-color-text-muted)', textTransform: 'uppercase', letterSpacing: '0.06em', marginRight: '4px' }}>
+            <MapPin size={14} style={{ color: 'var(--rsi-blau)', flexShrink: 0 }} />
+            <span style={{ fontSize: '10px', fontWeight: 700, color: 'var(--rsi-color-text-muted)', textTransform: 'uppercase', letterSpacing: '0.06em', marginRight: '4px' }}>
               Standort:
             </span>
 
@@ -882,12 +882,12 @@ export default function BildEditor({ scene, deficits, onSave, onClose, initialDe
               onClick={() => setAktivePerspektiveId(null)}
               style={{
                 padding: '4px 10px', borderRadius: '6px',
-                border: !aktivePerspektiveId ? '2px solid var(--zh-blau)' : '1px solid var(--zh-color-border)',
-                background: !aktivePerspektiveId ? 'rgba(0,118,189,0.15)' : 'var(--zh-color-surface)',
-                color: !aktivePerspektiveId ? 'var(--zh-blau)' : 'var(--zh-color-text-muted)',
+                border: !aktivePerspektiveId ? '2px solid var(--rsi-blau)' : '1px solid var(--rsi-color-border)',
+                background: !aktivePerspektiveId ? 'rgba(0,118,189,0.15)' : 'var(--rsi-color-surface)',
+                color: !aktivePerspektiveId ? 'var(--rsi-blau)' : 'var(--rsi-color-text-muted)',
                 fontSize: '11px', fontWeight: 700,
                 cursor: !aktivePerspektiveId ? 'default' : 'pointer',
-                fontFamily: 'var(--zh-font)',
+                fontFamily: 'var(--rsi-font)',
               }}
             >
               Haupt-Panorama
@@ -907,12 +907,12 @@ export default function BildEditor({ scene, deficits, onSave, onClose, initialDe
                   title={hatBild ? (p.bildUrl || `Perspektive ${i + 1}`) : 'Kein Bild hinterlegt'}
                   style={{
                     padding: '4px 10px', borderRadius: '6px',
-                    border: isActive ? '2px solid var(--zh-blau)' : '1px solid var(--zh-color-border)',
-                    background: isActive ? 'rgba(0,118,189,0.15)' : 'var(--zh-color-surface)',
-                    color: isActive ? 'var(--zh-blau)' : hatBild ? 'var(--zh-color-text-muted)' : 'var(--zh-color-text-disabled)',
+                    border: isActive ? '2px solid var(--rsi-blau)' : '1px solid var(--rsi-color-border)',
+                    background: isActive ? 'rgba(0,118,189,0.15)' : 'var(--rsi-color-surface)',
+                    color: isActive ? 'var(--rsi-blau)' : hatBild ? 'var(--rsi-color-text-muted)' : 'var(--rsi-color-text-disabled)',
                     fontSize: '11px', fontWeight: 700,
                     cursor: hatBild ? (isActive ? 'default' : 'pointer') : 'not-allowed',
-                    fontFamily: 'var(--zh-font)',
+                    fontFamily: 'var(--rsi-font)',
                     display: 'flex', alignItems: 'center', gap: '4px',
                     opacity: hatBild ? 1 : 0.5,
                   }}
@@ -924,7 +924,7 @@ export default function BildEditor({ scene, deficits, onSave, onClose, initialDe
             })}
 
             {aktivePerspektiveId && (
-              <span style={{ fontSize: '10px', color: 'var(--zh-blau)', fontWeight: 600, marginLeft: '8px' }}>
+              <span style={{ fontSize: '10px', color: 'var(--rsi-blau)', fontWeight: 600, marginLeft: '8px' }}>
                 Verortungen werden für diese Perspektive gespeichert
               </span>
             )}
@@ -949,7 +949,7 @@ export default function BildEditor({ scene, deficits, onSave, onClose, initialDe
               <div style={{
                 position: 'absolute', inset: 0, display: 'flex',
                 alignItems: 'center', justifyContent: 'center',
-                color: 'var(--zh-color-text-disabled)', fontSize: '13px',
+                color: 'var(--rsi-color-text-disabled)', fontSize: '13px',
               }}>
                 {urlInput ? 'Panoramabild wird geladen...' : 'URL eingeben und auf «Laden» klicken.'}
               </div>
@@ -1047,15 +1047,15 @@ export default function BildEditor({ scene, deficits, onSave, onClose, initialDe
           {/* ── SEITENLEISTE ── */}
           <div style={{
             width: '240px', minWidth: '240px',
-            borderLeft: '1px solid var(--zh-color-border)',
+            borderLeft: '1px solid var(--rsi-color-border)',
             display: 'flex', flexDirection: 'column',
             overflow: 'hidden',
           }}>
             <div style={{
               padding: '8px 14px',
-              borderBottom: '1px solid var(--zh-color-border)',
+              borderBottom: '1px solid var(--rsi-color-border)',
               fontSize: '10px', fontWeight: 800, textTransform: 'uppercase',
-              letterSpacing: '0.12em', color: 'var(--zh-color-text-disabled)',
+              letterSpacing: '0.12em', color: 'var(--rsi-color-text-disabled)',
             }}>
               Sicherheitsdefizite ({localDeficits.length})
             </div>
@@ -1074,9 +1074,9 @@ export default function BildEditor({ scene, deficits, onSave, onClose, initialDe
                     onClick={() => setSelectedDeficitId(d.id)}
                     style={{
                       padding: '8px 14px',
-                      borderBottom: '1px solid var(--zh-color-border)',
+                      borderBottom: '1px solid var(--rsi-color-border)',
                       background: isSelected ? 'rgba(0,118,189,0.08)' : 'transparent',
-                      borderLeft: isSelected ? '3px solid var(--zh-blau)' : '3px solid transparent',
+                      borderLeft: isSelected ? '3px solid var(--rsi-blau)' : '3px solid transparent',
                       cursor: 'pointer',
                       display: 'flex', alignItems: 'flex-start', gap: '8px',
                     }}
@@ -1099,7 +1099,7 @@ export default function BildEditor({ scene, deficits, onSave, onClose, initialDe
                     <div style={{ minWidth: 0, flex: 1 }}>
                       <div style={{
                         fontSize: '12px', fontWeight: 600,
-                        color: isSelected ? 'var(--zh-blau)' : 'var(--zh-color-text)',
+                        color: isSelected ? 'var(--rsi-blau)' : 'var(--rsi-color-text)',
                         overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
                       }}>
                         {d.nameI18n.de || d.id}
@@ -1110,7 +1110,7 @@ export default function BildEditor({ scene, deficits, onSave, onClose, initialDe
                           background: farbe, flexShrink: 0,
                           display: 'inline-block',
                         }} />
-                        <span style={{ fontSize: '10px', color: 'var(--zh-color-text-muted)' }}>
+                        <span style={{ fontSize: '10px', color: 'var(--rsi-color-text-muted)' }}>
                           {vLabel}
                         </span>
                       </div>
@@ -1120,7 +1120,7 @@ export default function BildEditor({ scene, deficits, onSave, onClose, initialDe
                       title={isVisible ? 'Ausblenden' : 'Einblenden'}
                       style={{
                         background: 'none', border: 'none', cursor: 'pointer',
-                        color: isVisible ? 'var(--zh-color-text-muted)' : 'var(--zh-color-text-disabled)',
+                        color: isVisible ? 'var(--rsi-color-text-muted)' : 'var(--rsi-color-text-disabled)',
                         padding: '2px', flexShrink: 0,
                       }}
                     >
@@ -1133,8 +1133,8 @@ export default function BildEditor({ scene, deficits, onSave, onClose, initialDe
 
             {/* Gruppe-Modus: Erstellen-Button */}
             {modus === 'gruppe' && (
-              <div style={{ padding: '10px 14px', borderTop: '1px solid var(--zh-color-border)' }}>
-                <div style={{ fontSize: '11px', color: 'var(--zh-color-text-muted)', marginBottom: '6px' }}>
+              <div style={{ padding: '10px 14px', borderTop: '1px solid var(--rsi-color-border)' }}>
+                <div style={{ fontSize: '11px', color: 'var(--rsi-color-text-muted)', marginBottom: '6px' }}>
                   {gruppeIdsSelected.length} Defizite ausgewählt
                 </div>
                 <button
@@ -1142,11 +1142,11 @@ export default function BildEditor({ scene, deficits, onSave, onClose, initialDe
                   disabled={gruppeIdsSelected.length === 0 || !selectedDeficitId}
                   style={{
                     width: '100%', padding: '7px', borderRadius: '6px',
-                    background: gruppeIdsSelected.length > 0 ? 'var(--zh-dunkelblau)' : 'var(--zh-color-bg-tertiary)',
-                    color: gruppeIdsSelected.length > 0 ? 'white' : 'var(--zh-color-text-disabled)',
+                    background: gruppeIdsSelected.length > 0 ? 'var(--rsi-dunkelblau)' : 'var(--rsi-color-bg-tertiary)',
+                    color: gruppeIdsSelected.length > 0 ? 'white' : 'var(--rsi-color-text-disabled)',
                     border: 'none', fontSize: '12px', fontWeight: 700,
                     cursor: gruppeIdsSelected.length > 0 ? 'pointer' : 'not-allowed',
-                    fontFamily: 'var(--zh-font)',
+                    fontFamily: 'var(--rsi-font)',
                   }}
                 >
                   Gruppe erstellen
@@ -1163,8 +1163,8 @@ export default function BildEditor({ scene, deficits, onSave, onClose, initialDe
               return (
                 <div style={{
                   padding: '8px 14px',
-                  borderTop: '1px solid var(--zh-color-border)',
-                  fontSize: '11px', color: 'var(--zh-color-text-muted)',
+                  borderTop: '1px solid var(--rsi-color-border)',
+                  fontSize: '11px', color: 'var(--rsi-color-text-muted)',
                 }}>
                   <span style={{ fontWeight: 700, color: '#0076BD' }}>
                     Startblick{aktivePerspektiveId ? ` (${aktivePerspektive?.label ?? 'Perspektive'})` : ''}:
@@ -1203,10 +1203,10 @@ export default function BildEditor({ scene, deficits, onSave, onClose, initialDe
               return (
                 <div style={{
                   padding: '8px 14px',
-                  borderTop: '1px solid var(--zh-color-border)',
-                  fontSize: '11px', color: 'var(--zh-color-text-muted)',
+                  borderTop: '1px solid var(--rsi-color-border)',
+                  fontSize: '11px', color: 'var(--rsi-color-text-muted)',
                 }}>
-                  <div style={{ fontWeight: 700, marginBottom: '4px', color: 'var(--zh-color-text)' }}>
+                  <div style={{ fontWeight: 700, marginBottom: '4px', color: 'var(--rsi-color-text)' }}>
                     Verortung {aktivePerspektiveId ? `(${aktivePerspektive?.label ?? 'Perspektive'})` : ''}
                   </div>
                   {aktVerortung.typ === 'punkt' && (
@@ -1241,7 +1241,7 @@ export default function BildEditor({ scene, deficits, onSave, onClose, initialDe
                     style={{
                       marginTop: '5px', background: 'none', border: '1px solid rgba(212,0,83,0.3)',
                       borderRadius: '4px', cursor: 'pointer', color: '#D40053',
-                      fontSize: '11px', padding: '3px 8px', fontFamily: 'var(--zh-font)',
+                      fontSize: '11px', padding: '3px 8px', fontFamily: 'var(--rsi-font)',
                     }}
                   >
                     Verortung löschen
@@ -1264,11 +1264,11 @@ export default function BildEditor({ scene, deficits, onSave, onClose, initialDe
             return (
               <div style={{
                 padding: '8px 14px',
-                borderTop: '1px solid var(--zh-color-border)',
+                borderTop: '1px solid var(--rsi-color-border)',
               }}>
                 <div style={{
                   fontSize: '10px', fontWeight: 800, textTransform: 'uppercase',
-                  letterSpacing: '0.12em', color: 'var(--zh-color-text-disabled)',
+                  letterSpacing: '0.12em', color: 'var(--rsi-color-text-disabled)',
                   marginBottom: '6px',
                 }}>
                   Navigation von hier
@@ -1281,12 +1281,12 @@ export default function BildEditor({ scene, deficits, onSave, onClose, initialDe
                       marginBottom: '4px', fontSize: '11px',
                     }}>
                       <MapPin size={11} style={{ color: z.id === 'haupt' ? '#00407C' : '#0076BD', flexShrink: 0 }} />
-                      <span style={{ flex: 1, color: 'var(--zh-color-text)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                      <span style={{ flex: 1, color: 'var(--rsi-color-text)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                         {z.label}
                       </span>
                       {pos ? (
                         <>
-                          <span style={{ color: 'var(--zh-color-text-muted)', fontSize: '10px', flexShrink: 0 }}>
+                          <span style={{ color: 'var(--rsi-color-text-muted)', fontSize: '10px', flexShrink: 0 }}>
                             {Math.round(pos.theta)}°
                           </span>
                           <button
@@ -1316,10 +1316,10 @@ export default function BildEditor({ scene, deficits, onSave, onClose, initialDe
                             setModus('standort')
                           }}
                           style={{
-                            background: 'none', border: '1px solid var(--zh-blau)',
+                            background: 'none', border: '1px solid var(--rsi-blau)',
                             borderRadius: '4px', cursor: 'pointer',
-                            color: 'var(--zh-blau)', fontSize: '10px', padding: '2px 6px',
-                            fontFamily: 'var(--zh-font)', flexShrink: 0,
+                            color: 'var(--rsi-blau)', fontSize: '10px', padding: '2px 6px',
+                            fontFamily: 'var(--rsi-font)', flexShrink: 0,
                           }}
                         >
                           Setzen
@@ -1336,11 +1336,11 @@ export default function BildEditor({ scene, deficits, onSave, onClose, initialDe
           {!aktivePerspektiveId && (localScene.perspektiven ?? []).length > 0 && (
             <div style={{
               padding: '8px 14px',
-              borderTop: '1px solid var(--zh-color-border)',
+              borderTop: '1px solid var(--rsi-color-border)',
             }}>
               <div style={{
                 fontSize: '10px', fontWeight: 800, textTransform: 'uppercase',
-                letterSpacing: '0.12em', color: 'var(--zh-color-text-disabled)',
+                letterSpacing: '0.12em', color: 'var(--rsi-color-text-disabled)',
                 marginBottom: '6px',
               }}>
                 Standort-Positionen
@@ -1351,12 +1351,12 @@ export default function BildEditor({ scene, deficits, onSave, onClose, initialDe
                   marginBottom: '4px', fontSize: '11px',
                 }}>
                   <MapPin size={11} style={{ color: '#0076BD', flexShrink: 0 }} />
-                  <span style={{ flex: 1, color: 'var(--zh-color-text)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                  <span style={{ flex: 1, color: 'var(--rsi-color-text)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                     {p.label || `Standort ${i + 1}`}
                   </span>
                   {p.standortPosition ? (
                     <>
-                      <span style={{ color: 'var(--zh-color-text-muted)', fontSize: '10px', flexShrink: 0 }}>
+                      <span style={{ color: 'var(--rsi-color-text-muted)', fontSize: '10px', flexShrink: 0 }}>
                         {Math.round(p.standortPosition.theta)}°
                       </span>
                       <button
@@ -1383,10 +1383,10 @@ export default function BildEditor({ scene, deficits, onSave, onClose, initialDe
                         setModus('standort')
                       }}
                       style={{
-                        background: 'none', border: '1px solid var(--zh-blau)',
+                        background: 'none', border: '1px solid var(--rsi-blau)',
                         borderRadius: '4px', cursor: 'pointer',
-                        color: 'var(--zh-blau)', fontSize: '10px', padding: '2px 6px',
-                        fontFamily: 'var(--zh-font)', flexShrink: 0,
+                        color: 'var(--rsi-blau)', fontSize: '10px', padding: '2px 6px',
+                        fontFamily: 'var(--rsi-font)', flexShrink: 0,
                       }}
                     >
                       Setzen
@@ -1402,17 +1402,17 @@ export default function BildEditor({ scene, deficits, onSave, onClose, initialDe
         {/* ── FOOTER ── */}
         <div style={{
           padding: '10px 16px',
-          borderTop: '1px solid var(--zh-color-border)',
+          borderTop: '1px solid var(--rsi-color-border)',
           display: 'flex', justifyContent: 'space-between', alignItems: 'center',
-          background: 'var(--zh-color-bg-secondary)',
+          background: 'var(--rsi-color-bg-secondary)',
           flexShrink: 0,
         }}>
-          <div style={{ fontSize: '11px', color: 'var(--zh-color-text-muted)' }}>
+          <div style={{ fontSize: '11px', color: 'var(--rsi-color-text-muted)' }}>
             {bildGeladen
               ? `${bildBreite.toLocaleString('de-CH')} × ${bildHoehe.toLocaleString('de-CH')} px`
               : 'Kein Bild geladen'}
             {aktivePerspektiveId && aktivePerspektive && (
-              <span style={{ marginLeft: '8px', color: 'var(--zh-blau)', fontWeight: 600 }}>
+              <span style={{ marginLeft: '8px', color: 'var(--rsi-blau)', fontWeight: 600 }}>
                 | {aktivePerspektive.label}
               </span>
             )}
@@ -1421,10 +1421,10 @@ export default function BildEditor({ scene, deficits, onSave, onClose, initialDe
             <button
               onClick={onClose}
               style={{
-                padding: '7px 16px', borderRadius: 'var(--zh-radius-btn)',
-                border: '1px solid var(--zh-color-border)', background: 'transparent',
-                color: 'var(--zh-color-text-muted)', fontSize: '12px', fontWeight: 600,
-                cursor: 'pointer', fontFamily: 'var(--zh-font)',
+                padding: '7px 16px', borderRadius: 'var(--rsi-radius-btn)',
+                border: '1px solid var(--rsi-color-border)', background: 'transparent',
+                color: 'var(--rsi-color-text-muted)', fontSize: '12px', fontWeight: 600,
+                cursor: 'pointer', fontFamily: 'var(--rsi-font)',
               }}
             >
               Abbrechen
@@ -1433,10 +1433,10 @@ export default function BildEditor({ scene, deficits, onSave, onClose, initialDe
               onClick={() => onSave(localScene, localDeficits)}
               style={{
                 display: 'flex', alignItems: 'center', gap: '5px',
-                padding: '7px 16px', borderRadius: 'var(--zh-radius-btn)',
-                background: 'var(--zh-dunkelblau)', color: 'white',
+                padding: '7px 16px', borderRadius: 'var(--rsi-radius-btn)',
+                background: 'var(--rsi-dunkelblau)', color: 'white',
                 fontWeight: 700, fontSize: '12px', border: 'none',
-                cursor: 'pointer', fontFamily: 'var(--zh-font)',
+                cursor: 'pointer', fontFamily: 'var(--rsi-font)',
               }}
             >
               <Save size={13} /> Speichern

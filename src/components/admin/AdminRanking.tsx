@@ -215,7 +215,7 @@ export default function AdminRanking() {
   const btnStyle: React.CSSProperties = {
     display: 'flex', alignItems: 'center', gap: '5px',
     padding: '6px 12px', borderRadius: '6px', fontSize: '12px', fontWeight: 600,
-    cursor: 'pointer', fontFamily: 'var(--zh-font)', border: 'none',
+    cursor: 'pointer', fontFamily: 'var(--rsi-font)', border: 'none',
   }
 
   return (
@@ -223,23 +223,23 @@ export default function AdminRanking() {
       {/* Header */}
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '20px', flexWrap: 'wrap', gap: '10px' }}>
         <div>
-          <h2 style={{ fontSize: '18px', fontWeight: 700, color: 'var(--zh-color-text)', margin: 0 }}>
+          <h2 style={{ fontSize: '18px', fontWeight: 700, color: 'var(--rsi-color-text)', margin: 0 }}>
             {t('admin.rangliste_titel')}
           </h2>
-          <p style={{ fontSize: '12px', color: 'var(--zh-color-text-muted)', marginTop: '2px' }}>
+          <p style={{ fontSize: '12px', color: 'var(--rsi-color-text-muted)', marginTop: '2px' }}>
             {isOnline
               ? `${results.length} Einträge in Supabase`
               : `${localResults.length} lokale Einträge (Supabase nicht erreichbar)`}
           </p>
         </div>
         <div style={{ display: 'flex', gap: '8px' }}>
-          <button onClick={fetchResults} style={{ ...btnStyle, background: 'var(--zh-color-bg-secondary)', color: 'var(--zh-color-text-muted)', border: '1px solid var(--zh-color-border)' }}>
+          <button onClick={fetchResults} style={{ ...btnStyle, background: 'var(--rsi-color-bg-secondary)', color: 'var(--rsi-color-text-muted)', border: '1px solid var(--rsi-color-border)' }}>
             <RefreshCw size={12} /> Aktualisieren
           </button>
           {isOnline && results.length > 0 && (
             <button
               onClick={() => setConfirmAction({ label: 'Alle Einträge unwiderruflich löschen?', action: deleteAll })}
-              style={{ ...btnStyle, background: 'rgba(212,0,83,0.1)', color: 'var(--zh-rot)' }}
+              style={{ ...btnStyle, background: 'rgba(212,0,83,0.1)', color: 'var(--rsi-rot)' }}
             >
               <Trash2 size={12} /> Alles zurücksetzen
             </button>
@@ -249,7 +249,7 @@ export default function AdminRanking() {
 
       {/* Feedback-Toast */}
       {feedback && (
-        <div style={{ padding: '10px 16px', borderRadius: '8px', background: 'rgba(26,127,31,0.1)', border: '1px solid rgba(26,127,31,0.3)', color: 'var(--zh-gruen)', fontSize: '13px', fontWeight: 600, marginBottom: '16px' }}>
+        <div style={{ padding: '10px 16px', borderRadius: '8px', background: 'rgba(26,127,31,0.1)', border: '1px solid rgba(26,127,31,0.3)', color: 'var(--rsi-gruen)', fontSize: '13px', fontWeight: 600, marginBottom: '16px' }}>
           {feedback}
         </div>
       )}
@@ -257,19 +257,19 @@ export default function AdminRanking() {
       {/* Bestätigungs-Dialog */}
       {confirmAction && (
         <div style={{ padding: '16px', borderRadius: '10px', background: 'rgba(212,0,83,0.06)', border: '1px solid rgba(212,0,83,0.2)', marginBottom: '16px', display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap' }}>
-          <AlertTriangle size={18} style={{ color: 'var(--zh-rot)', flexShrink: 0 }} />
-          <span style={{ fontSize: '13px', fontWeight: 600, color: 'var(--zh-color-text)', flex: 1 }}>
+          <AlertTriangle size={18} style={{ color: 'var(--rsi-rot)', flexShrink: 0 }} />
+          <span style={{ fontSize: '13px', fontWeight: 600, color: 'var(--rsi-color-text)', flex: 1 }}>
             {confirmAction.label}
           </span>
           <button
             onClick={async () => { await confirmAction.action(); setConfirmAction(null) }}
-            style={{ ...btnStyle, background: 'var(--zh-rot)', color: 'white' }}
+            style={{ ...btnStyle, background: 'var(--rsi-rot)', color: 'white' }}
           >
             Ja, löschen
           </button>
           <button
             onClick={() => setConfirmAction(null)}
-            style={{ ...btnStyle, background: 'var(--zh-color-bg-secondary)', color: 'var(--zh-color-text-muted)', border: '1px solid var(--zh-color-border)' }}
+            style={{ ...btnStyle, background: 'var(--rsi-color-bg-secondary)', color: 'var(--rsi-color-text-muted)', border: '1px solid var(--rsi-color-border)' }}
           >
             {t('admin.cancelBtn')}
           </button>
@@ -279,7 +279,7 @@ export default function AdminRanking() {
       {/* Schnellaktionen: User löschen */}
       {isOnline && uniqueUsers.length > 0 && (
         <div style={{ marginBottom: '20px' }}>
-          <p style={{ fontSize: '10px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.12em', color: 'var(--zh-color-text-disabled)', marginBottom: '8px' }}>
+          <p style={{ fontSize: '10px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.12em', color: 'var(--rsi-color-text-disabled)', marginBottom: '8px' }}>
             <Users size={11} style={{ display: 'inline', verticalAlign: '-1px', marginRight: '4px' }} />
             {t('admin.rangliste_user')} ({uniqueUsers.length})
           </p>
@@ -290,14 +290,14 @@ export default function AdminRanking() {
                 <div key={u} style={{
                   display: 'flex', alignItems: 'center', gap: '6px',
                   padding: '5px 10px', borderRadius: '6px',
-                  background: 'var(--zh-color-bg-secondary)', border: '1px solid var(--zh-color-border)',
+                  background: 'var(--rsi-color-bg-secondary)', border: '1px solid var(--rsi-color-border)',
                   fontSize: '12px',
                 }}>
-                  <span style={{ fontWeight: 600, color: 'var(--zh-color-text)' }}>{u}</span>
-                  <span style={{ color: 'var(--zh-color-text-disabled)' }}>({count})</span>
+                  <span style={{ fontWeight: 600, color: 'var(--rsi-color-text)' }}>{u}</span>
+                  <span style={{ color: 'var(--rsi-color-text-disabled)' }}>({count})</span>
                   <button
                     onClick={() => setConfirmAction({ label: `Alle ${count} Einträge von "${u}" löschen?`, action: () => deleteByUsername(u) })}
-                    style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--zh-rot)', padding: '2px', display: 'flex', alignItems: 'center' }}
+                    style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--rsi-rot)', padding: '2px', display: 'flex', alignItems: 'center' }}
                     title={`Alle Einträge von ${u} löschen`}
                   >
                     <Trash2 size={12} />
@@ -312,7 +312,7 @@ export default function AdminRanking() {
       {/* Schnellaktionen: Kurs zurücksetzen */}
       {isOnline && uniqueKurse.length > 0 && (
         <div style={{ marginBottom: '20px' }}>
-          <p style={{ fontSize: '10px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.12em', color: 'var(--zh-color-text-disabled)', marginBottom: '8px' }}>
+          <p style={{ fontSize: '10px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.12em', color: 'var(--rsi-color-text-disabled)', marginBottom: '8px' }}>
             {t('admin.rangliste_kurse')}
           </p>
           <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
@@ -322,22 +322,22 @@ export default function AdminRanking() {
                 <div key={k} style={{
                   display: 'flex', alignItems: 'center', gap: '6px',
                   padding: '5px 10px', borderRadius: '6px',
-                  background: 'var(--zh-color-bg-secondary)', border: '1px solid var(--zh-color-border)',
+                  background: 'var(--rsi-color-bg-secondary)', border: '1px solid var(--rsi-color-border)',
                   fontSize: '12px',
                 }}>
-                  <span style={{ fontWeight: 600, color: 'var(--zh-color-text)' }}>{k}</span>
-                  <span style={{ color: 'var(--zh-color-text-disabled)' }}>({count})</span>
+                  <span style={{ fontWeight: 600, color: 'var(--rsi-color-text)' }}>{k}</span>
+                  <span style={{ color: 'var(--rsi-color-text-disabled)' }}>({count})</span>
                   <button
                     onClick={() => exportKurs(k)}
                     disabled={pdfBusy === k}
-                    style={{ background: 'none', border: 'none', cursor: pdfBusy === k ? 'progress' : 'pointer', color: 'var(--zh-blau)', padding: '2px', display: 'flex', alignItems: 'center', opacity: pdfBusy === k ? 0.5 : 1 }}
+                    style={{ background: 'none', border: 'none', cursor: pdfBusy === k ? 'progress' : 'pointer', color: 'var(--rsi-blau)', padding: '2px', display: 'flex', alignItems: 'center', opacity: pdfBusy === k ? 0.5 : 1 }}
                     title={t('bericht.export_kurs_btn')}
                   >
                     <FileDown size={12} />
                   </button>
                   <button
                     onClick={() => setConfirmAction({ label: `Kurs "${k}" zurücksetzen (${count} Einträge)?`, action: () => deleteByKurs(k) })}
-                    style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--zh-rot)', padding: '2px', display: 'flex', alignItems: 'center' }}
+                    style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--rsi-rot)', padding: '2px', display: 'flex', alignItems: 'center' }}
                     title={`Kurs ${k} zurücksetzen`}
                   >
                     <Trash2 size={12} />
@@ -351,7 +351,7 @@ export default function AdminRanking() {
 
       {/* Suchfilter */}
       <div style={{ position: 'relative', marginBottom: '16px' }}>
-        <Search size={14} style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: 'var(--zh-color-text-disabled)' }} />
+        <Search size={14} style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: 'var(--rsi-color-text-disabled)' }} />
         <input
           type="text"
           value={filter}
@@ -359,8 +359,8 @@ export default function AdminRanking() {
           placeholder="Filtern nach Username, Szene, Kurs..."
           style={{
             width: '100%', padding: '9px 12px 9px 34px', borderRadius: '8px',
-            border: '1px solid var(--zh-color-border)', background: 'var(--zh-color-bg-secondary)',
-            color: 'var(--zh-color-text)', fontSize: '13px', fontFamily: 'var(--zh-font)',
+            border: '1px solid var(--rsi-color-border)', background: 'var(--rsi-color-bg-secondary)',
+            color: 'var(--rsi-color-text)', fontSize: '13px', fontFamily: 'var(--rsi-font)',
             boxSizing: 'border-box', outline: 'none',
           }}
         />
@@ -368,16 +368,16 @@ export default function AdminRanking() {
 
       {/* Tabelle */}
       {loading ? (
-        <p style={{ textAlign: 'center', padding: '40px', color: 'var(--zh-color-text-muted)', fontSize: '14px' }}>
+        <p style={{ textAlign: 'center', padding: '40px', color: 'var(--rsi-color-text-muted)', fontSize: '14px' }}>
           {t('status.laden')}
         </p>
       ) : isOnline ? (
-        <div style={{ borderRadius: '10px', border: '1px solid var(--zh-color-border)', overflow: 'hidden' }}>
+        <div style={{ borderRadius: '10px', border: '1px solid var(--rsi-color-border)', overflow: 'hidden' }}>
           <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '12px' }}>
             <thead>
-              <tr style={{ background: 'var(--zh-color-bg-secondary)', borderBottom: '1px solid var(--zh-color-border)' }}>
+              <tr style={{ background: 'var(--rsi-color-bg-secondary)', borderBottom: '1px solid var(--rsi-color-border)' }}>
                 {['Username', 'Szene', 'Kurs', 'Punkte', '%', 'Dauer', 'Datum', ''].map(h => (
-                  <th key={h} style={{ padding: '8px 10px', fontWeight: 700, fontSize: '10px', textTransform: 'uppercase', letterSpacing: '0.1em', color: 'var(--zh-color-text-muted)', textAlign: h === 'Username' || h === 'Szene' || h === 'Kurs' ? 'left' : 'right' }}>
+                  <th key={h} style={{ padding: '8px 10px', fontWeight: 700, fontSize: '10px', textTransform: 'uppercase', letterSpacing: '0.1em', color: 'var(--rsi-color-text-muted)', textAlign: h === 'Username' || h === 'Szene' || h === 'Kurs' ? 'left' : 'right' }}>
                     {h}
                   </th>
                 ))}
@@ -385,27 +385,27 @@ export default function AdminRanking() {
             </thead>
             <tbody>
               {filtered.slice(0, 100).map((r, i) => (
-                <tr key={r.id} style={{ borderBottom: i < filtered.length - 1 ? '1px solid var(--zh-color-border)' : 'none' }}>
-                  <td style={{ padding: '7px 10px', fontWeight: 600, color: 'var(--zh-color-text)' }}>{r.username}</td>
-                  <td style={{ padding: '7px 10px', color: 'var(--zh-color-text-muted)' }}>{r.scene_id}</td>
-                  <td style={{ padding: '7px 10px', color: 'var(--zh-color-text-muted)' }}>{r.kurs_code ?? '—'}</td>
-                  <td style={{ padding: '7px 10px', fontWeight: 700, color: 'var(--zh-blau)', textAlign: 'right' }}>{r.punkte}</td>
-                  <td style={{ padding: '7px 10px', fontWeight: 700, textAlign: 'right', color: r.prozent >= 90 ? 'var(--zh-gruen)' : r.prozent >= 60 ? 'var(--zh-orange)' : 'var(--zh-color-text-muted)' }}>{r.prozent}%</td>
-                  <td style={{ padding: '7px 10px', color: 'var(--zh-color-text-muted)', textAlign: 'right' }}>{r.dauer_sekunden ? `${r.dauer_sekunden}s` : '—'}</td>
-                  <td style={{ padding: '7px 10px', color: 'var(--zh-color-text-disabled)', textAlign: 'right', fontSize: '11px' }}>{new Date(r.created_at).toLocaleString('de-CH', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' })}</td>
+                <tr key={r.id} style={{ borderBottom: i < filtered.length - 1 ? '1px solid var(--rsi-color-border)' : 'none' }}>
+                  <td style={{ padding: '7px 10px', fontWeight: 600, color: 'var(--rsi-color-text)' }}>{r.username}</td>
+                  <td style={{ padding: '7px 10px', color: 'var(--rsi-color-text-muted)' }}>{r.scene_id}</td>
+                  <td style={{ padding: '7px 10px', color: 'var(--rsi-color-text-muted)' }}>{r.kurs_code ?? '—'}</td>
+                  <td style={{ padding: '7px 10px', fontWeight: 700, color: 'var(--rsi-blau)', textAlign: 'right' }}>{r.punkte}</td>
+                  <td style={{ padding: '7px 10px', fontWeight: 700, textAlign: 'right', color: r.prozent >= 90 ? 'var(--rsi-gruen)' : r.prozent >= 60 ? 'var(--rsi-orange)' : 'var(--rsi-color-text-muted)' }}>{r.prozent}%</td>
+                  <td style={{ padding: '7px 10px', color: 'var(--rsi-color-text-muted)', textAlign: 'right' }}>{r.dauer_sekunden ? `${r.dauer_sekunden}s` : '—'}</td>
+                  <td style={{ padding: '7px 10px', color: 'var(--rsi-color-text-disabled)', textAlign: 'right', fontSize: '11px' }}>{new Date(r.created_at).toLocaleString('de-CH', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' })}</td>
                   <td style={{ padding: '7px 10px', textAlign: 'right' }}>
                     <div style={{ display: 'flex', gap: '4px', justifyContent: 'flex-end' }}>
                       <button
                         onClick={() => exportEinzel(r)}
                         disabled={pdfBusy === r.id}
-                        style={{ background: 'none', border: 'none', cursor: pdfBusy === r.id ? 'progress' : 'pointer', color: 'var(--zh-blau)', padding: '2px', display: 'flex', alignItems: 'center', opacity: pdfBusy === r.id ? 0.5 : 1 }}
+                        style={{ background: 'none', border: 'none', cursor: pdfBusy === r.id ? 'progress' : 'pointer', color: 'var(--rsi-blau)', padding: '2px', display: 'flex', alignItems: 'center', opacity: pdfBusy === r.id ? 0.5 : 1 }}
                         title={t('bericht.export_btn')}
                       >
                         <FileDown size={12} />
                       </button>
                       <button
                         onClick={() => setConfirmAction({ label: `Eintrag von "${r.username}" (${r.punkte} Pkt.) löschen?`, action: () => deleteEntry(r.id) })}
-                        style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--zh-color-text-disabled)', padding: '2px', display: 'flex', alignItems: 'center' }}
+                        style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--rsi-color-text-disabled)', padding: '2px', display: 'flex', alignItems: 'center' }}
                         title="Eintrag löschen"
                       >
                         <Trash2 size={12} />
@@ -415,20 +415,20 @@ export default function AdminRanking() {
                 </tr>
               ))}
               {filtered.length === 0 && (
-                <tr><td colSpan={8} style={{ padding: '32px', textAlign: 'center', color: 'var(--zh-color-text-disabled)' }}>Keine Einträge gefunden.</td></tr>
+                <tr><td colSpan={8} style={{ padding: '32px', textAlign: 'center', color: 'var(--rsi-color-text-disabled)' }}>Keine Einträge gefunden.</td></tr>
               )}
               {filtered.length > 100 && (
-                <tr><td colSpan={8} style={{ padding: '10px', textAlign: 'center', color: 'var(--zh-color-text-disabled)', fontSize: '11px' }}>Zeige 100 von {filtered.length} Einträgen. Filter verwenden für gezieltere Ansicht.</td></tr>
+                <tr><td colSpan={8} style={{ padding: '10px', textAlign: 'center', color: 'var(--rsi-color-text-disabled)', fontSize: '11px' }}>Zeige 100 von {filtered.length} Einträgen. Filter verwenden für gezieltere Ansicht.</td></tr>
               )}
             </tbody>
           </table>
         </div>
       ) : (
-        <div style={{ padding: '24px', borderRadius: '10px', border: '1px solid var(--zh-color-border)', background: 'var(--zh-color-bg-secondary)', textAlign: 'center' }}>
-          <p style={{ fontSize: '14px', color: 'var(--zh-color-text-muted)', marginBottom: '8px' }}>
+        <div style={{ padding: '24px', borderRadius: '10px', border: '1px solid var(--rsi-color-border)', background: 'var(--rsi-color-bg-secondary)', textAlign: 'center' }}>
+          <p style={{ fontSize: '14px', color: 'var(--rsi-color-text-muted)', marginBottom: '8px' }}>
             Supabase nicht erreichbar — nur lokale Daten verfuegbar.
           </p>
-          <p style={{ fontSize: '12px', color: 'var(--zh-color-text-disabled)' }}>
+          <p style={{ fontSize: '12px', color: 'var(--rsi-color-text-disabled)' }}>
             {localResults.length} lokale Resultate. Löschen ist nur mit Supabase-Verbindung möglich.
           </p>
         </div>

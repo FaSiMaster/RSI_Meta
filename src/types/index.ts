@@ -1,4 +1,4 @@
-// Typen für RSI VR Tool – FaSi Kanton Zürich
+// Typen für RSI VR Tool
 
 export interface Topic {
   id: string

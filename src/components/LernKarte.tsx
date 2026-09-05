@@ -51,11 +51,11 @@ export default function LernKarte({ deficit, kategorieRichtig, wichtigkeitKorrek
       borderRadius: '14px', border: '1px solid rgba(255,255,255,0.12)',
       padding: '24px 28px', width: '420px', maxWidth: '94vw',
       maxHeight: '85vh', overflowY: 'auto',
-      boxShadow: '0 16px 48px rgba(0,0,0,0.7)', zIndex: 300, fontFamily: 'var(--zh-font)',
+      boxShadow: '0 16px 48px rgba(0,0,0,0.7)', zIndex: 300, fontFamily: 'var(--rsi-font)',
     }}>
       {/* Header */}
       <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '6px' }}>
-        <BookOpen size={18} style={{ color: 'var(--zh-blau)', flexShrink: 0 }} />
+        <BookOpen size={18} style={{ color: 'var(--rsi-blau)', flexShrink: 0 }} />
         <p style={{ fontSize: '10px', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.16em', color: 'rgba(255,255,255,0.45)', margin: 0 }}>
           {t('lernkarte.titel')}
         </p>
@@ -71,7 +71,7 @@ export default function LernKarte({ deficit, kategorieRichtig, wichtigkeitKorrek
           <span style={{
             padding: '3px 10px', borderRadius: '6px', fontSize: '10px', fontWeight: 700,
             background: kategorieRichtig ? 'rgba(26,127,31,0.2)' : 'rgba(184,115,0,0.2)',
-            color: kategorieRichtig ? 'var(--zh-gruen)' : 'var(--zh-warnung)',
+            color: kategorieRichtig ? 'var(--rsi-gruen)' : 'var(--rsi-warnung)',
             border: `1px solid ${kategorieRichtig ? 'rgba(26,127,31,0.4)' : 'rgba(184,115,0,0.4)'}`,
           }}>
             {t(`kategorie.${deficit.kategorie}`)}
@@ -79,7 +79,7 @@ export default function LernKarte({ deficit, kategorieRichtig, wichtigkeitKorrek
         )}
         <span style={{
           padding: '3px 10px', borderRadius: '6px', fontSize: '10px', fontWeight: 700,
-          background: 'rgba(0,118,189,0.15)', color: 'color-mix(in srgb, var(--zh-blau) 85%, transparent)',
+          background: 'rgba(0,118,189,0.15)', color: 'color-mix(in srgb, var(--rsi-blau) 85%, transparent)',
           border: '1px solid rgba(0,118,189,0.3)',
         }}>
           {kriteriumLabel}
@@ -95,8 +95,8 @@ export default function LernKarte({ deficit, kategorieRichtig, wichtigkeitKorrek
           <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
             {deficit.normRefs.map(ref => (
               <div key={ref} style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                <ExternalLink size={11} style={{ color: 'color-mix(in srgb, var(--zh-blau) 70%, transparent)', flexShrink: 0 }} />
-                <span style={{ fontSize: '12px', color: 'color-mix(in srgb, var(--zh-blau) 85%, transparent)', fontWeight: 600 }}>
+                <ExternalLink size={11} style={{ color: 'color-mix(in srgb, var(--rsi-blau) 70%, transparent)', flexShrink: 0 }} />
+                <span style={{ fontSize: '12px', color: 'color-mix(in srgb, var(--rsi-blau) 85%, transparent)', fontWeight: 600 }}>
                   {ref}
                 </span>
               </div>
@@ -119,18 +119,18 @@ export default function LernKarte({ deficit, kategorieRichtig, wichtigkeitKorrek
               border: `1px solid ${row.korrekt ? 'rgba(26,127,31,0.25)' : 'rgba(212,0,83,0.25)'}`,
             }}>
               {row.korrekt
-                ? <CheckCircle2 size={14} style={{ color: 'var(--zh-gruen)', flexShrink: 0 }} />
-                : <XCircle size={14} style={{ color: 'var(--zh-rot)', flexShrink: 0 }} />}
+                ? <CheckCircle2 size={14} style={{ color: 'var(--rsi-gruen)', flexShrink: 0 }} />
+                : <XCircle size={14} style={{ color: 'var(--rsi-rot)', flexShrink: 0 }} />}
               <span style={{ fontSize: '12px', fontWeight: 600, color: 'rgba(255,255,255,0.85)', flex: 1 }}>
                 {row.label}
               </span>
               {!row.korrekt && (
-                <span style={{ fontSize: '11px', color: 'var(--zh-rot)', fontWeight: 700 }}>
+                <span style={{ fontSize: '11px', color: 'var(--rsi-rot)', fontWeight: 700 }}>
                   → {row.korrekterWert}
                 </span>
               )}
               {row.korrekt && (
-                <span style={{ fontSize: '11px', color: 'var(--zh-gruen)', fontWeight: 700 }}>
+                <span style={{ fontSize: '11px', color: 'var(--rsi-gruen)', fontWeight: 700 }}>
                   {t('lernkarte.korrekt')} · {row.korrekterWert}
                 </span>
               )}
@@ -147,7 +147,7 @@ export default function LernKarte({ deficit, kategorieRichtig, wichtigkeitKorrek
           border: '1px solid rgba(0,118,189,0.2)',
           marginBottom: '16px',
         }}>
-          <p style={{ fontSize: '10px', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.12em', color: 'color-mix(in srgb, var(--zh-blau) 70%, transparent)', marginBottom: '6px' }}>
+          <p style={{ fontSize: '10px', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.12em', color: 'color-mix(in srgb, var(--rsi-blau) 70%, transparent)', marginBottom: '6px' }}>
             {t('lernkarte.erklaerung')}
           </p>
           <p style={{ fontSize: '13px', color: 'rgba(255,255,255,0.75)', lineHeight: 1.6, margin: 0 }}>
@@ -169,9 +169,9 @@ export default function LernKarte({ deficit, kategorieRichtig, wichtigkeitKorrek
         style={{
           width: '100%', padding: '12px 20px',
           borderRadius: '8px', border: 'none',
-          background: 'var(--zh-blau)', color: 'white',
+          background: 'var(--rsi-blau)', color: 'white',
           fontWeight: 700, fontSize: '14px',
-          cursor: 'pointer', fontFamily: 'var(--zh-font)',
+          cursor: 'pointer', fontFamily: 'var(--rsi-font)',
         }}
       >
         {t('lernkarte.weiter')} →

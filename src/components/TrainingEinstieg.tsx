@@ -36,7 +36,7 @@ export default function TrainingEinstieg({ scene, topic, deficits, onStart, onBa
   const kriterium     = kriteriumFuerSzene(scene)
 
   const kontextLabel = scene.kontext === 'io' ? t('einstieg.kontext_io') : t('einstieg.kontext_ao')
-  const kontextColor = scene.kontext === 'io' ? 'var(--zh-blau)' : 'var(--zh-gruen)'
+  const kontextColor = scene.kontext === 'io' ? 'var(--rsi-blau)' : 'var(--rsi-gruen)'
   const kontextBg    = scene.kontext === 'io' ? 'rgba(0,118,189,0.1)' : 'rgba(26,127,31,0.1)'
 
   // Vorschaubilder: neue Felder zuerst, Fallback auf Legacy-Array
@@ -73,7 +73,7 @@ export default function TrainingEinstieg({ scene, topic, deficits, onStart, onBa
         margin: '0 auto',
         width: '100%',
         padding: '32px 24px 40px',
-        fontFamily: 'var(--zh-font)',
+        fontFamily: 'var(--rsi-font)',
         overflowY: 'auto',
       }}
     >
@@ -88,12 +88,12 @@ export default function TrainingEinstieg({ scene, topic, deficits, onStart, onBa
       }}>
         <div style={{
           fontSize: '14px',
-          color: 'var(--zh-color-text-muted)',
+          color: 'var(--rsi-color-text-muted)',
           display: 'flex',
           alignItems: 'center',
           gap: '6px',
         }}>
-          <span style={{ fontWeight: 600, color: 'var(--zh-color-text)' }}>
+          <span style={{ fontWeight: 600, color: 'var(--rsi-color-text)' }}>
             {ml(topic.nameI18n, lang)}
           </span>
           <span style={{ opacity: 0.4 }}>›</span>
@@ -125,8 +125,8 @@ export default function TrainingEinstieg({ scene, topic, deficits, onStart, onBa
         {[vorschau0, vorschau1].map((url, i) => (
           <div key={i} style={{
             height: '150px',
-            background: 'var(--zh-color-bg-secondary)',
-            border: '1px solid var(--zh-color-border)',
+            background: 'var(--rsi-color-bg-secondary)',
+            border: '1px solid var(--rsi-color-border)',
             borderRadius: '8px',
             overflow: 'hidden',
             display: 'flex',
@@ -143,10 +143,10 @@ export default function TrainingEinstieg({ scene, topic, deficits, onStart, onBa
               />
             ) : (
               <>
-                <Camera size={22} color="var(--zh-color-text-disabled)" />
+                <Camera size={22} color="var(--rsi-color-text-disabled)" />
                 <span style={{
                   fontSize: '12px',
-                  color: 'var(--zh-color-text-disabled)',
+                  color: 'var(--rsi-color-text-disabled)',
                   textAlign: 'center',
                   padding: '0 12px',
                 }}>
@@ -162,7 +162,7 @@ export default function TrainingEinstieg({ scene, topic, deficits, onStart, onBa
       <p style={{
         fontSize: '15px',
         lineHeight: 1.6,
-        color: beschreibung.length > 0 ? 'var(--zh-color-text-muted)' : 'var(--zh-color-text-disabled)',
+        color: beschreibung.length > 0 ? 'var(--rsi-color-text-muted)' : 'var(--rsi-color-text-disabled)',
         fontStyle: beschreibung.length > 0 ? 'normal' : 'italic',
         marginBottom: '24px',
       }}>
@@ -200,19 +200,19 @@ export default function TrainingEinstieg({ scene, topic, deficits, onStart, onBa
             fontWeight: 700,
             textTransform: 'uppercase',
             letterSpacing: '0.14em',
-            color: 'var(--zh-color-text-disabled)',
+            color: 'var(--rsi-color-text-disabled)',
             marginBottom: '8px',
           }}>
             {t('einstieg.merkmale')}
           </p>
           <div style={{
             borderRadius: '8px',
-            border: '1px solid var(--zh-color-border)',
+            border: '1px solid var(--rsi-color-border)',
             overflow: 'hidden',
           }}>
             <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '13px' }}>
               <thead>
-                <tr style={{ background: 'var(--zh-color-bg-secondary)' }}>
+                <tr style={{ background: 'var(--rsi-color-bg-secondary)' }}>
                   <th style={{
                     padding: '10px 16px',
                     textAlign: 'left',
@@ -220,8 +220,8 @@ export default function TrainingEinstieg({ scene, topic, deficits, onStart, onBa
                     fontSize: '11px',
                     textTransform: 'uppercase',
                     letterSpacing: '0.1em',
-                    color: 'var(--zh-color-text-muted)',
-                    borderBottom: '1px solid var(--zh-color-border)',
+                    color: 'var(--rsi-color-text-muted)',
+                    borderBottom: '1px solid var(--rsi-color-border)',
                   }}>
                     {t('admin.merkmale_label')}
                   </th>
@@ -232,8 +232,8 @@ export default function TrainingEinstieg({ scene, topic, deficits, onStart, onBa
                     fontSize: '11px',
                     textTransform: 'uppercase',
                     letterSpacing: '0.1em',
-                    color: 'var(--zh-color-text-muted)',
-                    borderBottom: '1px solid var(--zh-color-border)',
+                    color: 'var(--rsi-color-text-muted)',
+                    borderBottom: '1px solid var(--rsi-color-border)',
                   }}>
                     {t('admin.merkmale_wert')}
                   </th>
@@ -245,22 +245,22 @@ export default function TrainingEinstieg({ scene, topic, deficits, onStart, onBa
                     key={i}
                     style={{
                       background: i % 2 === 0
-                        ? 'var(--zh-color-surface)'
-                        : 'var(--zh-color-bg-secondary)',
+                        ? 'var(--rsi-color-surface)'
+                        : 'var(--rsi-color-bg-secondary)',
                     }}
                   >
                     <td style={{
                       padding: '10px 16px',
-                      color: 'var(--zh-color-text-muted)',
-                      borderBottom: i < merkmale.length - 1 ? '1px solid var(--zh-color-border)' : 'none',
+                      color: 'var(--rsi-color-text-muted)',
+                      borderBottom: i < merkmale.length - 1 ? '1px solid var(--rsi-color-border)' : 'none',
                     }}>
                       {ml(m.labelI18n, lang)}
                     </td>
                     <td style={{
                       padding: '10px 16px',
-                      color: 'var(--zh-color-text)',
+                      color: 'var(--rsi-color-text)',
                       fontWeight: 600,
-                      borderBottom: i < merkmale.length - 1 ? '1px solid var(--zh-color-border)' : 'none',
+                      borderBottom: i < merkmale.length - 1 ? '1px solid var(--rsi-color-border)' : 'none',
                     }}>
                       {ml(m.wertI18n, lang)}
                     </td>
@@ -284,11 +284,11 @@ export default function TrainingEinstieg({ scene, topic, deficits, onStart, onBa
           marginBottom: '12px',
           alignItems: 'flex-start',
         }}>
-          <Target size={18} color="var(--zh-gruen)" style={{ flexShrink: 0, marginTop: '1px' }} />
+          <Target size={18} color="var(--rsi-gruen)" style={{ flexShrink: 0, marginTop: '1px' }} />
           <p style={{
             fontSize: '14px',
             lineHeight: 1.6,
-            color: 'var(--zh-color-text-muted)',
+            color: 'var(--rsi-color-text-muted)',
             margin: 0,
           }}>
             {t('einstieg.defizit_info', { count: deficits.length, pflicht: pflichtCount })}
@@ -312,11 +312,11 @@ export default function TrainingEinstieg({ scene, topic, deficits, onStart, onBa
         marginBottom: '32px',
         alignItems: 'flex-start',
       }}>
-        <Info size={18} color="var(--zh-blau)" style={{ flexShrink: 0, marginTop: '1px' }} />
+        <Info size={18} color="var(--rsi-blau)" style={{ flexShrink: 0, marginTop: '1px' }} />
         <p style={{
           fontSize: '14px',
           lineHeight: 1.6,
-          color: 'var(--zh-color-text-muted)',
+          color: 'var(--rsi-color-text-muted)',
           margin: 0,
         }}>
           {t('einstieg.hinweis')}
@@ -333,14 +333,14 @@ export default function TrainingEinstieg({ scene, topic, deficits, onStart, onBa
           onClick={onBack}
           style={{
             padding: '10px 20px',
-            borderRadius: 'var(--zh-radius-btn)',
-            border: '1px solid var(--zh-color-border)',
+            borderRadius: 'var(--rsi-radius-btn)',
+            border: '1px solid var(--rsi-color-border)',
             background: 'transparent',
-            color: 'var(--zh-color-text-muted)',
+            color: 'var(--rsi-color-text-muted)',
             fontSize: '14px',
             fontWeight: 600,
             cursor: 'pointer',
-            fontFamily: 'var(--zh-font)',
+            fontFamily: 'var(--rsi-font)',
           }}
         >
           {t('einstieg.zurück')}
@@ -349,14 +349,14 @@ export default function TrainingEinstieg({ scene, topic, deficits, onStart, onBa
           onClick={onStart}
           style={{
             padding: '11px 28px',
-            borderRadius: 'var(--zh-radius-btn)',
-            background: 'var(--zh-dunkelblau)',
+            borderRadius: 'var(--rsi-radius-btn)',
+            background: 'var(--rsi-dunkelblau)',
             color: 'white',
             fontSize: '14px',
             fontWeight: 700,
             cursor: 'pointer',
             border: 'none',
-            fontFamily: 'var(--zh-font)',
+            fontFamily: 'var(--rsi-font)',
           }}
         >
           {t('einstieg.starten')} →

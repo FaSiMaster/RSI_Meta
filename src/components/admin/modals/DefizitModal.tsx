@@ -70,12 +70,12 @@ export default function DefizitModal({ open, initial, scene, onClose, onSave, on
   return (
     <div style={{ position: 'fixed', inset: 0, zIndex: 50, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'rgba(0,0,0,0.5)', backdropFilter: 'blur(4px)' }}
       onClick={e => { if (e.target === e.currentTarget) onClose() }}>
-      <div ref={modalRef} role="dialog" aria-modal="true" style={{ width: '680px', maxHeight: '88vh', overflowY: 'auto', borderRadius: 'var(--zh-radius-card)', border: '1px solid var(--zh-color-border)', background: 'var(--zh-color-surface)', padding: '28px 32px', boxShadow: 'var(--zh-shadow-lg)' }}>
+      <div ref={modalRef} role="dialog" aria-modal="true" style={{ width: '680px', maxHeight: '88vh', overflowY: 'auto', borderRadius: 'var(--rsi-radius-card)', border: '1px solid var(--rsi-color-border)', background: 'var(--rsi-color-surface)', padding: '28px 32px', boxShadow: 'var(--rsi-shadow-lg)' }}>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '24px' }}>
-          <h3 style={{ fontSize: '18px', fontWeight: 700, color: 'var(--zh-color-text)' }}>
+          <h3 style={{ fontSize: '18px', fontWeight: 700, color: 'var(--rsi-color-text)' }}>
             {draft.id.startsWith('d-') ? t('admin.modalTitleNew') : t('admin.modalTitleEdit')}
           </h3>
-          <button onClick={onClose} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--zh-color-text-muted)' }}><X size={18} /></button>
+          <button onClick={onClose} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--rsi-color-text-muted)' }}><X size={18} /></button>
         </div>
 
         <Section label={t('admin.fieldTitle')}>
@@ -97,7 +97,7 @@ export default function DefizitModal({ open, initial, scene, onClose, onSave, on
         <Section label="Kategorie">
           <select value={draft.kategorie ?? ''}
             onChange={e => setDraft(prev => prev ? { ...prev, kategorie: (e.target.value as AppDeficit['kategorie']) || undefined } : prev)}
-            style={{ width: '100%', padding: '8px 12px', borderRadius: '6px', border: '1px solid var(--zh-color-border)', background: 'var(--zh-color-bg-secondary)', color: 'var(--zh-color-text)', fontSize: '13px', fontFamily: 'var(--zh-font)' }}>
+            style={{ width: '100%', padding: '8px 12px', borderRadius: '6px', border: '1px solid var(--rsi-color-border)', background: 'var(--rsi-color-bg-secondary)', color: 'var(--rsi-color-text)', fontSize: '13px', fontFamily: 'var(--rsi-font)' }}>
             <option value="">— keine —</option>
             <option value="verkehrsfuehrung">Verkehrsführung</option>
             <option value="sicht">Sicht</option>
@@ -112,20 +112,20 @@ export default function DefizitModal({ open, initial, scene, onClose, onSave, on
         <Section label="Kriterium & Kontext">
           <div style={{ display: 'grid', gridTemplateColumns: '1fr auto', gap: '12px' }}>
             <div>
-              <div style={{ fontSize: '11px', fontWeight: 700, color: 'var(--zh-color-text-disabled)', marginBottom: '4px', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Sicherheitskriterium</div>
+              <div style={{ fontSize: '11px', fontWeight: 700, color: 'var(--rsi-color-text-disabled)', marginBottom: '4px', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Sicherheitskriterium</div>
               <select value={draft.kriteriumId} onChange={e => setDraft(prev => prev ? { ...prev, kriteriumId: e.target.value } : prev)}
-                style={{ width: '100%', padding: '8px 10px', borderRadius: '6px', border: '1px solid var(--zh-color-border)', background: 'var(--zh-color-bg-secondary)', color: 'var(--zh-color-text)', fontSize: '13px', fontFamily: 'var(--zh-font)' }}>
+                style={{ width: '100%', padding: '8px 10px', borderRadius: '6px', border: '1px solid var(--rsi-color-border)', background: 'var(--rsi-color-bg-secondary)', color: 'var(--rsi-color-text)', fontSize: '13px', fontFamily: 'var(--rsi-font)' }}>
                 {Object.entries(KRITERIUM_LABELS).map(([k, v]) => (
                   <option key={k} value={k}>{v}</option>
                 ))}
               </select>
             </div>
             <div>
-              <div style={{ fontSize: '11px', fontWeight: 700, color: 'var(--zh-color-text-disabled)', marginBottom: '4px', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Kontext</div>
+              <div style={{ fontSize: '11px', fontWeight: 700, color: 'var(--rsi-color-text-disabled)', marginBottom: '4px', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Kontext</div>
               <div style={{ display: 'flex', gap: '6px' }}>
                 {(['io','ao'] as const).map(k => (
                   <button key={k} onClick={() => setDraft(prev => prev ? { ...prev, kontext: k } : prev)}
-                    style={{ padding: '8px 16px', borderRadius: '6px', border: draft.kontext === k ? '2px solid var(--zh-blau)' : '1px solid var(--zh-color-border)', background: draft.kontext === k ? 'rgba(0,118,189,0.08)' : 'var(--zh-color-surface)', color: draft.kontext === k ? 'var(--zh-blau)' : 'var(--zh-color-text-muted)', fontWeight: 700, fontSize: '13px', cursor: 'pointer' }}>
+                    style={{ padding: '8px 16px', borderRadius: '6px', border: draft.kontext === k ? '2px solid var(--rsi-blau)' : '1px solid var(--rsi-color-border)', background: draft.kontext === k ? 'rgba(0,118,189,0.08)' : 'var(--rsi-color-surface)', color: draft.kontext === k ? 'var(--rsi-blau)' : 'var(--rsi-color-text-muted)', fontWeight: 700, fontSize: '13px', cursor: 'pointer' }}>
                     {k === 'io' ? 'Innerorts' : 'Ausserorts'}
                   </button>
                 ))}
@@ -133,8 +133,8 @@ export default function DefizitModal({ open, initial, scene, onClose, onSave, on
             </div>
           </div>
           {WICHTIGKEIT_TABLE[draft.kriteriumId] && (
-            <div style={{ marginTop: '8px', fontSize: '12px', color: 'var(--zh-color-text-muted)' }}>
-              Wichtigkeit gemäss Tabelle: <strong style={{ color: 'var(--zh-blau)' }}>{WICHTIGKEIT_TABLE[draft.kriteriumId][draft.kontext] || '—'}</strong>
+            <div style={{ marginTop: '8px', fontSize: '12px', color: 'var(--rsi-color-text-muted)' }}>
+              Wichtigkeit gemäss Tabelle: <strong style={{ color: 'var(--rsi-blau)' }}>{WICHTIGKEIT_TABLE[draft.kriteriumId][draft.kontext] || '—'}</strong>
             </div>
           )}
         </Section>
@@ -151,7 +151,7 @@ export default function DefizitModal({ open, initial, scene, onClose, onSave, on
               options={['0','1','2','3','4','5','6','7'].map(n => [n, `NACA ${n}`])}
               onChange={v => setCA('naca', Number(v) as NacaRaw)} />
           </div>
-          <div style={{ marginTop: '12px', padding: '10px 14px', borderRadius: '8px', background: 'var(--zh-color-bg-secondary)', display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '12px' }}>
+          <div style={{ marginTop: '12px', padding: '10px 14px', borderRadius: '8px', background: 'var(--rsi-color-bg-secondary)', display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '12px' }}>
             {(() => {
               const rs = calcRelevanzSD(draft.correctAssessment.wichtigkeit, draft.correctAssessment.abweichung) as ResultDimension
               const us = nacaToSchwere(draft.correctAssessment.naca) as NACADimension
@@ -165,12 +165,12 @@ export default function DefizitModal({ open, initial, scene, onClose, onSave, on
               )
             })()}
           </div>
-          <p style={{ fontSize: '11px', color: 'var(--zh-color-text-disabled)', marginTop: '4px' }}>Relevanz SD, Unfallschwere und Unfallrisiko werden automatisch berechnet.</p>
+          <p style={{ fontSize: '11px', color: 'var(--rsi-color-text-disabled)', marginTop: '4px' }}>Relevanz SD, Unfallschwere und Unfallrisiko werden automatisch berechnet.</p>
         </Section>
 
         <Section label="Eigenschaften">
           <div style={{ display: 'flex', gap: '24px', flexWrap: 'wrap' }}>
-            <label style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '14px', color: 'var(--zh-color-text)', cursor: 'pointer' }}>
+            <label style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '14px', color: 'var(--rsi-color-text)', cursor: 'pointer' }}>
               <input
                 type="checkbox"
                 checked={draft.isPflicht}
@@ -178,7 +178,7 @@ export default function DefizitModal({ open, initial, scene, onClose, onSave, on
               />
               Pflichtdefizit
             </label>
-            <label style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '14px', color: 'var(--zh-color-text)', cursor: 'pointer' }}>
+            <label style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '14px', color: 'var(--rsi-color-text)', cursor: 'pointer' }}>
               <input
                 type="checkbox"
                 checked={draft.isBooster}
@@ -194,11 +194,11 @@ export default function DefizitModal({ open, initial, scene, onClose, onSave, on
             {/* D-9: Bonus-%-Auswahl, nur sichtbar wenn Booster aktiv */}
             {draft.isBooster && (
               <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                <span style={{ fontSize: '12px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', color: 'var(--zh-color-text-muted)' }}>
+                <span style={{ fontSize: '12px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', color: 'var(--rsi-color-text-muted)' }}>
                   Bonus
                 </span>
                 {([10, 20] as const).map(pct => (
-                  <label key={pct} style={{ display: 'flex', alignItems: 'center', gap: '4px', fontSize: '13px', color: 'var(--zh-color-text)', cursor: 'pointer' }}>
+                  <label key={pct} style={{ display: 'flex', alignItems: 'center', gap: '4px', fontSize: '13px', color: 'var(--rsi-color-text)', cursor: 'pointer' }}>
                     <input
                       type="radio"
                       name="boosterBonusProzent"
@@ -225,33 +225,33 @@ export default function DefizitModal({ open, initial, scene, onClose, onSave, on
           {scene?.panoramaBildUrl ? (
             <div>
               {draft.verortung && (
-                <div style={{ marginBottom: '8px', fontSize: '12px', color: 'var(--zh-color-text-muted)' }}>
-                  Aktuell: <strong style={{ color: 'var(--zh-blau)' }}>{draft.verortung.typ}</strong>
+                <div style={{ marginBottom: '8px', fontSize: '12px', color: 'var(--rsi-color-text-muted)' }}>
+                  Aktuell: <strong style={{ color: 'var(--rsi-blau)' }}>{draft.verortung.typ}</strong>
                 </div>
               )}
               <button
                 onClick={handleOpenBildEditor}
                 style={{
                   padding: '8px 16px', borderRadius: '6px',
-                  background: 'rgba(0,118,189,0.1)', color: 'var(--zh-blau)',
+                  background: 'rgba(0,118,189,0.1)', color: 'var(--rsi-blau)',
                   border: '1px solid rgba(0,118,189,0.3)',
                   fontSize: '13px', fontWeight: 600, cursor: 'pointer',
-                  fontFamily: 'var(--zh-font)',
+                  fontFamily: 'var(--rsi-font)',
                 }}
               >
                 {t('admin.panorama_editor')}
               </button>
             </div>
           ) : (
-            <p style={{ fontSize: '12px', color: 'var(--zh-color-text-disabled)', fontStyle: 'italic' }}>
+            <p style={{ fontSize: '12px', color: 'var(--rsi-color-text-disabled)', fontStyle: 'italic' }}>
               Zuerst Panoramabild für diese Szene setzen.
             </p>
           )}
         </Section>
 
         <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px', marginTop: '24px' }}>
-          <button onClick={onClose} style={{ padding: '9px 18px', borderRadius: 'var(--zh-radius-btn)', border: '1px solid var(--zh-color-border)', background: 'transparent', color: 'var(--zh-color-text-muted)', fontSize: '13px', fontWeight: 600, cursor: 'pointer' }}>{t('admin.cancelBtn')}</button>
-          <button onClick={handleSave} style={{ display: 'flex', alignItems: 'center', gap: '6px', padding: '9px 18px', borderRadius: 'var(--zh-radius-btn)', background: 'var(--zh-dunkelblau)', color: 'white', fontWeight: 700, fontSize: '13px', border: 'none', cursor: 'pointer' }}>
+          <button onClick={onClose} style={{ padding: '9px 18px', borderRadius: 'var(--rsi-radius-btn)', border: '1px solid var(--rsi-color-border)', background: 'transparent', color: 'var(--rsi-color-text-muted)', fontSize: '13px', fontWeight: 600, cursor: 'pointer' }}>{t('admin.cancelBtn')}</button>
+          <button onClick={handleSave} style={{ display: 'flex', alignItems: 'center', gap: '6px', padding: '9px 18px', borderRadius: 'var(--rsi-radius-btn)', background: 'var(--rsi-dunkelblau)', color: 'white', fontWeight: 700, fontSize: '13px', border: 'none', cursor: 'pointer' }}>
             <Save size={14} /> {t('admin.saveBtn')}
           </button>
         </div>

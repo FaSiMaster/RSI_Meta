@@ -60,10 +60,10 @@ export default function ThemaModal({ open, initial, initialTyp, onClose, onSave 
   return (
     <div style={{ position: 'fixed', inset: 0, zIndex: 50, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'rgba(0,0,0,0.5)', backdropFilter: 'blur(4px)' }}
       onClick={e => { if (e.target === e.currentTarget) onClose() }}>
-      <div ref={modalRef} role="dialog" aria-modal="true" style={{ width: '560px', maxHeight: '88vh', overflowY: 'auto', borderRadius: 'var(--zh-radius-card)', border: '1px solid var(--zh-color-border)', background: 'var(--zh-color-surface)', padding: '28px 32px', boxShadow: 'var(--zh-shadow-lg)' }}>
+      <div ref={modalRef} role="dialog" aria-modal="true" style={{ width: '560px', maxHeight: '88vh', overflowY: 'auto', borderRadius: 'var(--rsi-radius-card)', border: '1px solid var(--rsi-color-border)', background: 'var(--rsi-color-surface)', padding: '28px 32px', boxShadow: 'var(--rsi-shadow-lg)' }}>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '24px' }}>
-          <h3 style={{ fontSize: '18px', fontWeight: 700, color: 'var(--zh-color-text)' }}>{draft.nameI18n.de ? t('admin.thema_bearbeiten') : t('admin.thema_neu')}</h3>
-          <button onClick={onClose} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--zh-color-text-muted)' }}><X size={18} /></button>
+          <h3 style={{ fontSize: '18px', fontWeight: 700, color: 'var(--rsi-color-text)' }}>{draft.nameI18n.de ? t('admin.thema_bearbeiten') : t('admin.thema_neu')}</h3>
+          <button onClick={onClose} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--rsi-color-text-muted)' }}><X size={18} /></button>
         </div>
 
         <Section label="Bezeichnung">
@@ -85,8 +85,8 @@ export default function ThemaModal({ open, initial, initialTyp, onClose, onSave 
         {/* D-4: Pikogramm-Picker mit Auto-Vorschlag */}
         <Section label="Pikogramm">
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
-            <p style={{ fontSize: '12px', color: 'var(--zh-color-text-muted)', margin: 0, flex: 1 }}>
-              Aktuell: <strong style={{ color: 'var(--zh-blau)' }}>{draft.iconKey ?? 'kein Icon'}</strong>
+            <p style={{ fontSize: '12px', color: 'var(--rsi-color-text-muted)', margin: 0, flex: 1 }}>
+              Aktuell: <strong style={{ color: 'var(--rsi-blau)' }}>{draft.iconKey ?? 'kein Icon'}</strong>
             </p>
             <button
               onClick={() => {
@@ -96,7 +96,7 @@ export default function ThemaModal({ open, initial, initialTyp, onClose, onSave 
                 }
               }}
               title="Icon aus Themenname vorschlagen"
-              style={{ display: 'flex', alignItems: 'center', gap: '4px', padding: '5px 10px', borderRadius: '6px', border: '1px solid var(--zh-color-border)', background: 'var(--zh-color-bg-secondary)', fontSize: '11px', color: 'var(--zh-color-text-muted)', cursor: 'pointer' }}
+              style={{ display: 'flex', alignItems: 'center', gap: '4px', padding: '5px 10px', borderRadius: '6px', border: '1px solid var(--rsi-color-border)', background: 'var(--rsi-color-bg-secondary)', fontSize: '11px', color: 'var(--rsi-color-text-muted)', cursor: 'pointer' }}
             >
               <Sparkles size={11} /> Vorschlag
             </button>
@@ -112,10 +112,10 @@ export default function ThemaModal({ open, initial, initialTyp, onClose, onSave 
                   style={{
                     display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '4px',
                     padding: '8px 4px', borderRadius: '8px',
-                    border: aktiv ? '2px solid var(--zh-blau)' : '1px solid var(--zh-color-border)',
-                    background: aktiv ? 'rgba(0,118,189,0.08)' : 'var(--zh-color-bg-secondary)',
-                    color: aktiv ? 'var(--zh-blau)' : 'var(--zh-color-text)',
-                    cursor: 'pointer', fontFamily: 'var(--zh-font)',
+                    border: aktiv ? '2px solid var(--rsi-blau)' : '1px solid var(--rsi-color-border)',
+                    background: aktiv ? 'rgba(0,118,189,0.08)' : 'var(--rsi-color-bg-secondary)',
+                    color: aktiv ? 'var(--rsi-blau)' : 'var(--rsi-color-text)',
+                    cursor: 'pointer', fontFamily: 'var(--rsi-font)',
                   }}
                 >
                   <Icon size={20} />
@@ -130,7 +130,7 @@ export default function ThemaModal({ open, initial, initialTyp, onClose, onSave 
 
         {/* v0.10.1: Kurs-Exklusivitaet — Thema nur in zugewiesenen Kursen sichtbar */}
         <Section label={t('admin.thema_kursexklusiv_titel')}>
-          <label style={{ display: 'flex', alignItems: 'flex-start', gap: '8px', fontSize: '14px', color: 'var(--zh-color-text)', cursor: 'pointer' }}>
+          <label style={{ display: 'flex', alignItems: 'flex-start', gap: '8px', fontSize: '14px', color: 'var(--rsi-color-text)', cursor: 'pointer' }}>
             <input
               type="checkbox"
               checked={draft.kursExklusiv === true}
@@ -139,7 +139,7 @@ export default function ThemaModal({ open, initial, initialTyp, onClose, onSave 
             />
             <span>
               {t('admin.thema_kursexklusiv')}
-              <span style={{ display: 'block', fontSize: '11px', color: 'var(--zh-color-text-disabled)', marginTop: '2px' }}>
+              <span style={{ display: 'block', fontSize: '11px', color: 'var(--rsi-color-text-disabled)', marginTop: '2px' }}>
                 {t('admin.thema_kursexklusiv_hinweis')}
               </span>
             </span>
@@ -149,7 +149,7 @@ export default function ThemaModal({ open, initial, initialTyp, onClose, onSave 
         <Section label={t('admin.thema_typ')}>
           <div style={{ display: 'flex', gap: '12px' }}>
             {(['ober','unter'] as const).map(val => (
-              <label key={val} style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '14px', color: 'var(--zh-color-text)', cursor: 'pointer' }}>
+              <label key={val} style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '14px', color: 'var(--rsi-color-text)', cursor: 'pointer' }}>
                 <input type="radio" checked={typ === val} onChange={() => setTyp(val)} />
                 {val === 'ober' ? t('admin.oberthema') : t('admin.unterthema')}
               </label>
@@ -162,7 +162,7 @@ export default function ThemaModal({ open, initial, initialTyp, onClose, onSave 
             <select
               value={draft.parentTopicId ?? ''}
               onChange={e => setDraft(prev => prev ? { ...prev, parentTopicId: e.target.value || null } : prev)}
-              style={{ width: '100%', padding: '8px 10px', borderRadius: '6px', border: '1px solid var(--zh-color-border)', background: 'var(--zh-color-bg-secondary)', color: 'var(--zh-color-text)', fontSize: '13px', fontFamily: 'var(--zh-font)' }}>
+              style={{ width: '100%', padding: '8px 10px', borderRadius: '6px', border: '1px solid var(--rsi-color-border)', background: 'var(--rsi-color-bg-secondary)', color: 'var(--rsi-color-text)', fontSize: '13px', fontFamily: 'var(--rsi-font)' }}>
               <option value="">— Bitte auswählen —</option>
               {getOberthemen().map(ot => (
                 <option key={ot.id} value={ot.id}>{ml(ot.nameI18n, lang)}</option>
@@ -172,8 +172,8 @@ export default function ThemaModal({ open, initial, initialTyp, onClose, onSave 
         )}
 
         <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px', marginTop: '24px' }}>
-          <button onClick={onClose} style={{ padding: '9px 18px', borderRadius: 'var(--zh-radius-btn)', border: '1px solid var(--zh-color-border)', background: 'transparent', color: 'var(--zh-color-text-muted)', fontSize: '13px', fontWeight: 600, cursor: 'pointer' }}>{t('admin.cancelBtn')}</button>
-          <button onClick={handleSave} style={{ display: 'flex', alignItems: 'center', gap: '6px', padding: '9px 18px', borderRadius: 'var(--zh-radius-btn)', background: 'var(--zh-dunkelblau)', color: 'white', fontWeight: 700, fontSize: '13px', border: 'none', cursor: 'pointer' }}>
+          <button onClick={onClose} style={{ padding: '9px 18px', borderRadius: 'var(--rsi-radius-btn)', border: '1px solid var(--rsi-color-border)', background: 'transparent', color: 'var(--rsi-color-text-muted)', fontSize: '13px', fontWeight: 600, cursor: 'pointer' }}>{t('admin.cancelBtn')}</button>
+          <button onClick={handleSave} style={{ display: 'flex', alignItems: 'center', gap: '6px', padding: '9px 18px', borderRadius: 'var(--rsi-radius-btn)', background: 'var(--rsi-dunkelblau)', color: 'white', fontWeight: 700, fontSize: '13px', border: 'none', cursor: 'pointer' }}>
             <Save size={14} /> {t('admin.saveBtn')}
           </button>
         </div>

@@ -1,6 +1,6 @@
 # Admin-Handbuch – RSI VR Tool
 
-> Für Kursleitung und Fachstelle. Stand v0.11.0.
+> Für die Kursleitung. Stand v0.12.0.
 > Voraussetzung: Admin-PIN als Supabase-Secret gesetzt, Edge Functions
 > `admin-auth`, `admin-write` und `kurs-auth` deployt.
 
@@ -22,7 +22,7 @@ im Secret `ADMIN_PIN` der Edge Function. Der Client kennt sie nur für die Dauer
 des HTTPS-Requests und verwirft sie nach dem Tausch gegen das Token.
 
 **Der PIN-Wert gehört nicht in dieses Repository.** Er wird im Passwortsafe der
-Fachstelle geführt und im Supabase-Dashboard gesetzt.
+Kursleitung geführt und im Supabase-Dashboard gesetzt.
 
 ### 1.1 Token-Fluss
 
@@ -521,7 +521,5 @@ sowie Kontraste nach WCAG AA.
 
 ## 19. Kontakt
 
-Fachstelle Verkehrssicherheit
-Stevan Skeledzic, Leiter Verkehrssicherheit
-Tiefbauamt, Baudirektion, Kanton Zürich
-sicherheit.tba@bd.zh.ch · +41 43 259 31 20
+Stevan Skeledzic
+info@skeledzic.ch

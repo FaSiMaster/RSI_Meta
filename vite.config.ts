@@ -51,9 +51,9 @@ export default defineConfig({
         ],
       },
       manifest: {
-        name: 'RSI VR Tool – FaSi Kanton Zürich',
+        name: 'RSI VR Tool',
         short_name: 'RSI VR',
-        description: 'Immersives Road Safety Inspection Tool fuer Meta Quest',
+        description: 'Immersives Road Safety Inspection Tool für Meta Quest',
         theme_color: '#003C71',
         background_color: '#0f0f1a',
         display: 'standalone',

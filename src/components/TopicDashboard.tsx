@@ -51,14 +51,14 @@ export default function TopicDashboard({ username, score, kursId, onSelectTopic 
   ]
 
   return (
-    <div className="max-w-7xl mx-auto w-full" style={{ padding: 'var(--zh-padding-page)' }}>
+    <div className="max-w-7xl mx-auto w-full" style={{ padding: 'var(--rsi-padding-page)' }}>
       {/* Header */}
       <div className="flex items-end justify-between mb-10">
         <div>
-          <h1 style={{ fontSize: '28px', fontWeight: 700, color: 'var(--zh-color-text)', marginBottom: '4px' }}>{t('topics.title')}</h1>
-          <p style={{ fontSize: '14px', color: 'var(--zh-color-text-muted)' }}>{t('topics.subtitle')}</p>
+          <h1 style={{ fontSize: '28px', fontWeight: 700, color: 'var(--rsi-color-text)', marginBottom: '4px' }}>{t('topics.title')}</h1>
+          <p style={{ fontSize: '14px', color: 'var(--rsi-color-text-muted)' }}>{t('topics.subtitle')}</p>
         </div>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '8px 16px', borderRadius: '20px', background: 'var(--zh-dunkelblau)', color: 'white', fontSize: '14px', fontWeight: 700 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '8px 16px', borderRadius: '20px', background: 'var(--rsi-dunkelblau)', color: 'white', fontSize: '14px', fontWeight: 700 }}>
           <Trophy size={14} />
           {score.toLocaleString('de-CH')} Pkt.
           {username && <span style={{ opacity: 0.7, fontWeight: 500, fontSize: '13px' }}>· {username}</span>}
@@ -79,22 +79,22 @@ export default function TopicDashboard({ username, score, kursId, onSelectTopic 
               whileTap={{ scale: 0.98 }}
               onClick={() => onSelectTopic(topic)}
               className="group cursor-pointer relative overflow-hidden"
-              style={{ borderRadius: 'var(--zh-radius-card)', border: '1px solid var(--zh-color-border)', background: 'var(--zh-color-surface)', padding: '24px', boxShadow: 'var(--zh-shadow-sm)' }}
+              style={{ borderRadius: 'var(--rsi-radius-card)', border: '1px solid var(--rsi-color-border)', background: 'var(--rsi-color-surface)', padding: '24px', boxShadow: 'var(--rsi-shadow-sm)' }}
             >
-              <div style={{ width: '44px', height: '44px', borderRadius: '10px', background: 'rgba(0,118,189,0.1)', color: 'var(--zh-color-accent)', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '20px' }}>
+              <div style={{ width: '44px', height: '44px', borderRadius: '10px', background: 'rgba(0,118,189,0.1)', color: 'var(--rsi-color-accent)', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '20px' }}>
                 <TopicIcon iconKey={topic.iconKey} />
               </div>
-              <h3 style={{ fontSize: '16px', fontWeight: 600, color: 'var(--zh-color-text)', marginBottom: '6px' }}>
+              <h3 style={{ fontSize: '16px', fontWeight: 600, color: 'var(--rsi-color-text)', marginBottom: '6px' }}>
                 {ml(topic.nameI18n, lang)}
               </h3>
-              <p style={{ fontSize: '13px', color: 'var(--zh-color-text-muted)', lineHeight: 1.5, marginBottom: '20px' }}>
+              <p style={{ fontSize: '13px', color: 'var(--rsi-color-text-muted)', lineHeight: 1.5, marginBottom: '20px' }}>
                 {ml(topic.beschreibungI18n, lang)}
               </p>
               <div className="flex items-center justify-between">
-                <span style={{ fontSize: '10px', padding: '3px 10px', borderRadius: '20px', background: 'rgba(0,118,189,0.1)', color: 'var(--zh-color-accent)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.12em' }}>RSI</span>
-                <span style={{ fontSize: '12px', color: 'var(--zh-color-text-disabled)', fontWeight: 600 }}>{sceneCount} {t('topics.scenesCount')}</span>
+                <span style={{ fontSize: '10px', padding: '3px 10px', borderRadius: '20px', background: 'rgba(0,118,189,0.1)', color: 'var(--rsi-color-accent)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.12em' }}>RSI</span>
+                <span style={{ fontSize: '12px', color: 'var(--rsi-color-text-disabled)', fontWeight: 600 }}>{sceneCount} {t('topics.scenesCount')}</span>
               </div>
-              <div className="absolute bottom-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity" style={{ color: 'var(--zh-color-accent)' }}>
+              <div className="absolute bottom-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity" style={{ color: 'var(--rsi-color-accent)' }}>
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M9 18l6-6-6-6"/></svg>
               </div>
             </motion.div>
@@ -105,7 +105,7 @@ export default function TopicDashboard({ username, score, kursId, onSelectTopic 
       {/* E-1: Visueller Trenner zwischen Themen-Bereich und «So funktioniert» */}
       <div style={{
         marginTop: '56px', marginBottom: '32px',
-        height: '1px', background: 'var(--zh-color-border)',
+        height: '1px', background: 'var(--rsi-color-border)',
       }} />
 
       {/* ── Schritt-für-Schritt Anleitung ── */}
@@ -115,23 +115,23 @@ export default function TopicDashboard({ username, score, kursId, onSelectTopic 
         transition={{ delay: 0.35 }}
         style={{
           padding: '24px',
-          borderRadius: 'var(--zh-radius-card)',
-          background: 'var(--zh-color-bg-secondary)',
-          border: '1px solid var(--zh-color-border)',
+          borderRadius: 'var(--rsi-radius-card)',
+          background: 'var(--rsi-color-bg-secondary)',
+          border: '1px solid var(--rsi-color-border)',
         }}
       >
         <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '4px' }}>
           <span style={{
             display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
             width: '28px', height: '28px', borderRadius: '6px',
-            background: 'var(--zh-dunkelblau)', color: 'white',
+            background: 'var(--rsi-dunkelblau)', color: 'white',
             fontSize: '13px', fontWeight: 800,
           }}>?</span>
-          <h2 style={{ fontSize: '20px', fontWeight: 700, color: 'var(--zh-color-text)', margin: 0 }}>
+          <h2 style={{ fontSize: '20px', fontWeight: 700, color: 'var(--rsi-color-text)', margin: 0 }}>
             {t('guide.title')}
           </h2>
         </div>
-        <p style={{ fontSize: '13px', color: 'var(--zh-color-text-muted)', marginBottom: '20px', marginLeft: '38px' }}>
+        <p style={{ fontSize: '13px', color: 'var(--rsi-color-text-muted)', marginBottom: '20px', marginLeft: '38px' }}>
           {t('guide.subtitle')}
         </p>
 
@@ -144,9 +144,9 @@ export default function TopicDashboard({ username, score, kursId, onSelectTopic 
               aria-label={`Schritt ${s.nr}: ${s.title}. ${s.detail}`}
               title={s.detail}
               style={{
-                borderRadius: 'var(--zh-radius-card)',
-                border: '1px solid var(--zh-color-border)',
-                background: 'var(--zh-color-surface)',
+                borderRadius: 'var(--rsi-radius-card)',
+                border: '1px solid var(--rsi-color-border)',
+                background: 'var(--rsi-color-surface)',
                 padding: '20px',
                 position: 'relative',
                 cursor: 'help',
@@ -154,14 +154,14 @@ export default function TopicDashboard({ username, score, kursId, onSelectTopic 
               }}
               onMouseEnter={e => {
                 e.currentTarget.style.transform = 'translateY(-2px)'
-                e.currentTarget.style.borderColor = 'var(--zh-blau)'
-                e.currentTarget.style.boxShadow = 'var(--zh-shadow-sm)'
+                e.currentTarget.style.borderColor = 'var(--rsi-blau)'
+                e.currentTarget.style.boxShadow = 'var(--rsi-shadow-sm)'
                 const ext = e.currentTarget.querySelector<HTMLDivElement>('.step-detail')
                 if (ext) ext.style.opacity = '1'
               }}
               onMouseLeave={e => {
                 e.currentTarget.style.transform = 'translateY(0)'
-                e.currentTarget.style.borderColor = 'var(--zh-color-border)'
+                e.currentTarget.style.borderColor = 'var(--rsi-color-border)'
                 e.currentTarget.style.boxShadow = 'none'
                 const ext = e.currentTarget.querySelector<HTMLDivElement>('.step-detail')
                 if (ext) ext.style.opacity = '0'
@@ -171,8 +171,8 @@ export default function TopicDashboard({ username, score, kursId, onSelectTopic 
               <div style={{
                 position: 'absolute', top: '12px', right: '12px',
                 width: '24px', height: '24px', borderRadius: '50%',
-                background: 'var(--zh-color-bg-tertiary)',
-                color: 'var(--zh-color-text-disabled)',
+                background: 'var(--rsi-color-bg-tertiary)',
+                color: 'var(--rsi-color-text-disabled)',
                 fontSize: '11px', fontWeight: 800,
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
               }}>
@@ -182,17 +182,17 @@ export default function TopicDashboard({ username, score, kursId, onSelectTopic 
               {/* Icon */}
               <div style={{
                 width: '40px', height: '40px', borderRadius: '10px',
-                background: 'rgba(0,64,124,0.08)', color: 'var(--zh-dunkelblau)',
+                background: 'rgba(0,64,124,0.08)', color: 'var(--rsi-dunkelblau)',
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
                 marginBottom: '14px',
               }}>
                 {s.icon}
               </div>
 
-              <h4 style={{ fontSize: '14px', fontWeight: 600, color: 'var(--zh-color-text)', marginBottom: '6px' }}>
+              <h4 style={{ fontSize: '14px', fontWeight: 600, color: 'var(--rsi-color-text)', marginBottom: '6px' }}>
                 {s.title}
               </h4>
-              <p style={{ fontSize: '12px', color: 'var(--zh-color-text-muted)', lineHeight: 1.5 }}>
+              <p style={{ fontSize: '12px', color: 'var(--rsi-color-text-muted)', lineHeight: 1.5 }}>
                 {s.desc}
               </p>
 
@@ -200,8 +200,8 @@ export default function TopicDashboard({ username, score, kursId, onSelectTopic 
               {s.detail && s.detail !== s.desc && (
                 <div className="step-detail" style={{
                   marginTop: '10px', padding: '8px 10px',
-                  borderTop: '1px dashed var(--zh-color-border)',
-                  fontSize: '11px', color: 'var(--zh-blau)', lineHeight: 1.5,
+                  borderTop: '1px dashed var(--rsi-color-border)',
+                  fontSize: '11px', color: 'var(--rsi-blau)', lineHeight: 1.5,
                   opacity: 0, transition: 'opacity 0.2s',
                   pointerEvents: 'none',
                 }}>
@@ -213,7 +213,7 @@ export default function TopicDashboard({ username, score, kursId, onSelectTopic 
               {i < schritte.length - 1 && (
                 <div className="hidden lg:block" style={{
                   position: 'absolute', right: '-14px', top: '50%', transform: 'translateY(-50%)',
-                  color: 'var(--zh-color-border)', zIndex: 2,
+                  color: 'var(--rsi-color-border)', zIndex: 2,
                 }}>
                   <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3"><path d="M9 18l6-6-6-6"/></svg>
                 </div>
@@ -230,9 +230,9 @@ export default function TopicDashboard({ username, score, kursId, onSelectTopic 
         transition={{ delay: 0.45 }}
         style={{
           marginTop: '32px',
-          borderRadius: 'var(--zh-radius-card)',
-          border: '1px solid var(--zh-color-border)',
-          background: 'var(--zh-color-surface)',
+          borderRadius: 'var(--rsi-radius-card)',
+          border: '1px solid var(--rsi-color-border)',
+          background: 'var(--rsi-color-surface)',
           overflow: 'hidden',
           marginBottom: '48px',
         }}
@@ -244,27 +244,27 @@ export default function TopicDashboard({ username, score, kursId, onSelectTopic 
             display: 'flex', alignItems: 'center', justifyContent: 'space-between',
             width: '100%', padding: '20px 24px',
             background: 'none', border: 'none', cursor: 'pointer',
-            fontFamily: 'var(--zh-font)', textAlign: 'left',
+            fontFamily: 'var(--rsi-font)', textAlign: 'left',
           }}
         >
           <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
             <div style={{
               width: '36px', height: '36px', borderRadius: '8px',
-              background: 'rgba(0,64,124,0.08)', color: 'var(--zh-dunkelblau)',
+              background: 'rgba(0,64,124,0.08)', color: 'var(--rsi-dunkelblau)',
               display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0,
             }}>
               <BookOpen size={18} />
             </div>
             <div>
-              <div style={{ fontSize: '15px', fontWeight: 700, color: 'var(--zh-color-text)' }}>
+              <div style={{ fontSize: '15px', fontWeight: 700, color: 'var(--rsi-color-text)' }}>
                 {t('methodik.title')}
               </div>
-              <div style={{ fontSize: '12px', color: 'var(--zh-color-text-muted)' }}>
+              <div style={{ fontSize: '12px', color: 'var(--rsi-color-text-muted)' }}>
                 {t('methodik.subtitle')}
               </div>
             </div>
           </div>
-          <div style={{ color: 'var(--zh-color-text-muted)' }}>
+          <div style={{ color: 'var(--rsi-color-text-muted)' }}>
             {showMethodik ? <ChevronUp size={18} /> : <ChevronDown size={18} />}
           </div>
         </button>
@@ -281,7 +281,7 @@ export default function TopicDashboard({ username, score, kursId, onSelectTopic 
             >
               <div style={{
                 padding: '0 24px 24px',
-                borderTop: '1px solid var(--zh-color-border)',
+                borderTop: '1px solid var(--rsi-color-border)',
                 paddingTop: '20px',
               }}>
                 {/* 3-spaltig: Relevanz-Matrix | Unfallrisiko-Matrix | NACA */}
@@ -289,10 +289,10 @@ export default function TopicDashboard({ username, score, kursId, onSelectTopic 
 
                   {/* Relevanz-Matrix */}
                   <div>
-                    <h4 style={{ fontSize: '12px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.1em', color: 'var(--zh-color-text-muted)', marginBottom: '10px' }}>
+                    <h4 style={{ fontSize: '12px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.1em', color: 'var(--rsi-color-text-muted)', marginBottom: '10px' }}>
                       {t('methodik.relevanz_title')}
                     </h4>
-                    <p style={{ fontSize: '11px', color: 'var(--zh-color-text-disabled)', marginBottom: '10px' }}>
+                    <p style={{ fontSize: '11px', color: 'var(--rsi-color-text-disabled)', marginBottom: '10px' }}>
                       {t('methodik.relevanz_desc')}
                     </p>
                     <table style={{ width: '100%', fontSize: '11px', borderCollapse: 'collapse' }}>
@@ -325,17 +325,17 @@ export default function TopicDashboard({ username, score, kursId, onSelectTopic 
                         </tr>
                       </tbody>
                     </table>
-                    <div style={{ fontSize: '9px', color: 'var(--zh-color-text-disabled)', marginTop: '6px' }}>
+                    <div style={{ fontSize: '9px', color: 'var(--rsi-color-text-disabled)', marginTop: '6px' }}>
                       {t('methodik.achse')}: {t('methodik.zeile_wichtigkeit')}, {t('methodik.spalte_abweichung')}
                     </div>
                   </div>
 
                   {/* Unfallrisiko-Matrix */}
                   <div>
-                    <h4 style={{ fontSize: '12px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.1em', color: 'var(--zh-color-text-muted)', marginBottom: '10px' }}>
+                    <h4 style={{ fontSize: '12px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.1em', color: 'var(--rsi-color-text-muted)', marginBottom: '10px' }}>
                       {t('methodik.risiko_title')}
                     </h4>
-                    <p style={{ fontSize: '11px', color: 'var(--zh-color-text-disabled)', marginBottom: '10px' }}>
+                    <p style={{ fontSize: '11px', color: 'var(--rsi-color-text-disabled)', marginBottom: '10px' }}>
                       {t('methodik.risiko_desc')}
                     </p>
                     <table style={{ width: '100%', fontSize: '11px', borderCollapse: 'collapse' }}>
@@ -368,23 +368,23 @@ export default function TopicDashboard({ username, score, kursId, onSelectTopic 
                         </tr>
                       </tbody>
                     </table>
-                    <div style={{ fontSize: '9px', color: 'var(--zh-color-text-disabled)', marginTop: '6px' }}>
+                    <div style={{ fontSize: '9px', color: 'var(--rsi-color-text-disabled)', marginTop: '6px' }}>
                       {t('methodik.achse')}: {t('methodik.zeile_relevanz')}, {t('methodik.spalte_schwere')}
                     </div>
                   </div>
 
                   {/* NACA-Skala */}
                   <div>
-                    <h4 style={{ fontSize: '12px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.1em', color: 'var(--zh-color-text-muted)', marginBottom: '10px' }}>
+                    <h4 style={{ fontSize: '12px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.1em', color: 'var(--rsi-color-text-muted)', marginBottom: '10px' }}>
                       {t('methodik.naca_title')}
                     </h4>
-                    <p style={{ fontSize: '11px', color: 'var(--zh-color-text-disabled)', marginBottom: '10px' }}>
+                    <p style={{ fontSize: '11px', color: 'var(--rsi-color-text-disabled)', marginBottom: '10px' }}>
                       {t('methodik.naca_desc')}
                     </p>
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-                      <NacaBar label={t('scoring.schwere_leicht')} range="NACA 0–1" color="var(--zh-gruen)" width="33%" />
-                      <NacaBar label={t('scoring.schwere_mittel')} range="NACA 2–3" color="var(--zh-orange)" width="50%" />
-                      <NacaBar label={t('scoring.schwere_schwer')} range="NACA 4–7" color="var(--zh-rot)" width="100%" />
+                      <NacaBar label={t('scoring.schwere_leicht')} range="NACA 0–1" color="var(--rsi-gruen)" width="33%" />
+                      <NacaBar label={t('scoring.schwere_mittel')} range="NACA 2–3" color="var(--rsi-orange)" width="50%" />
+                      <NacaBar label={t('scoring.schwere_schwer')} range="NACA 4–7" color="var(--rsi-rot)" width="100%" />
                     </div>
                   </div>
                 </div>
@@ -392,15 +392,15 @@ export default function TopicDashboard({ username, score, kursId, onSelectTopic 
                 {/* E-3: Quellen-Block als eigenstaendiger Absatz unter den 3 Spalten */}
                 <div style={{
                   marginTop: '24px', paddingTop: '16px',
-                  borderTop: '1px solid var(--zh-color-border)',
+                  borderTop: '1px solid var(--rsi-color-border)',
                   display: 'flex', alignItems: 'flex-start', gap: '12px',
-                  fontSize: '11px', color: 'var(--zh-color-text-muted)', lineHeight: 1.6,
+                  fontSize: '11px', color: 'var(--rsi-color-text-muted)', lineHeight: 1.6,
                 }}>
                   <div style={{ fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.1em', whiteSpace: 'nowrap', minWidth: '80px' }}>
                     {t('methodik.quellen')}
                   </div>
                   <div style={{ display: 'flex', flexWrap: 'wrap', gap: '4px 16px' }}>
-                    <span>TBA-Fachkurs FK RSI (V 16.09.2020)</span>
+                    <span>Fachkurs FK RSI (V 16.09.2020)</span>
                     <span>·</span>
                     <span>bfu-Bericht 73 (NACA)</span>
                     <span>·</span>
@@ -421,10 +421,10 @@ export default function TopicDashboard({ username, score, kursId, onSelectTopic 
 function NacaBar({ label, range, color, width }: { label: string; range: string; color: string; width: string }) {
   return (
     <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-      <div style={{ width: '70px', fontSize: '11px', fontWeight: 600, color: 'var(--zh-color-text)', flexShrink: 0 }}>
+      <div style={{ width: '70px', fontSize: '11px', fontWeight: 600, color: 'var(--rsi-color-text)', flexShrink: 0 }}>
         {label}
       </div>
-      <div style={{ flex: 1, height: '22px', borderRadius: '4px', background: 'var(--zh-color-bg-secondary)', position: 'relative', overflow: 'hidden' }}>
+      <div style={{ flex: 1, height: '22px', borderRadius: '4px', background: 'var(--rsi-color-bg-secondary)', position: 'relative', overflow: 'hidden' }}>
         <div style={{
           width, height: '100%', borderRadius: '4px',
           background: color, opacity: 0.15,
@@ -447,27 +447,27 @@ function thStyle(): React.CSSProperties {
     padding: '6px 8px',
     textAlign: 'center',
     fontWeight: 700,
-    color: 'var(--zh-color-text-muted)',
-    borderBottom: '2px solid var(--zh-color-border)',
+    color: 'var(--rsi-color-text-muted)',
+    borderBottom: '2px solid var(--rsi-color-border)',
   }
 }
 
 function tdStyle(): React.CSSProperties {
   return {
     padding: '6px 8px',
-    borderBottom: '1px solid var(--zh-color-border)',
-    color: 'var(--zh-color-text)',
+    borderBottom: '1px solid var(--rsi-color-border)',
+    color: 'var(--rsi-color-text)',
   }
 }
 
 function tdCell(level: 'gering' | 'mittel' | 'hoch'): React.CSSProperties {
   const bg = level === 'hoch' ? 'rgba(212,0,83,0.1)' : level === 'mittel' ? 'rgba(184,115,0,0.1)' : 'rgba(26,127,31,0.1)'
-  const color = level === 'hoch' ? 'var(--zh-rot)' : level === 'mittel' ? 'var(--zh-orange)' : 'var(--zh-gruen)'
+  const color = level === 'hoch' ? 'var(--rsi-rot)' : level === 'mittel' ? 'var(--rsi-orange)' : 'var(--rsi-gruen)'
   return {
     padding: '6px 8px',
     textAlign: 'center',
     fontWeight: 600,
-    borderBottom: '1px solid var(--zh-color-border)',
+    borderBottom: '1px solid var(--rsi-color-border)',
     background: bg,
     color,
     borderRadius: '2px',

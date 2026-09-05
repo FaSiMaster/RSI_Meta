@@ -60,18 +60,18 @@ function ErrorFallback() {
   return (
     <div style={{
       display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
-      minHeight: '100dvh', padding: '32px', fontFamily: 'var(--zh-font)',
-      background: 'var(--zh-color-bg)', color: 'var(--zh-color-text)', textAlign: 'center',
+      minHeight: '100dvh', padding: '32px', fontFamily: 'var(--rsi-font)',
+      background: 'var(--rsi-color-bg)', color: 'var(--rsi-color-text)', textAlign: 'center',
     }}>
-      <h1 style={{ color: 'var(--zh-dunkelblau)', marginBottom: '12px' }}>Es ist ein Fehler aufgetreten</h1>
-      <p style={{ color: 'var(--zh-color-text-muted)', maxWidth: '480px', marginBottom: '24px' }}>
+      <h1 style={{ color: 'var(--rsi-dunkelblau)', marginBottom: '12px' }}>Es ist ein Fehler aufgetreten</h1>
+      <p style={{ color: 'var(--rsi-color-text-muted)', maxWidth: '480px', marginBottom: '24px' }}>
         Bitte laden Sie die Seite neu. Falls der Fehler erneut auftritt, nutzen Sie «Zurücksetzen &amp; neu laden».
       </p>
       <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap', justifyContent: 'center' }}>
         <button
           onClick={() => window.location.reload()}
           style={{
-            padding: '10px 24px', borderRadius: '8px', background: 'var(--zh-dunkelblau)',
+            padding: '10px 24px', borderRadius: '8px', background: 'var(--rsi-dunkelblau)',
             color: 'white', border: 'none', fontWeight: 700, cursor: 'pointer',
           }}
         >
@@ -82,14 +82,14 @@ function ErrorFallback() {
           disabled={resetting}
           style={{
             padding: '10px 24px', borderRadius: '8px', background: 'transparent',
-            color: 'var(--zh-dunkelblau)', border: '2px solid var(--zh-dunkelblau)',
+            color: 'var(--rsi-dunkelblau)', border: '2px solid var(--rsi-dunkelblau)',
             fontWeight: 700, cursor: resetting ? 'wait' : 'pointer', opacity: resetting ? 0.6 : 1,
           }}
         >
           {resetting ? 'Wird zurückgesetzt…' : 'Zurücksetzen & neu laden'}
         </button>
       </div>
-      <p style={{ fontSize: '12px', color: 'var(--zh-color-text-muted)', maxWidth: '480px', marginTop: '20px' }}>
+      <p style={{ fontSize: '12px', color: 'var(--rsi-color-text-muted)', maxWidth: '480px', marginTop: '20px' }}>
         «Zurücksetzen» löscht Service Worker und Offline-Cache (PWA). Ihre lokalen Kurs- und Session-Daten bleiben erhalten.
       </p>
     </div>

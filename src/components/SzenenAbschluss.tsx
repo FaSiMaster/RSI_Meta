@@ -97,9 +97,9 @@ export default function SzenenAbschluss({
   return (
     <div
       style={{
-        flex: 1, overflow: 'auto', background: 'var(--zh-color-bg)',
+        flex: 1, overflow: 'auto', background: 'var(--rsi-color-bg)',
         display: 'flex', flexDirection: 'column', alignItems: 'center',
-        padding: '32px 24px', fontFamily: 'var(--zh-font)',
+        padding: '32px 24px', fontFamily: 'var(--rsi-font)',
       }}
     >
       <div style={{ maxWidth: '680px', width: '100%' }}>
@@ -111,12 +111,12 @@ export default function SzenenAbschluss({
             display: 'flex', alignItems: 'center', justifyContent: 'center',
             margin: '0 auto 12px',
           }}>
-            <Trophy size={24} style={{ color: allFound ? 'var(--zh-gruen)' : 'var(--zh-blau)' }} />
+            <Trophy size={24} style={{ color: allFound ? 'var(--rsi-gruen)' : 'var(--rsi-blau)' }} />
           </div>
-          <h1 style={{ fontSize: '24px', fontWeight: 800, color: 'var(--zh-color-text)', marginBottom: '4px' }}>
+          <h1 style={{ fontSize: '24px', fontWeight: 800, color: 'var(--rsi-color-text)', marginBottom: '4px' }}>
             {t('completion.titel')}
           </h1>
-          <p style={{ fontSize: '13px', color: 'var(--zh-color-text-muted)' }}>
+          <p style={{ fontSize: '13px', color: 'var(--rsi-color-text-muted)' }}>
             {ml(scene.nameI18n, lang)} · {scene.kontext === 'io' ? t('einstieg.kontext_io') : t('einstieg.kontext_ao')}
           </p>
 
@@ -124,13 +124,13 @@ export default function SzenenAbschluss({
           <div style={{ display: 'flex', justifyContent: 'center', marginTop: '12px', gap: '4px' }}>
             <SterneAnzeige sterne={sterne} size={28} />
           </div>
-          <p style={{ fontSize: '13px', fontWeight: 700, color: sterne === 3 ? 'var(--zh-gruen)' : sterne === 2 ? 'var(--zh-orange)' : 'var(--zh-color-text-muted)', marginTop: '6px' }}>
+          <p style={{ fontSize: '13px', fontWeight: 700, color: sterne === 3 ? 'var(--rsi-gruen)' : sterne === 2 ? 'var(--rsi-orange)' : 'var(--rsi-color-text-muted)', marginTop: '6px' }}>
             {t('completion.prozent_korrekt', { prozent })}
           </p>
           {istNeuerBestwert && versuche > 1 && (
             <div style={{ display: 'inline-flex', alignItems: 'center', gap: '5px', marginTop: '8px', padding: '4px 12px', borderRadius: '12px', background: 'rgba(26,127,31,0.1)', border: '1px solid rgba(26,127,31,0.3)' }}>
-              <TrendingUp size={13} style={{ color: 'var(--zh-gruen)' }} />
-              <span style={{ fontSize: '12px', fontWeight: 700, color: 'var(--zh-gruen)' }}>{t('completion.neuer_bestwert')}</span>
+              <TrendingUp size={13} style={{ color: 'var(--rsi-gruen)' }} />
+              <span style={{ fontSize: '12px', fontWeight: 700, color: 'var(--rsi-gruen)' }}>{t('completion.neuer_bestwert')}</span>
             </div>
           )}
 
@@ -142,13 +142,13 @@ export default function SzenenAbschluss({
               background: bestanden ? 'rgba(26,127,31,0.12)' : 'rgba(212,0,83,0.08)',
               border: `1px solid ${bestanden ? 'rgba(26,127,31,0.4)' : 'rgba(212,0,83,0.3)'}`,
             }}>
-              <Award size={14} style={{ color: bestanden ? 'var(--zh-gruen)' : 'var(--zh-rot)' }} />
-              <span style={{ fontSize: '13px', fontWeight: 800, color: bestanden ? 'var(--zh-gruen)' : 'var(--zh-rot)' }}>
+              <Award size={14} style={{ color: bestanden ? 'var(--rsi-gruen)' : 'var(--rsi-rot)' }} />
+              <span style={{ fontSize: '13px', fontWeight: 800, color: bestanden ? 'var(--rsi-gruen)' : 'var(--rsi-rot)' }}>
                 {bestanden ? t('completion.bestanden') : t('completion.nicht_bestanden')}
               </span>
             </div>
             {!bestanden && (
-              <p style={{ fontSize: '11px', color: 'var(--zh-color-text-muted)', marginTop: '5px' }}>
+              <p style={{ fontSize: '11px', color: 'var(--rsi-color-text-muted)', marginTop: '5px' }}>
                 {pflichtFehlt > 0 && t('completion.bestanden_grund_pflicht', { fehlt: pflichtFehlt })}
                 {pflichtFehlt > 0 && kriterium.minProzent != null && prozentAktuell < kriterium.minProzent && ' · '}
                 {kriterium.minProzent != null && prozentAktuell < kriterium.minProzent &&
@@ -164,16 +164,16 @@ export default function SzenenAbschluss({
           gap: '8px', marginBottom: '16px',
         }}>
           {[
-            { label: t('completion.punkte'), value: sceneScore.toLocaleString('de-CH'), color: 'var(--zh-blau)' },
-            { label: t('completion.gefunden'), value: `${foundCount}/${deficits.length}`, color: allFound ? 'var(--zh-gruen)' : 'var(--zh-color-text)' },
-            { label: t('completion.versuch'), value: `#${versuche}`, color: 'var(--zh-color-text)' },
-            { label: t('completion.dauer'), value: formatDauer(dauerSek), color: 'var(--zh-color-text-muted)' },
+            { label: t('completion.punkte'), value: sceneScore.toLocaleString('de-CH'), color: 'var(--rsi-blau)' },
+            { label: t('completion.gefunden'), value: `${foundCount}/${deficits.length}`, color: allFound ? 'var(--rsi-gruen)' : 'var(--rsi-color-text)' },
+            { label: t('completion.versuch'), value: `#${versuche}`, color: 'var(--rsi-color-text)' },
+            { label: t('completion.dauer'), value: formatDauer(dauerSek), color: 'var(--rsi-color-text-muted)' },
           ].map(card => (
             <div key={card.label} style={{
-              borderRadius: '10px', border: '1px solid var(--zh-color-border)',
-              background: 'var(--zh-color-surface)', padding: '14px 10px', textAlign: 'center',
+              borderRadius: '10px', border: '1px solid var(--rsi-color-border)',
+              background: 'var(--rsi-color-surface)', padding: '14px 10px', textAlign: 'center',
             }}>
-              <p style={{ fontSize: '9px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.12em', color: 'var(--zh-color-text-disabled)', marginBottom: '6px' }}>
+              <p style={{ fontSize: '9px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.12em', color: 'var(--rsi-color-text-disabled)', marginBottom: '6px' }}>
                 {card.label}
               </p>
               <p style={{ fontSize: '20px', fontWeight: 900, color: card.color }}>{card.value}</p>
@@ -187,17 +187,17 @@ export default function SzenenAbschluss({
             display: 'grid', gridTemplateColumns: '1fr 1fr 1fr',
             gap: '8px', marginBottom: '16px',
           }}>
-            <div style={{ padding: '10px 12px', borderRadius: '8px', background: 'var(--zh-color-bg-secondary)', border: '1px solid var(--zh-color-border)', textAlign: 'center' }}>
-              <p style={{ fontSize: '9px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.1em', color: 'var(--zh-color-text-disabled)', marginBottom: '4px' }}>{t('completion.bester_versuch')}</p>
-              <p style={{ fontSize: '16px', fontWeight: 800, color: 'var(--zh-gruen)' }}>{best.prozent}%</p>
+            <div style={{ padding: '10px 12px', borderRadius: '8px', background: 'var(--rsi-color-bg-secondary)', border: '1px solid var(--rsi-color-border)', textAlign: 'center' }}>
+              <p style={{ fontSize: '9px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.1em', color: 'var(--rsi-color-text-disabled)', marginBottom: '4px' }}>{t('completion.bester_versuch')}</p>
+              <p style={{ fontSize: '16px', fontWeight: 800, color: 'var(--rsi-gruen)' }}>{best.prozent}%</p>
             </div>
-            <div style={{ padding: '10px 12px', borderRadius: '8px', background: 'var(--zh-color-bg-secondary)', border: '1px solid var(--zh-color-border)', textAlign: 'center' }}>
-              <p style={{ fontSize: '9px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.1em', color: 'var(--zh-color-text-disabled)', marginBottom: '4px' }}>{t('completion.versuche_total')}</p>
-              <p style={{ fontSize: '16px', fontWeight: 800, color: 'var(--zh-color-text)' }}>{versuche}</p>
+            <div style={{ padding: '10px 12px', borderRadius: '8px', background: 'var(--rsi-color-bg-secondary)', border: '1px solid var(--rsi-color-border)', textAlign: 'center' }}>
+              <p style={{ fontSize: '9px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.1em', color: 'var(--rsi-color-text-disabled)', marginBottom: '4px' }}>{t('completion.versuche_total')}</p>
+              <p style={{ fontSize: '16px', fontWeight: 800, color: 'var(--rsi-color-text)' }}>{versuche}</p>
             </div>
-            <div style={{ padding: '10px 12px', borderRadius: '8px', background: 'var(--zh-color-bg-secondary)', border: '1px solid var(--zh-color-border)', textAlign: 'center' }}>
-              <p style={{ fontSize: '9px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.1em', color: 'var(--zh-color-text-disabled)', marginBottom: '4px' }}>{t('completion.avg_zeit')}</p>
-              <p style={{ fontSize: '16px', fontWeight: 800, color: 'var(--zh-color-text-muted)' }}>
+            <div style={{ padding: '10px 12px', borderRadius: '8px', background: 'var(--rsi-color-bg-secondary)', border: '1px solid var(--rsi-color-border)', textAlign: 'center' }}>
+              <p style={{ fontSize: '9px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.1em', color: 'var(--rsi-color-text-disabled)', marginBottom: '4px' }}>{t('completion.avg_zeit')}</p>
+              <p style={{ fontSize: '16px', fontWeight: 800, color: 'var(--rsi-color-text-muted)' }}>
                 <Clock size={13} style={{ display: 'inline', verticalAlign: '-2px', marginRight: '4px' }} />
                 {avgDefizitZeit}s
               </p>
@@ -208,31 +208,31 @@ export default function SzenenAbschluss({
         {/* Gesamt-Score (Best-of) */}
         <div style={{
           padding: '12px 18px', borderRadius: '8px',
-          background: 'var(--zh-color-bg-secondary)', border: '1px solid var(--zh-color-border)',
+          background: 'var(--rsi-color-bg-secondary)', border: '1px solid var(--rsi-color-border)',
           display: 'flex', alignItems: 'center', justifyContent: 'space-between',
           marginBottom: '20px',
         }}>
-          <span style={{ fontSize: '13px', color: 'var(--zh-color-text-muted)', fontWeight: 600 }}>
+          <span style={{ fontSize: '13px', color: 'var(--rsi-color-text-muted)', fontWeight: 600 }}>
             {t('completion.gesamtscore')}
           </span>
-          <span style={{ fontSize: '20px', fontWeight: 900, color: 'var(--zh-blau)' }}>
+          <span style={{ fontSize: '20px', fontWeight: 900, color: 'var(--rsi-blau)' }}>
             {totalScore.toLocaleString('de-CH')} {t('completion.pkt')}
           </span>
         </div>
 
         {/* Defizit-Aufschlüsselung */}
         <div style={{
-          borderRadius: '10px', border: '1px solid var(--zh-color-border)',
-          overflow: 'hidden', background: 'var(--zh-color-surface)', marginBottom: '24px',
+          borderRadius: '10px', border: '1px solid var(--rsi-color-border)',
+          overflow: 'hidden', background: 'var(--rsi-color-surface)', marginBottom: '24px',
         }}>
           <div style={{
             display: 'grid', gridTemplateColumns: '24px 1fr auto 60px auto',
             gap: '8px', padding: '8px 16px',
-            borderBottom: '1px solid var(--zh-color-border)',
-            background: 'var(--zh-color-bg-secondary)',
+            borderBottom: '1px solid var(--rsi-color-border)',
+            background: 'var(--rsi-color-bg-secondary)',
           }}>
             {['', t('completion.col_defizit'), t('completion.pkt'), t('completion.col_zeit'), t('completion.col_status')].map((h, i) => (
-              <span key={i} style={{ fontSize: '9px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.12em', color: 'var(--zh-color-text-disabled)', textAlign: i >= 2 ? 'right' : 'left' }}>
+              <span key={i} style={{ fontSize: '9px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.12em', color: 'var(--rsi-color-text-disabled)', textAlign: i >= 2 ? 'right' : 'left' }}>
                 {h}
               </span>
             ))}
@@ -248,63 +248,63 @@ export default function SzenenAbschluss({
                   display: 'grid', gridTemplateColumns: '24px 1fr auto 60px auto',
                   alignItems: 'center', gap: '8px',
                   padding: '10px 16px',
-                  borderBottom: i < deficits.length - 1 ? '1px solid var(--zh-color-border)' : 'none',
+                  borderBottom: i < deficits.length - 1 ? '1px solid var(--rsi-color-border)' : 'none',
                   background: found ? 'rgba(26,127,31,0.03)' : 'rgba(212,0,83,0.03)',
                 }}
               >
                 {found
-                  ? <CheckCircle2 size={14} style={{ color: 'var(--zh-gruen)' }} />
-                  : <XCircle     size={14} style={{ color: 'var(--zh-rot)' }} />}
+                  ? <CheckCircle2 size={14} style={{ color: 'var(--rsi-gruen)' }} />
+                  : <XCircle     size={14} style={{ color: 'var(--rsi-rot)' }} />}
 
                 <div>
-                  <p style={{ fontSize: '12px', fontWeight: 600, color: 'var(--zh-color-text)', marginBottom: '2px' }}>
+                  <p style={{ fontSize: '12px', fontWeight: 600, color: 'var(--rsi-color-text)', marginBottom: '2px' }}>
                     {ml(d.nameI18n, lang)}
                   </p>
                   <div style={{ display: 'flex', gap: '4px', flexWrap: 'wrap' }}>
                     {d.isPflicht && (
-                      <span style={{ fontSize: '8px', fontWeight: 800, padding: '1px 4px', borderRadius: '3px', background: 'rgba(212,0,83,0.1)', color: 'var(--zh-rot)', textTransform: 'uppercase' }}>
+                      <span style={{ fontSize: '8px', fontWeight: 800, padding: '1px 4px', borderRadius: '3px', background: 'rgba(212,0,83,0.1)', color: 'var(--rsi-rot)', textTransform: 'uppercase' }}>
                         {t('completion.pflicht')}
                       </span>
                     )}
                     {found && !found.kategorieRichtig && (
-                      <span style={{ fontSize: '8px', fontWeight: 700, padding: '1px 4px', borderRadius: '3px', background: 'rgba(184,115,0,0.1)', color: 'var(--zh-orange)' }}>
+                      <span style={{ fontSize: '8px', fontWeight: 700, padding: '1px 4px', borderRadius: '3px', background: 'rgba(184,115,0,0.1)', color: 'var(--rsi-orange)' }}>
                         {t('completion.kat_chip')}
                       </span>
                     )}
                     {found?.hintPenalty && (
-                      <span style={{ fontSize: '8px', fontWeight: 700, padding: '1px 4px', borderRadius: '3px', background: 'rgba(0,0,0,0.07)', color: 'var(--zh-color-text-muted)' }}>
+                      <span style={{ fontSize: '8px', fontWeight: 700, padding: '1px 4px', borderRadius: '3px', background: 'rgba(0,0,0,0.07)', color: 'var(--rsi-color-text-muted)' }}>
                         {t('completion.hinweis_chip', { abzug: found.hintAbzug ?? 25 })}
                       </span>
                     )}
                     {!found && standorteFür(d).length > 0 && (
-                      <span style={{ fontSize: '8px', fontWeight: 700, padding: '1px 4px', borderRadius: '3px', background: 'rgba(0,118,189,0.08)', color: 'var(--zh-blau)' }}>
+                      <span style={{ fontSize: '8px', fontWeight: 700, padding: '1px 4px', borderRadius: '3px', background: 'rgba(0,118,189,0.08)', color: 'var(--rsi-blau)' }}>
                         {t('completion.standort_chip', { orte: standorteFür(d) })}
                       </span>
                     )}
                     {defResult && !defResult.wichtigkeitKorrekt && (
-                      <span style={{ fontSize: '8px', fontWeight: 700, padding: '1px 4px', borderRadius: '3px', background: 'rgba(212,0,83,0.06)', color: 'var(--zh-rot)' }}>W</span>
+                      <span style={{ fontSize: '8px', fontWeight: 700, padding: '1px 4px', borderRadius: '3px', background: 'rgba(212,0,83,0.06)', color: 'var(--rsi-rot)' }}>W</span>
                     )}
                     {defResult && !defResult.abweichungKorrekt && (
-                      <span style={{ fontSize: '8px', fontWeight: 700, padding: '1px 4px', borderRadius: '3px', background: 'rgba(212,0,83,0.06)', color: 'var(--zh-rot)' }}>A</span>
+                      <span style={{ fontSize: '8px', fontWeight: 700, padding: '1px 4px', borderRadius: '3px', background: 'rgba(212,0,83,0.06)', color: 'var(--rsi-rot)' }}>A</span>
                     )}
                     {defResult && !defResult.nacaKorrekt && (
-                      <span style={{ fontSize: '8px', fontWeight: 700, padding: '1px 4px', borderRadius: '3px', background: 'rgba(212,0,83,0.06)', color: 'var(--zh-rot)' }}>N</span>
+                      <span style={{ fontSize: '8px', fontWeight: 700, padding: '1px 4px', borderRadius: '3px', background: 'rgba(212,0,83,0.06)', color: 'var(--rsi-rot)' }}>N</span>
                     )}
                   </div>
                 </div>
 
-                <span style={{ fontSize: '12px', fontWeight: 700, color: found ? 'var(--zh-blau)' : 'var(--zh-color-text-disabled)', textAlign: 'right' }}>
+                <span style={{ fontSize: '12px', fontWeight: 700, color: found ? 'var(--rsi-blau)' : 'var(--rsi-color-text-disabled)', textAlign: 'right' }}>
                   {found ? found.pointsEarned.toLocaleString('de-CH') : '—'}
                 </span>
 
-                <span style={{ fontSize: '11px', color: 'var(--zh-color-text-muted)', textAlign: 'right' }}>
+                <span style={{ fontSize: '11px', color: 'var(--rsi-color-text-muted)', textAlign: 'right' }}>
                   {defResult ? `${defResult.dauerSekunden}s` : '—'}
                 </span>
 
                 <span style={{
                   fontSize: '10px', fontWeight: 700, padding: '2px 8px', borderRadius: '4px', textAlign: 'center',
                   background: found ? 'rgba(26,127,31,0.1)' : 'rgba(212,0,83,0.08)',
-                  color: found ? 'var(--zh-gruen)' : 'var(--zh-rot)',
+                  color: found ? 'var(--rsi-gruen)' : 'var(--rsi-rot)',
                 }}>
                   {found ? t('completion.gefunden_status') : t('completion.verpasst_status')}
                 </span>
@@ -317,13 +317,13 @@ export default function SzenenAbschluss({
         <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap', alignItems: 'center' }}>
           <button
             onClick={onToTopics}
-            style={{ display: 'flex', alignItems: 'center', gap: '6px', padding: '10px 18px', borderRadius: '8px', border: '1px solid var(--zh-color-border)', background: 'var(--zh-color-surface)', color: 'var(--zh-color-text-muted)', fontSize: '13px', fontWeight: 600, cursor: 'pointer', fontFamily: 'var(--zh-font)' }}
+            style={{ display: 'flex', alignItems: 'center', gap: '6px', padding: '10px 18px', borderRadius: '8px', border: '1px solid var(--rsi-color-border)', background: 'var(--rsi-color-surface)', color: 'var(--rsi-color-text-muted)', fontSize: '13px', fontWeight: 600, cursor: 'pointer', fontFamily: 'var(--rsi-font)' }}
           >
             <ArrowLeft size={14} /> {t('completion.zu_themen')}
           </button>
           <button
             onClick={onToRanking}
-            style={{ display: 'flex', alignItems: 'center', gap: '6px', padding: '10px 18px', borderRadius: '8px', border: '1px solid var(--zh-color-border)', background: 'var(--zh-color-surface)', color: 'var(--zh-color-text-muted)', fontSize: '13px', fontWeight: 600, cursor: 'pointer', fontFamily: 'var(--zh-font)' }}
+            style={{ display: 'flex', alignItems: 'center', gap: '6px', padding: '10px 18px', borderRadius: '8px', border: '1px solid var(--rsi-color-border)', background: 'var(--rsi-color-surface)', color: 'var(--rsi-color-text-muted)', fontSize: '13px', fontWeight: 600, cursor: 'pointer', fontFamily: 'var(--rsi-font)' }}
           >
             <BarChart3 size={14} /> {t('nav.ranking')}
           </button>
@@ -335,13 +335,13 @@ export default function SzenenAbschluss({
               style={{
                 display: 'flex', alignItems: 'center', gap: '6px',
                 padding: '10px 18px', borderRadius: '8px',
-                border: '1px solid var(--zh-color-border)',
-                background: 'var(--zh-color-surface)',
-                color: pdfStatus === 'fehler' ? 'var(--zh-rot)' : 'var(--zh-color-text-muted)',
+                border: '1px solid var(--rsi-color-border)',
+                background: 'var(--rsi-color-surface)',
+                color: pdfStatus === 'fehler' ? 'var(--rsi-rot)' : 'var(--rsi-color-text-muted)',
                 fontSize: '13px', fontWeight: 600,
                 cursor: pdfStatus === 'laeuft' ? 'progress' : 'pointer',
                 opacity: pdfStatus === 'laeuft' ? 0.6 : 1,
-                fontFamily: 'var(--zh-font)',
+                fontFamily: 'var(--rsi-font)',
               }}
             >
               <FileDown size={14} />
@@ -353,7 +353,7 @@ export default function SzenenAbschluss({
           {onNextScene && (
             <button
               onClick={onNextScene}
-              style={{ display: 'flex', alignItems: 'center', gap: '6px', padding: '10px 18px', borderRadius: '8px', background: 'var(--zh-dunkelblau)', color: 'white', fontSize: '13px', fontWeight: 700, cursor: 'pointer', border: 'none', marginLeft: 'auto', fontFamily: 'var(--zh-font)' }}
+              style={{ display: 'flex', alignItems: 'center', gap: '6px', padding: '10px 18px', borderRadius: '8px', background: 'var(--rsi-dunkelblau)', color: 'white', fontSize: '13px', fontWeight: 700, cursor: 'pointer', border: 'none', marginLeft: 'auto', fontFamily: 'var(--rsi-font)' }}
             >
               {t('szene.nächste')} <ChevronRight size={14} />
             </button>

@@ -2,14 +2,14 @@
 //
 // Zwei Berichte:
 //   1. Teilnehmerbericht — Auswertung (Deckblatt) + Befundliste im RSI-Format
-//   2. Kursbericht       — Uebersicht aller Durchlaeufe eines Kurses
+//   2. Kursbericht       — Übersicht aller Durchläufe eines Kurses
 //
 // pdfmake wird bewusst per dynamischem Import geladen: Bibliothek und
 // Schriftdateien (rund 1 MB) liegen dadurch in einem eigenen Chunk und
-// belasten den Start der App nicht. Erst der Klick auf «Bericht» laedt sie.
+// belasten den Start der App nicht. Erst der Klick auf «Bericht» lädt sie.
 //
-// Corporate Design Kanton Zuerich: Dunkelblau #00407C als Leitfarbe,
-// Blau #0076BD fuer Akzente. Bewusst keine Logos — die App fuehrt keine.
+// Farbgebung nach den Design-Tokens der Anwendung: Dunkelblau #00407C als
+// Leitfarbe, Blau #0076BD für Akzente. Bewusst keine Logos — die App führt keine.
 
 import type { TDocumentDefinitions, Content, TableCell } from 'pdfmake/interfaces'
 import type { TFunction } from 'i18next'
@@ -19,12 +19,12 @@ import {
 } from '../data/berichtModel'
 import { logger } from '../lib/logger'
 
-const ZH_DUNKELBLAU = '#00407C'
-const ZH_BLAU       = '#0076BD'
-const ZH_GRAU       = '#6B7280'
-const ZH_GRUEN      = '#1A7F1F'
-const ZH_ROT        = '#C4161C'
-const ZH_LINIE      = '#D4D9E0'
+const FARBE_DUNKELBLAU = '#00407C'
+const FARBE_BLAU       = '#0076BD'
+const FARBE_GRAU       = '#6B7280'
+const FARBE_GRUEN      = '#1A7F1F'
+const FARBE_ROT        = '#C4161C'
+const FARBE_LINIE      = '#D4D9E0'
 
 // pdfmake liefert UMD-Module; die Typen des Browser-Builds sind in
 // @types/pdfmake nicht als Modul deklariert. Deshalb ein schmales Interface
@@ -76,9 +76,9 @@ async function ladePdfMake(): Promise<PdfMakeBrowser> {
 function kopfzeile(titel: string, untertitel: string): Content {
   return {
     stack: [
-      { text: titel, fontSize: 18, bold: true, color: ZH_DUNKELBLAU },
-      { text: untertitel, fontSize: 10, color: ZH_GRAU, margin: [0, 2, 0, 0] },
-      { canvas: [{ type: 'line', x1: 0, y1: 0, x2: 515, y2: 0, lineWidth: 2, lineColor: ZH_BLAU }], margin: [0, 8, 0, 0] },
+      { text: titel, fontSize: 18, bold: true, color: FARBE_DUNKELBLAU },
+      { text: untertitel, fontSize: 10, color: FARBE_GRAU, margin: [0, 2, 0, 0] },
+      { canvas: [{ type: 'line', x1: 0, y1: 0, x2: 515, y2: 0, lineWidth: 2, lineColor: FARBE_BLAU }], margin: [0, 8, 0, 0] },
     ],
     margin: [0, 0, 0, 16],
   }
@@ -90,7 +90,7 @@ function kennwerte(paare: [string, string][]): Content {
     table: {
       widths: [140, '*'],
       body: paare.map(([k, v]) => ([
-        { text: k, fontSize: 9, color: ZH_GRAU, border: [false, false, false, false], margin: [0, 2, 0, 2] },
+        { text: k, fontSize: 9, color: FARBE_GRAU, border: [false, false, false, false], margin: [0, 2, 0, 2] },
         { text: v, fontSize: 9, bold: true, border: [false, false, false, false], margin: [0, 2, 0, 2] },
       ] as TableCell[])),
     },
@@ -107,7 +107,7 @@ function statusBadge(bestanden: boolean | null, t: TFunction): Content {
       body: [[{
         text: bestanden ? t('bericht.bestanden') : t('bericht.nicht_bestanden'),
         color: '#FFFFFF',
-        fillColor: bestanden ? ZH_GRUEN : ZH_ROT,
+        fillColor: bestanden ? FARBE_GRUEN : FARBE_ROT,
         bold: true,
         fontSize: 10,
         margin: [10, 5, 10, 5],
@@ -132,11 +132,11 @@ function auswertungsTabelle(b: TeilnehmerBericht, t: TFunction): Content {
     t('bericht.spalte_defizit'), t('bericht.spalte_kategorie'),
     t('bericht.spalte_w'), t('bericht.spalte_a'), t('bericht.spalte_naca'),
     t('bericht.spalte_punkte'),
-  ].map(text => ({ text, bold: true, fontSize: 8, color: '#FFFFFF', fillColor: ZH_DUNKELBLAU, margin: [3, 4, 3, 4] }))
+  ].map(text => ({ text, bold: true, fontSize: 8, color: '#FFFFFF', fillColor: FARBE_DUNKELBLAU, margin: [3, 4, 3, 4] }))
 
   const zeichen = (ok: boolean | null): TableCell => ({
     text: ok == null ? '–' : ok ? '✓' : '✗',
-    color: ok == null ? ZH_GRAU : ok ? ZH_GRUEN : ZH_ROT,
+    color: ok == null ? FARBE_GRAU : ok ? FARBE_GRUEN : FARBE_ROT,
     alignment: 'center', fontSize: 9, bold: true, margin: [2, 3, 2, 3],
   })
 
@@ -144,10 +144,10 @@ function auswertungsTabelle(b: TeilnehmerBericht, t: TFunction): Content {
     if (!d.gefunden) {
       // colSpan: die drei Folgezellen muessen als leere Platzhalter stehen.
       return [
-        { text: d.name + (d.isPflicht ? ' *' : ''), fontSize: 8, color: ZH_GRAU, italics: true, margin: [3, 3, 3, 3] },
-        { text: t('bericht.nicht_gefunden'), fontSize: 8, color: ZH_GRAU, italics: true, colSpan: 4, margin: [3, 3, 3, 3] },
+        { text: d.name + (d.isPflicht ? ' *' : ''), fontSize: 8, color: FARBE_GRAU, italics: true, margin: [3, 3, 3, 3] },
+        { text: t('bericht.nicht_gefunden'), fontSize: 8, color: FARBE_GRAU, italics: true, colSpan: 4, margin: [3, 3, 3, 3] },
         { text: '' }, { text: '' }, { text: '' },
-        { text: '0', fontSize: 8, alignment: 'right', color: ZH_GRAU, margin: [3, 3, 3, 3] },
+        { text: '0', fontSize: 8, alignment: 'right', color: FARBE_GRAU, margin: [3, 3, 3, 3] },
       ] as TableCell[]
     }
     return [
@@ -165,7 +165,7 @@ function auswertungsTabelle(b: TeilnehmerBericht, t: TFunction): Content {
     layout: {
       hLineWidth: (i: number) => (i === 0 || i === 1 ? 0 : 0.5),
       vLineWidth: () => 0,
-      hLineColor: () => ZH_LINIE,
+      hLineColor: () => FARBE_LINIE,
     },
     margin: [0, 0, 0, 6],
   }
@@ -195,13 +195,13 @@ function befundBlock(d: BerichtDefizit, t: TFunction): Content {
     stack: [
       {
         columns: [
-          { text: `${d.nr}.  ${d.name}`, fontSize: 11, bold: true, color: ZH_DUNKELBLAU, width: '*' },
+          { text: `${d.nr}.  ${d.name}`, fontSize: 11, bold: true, color: FARBE_DUNKELBLAU, width: '*' },
           {
             text: d.gefunden
               ? `${fmtZahl(d.punkteFinal ?? 0)} / ${fmtZahl(d.punkteMax)}`
               : t('bericht.nicht_gefunden'),
             fontSize: 9, bold: true, alignment: 'right', width: 'auto',
-            color: d.gefunden ? ZH_BLAU : ZH_ROT,
+            color: d.gefunden ? FARBE_BLAU : FARBE_ROT,
           },
         ],
         margin: [0, 0, 0, 4],
@@ -213,7 +213,7 @@ function befundBlock(d: BerichtDefizit, t: TFunction): Content {
         table: {
           widths: [90, '*'],
           body: zeilen.map(([k, v]) => ([
-            { text: k, fontSize: 8, color: ZH_GRAU, margin: [0, 1.5, 0, 1.5] },
+            { text: k, fontSize: 8, color: FARBE_GRAU, margin: [0, 1.5, 0, 1.5] },
             { text: v, fontSize: 8, margin: [0, 1.5, 0, 1.5] },
           ] as TableCell[])),
         },
@@ -222,10 +222,10 @@ function befundBlock(d: BerichtDefizit, t: TFunction): Content {
       abweichend
         ? {
             text: t('bericht.risiko_abweichung'),
-            fontSize: 8, italics: true, color: ZH_ROT, margin: [0, 4, 0, 0],
+            fontSize: 8, italics: true, color: FARBE_ROT, margin: [0, 4, 0, 0],
           } as Content
         : { text: '' } as Content,
-      { canvas: [{ type: 'line', x1: 0, y1: 0, x2: 515, y2: 0, lineWidth: 0.5, lineColor: ZH_LINIE }], margin: [0, 8, 0, 8] },
+      { canvas: [{ type: 'line', x1: 0, y1: 0, x2: 515, y2: 0, lineWidth: 0.5, lineColor: FARBE_LINIE }], margin: [0, 8, 0, 8] },
     ],
   }
 }
@@ -242,14 +242,14 @@ export function baueTeilnehmerDoc(b: TeilnehmerBericht, t: TFunction, lang: stri
     pageMargins: [40, 44, 40, 52],
     info: {
       title: `${t('bericht.titel')} — ${b.szene}`,
-      author: 'RSI VR Tool · Fachstelle Verkehrssicherheit, Tiefbauamt Kanton Zürich',
+      author: 'RSI VR Tool · Stevan Skeledzic',
       subject: t('bericht.untertitel'),
     },
     defaultStyle: { font: 'Roboto', fontSize: 9 },
     footer: (page: number, total: number) => ({
       columns: [
-        { text: `${b.szene} · ${b.teilnehmer}`, fontSize: 7, color: ZH_GRAU, margin: [40, 0, 0, 0] },
-        { text: `${page} / ${total}`, fontSize: 7, color: ZH_GRAU, alignment: 'right', margin: [0, 0, 40, 0] },
+        { text: `${b.szene} · ${b.teilnehmer}`, fontSize: 7, color: FARBE_GRAU, margin: [40, 0, 0, 0] },
+        { text: `${page} / ${total}`, fontSize: 7, color: FARBE_GRAU, alignment: 'right', margin: [0, 0, 40, 0] },
       ],
       margin: [0, 16, 0, 0],
     }),
@@ -270,19 +270,19 @@ export function baueTeilnehmerDoc(b: TeilnehmerBericht, t: TFunction, lang: stri
         [t('bericht.gefunden'), `${fmtZahl(b.gefunden)} / ${fmtZahl(b.total)}`],
         [t('bericht.pflicht'), pflicht],
       ]),
-      { text: t('bericht.abschnitt_auswertung'), fontSize: 12, bold: true, color: ZH_DUNKELBLAU, margin: [0, 6, 0, 8] },
+      { text: t('bericht.abschnitt_auswertung'), fontSize: 12, bold: true, color: FARBE_DUNKELBLAU, margin: [0, 6, 0, 8] },
       // Ohne Detaildaten (Serverzeile vor der detail-Migration) bleiben nur die
       // Kopfzahlen — dann statt leerer Tabellen ein klarer Hinweis.
       ...(b.defizite.length === 0
-        ? [{ text: t('bericht.keine_details'), fontSize: 9, italics: true, color: ZH_GRAU, margin: [0, 0, 0, 8] } as Content]
+        ? [{ text: t('bericht.keine_details'), fontSize: 9, italics: true, color: FARBE_GRAU, margin: [0, 0, 0, 8] } as Content]
         : [
             auswertungsTabelle(b, t),
-            { text: t('bericht.pflicht_fussnote'), fontSize: 7, color: ZH_GRAU, margin: [0, 0, 0, 4] } as Content,
-            { text: t('bericht.abschnitt_befunde'), fontSize: 12, bold: true, color: ZH_DUNKELBLAU, pageBreak: 'before', margin: [0, 0, 0, 4] } as Content,
-            { text: t('bericht.befunde_hinweis'), fontSize: 8, color: ZH_GRAU, margin: [0, 0, 0, 10] } as Content,
+            { text: t('bericht.pflicht_fussnote'), fontSize: 7, color: FARBE_GRAU, margin: [0, 0, 0, 4] } as Content,
+            { text: t('bericht.abschnitt_befunde'), fontSize: 12, bold: true, color: FARBE_DUNKELBLAU, pageBreak: 'before', margin: [0, 0, 0, 4] } as Content,
+            { text: t('bericht.befunde_hinweis'), fontSize: 8, color: FARBE_GRAU, margin: [0, 0, 0, 10] } as Content,
             ...b.defizite.map(d => befundBlock(d, t)),
           ]),
-      { text: t('bericht.disclaimer'), fontSize: 7, color: ZH_GRAU, italics: true, margin: [0, 10, 0, 0] },
+      { text: t('bericht.disclaimer'), fontSize: 7, color: FARBE_GRAU, italics: true, margin: [0, 10, 0, 0] },
     ],
   }
 }
@@ -317,7 +317,7 @@ export function baueKursDoc(k: KursBericht, t: TFunction, lang: string): TDocume
   const kopf: TableCell[] = [
     t('bericht.teilnehmer'), t('bericht.szene'), t('bericht.datum'),
     t('bericht.spalte_punkte'), '%', t('bericht.dauer'), t('bericht.spalte_status'),
-  ].map(text => ({ text, bold: true, fontSize: 8, color: '#FFFFFF', fillColor: ZH_DUNKELBLAU, margin: [3, 4, 3, 4] }))
+  ].map(text => ({ text, bold: true, fontSize: 8, color: '#FFFFFF', fillColor: FARBE_DUNKELBLAU, margin: [3, 4, 3, 4] }))
 
   const zeilen: TableCell[][] = k.zeilen.map(z => ([
     { text: z.teilnehmer, fontSize: 7.5, margin: [3, 3, 3, 3] },
@@ -332,7 +332,7 @@ export function baueKursDoc(k: KursBericht, t: TFunction, lang: string): TDocume
     {
       text: z.bestanden == null ? '–' : z.bestanden ? t('bericht.bestanden') : t('bericht.nicht_bestanden'),
       fontSize: 7.5, bold: true,
-      color: z.bestanden == null ? ZH_GRAU : z.bestanden ? ZH_GRUEN : ZH_ROT,
+      color: z.bestanden == null ? FARBE_GRAU : z.bestanden ? FARBE_GRUEN : FARBE_ROT,
       margin: [3, 3, 3, 3],
     },
   ]))
@@ -343,13 +343,13 @@ export function baueKursDoc(k: KursBericht, t: TFunction, lang: string): TDocume
     pageMargins: [36, 44, 36, 48],
     info: {
       title: `${t('bericht.kurs_titel')} — ${k.kursName}`,
-      author: 'RSI VR Tool · Fachstelle Verkehrssicherheit, Tiefbauamt Kanton Zürich',
+      author: 'RSI VR Tool · Stevan Skeledzic',
     },
     defaultStyle: { font: 'Roboto', fontSize: 9 },
     footer: (page: number, total: number) => ({
       columns: [
-        { text: k.kursName, fontSize: 7, color: ZH_GRAU, margin: [36, 0, 0, 0] },
-        { text: `${page} / ${total}`, fontSize: 7, color: ZH_GRAU, alignment: 'right', margin: [0, 0, 36, 0] },
+        { text: k.kursName, fontSize: 7, color: FARBE_GRAU, margin: [36, 0, 0, 0] },
+        { text: `${page} / ${total}`, fontSize: 7, color: FARBE_GRAU, alignment: 'right', margin: [0, 0, 36, 0] },
       ],
       margin: [0, 14, 0, 0],
     }),
@@ -362,17 +362,17 @@ export function baueKursDoc(k: KursBericht, t: TFunction, lang: string): TDocume
         [t('bericht.erstellt'), fmtDatum(new Date().toISOString(), lang)],
       ]),
       ...(k.anonymisiert
-        ? [{ text: t('bericht.anonym_hinweis'), fontSize: 8, italics: true, color: ZH_GRAU, margin: [0, 0, 0, 10] } as Content]
+        ? [{ text: t('bericht.anonym_hinweis'), fontSize: 8, italics: true, color: FARBE_GRAU, margin: [0, 0, 0, 10] } as Content]
         : []),
       {
         table: { headerRows: 1, widths: [120, '*', 90, 70, 28, 60, 62], body: [kopf, ...zeilen] },
         layout: {
           hLineWidth: (i: number) => (i === 0 || i === 1 ? 0 : 0.5),
           vLineWidth: () => 0,
-          hLineColor: () => ZH_LINIE,
+          hLineColor: () => FARBE_LINIE,
         },
       },
-      { text: t('bericht.disclaimer'), fontSize: 7, color: ZH_GRAU, italics: true, margin: [0, 12, 0, 0] },
+      { text: t('bericht.disclaimer'), fontSize: 7, color: FARBE_GRAU, italics: true, margin: [0, 12, 0, 0] },
     ],
   }
 }

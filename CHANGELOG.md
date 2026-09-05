@@ -9,6 +9,60 @@ Versionierung nach [Semantic Versioning](https://semver.org/lang/de/).
 
 ## [Unreleased]
 
+### Geändert — Rückbau aller Behördenbezüge (v0.12.0)
+
+Das Werkzeug wird als privates Projekt von Stevan Skeledzic geführt. Entfernt
+sind sämtliche Angaben, die es als Erzeugnis der Fachstelle Verkehrssicherheit,
+des Tiefbauamts oder des Kantons Zürich ausweisen: Herausgeber und
+Verantwortlicher in Impressum und Datenschutzerklärung, die Dienstadresse und
+die Dienst-Telefonnummer, die Support-Adresse im Feedback-Dialog, die
+Organisationszeile in der Kopfleiste, der Absenderblock auf der Startseite, die
+Fusszeilen der drei Rechtsseiten in allen vier Sprachen sowie Seitentitel,
+Beschreibung und PWA-Manifest.
+
+**Das ISSI-Ausbildungslogo ist entfernt.** Es trug die Wortmarke «AUSBILDUNG
+TBA ZH» als festen Bestandteil der Bilddatei und stand damit auf jeder Seite in
+der Kopfleiste. Die Anwendung führt keine Bildmarke mehr und heisst schlicht
+«RSI VR Tool».
+
+**Die fachliche Quelle bleibt genannt.** Die Wichtigkeits-Tabelle und die
+beiden Bewertungsmatrizen stammen aus dem TBA-Fachkurs FK RSI (V 16.09.2020),
+die NACA-Einstufung aus dem bfu-Bericht 73. Weg muss die Behörde als Absender,
+nicht als belegte Fundstelle — eine Quelle, die man nicht identifizieren kann,
+ist keine Quelle.
+
+Die Design-Tokens heissen neu `--rsi-*` statt `--zh-*` (1302 Stellen); die
+Farbwerte sind unverändert. Im PDF-Export heissen die Farbkonstanten
+`FARBE_*` statt `ZH_*`.
+
+**Rechtsgrundlage der Datenschutzerklärung neu gefasst.** Verantwortlich ist
+neu eine Privatperson, nicht ein kantonales Organ. Der Verweis auf die
+öffentliche Aufgabe nach dem Strassengesetz und auf den kantonalen
+Datenschutzbeauftragten entfällt; die Bearbeitung stützt sich auf die
+Einwilligung nach Art. 31 Abs. 1 DSG, für EU-Betroffene auf Art. 6 Abs. 1
+lit. a und f DSGVO. Der bisherige Verweis auf Art. 31 Abs. 2 lit. a DSG war
+sachlich unzutreffend — diese Bestimmung betrifft Vertragspartner, nicht
+Schulungen (belegt am Gesetzestext, Fedlex-Stand 7. Juli 2025).
+
+### Hinzugefügt
+
+- Wächter `src/test/keine-affiliation.test.ts`: prüft Quellbaum **und** das
+  gebaute `dist/` gegen 18 Muster (Amtsbezeichnungen in vier Sprachen,
+  Kontaktangaben, Design-Tokens, Logo-Verweise). Die belegten Quellenangaben
+  stehen in einer ausdrücklichen Ausnahmeliste. Ein eingebauter Fehlerfall
+  belegt, dass die Muster greifen. Beim ersten Lauf schlug er am alten
+  `dist/`-Stand an — der Quellbaum allein hätte grün gemeldet.
+
+### Hinweis zur Historie
+
+Einträge unterhalb dieser Fassung beschreiben den damaligen Stand und nennen
+deshalb weiterhin die frühere Trägerschaft. Sie werden nicht rückwirkend
+geändert.
+
+---
+
+## [Historie bis v0.11.1]
+
 ### Geändert — Datenschutzerklärung nachgeführt (Freigabe P1/P2 vom 2026-08-02)
 
 Die Fachstelle hat entschieden, dass die seit v0.11.0 zentral gespeicherten

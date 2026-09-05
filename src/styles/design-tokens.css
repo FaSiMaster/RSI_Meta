@@ -1,90 +1,90 @@
-/* ── ZH Design-Tokens (aus FaSi_VIZ / Kanton Zürich Corporate Design) ── */
+/* ── RSI Design-Tokens ── */
 
 :root {
   /* Primärfarben */
-  --zh-blau:        #0076BD;
-  --zh-dunkelblau:  #00407C;
-  --zh-cyan:        #009EE0;
-  --zh-gruen:       #1A7F1F;
-  --zh-rot:         #D40053;
-  --zh-orange:      #B87300;
-  /* Hint/Warnung: heller als --zh-orange — semantisch fuer Overlays, RSI-
+  --rsi-blau:        #0076BD;
+  --rsi-dunkelblau:  #00407C;
+  --rsi-cyan:        #009EE0;
+  --rsi-gruen:       #1A7F1F;
+  --rsi-rot:         #D40053;
+  --rsi-orange:      #B87300;
+  /* Hint/Warnung: heller als --rsi-orange — semantisch fuer Overlays, RSI-
      Hotspots (Hint-Modus), Kategorie-Fehler (kein Match aber kein Hard-Fail).
-     Nicht im offiziellen KZH-CD-Set, aber seit v0.3.x in RSI_Meta etabliert. */
-  --zh-warnung:     #F0A500;
+     Seit v0.3.x in RSI_Meta etabliert. */
+  --rsi-warnung:     #F0A500;
 
   /* Graustufen */
-  --zh-schwarz:     #000000;
-  --zh-grau-1:      #333333;
-  --zh-grau-2:      #666666;
-  --zh-grau-3:      #949494;
-  --zh-grau-4:      #CCCCCC;
-  --zh-grau-5:      #F0F0F0;
-  --zh-grau-6:      #F7F7F7;
-  --zh-weiss:       #FFFFFF;
+  --rsi-schwarz:     #000000;
+  --rsi-grau-1:      #333333;
+  --rsi-grau-2:      #666666;
+  --rsi-grau-3:      #949494;
+  --rsi-grau-4:      #CCCCCC;
+  --rsi-grau-5:      #F0F0F0;
+  --rsi-grau-6:      #F7F7F7;
+  --rsi-weiss:       #FFFFFF;
 
   /* Semantische Farben
      - text-muted:   normaler Lesetext zweiter Ordnung (Kontrast 5.7:1, WCAG-AA)
      - text-disabled: subtil, aber WCAG-AA-konform (4.7:1) — wird in der Codebase
                       breit für Metadata/Timestamps/Footer genutzt, daher KEIN
                       2.85:1-Grau (#949494) mehr, sondern #737373. */
-  --zh-color-bg:          var(--zh-weiss);
-  --zh-color-bg-secondary: var(--zh-grau-6);
-  --zh-color-bg-tertiary:  var(--zh-grau-5);
-  --zh-color-surface:      var(--zh-weiss);
-  --zh-color-border:       var(--zh-grau-4);
-  --zh-color-text:         var(--zh-schwarz);
-  --zh-color-text-secondary: var(--zh-grau-1);
-  --zh-color-text-muted:   var(--zh-grau-2);
-  --zh-color-text-disabled: #737373;       /* 4.7:1 — WCAG-AA fuer kleinen Content-Text */
-  --zh-color-accent:       var(--zh-blau);
-  --zh-color-accent-dark:  var(--zh-dunkelblau);
+  --rsi-color-bg:          var(--rsi-weiss);
+  --rsi-color-bg-secondary: var(--rsi-grau-6);
+  --rsi-color-bg-tertiary:  var(--rsi-grau-5);
+  --rsi-color-surface:      var(--rsi-weiss);
+  --rsi-color-border:       var(--rsi-grau-4);
+  --rsi-color-text:         var(--rsi-schwarz);
+  --rsi-color-text-secondary: var(--rsi-grau-1);
+  --rsi-color-text-muted:   var(--rsi-grau-2);
+  --rsi-color-text-disabled: #737373;       /* 4.7:1 — WCAG-AA fuer kleinen Content-Text */
+  --rsi-color-accent:       var(--rsi-blau);
+  --rsi-color-accent-dark:  var(--rsi-dunkelblau);
 
   /* Badge / Status */
-  --zh-badge-w:     #1A7F1F;
-  --zh-badge-a:     #B87300;
-  --zh-badge-n:     #D40053;
+  --rsi-badge-w:     #1A7F1F;
+  --rsi-badge-a:     #B87300;
+  --rsi-badge-n:     #D40053;
 
   /* Typografie */
-  --zh-font:        "Inter", "Helvetica Now", "Helvetica", "Arial", sans-serif;
-  --zh-font-features: "ss07" 1, "ss08" 1, "cv03" 1, "cv04" 1, "cv10" 1;
+  --rsi-font:        "Inter", "Helvetica Now", "Helvetica", "Arial", sans-serif;
+  --rsi-font-features: "ss07" 1, "ss08" 1, "cv03" 1, "cv04" 1, "cv10" 1;
 
   /* Layout */
-  --zh-navbar-h:    56px;
-  --zh-footer-h:    56px;
-  --zh-radius-card: 12px;
-  --zh-radius-btn:  8px;
-  --zh-padding-page: 32px;
-  --zh-font-min:    14px;
+  --rsi-navbar-h:    56px;
+  --rsi-footer-h:    56px;
+  --rsi-radius-card: 12px;
+  --rsi-radius-btn:  8px;
+  --rsi-padding-page: 32px;
+  --rsi-font-min:    14px;
 
   /* Schatten */
-  --zh-shadow-sm:   0 1px 3px rgba(0,0,0,0.08);
-  --zh-shadow-md:   0 4px 16px rgba(0,0,0,0.10);
-  --zh-shadow-lg:   0 12px 40px rgba(0,0,0,0.12);
+  --rsi-shadow-sm:   0 1px 3px rgba(0,0,0,0.08);
+  --rsi-shadow-md:   0 4px 16px rgba(0,0,0,0.10);
+  --rsi-shadow-lg:   0 12px 40px rgba(0,0,0,0.12);
 }
 
 /* ── Dark Mode ── */
 [data-theme="dark"] {
-  --zh-blau:        #7AB6E2;
-  --zh-cyan:        #6BC9CB;
-  --zh-gruen:       #6EBD72;
-  --zh-rot:         #FF6B9D;
-  --zh-orange:      #FFBA55;
-  --zh-warnung:     #FFC24D;
+  --rsi-blau:        #7AB6E2;
+  --rsi-cyan:        #6BC9CB;
+  --rsi-gruen:       #6EBD72;
+  --rsi-rot:         #FF6B9D;
+  --rsi-orange:      #FFBA55;
+  --rsi-warnung:     #FFC24D;
 
-  --zh-color-bg:           #000000;
-  --zh-color-bg-secondary: #1A1A1A;
-  --zh-color-bg-tertiary:  #252525;
-  --zh-color-surface:      #111111;
-  --zh-color-border:       #333333;
-  --zh-color-text:         #F0F0F0;
-  --zh-color-text-secondary: #CCCCCC;
-  --zh-color-text-muted:   #B5B5B5;  /* Dark-Mode: WCAG-AA auf #000 (Kontrast 10:1) */
-  --zh-color-text-disabled: #8E8E8E;  /* Dark-Mode: 5.4:1 auf #000 */
-  --zh-color-accent:       #7AB6E2;
-  --zh-color-accent-dark:  #5FA0D0;
+  --rsi-color-bg:           #000000;
+  --rsi-color-bg-secondary: #1A1A1A;
+  --rsi-color-bg-tertiary:  #252525;
+  --rsi-color-surface:      #111111;
+  --rsi-color-border:       #333333;
+  --rsi-color-text:         #F0F0F0;
+  --rsi-color-text-secondary: #CCCCCC;
+  --rsi-color-text-muted:   #B5B5B5;  /* Dark-Mode: WCAG-AA auf #000 (Kontrast 10:1) */
+  --rsi-color-text-disabled: #8E8E8E;  /* Dark-Mode: 5.4:1 auf #000 */
+  --rsi-color-accent:       #7AB6E2;
+  --rsi-color-accent-dark:  #5FA0D0;
 
-  --zh-shadow-sm:   0 1px 3px rgba(0,0,0,0.40);
-  --zh-shadow-md:   0 4px 16px rgba(0,0,0,0.50);
-  --zh-shadow-lg:   0 12px 40px rgba(0,0,0,0.60);
+  --rsi-shadow-sm:   0 1px 3px rgba(0,0,0,0.40);
+  --rsi-shadow-md:   0 4px 16px rgba(0,0,0,0.50);
+  --rsi-shadow-lg:   0 12px 40px rgba(0,0,0,0.60);
 }

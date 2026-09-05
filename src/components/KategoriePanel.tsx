@@ -51,7 +51,7 @@ export default function KategoriePanel({ onSelect, onCancel }: Props) {
         maxWidth:       '92vw',
         boxShadow:      '0 16px 48px rgba(0,0,0,0.7)',
         zIndex:         300,
-        fontFamily:     'var(--zh-font)',
+        fontFamily:     'var(--rsi-font)',
       }}
     >
       {/* Header */}
@@ -91,7 +91,7 @@ export default function KategoriePanel({ onSelect, onCancel }: Props) {
               fontSize:    '14px',
               fontWeight:  600,
               cursor:      'pointer',
-              fontFamily:  'var(--zh-font)',
+              fontFamily:  'var(--rsi-font)',
             }}
             onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.background = 'rgba(0,118,189,0.45)'; (e.currentTarget as HTMLButtonElement).style.borderColor = 'rgba(0,118,189,0.6)' }}
             onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.background = 'rgba(255,255,255,0.05)'; (e.currentTarget as HTMLButtonElement).style.borderColor = 'rgba(255,255,255,0.10)' }}
@@ -106,7 +106,7 @@ export default function KategoriePanel({ onSelect, onCancel }: Props) {
 
       <button
         onClick={onCancel}
-        style={{ width: '100%', padding: '9px', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.10)', background: 'transparent', color: 'rgba(255,255,255,0.45)', fontSize: '13px', cursor: 'pointer', fontFamily: 'var(--zh-font)' }}
+        style={{ width: '100%', padding: '9px', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.10)', background: 'transparent', color: 'rgba(255,255,255,0.45)', fontSize: '13px', cursor: 'pointer', fontFamily: 'var(--rsi-font)' }}
       >
         {t('admin.cancelBtn')}
       </button>

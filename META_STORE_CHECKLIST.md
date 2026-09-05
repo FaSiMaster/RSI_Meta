@@ -45,7 +45,7 @@
 - [ ] Ausführliche Beschreibung bis 4000 Zeichen zu Zweck, Zielgruppe und
       Kursgrundlage
 - [ ] Kategorie: Bildung oder Training
-- [ ] Anbieter: Kanton Zürich, Tiefbauamt
+- [ ] Anbieter: Stevan Skeledzic (privat)
 - [ ] Adresse der Anwendung und Adresse für Unterstützung
 
 ### 2.2 Sprachen
@@ -89,7 +89,6 @@
 
 - [ ] Verwendung des Kantonswappens durch die Staatskanzlei genehmigen lassen
 - [ ] Road Safety Inspection ist ein Fachbegriff ohne Markenschutz
-- [ ] Auftritt von Fachstelle und Tiefbauamt ist intern abgestimmt
 
 ---
 
@@ -139,7 +138,7 @@ Kleinere Aktualisierungen erreichen die Geräte über den Service Worker und
 wirken sofort. Grössere Sprünge verlangen ein neues Paket und eine erneute
 Einreichung. Die Versionshinweise für den Eintrag entstehen auf Deutsch.
 
-Für Rückfragen dient die Adresse der Fachstelle; ein Verweis auf die häufigen
+Für Rückfragen dient die Adresse im Impressum; ein Verweis auf die häufigen
 Fragen gehört in den Eintrag.
 
 ---
@@ -148,10 +147,10 @@ Fragen gehört in den Eintrag.
 
 | Punkt | Zuständig | Termin |
 |---|---|---|
-| Name «RSI VR Tool» bestätigen | Fachstelle und Kommunikation | vor der Einreichung |
+| Name «RSI VR Tool» bestätigen | Herausgeber | vor der Einreichung |
 | Nutzung des Kantonswappens | Staatskanzlei | vor der Einreichung |
-| Sprachen des Eintrags | Fachstelle | vor der Einreichung |
-| Angestrebte Altersfreigabe | Fachstelle | beim Ausfüllen des Fragebogens |
+| Sprachen des Eintrags | Herausgeber | vor der Einreichung |
+| Angestrebte Altersfreigabe | Herausgeber | beim Ausfüllen des Fragebogens |
 | Interner Test oder direkte Einreichung | Amtsleitung | vor Bubblewrap |
 
 ---

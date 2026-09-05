@@ -26,18 +26,18 @@ export function VorschaubildEditor({
     borderRadius: '6px',
     fontSize: '12px',
     fontWeight: 600,
-    border: aktiv ? '2px solid var(--zh-blau)' : '1px solid var(--zh-color-border)',
-    background: aktiv ? 'rgba(0,118,189,0.08)' : 'var(--zh-color-surface)',
-    color: aktiv ? 'var(--zh-blau)' : disabled ? 'var(--zh-color-text-disabled)' : 'var(--zh-color-text-muted)',
+    border: aktiv ? '2px solid var(--rsi-blau)' : '1px solid var(--rsi-color-border)',
+    background: aktiv ? 'rgba(0,118,189,0.08)' : 'var(--rsi-color-surface)',
+    color: aktiv ? 'var(--rsi-blau)' : disabled ? 'var(--rsi-color-text-disabled)' : 'var(--rsi-color-text-muted)',
     cursor: disabled ? 'not-allowed' : 'pointer',
-    fontFamily: 'var(--zh-font)',
+    fontFamily: 'var(--rsi-font)',
     opacity: disabled ? 0.55 : 1,
   })
 
   return (
     <div style={{ marginBottom: '20px' }}>
       <div style={{
-        fontSize: '11px', fontWeight: 700, color: 'var(--zh-color-text-disabled)',
+        fontSize: '11px', fontWeight: 700, color: 'var(--rsi-color-text-disabled)',
         marginBottom: '8px', textTransform: 'uppercase', letterSpacing: '0.1em',
       }}>
         {label}
@@ -68,7 +68,7 @@ export function VorschaubildEditor({
 
       {/* Kein Panorama vorhanden */}
       {modus === 'panorama' && !hasPanorama && (
-        <p style={{ fontSize: '12px', color: 'var(--zh-color-text-disabled)', fontStyle: 'italic', marginBottom: '8px' }}>
+        <p style={{ fontSize: '12px', color: 'var(--rsi-color-text-disabled)', fontStyle: 'italic', marginBottom: '8px' }}>
           Zuerst ein Panoramabild für diese Szene hochladen.
         </p>
       )}
@@ -93,7 +93,7 @@ export function VorschaubildEditor({
           height: '80px',
           borderRadius: '6px',
           overflow: 'hidden',
-          border: '1px solid var(--zh-color-border)',
+          border: '1px solid var(--rsi-color-border)',
           background: '#000',
           marginTop: '6px',
         }}>

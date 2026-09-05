@@ -134,10 +134,10 @@ export default function SzeneModal({ open, initial, isNew, onClose, onSave, onOp
   return (
     <div style={{ position: 'fixed', inset: 0, zIndex: 50, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'rgba(0,0,0,0.5)', backdropFilter: 'blur(4px)' }}
       onClick={e => { if (e.target === e.currentTarget) onClose() }}>
-      <div ref={modalRef} role="dialog" aria-modal="true" style={{ width: '680px', maxHeight: '88vh', overflowY: 'auto', borderRadius: 'var(--zh-radius-card)', border: '1px solid var(--zh-color-border)', background: 'var(--zh-color-surface)', padding: '28px 32px', boxShadow: 'var(--zh-shadow-lg)' }}>
+      <div ref={modalRef} role="dialog" aria-modal="true" style={{ width: '680px', maxHeight: '88vh', overflowY: 'auto', borderRadius: 'var(--rsi-radius-card)', border: '1px solid var(--rsi-color-border)', background: 'var(--rsi-color-surface)', padding: '28px 32px', boxShadow: 'var(--rsi-shadow-lg)' }}>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '24px' }}>
-          <h3 style={{ fontSize: '18px', fontWeight: 700, color: 'var(--zh-color-text)' }}>{isNew ? t('admin.szene_neu') : t('admin.szene_bearbeiten')}</h3>
-          <button onClick={onClose} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--zh-color-text-muted)' }}><X size={18} /></button>
+          <h3 style={{ fontSize: '18px', fontWeight: 700, color: 'var(--rsi-color-text)' }}>{isNew ? t('admin.szene_neu') : t('admin.szene_bearbeiten')}</h3>
+          <button onClick={onClose} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--rsi-color-text-muted)' }}><X size={18} /></button>
         </div>
 
         <Section label="Szenenname">
@@ -174,7 +174,7 @@ export default function SzeneModal({ open, initial, isNew, onClose, onSave, onOp
           <div style={{ display: 'flex', gap: '6px' }}>
             {(['io','ao'] as const).map(k => (
               <button key={k} onClick={() => setDraft(prev => prev ? { ...prev, kontext: k } : prev)}
-                style={{ padding: '8px 16px', borderRadius: '6px', border: draft.kontext === k ? '2px solid var(--zh-blau)' : '1px solid var(--zh-color-border)', background: draft.kontext === k ? 'rgba(0,118,189,0.08)' : 'var(--zh-color-surface)', color: draft.kontext === k ? 'var(--zh-blau)' : 'var(--zh-color-text-muted)', fontWeight: 700, fontSize: '13px', cursor: 'pointer' }}>
+                style={{ padding: '8px 16px', borderRadius: '6px', border: draft.kontext === k ? '2px solid var(--rsi-blau)' : '1px solid var(--rsi-color-border)', background: draft.kontext === k ? 'rgba(0,118,189,0.08)' : 'var(--rsi-color-surface)', color: draft.kontext === k ? 'var(--rsi-blau)' : 'var(--rsi-color-text-muted)', fontWeight: 700, fontSize: '13px', cursor: 'pointer' }}>
                 {k === 'io' ? 'Innerorts' : 'Ausserorts'}
               </button>
             ))}
@@ -185,7 +185,7 @@ export default function SzeneModal({ open, initial, isNew, onClose, onSave, onOp
             app-weiten Defaults (alle Pflichtdefizite + 60 %). */}
         <Section label={t('admin.bestanden_titel')}>
           <div style={{ display: 'flex', gap: '16px', alignItems: 'center', flexWrap: 'wrap' }}>
-            <label style={{ display: 'flex', alignItems: 'center', gap: '7px', fontSize: '13px', color: 'var(--zh-color-text)', cursor: 'pointer' }}>
+            <label style={{ display: 'flex', alignItems: 'center', gap: '7px', fontSize: '13px', color: 'var(--rsi-color-text)', cursor: 'pointer' }}>
               <input
                 type="checkbox"
                 checked={draft.bestandenKriterium?.allePflicht ?? true}
@@ -196,7 +196,7 @@ export default function SzeneModal({ open, initial, isNew, onClose, onSave, onOp
               />
               {t('admin.bestanden_pflicht')}
             </label>
-            <label style={{ display: 'flex', alignItems: 'center', gap: '7px', fontSize: '13px', color: 'var(--zh-color-text)' }}>
+            <label style={{ display: 'flex', alignItems: 'center', gap: '7px', fontSize: '13px', color: 'var(--rsi-color-text)' }}>
               {t('admin.bestanden_prozent')}
               <input
                 type="number"
@@ -212,12 +212,12 @@ export default function SzeneModal({ open, initial, isNew, onClose, onSave, onOp
                     bestandenKriterium: { ...prev.bestandenKriterium, minProzent: val },
                   } : prev)
                 }}
-                style={{ width: '70px', padding: '6px 8px', borderRadius: '6px', border: '1px solid var(--zh-color-border)', background: 'var(--zh-color-bg-secondary)', color: 'var(--zh-color-text)', fontSize: '13px', fontFamily: 'var(--zh-font)' }}
+                style={{ width: '70px', padding: '6px 8px', borderRadius: '6px', border: '1px solid var(--rsi-color-border)', background: 'var(--rsi-color-bg-secondary)', color: 'var(--rsi-color-text)', fontSize: '13px', fontFamily: 'var(--rsi-font)' }}
               />
               %
             </label>
           </div>
-          <p style={{ fontSize: '11px', color: 'var(--zh-color-text-disabled)', marginTop: '6px' }}>
+          <p style={{ fontSize: '11px', color: 'var(--rsi-color-text-disabled)', marginTop: '6px' }}>
             {t('admin.bestanden_hinweis')}
           </p>
         </Section>
@@ -225,7 +225,7 @@ export default function SzeneModal({ open, initial, isNew, onClose, onSave, onOp
         <Section label={t('admin.merkmale_label')}>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
             {(draft.strassenmerkmale ?? []).length === 0 && (
-              <button onClick={initMerkmaleFromKatalog} style={{ padding: '10px 14px', borderRadius: '6px', border: '1px dashed var(--zh-color-border)', background: 'rgba(0,118,189,0.04)', color: 'var(--zh-blau)', fontSize: '13px', fontWeight: 600, cursor: 'pointer', textAlign: 'left' }}>
+              <button onClick={initMerkmaleFromKatalog} style={{ padding: '10px 14px', borderRadius: '6px', border: '1px dashed var(--rsi-color-border)', background: 'rgba(0,118,189,0.04)', color: 'var(--rsi-blau)', fontSize: '13px', fontWeight: 600, cursor: 'pointer', textAlign: 'left' }}>
                 Katalog laden (Funktionalität)
               </button>
             )}
@@ -234,12 +234,12 @@ export default function SzeneModal({ open, initial, isNew, onClose, onSave, onOp
               return (
                 <div key={i} style={{ display: 'flex', gap: '8px', alignItems: 'flex-end' }}>
                   <div style={{ flex: 1 }}>
-                    <div style={{ fontSize: '10px', fontWeight: 700, color: 'var(--zh-color-text-disabled)', marginBottom: '3px', textTransform: 'uppercase', letterSpacing: '0.1em' }}>
+                    <div style={{ fontSize: '10px', fontWeight: 700, color: 'var(--rsi-color-text-disabled)', marginBottom: '3px', textTransform: 'uppercase', letterSpacing: '0.1em' }}>
                       {katalogDef ? katalogDef.label : 'Label (DE)'}
                     </div>
                     {!katalogDef ? (
                       <input value={m.labelI18n.de} onChange={e => updateMerkmal(i, 'labelI18n', e.target.value)}
-                        style={{ width: '100%', padding: '7px 10px', borderRadius: '6px', border: '1px solid var(--zh-color-border)', background: 'var(--zh-color-bg-secondary)', color: 'var(--zh-color-text)', fontSize: '13px', fontFamily: 'var(--zh-font)', boxSizing: 'border-box' }} />
+                        style={{ width: '100%', padding: '7px 10px', borderRadius: '6px', border: '1px solid var(--rsi-color-border)', background: 'var(--rsi-color-bg-secondary)', color: 'var(--rsi-color-text)', fontSize: '13px', fontFamily: 'var(--rsi-font)', boxSizing: 'border-box' }} />
                     ) : null}
                   </div>
                   <div style={{ flex: 1 }}>
@@ -247,7 +247,7 @@ export default function SzeneModal({ open, initial, isNew, onClose, onSave, onOp
                       <select
                         value={m.wertI18n.de}
                         onChange={e => updateMerkmal(i, 'wertI18n', e.target.value)}
-                        style={{ width: '100%', padding: '7px 10px', borderRadius: '6px', border: '1px solid var(--zh-color-border)', background: 'var(--zh-color-bg-secondary)', color: 'var(--zh-color-text)', fontSize: '13px', fontFamily: 'var(--zh-font)', boxSizing: 'border-box', cursor: 'pointer' }}
+                        style={{ width: '100%', padding: '7px 10px', borderRadius: '6px', border: '1px solid var(--rsi-color-border)', background: 'var(--rsi-color-bg-secondary)', color: 'var(--rsi-color-text)', fontSize: '13px', fontFamily: 'var(--rsi-font)', boxSizing: 'border-box', cursor: 'pointer' }}
                       >
                         <option value="">— auswählen —</option>
                         {katalogDef.optionen.map(o => (
@@ -256,17 +256,17 @@ export default function SzeneModal({ open, initial, isNew, onClose, onSave, onOp
                       </select>
                     ) : (
                       <input value={m.wertI18n.de} onChange={e => updateMerkmal(i, 'wertI18n', e.target.value)}
-                        style={{ width: '100%', padding: '7px 10px', borderRadius: '6px', border: '1px solid var(--zh-color-border)', background: 'var(--zh-color-bg-secondary)', color: 'var(--zh-color-text)', fontSize: '13px', fontFamily: 'var(--zh-font)', boxSizing: 'border-box' }} />
+                        style={{ width: '100%', padding: '7px 10px', borderRadius: '6px', border: '1px solid var(--rsi-color-border)', background: 'var(--rsi-color-bg-secondary)', color: 'var(--rsi-color-text)', fontSize: '13px', fontFamily: 'var(--rsi-font)', boxSizing: 'border-box' }} />
                     )}
                   </div>
-                  <button onClick={() => removeMerkmal(i)} style={{ padding: '7px 10px', borderRadius: '6px', border: '1px solid rgba(212,0,83,0.2)', background: 'rgba(212,0,83,0.06)', color: 'var(--zh-rot)', cursor: 'pointer', flexShrink: 0 }}>
+                  <button onClick={() => removeMerkmal(i)} style={{ padding: '7px 10px', borderRadius: '6px', border: '1px solid rgba(212,0,83,0.2)', background: 'rgba(212,0,83,0.06)', color: 'var(--rsi-rot)', cursor: 'pointer', flexShrink: 0 }}>
                     <Trash2 size={13} />
                   </button>
                 </div>
               )
             })}
             {(draft.strassenmerkmale ?? []).length > 0 && (
-              <button onClick={addMerkmal} style={{ padding: '7px 14px', borderRadius: '6px', border: '1px dashed var(--zh-color-border)', background: 'transparent', color: 'var(--zh-blau)', fontSize: '13px', fontWeight: 600, cursor: 'pointer', textAlign: 'left' }}>
+              <button onClick={addMerkmal} style={{ padding: '7px 14px', borderRadius: '6px', border: '1px dashed var(--rsi-color-border)', background: 'transparent', color: 'var(--rsi-blau)', fontSize: '13px', fontWeight: 600, cursor: 'pointer', textAlign: 'left' }}>
                 {t('admin.merkmale_hinzufügen')}
               </button>
             )}
@@ -285,7 +285,7 @@ export default function SzeneModal({ open, initial, isNew, onClose, onSave, onOp
             }}
           />
           {panoramaVorschau && (
-            <p style={{ fontSize: '11px', color: 'var(--zh-color-text-muted)', marginTop: '6px' }}>
+            <p style={{ fontSize: '11px', color: 'var(--rsi-color-text-muted)', marginTop: '6px' }}>
               Geladen: {panoramaVorschau.breite.toLocaleString('de-CH')} × {panoramaVorschau.hoehe.toLocaleString('de-CH')} Pixel
             </p>
           )}
@@ -296,10 +296,10 @@ export default function SzeneModal({ open, initial, isNew, onClose, onSave, onOp
                 marginTop: '8px',
                 display: 'flex', alignItems: 'center', gap: '6px',
                 padding: '8px 14px', borderRadius: '6px',
-                background: 'rgba(0,118,189,0.1)', color: 'var(--zh-blau)',
+                background: 'rgba(0,118,189,0.1)', color: 'var(--rsi-blau)',
                 border: '1px solid rgba(0,118,189,0.3)',
                 fontSize: '13px', fontWeight: 600, cursor: 'pointer',
-                fontFamily: 'var(--zh-font)',
+                fontFamily: 'var(--rsi-font)',
               }}
             >
               Verortungs-Editor öffnen
@@ -309,18 +309,18 @@ export default function SzeneModal({ open, initial, isNew, onClose, onSave, onOp
 
         {/* Perspektiven (mehrere Panorama-Bilder pro Szene) */}
         <Section label="Perspektiven (Standortwechsel)">
-          <p style={{ fontSize: '11px', color: 'var(--zh-color-text-muted)', marginBottom: '10px' }}>
+          <p style={{ fontSize: '11px', color: 'var(--rsi-color-text-muted)', marginBottom: '10px' }}>
             Mehrere Panoramabilder für dieselbe Szene. Defizite können pro Perspektive neu verortet werden.
           </p>
           {perspektiven.map((p, i) => (
             <div key={p.id} style={{
               padding: '10px 12px', borderRadius: '8px',
-              border: '1px solid var(--zh-color-border)',
-              background: 'var(--zh-color-bg-secondary)',
+              border: '1px solid var(--rsi-color-border)',
+              background: 'var(--rsi-color-bg-secondary)',
               marginBottom: '8px',
             }}>
               <div style={{ display: 'flex', gap: '8px', alignItems: 'center', marginBottom: '8px' }}>
-                <span style={{ fontSize: '12px', fontWeight: 700, color: 'var(--zh-blau)', minWidth: '20px' }}>{i + 1}</span>
+                <span style={{ fontSize: '12px', fontWeight: 700, color: 'var(--rsi-blau)', minWidth: '20px' }}>{i + 1}</span>
                 <input
                   value={p.label}
                   onChange={e => {
@@ -331,8 +331,8 @@ export default function SzeneModal({ open, initial, isNew, onClose, onSave, onOp
                   placeholder="Label (z.B. Standort A)"
                   style={{
                     flex: 1, padding: '5px 8px', borderRadius: '4px',
-                    border: '1px solid var(--zh-color-border)', background: 'var(--zh-color-surface)',
-                    color: 'var(--zh-color-text)', fontSize: '12px', fontFamily: 'var(--zh-font)',
+                    border: '1px solid var(--rsi-color-border)', background: 'var(--rsi-color-surface)',
+                    color: 'var(--rsi-color-text)', fontSize: '12px', fontFamily: 'var(--rsi-font)',
                   }}
                 />
                 <button
@@ -342,7 +342,7 @@ export default function SzeneModal({ open, initial, isNew, onClose, onSave, onOp
                   }}
                   style={{
                     background: 'none', border: 'none', cursor: 'pointer',
-                    color: 'var(--zh-rot)', padding: '2px', flexShrink: 0,
+                    color: 'var(--rsi-rot)', padding: '2px', flexShrink: 0,
                   }}
                 >
                   <Trash2 size={14} />
@@ -362,7 +362,7 @@ export default function SzeneModal({ open, initial, isNew, onClose, onSave, onOp
                 }}
               />
               {p.bildUrl && (
-                <p style={{ fontSize: '10px', color: 'var(--zh-color-text-disabled)', marginTop: '4px' }}>
+                <p style={{ fontSize: '10px', color: 'var(--rsi-color-text-disabled)', marginTop: '4px' }}>
                   {p.bildUrl}
                 </p>
               )}
@@ -382,10 +382,10 @@ export default function SzeneModal({ open, initial, isNew, onClose, onSave, onOp
             }}
             style={{
               padding: '7px 14px', borderRadius: '6px',
-              border: '1px dashed var(--zh-color-border)',
-              background: 'transparent', color: 'var(--zh-blau)',
+              border: '1px dashed var(--rsi-color-border)',
+              background: 'transparent', color: 'var(--rsi-blau)',
               fontSize: '12px', fontWeight: 600, cursor: 'pointer',
-              fontFamily: 'var(--zh-font)',
+              fontFamily: 'var(--rsi-font)',
             }}
           >
             + Perspektive hinzufügen
@@ -430,14 +430,14 @@ export default function SzeneModal({ open, initial, isNew, onClose, onSave, onOp
             szeneId={draft.id}
           />
 
-          <p style={{ fontSize: '11px', color: 'var(--zh-color-text-disabled)', marginTop: '4px' }}>
+          <p style={{ fontSize: '11px', color: 'var(--rsi-color-text-disabled)', marginTop: '4px' }}>
             {t('admin.mehrsprachen_hinweis')}
           </p>
         </Section>
 
         <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px', marginTop: '24px' }}>
-          <button onClick={onClose} style={{ padding: '9px 18px', borderRadius: 'var(--zh-radius-btn)', border: '1px solid var(--zh-color-border)', background: 'transparent', color: 'var(--zh-color-text-muted)', fontSize: '13px', fontWeight: 600, cursor: 'pointer' }}>{t('admin.cancelBtn')}</button>
-          <button onClick={handleSave} style={{ display: 'flex', alignItems: 'center', gap: '6px', padding: '9px 18px', borderRadius: 'var(--zh-radius-btn)', background: 'var(--zh-dunkelblau)', color: 'white', fontWeight: 700, fontSize: '13px', border: 'none', cursor: 'pointer' }}>
+          <button onClick={onClose} style={{ padding: '9px 18px', borderRadius: 'var(--rsi-radius-btn)', border: '1px solid var(--rsi-color-border)', background: 'transparent', color: 'var(--rsi-color-text-muted)', fontSize: '13px', fontWeight: 600, cursor: 'pointer' }}>{t('admin.cancelBtn')}</button>
+          <button onClick={handleSave} style={{ display: 'flex', alignItems: 'center', gap: '6px', padding: '9px 18px', borderRadius: 'var(--rsi-radius-btn)', background: 'var(--rsi-dunkelblau)', color: 'white', fontWeight: 700, fontSize: '13px', border: 'none', cursor: 'pointer' }}>
             <Save size={14} /> {t('admin.saveBtn')}
           </button>
         </div>

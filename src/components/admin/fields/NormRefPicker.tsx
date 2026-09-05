@@ -51,15 +51,15 @@ export function NormRefPicker({ value, onChange }: NormRefPickerProps) {
             <span key={ref} style={{
               display: 'inline-flex', alignItems: 'center', gap: '6px',
               padding: '4px 10px', borderRadius: '14px',
-              background: 'rgba(0,118,189,0.10)', color: 'var(--zh-blau)',
+              background: 'rgba(0,118,189,0.10)', color: 'var(--rsi-blau)',
               border: '1px solid rgba(0,118,189,0.25)',
-              fontSize: '12px', fontWeight: 600, fontFamily: 'var(--zh-font)',
+              fontSize: '12px', fontWeight: 600, fontFamily: 'var(--rsi-font)',
             }}>
               {ref}
               <button
                 onClick={() => removeRef(ref)}
                 aria-label={`Norm ${ref} entfernen`}
-                style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--zh-blau)', padding: 0, display: 'flex', alignItems: 'center' }}
+                style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--rsi-blau)', padding: 0, display: 'flex', alignItems: 'center' }}
               >
                 <X size={11} />
               </button>
@@ -71,23 +71,23 @@ export function NormRefPicker({ value, onChange }: NormRefPickerProps) {
       {/* Suchfeld */}
       <div style={{ position: 'relative' }}>
         <div style={{ position: 'relative' }}>
-          <Search size={14} style={{ position: 'absolute', left: '10px', top: '50%', transform: 'translateY(-50%)', color: 'var(--zh-color-text-disabled)' }} />
+          <Search size={14} style={{ position: 'absolute', left: '10px', top: '50%', transform: 'translateY(-50%)', color: 'var(--rsi-color-text-disabled)' }} />
           <input
             value={query}
             onChange={e => { setQuery(e.target.value); setShowResults(true) }}
             onFocus={() => setShowResults(true)}
             onBlur={() => setTimeout(() => setShowResults(false), 200)}
             placeholder="Suche nach Norm-Nummer oder Stichwort (z.B. VSS 40 201, Fussverkehr, Sicht)"
-            style={{ width: '100%', padding: '8px 12px 8px 32px', borderRadius: '6px', border: '1px solid var(--zh-color-border)', background: 'var(--zh-color-bg-secondary)', color: 'var(--zh-color-text)', fontSize: '13px', fontFamily: 'var(--zh-font)', boxSizing: 'border-box' }}
+            style={{ width: '100%', padding: '8px 12px 8px 32px', borderRadius: '6px', border: '1px solid var(--rsi-color-border)', background: 'var(--rsi-color-bg-secondary)', color: 'var(--rsi-color-text)', fontSize: '13px', fontFamily: 'var(--rsi-font)', boxSizing: 'border-box' }}
           />
         </div>
         {showResults && results.length > 0 && (
           <div style={{
             position: 'absolute', top: 'calc(100% + 4px)', left: 0, right: 0, zIndex: 10,
-            background: 'var(--zh-color-surface)',
-            border: '1px solid var(--zh-color-border)',
+            background: 'var(--rsi-color-surface)',
+            border: '1px solid var(--rsi-color-border)',
             borderRadius: '8px',
-            boxShadow: 'var(--zh-shadow-lg)',
+            boxShadow: 'var(--rsi-shadow-lg)',
             maxHeight: '280px', overflowY: 'auto',
           }}>
             {results.map(r => (
@@ -98,16 +98,16 @@ export function NormRefPicker({ value, onChange }: NormRefPickerProps) {
                   display: 'block', width: '100%', textAlign: 'left',
                   padding: '8px 12px',
                   background: 'transparent', border: 'none',
-                  borderBottom: '1px solid var(--zh-color-border)',
-                  cursor: 'pointer', fontFamily: 'var(--zh-font)',
+                  borderBottom: '1px solid var(--rsi-color-border)',
+                  cursor: 'pointer', fontFamily: 'var(--rsi-font)',
                 }}
                 onMouseEnter={e => (e.currentTarget.style.background = 'rgba(0,118,189,0.06)')}
                 onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
               >
-                <div style={{ fontSize: '12px', fontWeight: 700, color: 'var(--zh-blau)', fontFamily: 'monospace' }}>
+                <div style={{ fontSize: '12px', fontWeight: 700, color: 'var(--rsi-blau)', fontFamily: 'monospace' }}>
                   {r.nummer}
                 </div>
-                <div style={{ fontSize: '11px', color: 'var(--zh-color-text-muted)', marginTop: '2px' }}>
+                <div style={{ fontSize: '11px', color: 'var(--rsi-color-text-muted)', marginTop: '2px' }}>
                   {r.titel}
                 </div>
               </button>
@@ -123,12 +123,12 @@ export function NormRefPicker({ value, onChange }: NormRefPickerProps) {
           onChange={e => setFreeInput(e.target.value)}
           onKeyDown={e => { if (e.key === 'Enter') { e.preventDefault(); handleAddFree() } }}
           placeholder="Eigene Referenz hinzufuegen (Enter)"
-          style={{ flex: 1, padding: '7px 10px', borderRadius: '6px', border: '1px solid var(--zh-color-border)', background: 'var(--zh-color-bg-secondary)', color: 'var(--zh-color-text)', fontSize: '12px', fontFamily: 'var(--zh-font)', boxSizing: 'border-box' }}
+          style={{ flex: 1, padding: '7px 10px', borderRadius: '6px', border: '1px solid var(--rsi-color-border)', background: 'var(--rsi-color-bg-secondary)', color: 'var(--rsi-color-text)', fontSize: '12px', fontFamily: 'var(--rsi-font)', boxSizing: 'border-box' }}
         />
         <button
           onClick={handleAddFree}
           disabled={!freeInput.trim()}
-          style={{ padding: '7px 14px', borderRadius: '6px', border: 'none', background: freeInput.trim() ? 'var(--zh-dunkelblau)' : 'var(--zh-color-bg-tertiary)', color: freeInput.trim() ? 'white' : 'var(--zh-color-text-disabled)', fontSize: '12px', fontWeight: 700, cursor: freeInput.trim() ? 'pointer' : 'not-allowed' }}
+          style={{ padding: '7px 14px', borderRadius: '6px', border: 'none', background: freeInput.trim() ? 'var(--rsi-dunkelblau)' : 'var(--rsi-color-bg-tertiary)', color: freeInput.trim() ? 'white' : 'var(--rsi-color-text-disabled)', fontSize: '12px', fontWeight: 700, cursor: freeInput.trim() ? 'pointer' : 'not-allowed' }}
         >
           Hinzufuegen
         </button>
