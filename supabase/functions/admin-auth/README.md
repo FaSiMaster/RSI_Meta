@@ -13,7 +13,7 @@ Dashboard → Edge Functions → Deploy new function:
 - **Code:** Inhalt von `index.ts` einfügen
 - **Secrets** (Project Settings → Edge Functions → Secrets):
   - `ADMIN_PIN` – die aktuelle PIN, identisch mit der in `admin-write`
-    hinterlegten. Der Wert gehört in den Passwortsafe der Fachstelle, nicht in
+    hinterlegten. Der Wert gehört in einen Passwortsafe, nicht in
     dieses Repository.
   - `ADMIN_TOKEN_SECRET` – 32 Byte hexadezimal, einmalig erzeugt und geheim zu
     halten. Erzeugen etwa mit `openssl rand -hex 32` oder unter PowerShell mit

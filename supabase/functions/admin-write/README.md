@@ -78,4 +78,4 @@ gegebenenfalls die Rechteverwaltung von Supabase.
 damit, die Anwendung enthalte keine datenschutzrelevanten Daten. Gespeichert
 werden pseudonymisierte Namen, Punktestände und Kurszugehörigkeiten; das
 Datenschutzgesetz ist damit einschlägig, auch wenn die Angaben nicht besonders
-schützenswert sind. Die Risikoeinschätzung ist von der Fachstelle zu bestätigen.
+schützenswert sind. Die Risikoeinschätzung ist vom Betreiber zu bestätigen.
