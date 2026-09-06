@@ -6684,48 +6684,6 @@
       }
     },
     {
-      "id": "SD_0002",
-      "kontext": "io",
-      "sceneId": "SZ_2026_003",
-      "topicId": "tp-1776689553411",
-      "nameI18n": {
-        "de": "Sicht",
-        "en": "Visibility",
-        "fr": "Visibilité",
-        "it": "Visibilità"
-      },
-      "normRefs": [
-        "SN 641 723"
-      ],
-      "isBooster": true,
-      "isPflicht": true,
-      "kategorie": "sicht",
-      "verortung": {
-        "typ": "punkt",
-        "position": {
-          "phi": 90.82968647549679,
-          "theta": 72.53569878385517
-        },
-        "toleranz": 15
-      },
-      "kriteriumId": "miv_oev_lw",
-      "beschreibungI18n": {
-        "de": "Sichtweiten",
-        "en": "Sight distances",
-        "fr": "Distances de visibilité",
-        "it": "Distanze di visibilità"
-      },
-      "correctAssessment": {
-        "naca": 7,
-        "abweichung": "mittel",
-        "relevanzSD": "mittel",
-        "wichtigkeit": "gross",
-        "unfallrisiko": "hoch",
-        "unfallschwere": "schwer"
-      },
-      "boosterBonusProzent": 10
-    },
-    {
       "id": "d-1776640642461",
       "kontext": "io",
       "sceneId": "sc-1776639802186",

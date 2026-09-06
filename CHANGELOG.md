@@ -46,8 +46,8 @@ geführtes Merkmal. Neu **272 Merkmalswerte** statt 251.
 ### Behoben
 
 - **«VSS 41 723» gibt es nicht.** Das Gesamt-Normenverzeichnis VSS 41 001,
-  Ausgabe 2024-10, führt die Inspektion als **SN 641 723:2017** und das Audit
-  als **SN 641 722:2008**; umgenummert sind nur die Folgeabschätzung
+  Ausgabe 2024-10, führt die Inspektion als **SN 641 723:2016** und das Audit
+  als **SN 641 722:2017**; umgenummert sind nur die Folgeabschätzung
   (VSS 41 721) und die Netzeinstufung (VSS 41 725). Der Quellbaum trug die
   unbelegte Nummer an acht Stellen — sechsmal in den Vorgabedaten, einmal als
   Vorgabe für ein neues Defizit, einmal in den E2E-Daten. Alle umgestellt.

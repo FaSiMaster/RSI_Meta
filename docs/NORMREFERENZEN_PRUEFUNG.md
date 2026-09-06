@@ -244,11 +244,16 @@ nebeneinander:
 |---|---|---|
 | Folgeabschätzung (RIA) | **VSS 41 721** | 2023 |
 | Netzeinstufung (NSM) | **VSS 41 725** | 2019 |
-| Audit (RSA) | **SN 641 722** | 2008 |
-| Inspektion (RSI) | **SN 641 723** | 2017 |
+| Audit (RSA) | **SN 641 722** | 2017 |
+| Inspektion (RSI) | **SN 641 723** | 2016 |
 
 Im ganzen Verzeichnis kommt der Kreis 41 7xx viermal vor: 41 711, 41 713,
 41 721 und 41 725. **VSS 41 722 und VSS 41 723 stehen nicht darin.**
+
+Die Ausgabejahre in dieser Tabelle stammen aus dem Normenbestand, nicht aus
+dem Verzeichnis: Dessen Textextraktion ist spaltenverschoben, die Jahre
+stehen dort neben der falschen Nummer. Ein erster Durchgang hatte sie von
+dort übernommen und damit 2008 und 2017 vertauscht.
 
 Daraus folgt dreierlei:
 
@@ -276,3 +281,34 @@ SZ_2026_003, die es nicht gibt. Beides liegt in den Produktivdaten und
 erscheint damit im Training und im Bericht. Unverändert gelassen — es sind
 fremde Datensätze, und ob sie noch gebraucht werden, entscheidet nicht der
 Abgleich.
+
+### 6.1 Ist eine Anfrage bei der VSS nötig?
+
+Die eigene Recherche ist erschöpft. Geprüft wurden:
+
+- **Gesamt-Normenverzeichnis VSS 41 001:2024-10**, numerisch — kennt VSS 41 722
+  und VSS 41 723 nicht; der Kreis 41 7xx kommt viermal vor (41 711, 41 713,
+  41 721, 41 725).
+- **Normenbestand** — führt SN 641 722:2017 und SN 641 723:2016 als «veraltet»
+  (Stand 15.06.2026), aber kein Feld, das eine Nachfolgenummer nennen würde.
+  `nummer_alternativ` ist bei beiden leer.
+- **Bestand des Kreises 41 7xx** — VSS 41 711:2023, 41 713:2023, 41 721:2023,
+  41 725:2001, dazu 41 712 und 41 731 nur als Querverweis aus anderen Normen.
+
+**Dringend ist die Anfrage nicht**: Das Werkzeug führt die Nummer, die das
+Verzeichnis führt. Sollte inzwischen umgenummert worden sein, wäre der jetzige
+Stand veraltet, aber nicht falsch. Offen bleibt der Punkt trotzdem, und ohne
+Auskunft der VSS ist er nicht zu schliessen.
+
+**Entwurf für die Anfrage** (absenden kann nur, wer den Kanal hat):
+
+> Betreff: Nummerierung der Normen zu den Infrastruktur-Sicherheitsinstrumenten
+>
+> Das Gesamt-Normenverzeichnis VSS 41 001, Ausgabe 2024-10, führt die
+> Folgeabschätzung als VSS 41 721 und die Netzeinstufung als VSS 41 725, das
+> Audit dagegen als SN 641 722 und die Inspektion als SN 641 723.
+>
+> Ist die Umnummerierung von SN 641 xxx auf VSS 41 xxx für Audit und Inspektion
+> inzwischen erfolgt, und wenn ja, unter welchen Nummern und mit welcher
+> Ausgabe? Falls nicht: Bleiben SN 641 722 und SN 641 723 die gültigen
+> Bezeichnungen?

@@ -108,7 +108,11 @@ Unfallrisiko stehen deshalb fertig in der Datei — gerechnet mit dem, was in
 ## Die Einfuhrdatei trägt den ganzen Stand
 
 Nicht nur die neuen Datensätze, sondern auch den Bestand: 9 Themen, 2 Szenen
-und 31 Defizite aus Supabase, abgelegt unter `daten/bestand/`. Eine Datei, die
+und 30 Defizite aus Supabase, abgelegt unter `daten/bestand/`. Es waren 31 —
+SD_0002 hing an der Szene SZ_2026_003, die es nicht gibt, und ist am
+6. September 2026 aus der Bestandsdatei und aus Supabase entfernt. Über die
+Oberfläche war es nicht erreichbar: Der Weg dorthin führt über Thema, Szene
+und Defizit, und die mittlere Stufe fehlte. Eine Datei, die
 nur die neuen Sätze führt, überlässt es dem Zufall, ob der Bestand daneben
 bestehen bleibt — sie setzt voraus, dass das einlesende Gerät seinen vollen
 Stand kennt. Trägt die Datei alles, stellt jeder Import den ganzen Stand her,

@@ -1,31 +1,2608 @@
-[{"id":"d-1776435763992","scene_id":"sc-1776345484548","data":{"id": "d-1776435763992", "kontext": "io", "sceneId": "sc-1776345484548", "topicId": "tp-1776342855361", "nameI18n": {"de": "Platzhalter", "en": "Platzhalter", "fr": "Platzhalter", "it": "Platzhalter"}, "normRefs": ["Egal"], "isBooster": true, "isPflicht": true, "verortung": {"typ": "polygon", "punkte": [{"phi": 106.04456824512536, "theta": 204.06685236768806}, {"phi": 137.6323119777159, "theta": 204.06685236768806}, {"phi": 137.6323119777159, "theta": 210.08356545961004}, {"phi": 110.05571030640668, "theta": 211.58774373259052}, {"phi": 105.54317548746519, "theta": 211.58774373259052}, {"phi": 105.54317548746519, "theta": 211.58774373259052}], "toleranz": 15}, "kriteriumId": "flicke", "beschreibungI18n": {"de": "", "en": "", "fr": "", "it": ""}, "correctAssessment": {"naca": 7, "abweichung": "gross", "relevanzSD": "mittel", "wichtigkeit": "klein", "unfallrisiko": "hoch", "unfallschwere": "schwer"}},"updated_at":"2026-05-29T20:28:18.035+00:00"}, 
- {"id":"def1","scene_id":"sc1","data":{"id": "def1", "kontext": "io", "sceneId": "sc1", "topicId": "fuss", "nameI18n": {"de": "Fehlende Absenkung", "en": "Missing kerb drop", "fr": "Abaissement absent", "it": "Abbassamento mancante"}, "normRefs": ["VSS SN 640 075", "SN 641 723"], "isBooster": false, "isPflicht": true, "verortung": {"typ": "punkt", "position": {"phi": 115.1599900810341, "theta": 134.11226153702032}, "toleranz": 15}, "kriteriumId": "fussgaengerfuehrung_geometrie", "beschreibungI18n": {"de": "Bordstein an Querungsstelle nicht abgesenkt — Barrierefreiheit verletzt.", "en": "Kerb not dropped at crossing.", "fr": "Bordure non abaissée à la traversée.", "it": "Cordolo non ribassato all'attraversamento."}, "correctAssessment": {"naca": 2, "abweichung": "gross", "relevanzSD": "hoch", "wichtigkeit": "mittel", "unfallrisiko": "hoch", "unfallschwere": "mittel"}},"updated_at":"2026-06-21T22:37:57.46+00:00"}, 
- {"id":"d-1776641627946","scene_id":"sc-1776640574069","data":{"id": "d-1776641627946", "kontext": "io", "sceneId": "sc-1776640574069", "topicId": "tp-1776297460539", "nameI18n": {"de": "Platzhalter", "en": "Platzhalter", "fr": "Platzhalter", "it": "Platzhalter"}, "normRefs": ["SN 641 723"], "isBooster": false, "isPflicht": true, "kategorie": "baustelle", "verortung": {"typ": "punkt", "position": {"phi": 71.29860839492379, "theta": 184.77742888508467}, "toleranz": 15}, "kriteriumId": "angebot_vertraeglichkeit", "beschreibungI18n": {"de": "Platzhalter", "en": "Platzhalter", "fr": "Platzhalter", "it": "Platzhalter"}, "correctAssessment": {"naca": 0, "abweichung": "klein", "relevanzSD": "gering", "wichtigkeit": "klein", "unfallrisiko": "gering", "unfallschwere": "leicht"}},"updated_at":"2026-05-29T20:28:18.035+00:00"}, 
- {"id":"d-1776297647255","scene_id":"sc-1776297620183","data":{"id": "d-1776297647255", "kontext": "io", "sceneId": "sc-1776297620183", "topicId": "velo", "nameI18n": {"de": "Platzhalter", "en": "Platzhalter", "fr": "Platzhalter", "it": "Platzhalter"}, "normRefs": ["SN 641 723"], "isBooster": false, "isPflicht": true, "kategorie": "ausruestung", "verortung": null, "kriteriumId": "geschwindigkeit", "beschreibungI18n": {"de": "", "en": "", "fr": "", "it": ""}, "correctAssessment": {"naca": 7, "abweichung": "gross", "relevanzSD": "hoch", "wichtigkeit": "gross", "unfallrisiko": "hoch", "unfallschwere": "schwer"}},"updated_at":"2026-05-29T20:28:18.035+00:00"}, 
- {"id":"d-1776298200932","scene_id":"sc-1776298107808","data":{"id": "d-1776298200932", "kontext": "io", "sceneId": "sc-1776298107808", "topicId": "tp-1776298075242", "nameI18n": {"de": "Platzhalter", "en": "Platzhalter", "fr": "Platzhalter", "it": "Platzhalter"}, "normRefs": ["SN 641 723"], "isBooster": true, "isPflicht": true, "kategorie": "verkehrsfuehrung", "verortung": {"typ": "punkt", "position": {"phi": 97.37189397927781, "theta": 145.57282715122267}, "toleranz": 15}, "kriteriumId": "visuelle_linienfuehrung", "verortungen": {"persp-1776298130026": {"typ": "punkt", "position": {"phi": 89.85075390686798, "theta": 291.9813294710125}, "toleranz": 15}, "persp-1776298134532": {"typ": "punkt", "position": {"phi": 92.85920993583193, "theta": 49.30422288615543}, "toleranz": 15}}, "beschreibungI18n": {"de": "", "en": "", "fr": "", "it": ""}, "correctAssessment": {"naca": 7, "abweichung": "gross", "relevanzSD": "hoch", "wichtigkeit": "gross", "unfallrisiko": "hoch", "unfallschwere": "schwer"}},"updated_at":"2026-05-29T20:28:18.037+00:00"}, 
- {"id":"d-1776331013137","scene_id":"sc1","data":{"id": "d-1776331013137", "kontext": "io", "sceneId": "sc1", "topicId": "fuss", "nameI18n": {"de": "Platzhalter", "en": "Platzhalter", "fr": "Platzhalter", "it": "Platzhalter"}, "normRefs": ["SN 641 723"], "isBooster": false, "isPflicht": true, "kategorie": "ausruestung", "verortung": {"typ": "polygon", "punkte": [{"phi": 99.27576601671309, "theta": 257.21448467966576}, {"phi": 108.3008356545961, "theta": 244.67966573816153}, {"phi": 124.34540389972145, "theta": 268.2451253481894}, {"phi": 111.81058495821728, "theta": 280.7799442896936}, {"phi": 105.2924791086351, "theta": 264.233983286908}, {"phi": 105.2924791086351, "theta": 264.233983286908}], "toleranz": 15}, "kriteriumId": "miv_oev_lw", "verortungen": {"persp-1776296925554": {"typ": "polygon", "punkte": [{"phi": 116.82451253481894, "theta": 50.64066852367687}, {"phi": 133.87186629526462, "theta": 62.17270194986072}, {"phi": 121.83844011142064, "theta": 83.23119777158774}, {"phi": 107.29805013927576, "theta": 93.76044568245126}, {"phi": 108.80222841225627, "theta": 78.71866295264624}, {"phi": 112.8133704735376, "theta": 60.16713091922006}, {"phi": 112.8133704735376, "theta": 60.16713091922006}], "toleranz": 15}, "persp-1776296930977": {"typ": "polygon", "punkte": [{"phi": 126.35097493036211, "theta": 181.50417827298048}, {"phi": 156.43454038997214, "theta": 176.49025069637884}, {"phi": 149.91643454038996, "theta": 235.65459610027855}, {"phi": 122.33983286908077, "theta": 225.6267409470752}, {"phi": 120.83565459610027, "theta": 201.05849582172704}, {"phi": 120.83565459610027, "theta": 201.05849582172704}], "toleranz": 15}}, "beschreibungI18n": {"de": "Platzhalter", "en": "Platzhalter", "fr": "Platzhalter", "it": "Platzhalter"}, "correctAssessment": {"naca": 7, "abweichung": "gross", "relevanzSD": "hoch", "wichtigkeit": "mittel", "unfallrisiko": "hoch", "unfallschwere": "schwer"}},"updated_at":"2026-06-21T22:37:57.461+00:00"}, 
- {"id":"d-1776641679132","scene_id":"sc-1776639802186","data":{"id": "d-1776641679132", "kontext": "io", "sceneId": "sc-1776639802186", "topicId": "tp-1776297460539", "nameI18n": {"de": "Platzhalter", "en": "Platzhalter", "fr": "Platzhalter", "it": "Platzhalter"}, "normRefs": ["SN 641 723"], "isBooster": false, "isPflicht": true, "kategorie": "baustelle", "verortung": {"typ": "punkt", "position": {"phi": 115.42263015306135, "theta": 207.84178199025703}, "toleranz": 15}, "kriteriumId": "visuelle_linienfuehrung", "beschreibungI18n": {"de": "Platzhalter", "en": "Platzhalter", "fr": "Platzhalter", "it": "Platzhalter"}, "correctAssessment": {"naca": 2, "abweichung": "mittel", "relevanzSD": "mittel", "wichtigkeit": "mittel", "unfallrisiko": "mittel", "unfallschwere": "mittel"}},"updated_at":"2026-05-29T20:28:18.038+00:00"}, 
- {"id":"SD_0010","scene_id":"SZ_2026_002","data":{"id": "SD_0010", "kontext": "io", "sceneId": "SZ_2026_002", "topicId": "tp-1781537561454", "nameI18n": {"de": "Erkennbarkeit", "en": "Recognisability", "fr": "Détectabilité", "it": "Riconoscibilità"}, "normRefs": ["SN 641 723", "VSS 40 241 — Fussgaengerstreifen"], "isBooster": false, "isPflicht": true, "kategorie": "sicht", "verortung": {"typ": "punkt", "position": {"phi": 170.40057473555729, "theta": 142.64402137923148}, "toleranz": 15}, "kriteriumId": "fussgaengerstreifen", "verortungen": {"persp-1782066767869": {"typ": "punkt", "position": {"phi": 78.7075604345883, "theta": 175.6748767393364}, "toleranz": 5}, "persp-1782066806252": {"typ": "punkt", "position": {"phi": 85.90296491609966, "theta": 43.30386396075453}, "toleranz": 5}, "persp-1782066824895": {"typ": "punkt", "position": {"phi": 60.13052493464203, "theta": 236.84387045198355}, "toleranz": 5}, "persp-1782067731719": {"typ": "punkt", "position": {"phi": 164.4831498718517, "theta": 34.3338644081225}, "toleranz": 5}}, "erklaerungI18n": {"de": "Abweichung gross: Wegen der Kuppenlage wird die Querungsstelle zu spät wahrgenommen. Nach VSS 40 241 Ziff. 15 sollte die Erkennungsdistanz doppelt so gross sein wie die notwendige Sichtweite und darf sie keinesfalls unterschreiten. Unfallschwere schwer (NACA 7): Späte Erkennung bei hohem Tempo lässt keinen ausreichenden Anhalteweg.", "en": "Deviation large: due to the crest location, the crossing is perceived too late. Per VSS 40 241 sec. 15, the detection distance should be twice the required sight distance and must never fall below it. Severity severe (NACA 7): late detection at high speed leaves no adequate stopping distance.", "fr": "Écart grand: en raison du sommet de côte, la traversée est perçue trop tard. Selon la norme VSS 40 241 ch. 15, la distance de détection devrait être deux fois plus grande que la distance de visibilité nécessaire et ne doit en aucun cas être inférieure. Gravité grave (NACA 7): une détection tardive à vitesse élevée ne laisse pas de distance d'arrêt suffisante.", "it": "Scostamento grande: a causa della posizione su dosso l'attraversamento viene percepito troppo tardi. Secondo la norma VSS 40 241 cifra 15 la distanza di riconoscimento dovrebbe essere il doppio della distanza di visibilità necessaria e non deve in nessun caso essere inferiore. Gravità grave (NACA 7): un riconoscimento tardivo ad alta velocità non lascia una distanza di arresto sufficiente."}, "beschreibungI18n": {"de": "Die Erkennungsdistanz ist unzureichend. Erkennungsdistanz ist die Distanz, auf der die Querungsstelle als solche erkannt werden kann — also die Bodenmarkierung oder das Signal 4.11 (VSS 40 241 Ziff. 9). Wegen der Kuppenlage wird die Anlage erst spät sichtbar. Nach Ziff. 15 sollte die Erkennungsdistanz doppelt so gross sein wie die notwendige Sichtweite und darf diese keinesfalls unterschreiten. Abzugrenzen von der Sichtweite, die als eigenes Defizit erfasst ist: dort geht es um den gegenseitigen Blickkontakt zwischen Fahrzeuglenkenden und Fussgängern.", "en": "The detection distance is insufficient. The detection distance is the distance at which the crossing can be identified as such — via the road marking or signal 4.11 (VSS 40 241, sec. 9). Because of the crest, the facility only becomes visible late. According to sec. 15, the detection distance should be twice the required sight distance and must never fall below it. To be distinguished from the sight distance, recorded as a separate deficit: that one concerns the mutual visual contact between drivers and pedestrians.", "fr": "La distance de détection est insuffisante. La distance de détection est la distance à laquelle le passage piétons peut être détecté en tant que tel, soit par le marquage au sol, soit par le signal 4.11 (VSS 40 241, ch. 9). En raison du sommet de côte, l'installation n'est visible que tardivement. Selon le ch. 15, la distance de détection devrait être deux fois plus grande que la distance de visibilité nécessaire et ne doit en aucun cas être inférieure à celle-ci. À distinguer de la distance de visibilité, saisie comme déficit distinct: celle-ci concerne le contact visuel mutuel entre conducteurs et piétons.", "it": "La distanza di riconoscimento è insufficiente. È la distanza alla quale il passaggio pedonale può essere riconosciuto come tale, ossia tramite la segnaletica orizzontale o il segnale 4.11 (VSS 40 241, cifra 9). A causa del dosso l'impianto diventa visibile solo tardi. Secondo la cifra 15 la distanza di riconoscimento dovrebbe essere il doppio della distanza di visibilità necessaria e non deve in nessun caso essere inferiore ad essa. Da distinguere dalla distanza di visibilità, rilevata come deficit separato: quest'ultima riguarda il contatto visivo reciproco tra conducenti e pedoni."}, "correctAssessment": {"naca": 7, "abweichung": "gross", "relevanzSD": "hoch", "wichtigkeit": "gross", "unfallrisiko": "hoch", "unfallschwere": "schwer"}},"updated_at":"2026-06-21T22:29:04.269+00:00"}, 
- {"id":"d-1776641339582","scene_id":"sc-1776641264993","data":{"id": "d-1776641339582", "kontext": "io", "sceneId": "sc-1776641264993", "topicId": "tp-1776297472536", "nameI18n": {"de": "Platzhalter", "en": "Platzhalter", "fr": "Platzhalter", "it": "Platzhalter"}, "normRefs": ["SN 641 723"], "isBooster": true, "isPflicht": true, "kategorie": "sicht", "verortung": {"typ": "punkt", "position": {"phi": 74.30706442388771, "theta": 16.307371421217002}, "toleranz": 15}, "kriteriumId": "angebot_vertraeglichkeit", "verortungen": {"persp-1776641297470": {"typ": "punkt", "position": {"phi": 85.34513958375956, "theta": 101.6109769620537}, "toleranz": 15}}, "beschreibungI18n": {"de": "Platzhalter", "en": "Platzhalter", "fr": "Platzhalter", "it": "Platzhalter"}, "correctAssessment": {"naca": 7, "abweichung": "gross", "relevanzSD": "hoch", "wichtigkeit": "gross", "unfallrisiko": "hoch", "unfallschwere": "schwer"}},"updated_at":"2026-05-29T20:28:18.038+00:00"}, 
- {"id":"d-1776345748371","scene_id":"sc-1776345484548","data":{"id": "d-1776345748371", "kontext": "io", "sceneId": "sc-1776345484548", "topicId": "tp-1776342855361", "nameI18n": {"de": "Signal T30 wird nicht beachtet", "en": "T30 sign not observed", "fr": "Signal T30 non respecté", "it": "Segnale T30 non rispettato"}, "normRefs": ["SN 641 723"], "isBooster": true, "isPflicht": true, "kategorie": "ausruestung", "verortung": {"typ": "punkt", "position": {"phi": 92.30199576721235, "theta": 71.06087049051254}, "toleranz": 8}, "kriteriumId": "tempo30_begegnungszonen", "verortungen": {"persp-1776345640047": {"typ": "punkt", "position": {"phi": 83.983286908078, "theta": 213.5933147632312}, "toleranz": 15}, "persp-1776345669424": {"typ": "punkt", "position": {"phi": 82.98050139275766, "theta": 60.16713091922006}, "toleranz": 15}}, "beschreibungI18n": {"de": "", "en": "", "fr": "", "it": ""}, "correctAssessment": {"naca": 5, "abweichung": "mittel", "relevanzSD": "mittel", "wichtigkeit": "gross", "unfallrisiko": "hoch", "unfallschwere": "schwer"}},"updated_at":"2026-05-29T20:28:18.039+00:00"}, 
- {"id":"SD_0011","scene_id":"SZ_2026_002","data":{"id": "SD_0011", "kontext": "io", "sceneId": "SZ_2026_002", "topicId": "tp-1781537561454", "nameI18n": {"de": "Geschwindigkeit", "en": "Speed", "fr": "Vitesse", "it": "Velocità"}, "normRefs": ["SN 641 723", "VSS 40 241 — Fussgaengerstreifen"], "isBooster": false, "isPflicht": true, "kategorie": "verkehrsablauf", "verortung": {"typ": "punkt", "position": {"phi": 124.56738287301982, "theta": 354.22641399725217}, "toleranz": 15}, "kriteriumId": "fussgaengerstreifen", "verortungen": {"persp-1782066752407": {"typ": "punkt", "position": {"phi": 89.77315848591424, "theta": 48.874434843992034}, "toleranz": 16}, "persp-1782066767869": {"typ": "punkt", "position": {"phi": 100.75640701186221, "theta": 28.317076641555797}, "toleranz": 15}, "persp-1782066806252": {"typ": "punkt", "position": {"phi": 86.00324678373181, "theta": 226.91617063714844}, "toleranz": 15}, "persp-1782066824895": {"typ": "punkt", "position": {"phi": 71.56265784470496, "theta": 236.944150248093}, "toleranz": 5}, "persp-1782067731719": {"typ": "punkt", "position": {"phi": 134.39858958221245, "theta": 21.798889894441874}, "toleranz": 5}}, "erklaerungI18n": {"de": "Abweichung gross: Nach VSS 40 241 Ziff. 13 dürfen am Fussgängerstreifen signalisierte und gefahrene Geschwindigkeit (Basis V85) höchstens 60 km/h betragen. Liegt der V85 über der Signalisation, muss die notwendige Sichtweite auf Basis des V85 nachgewiesen werden (Ziff. 14) – die Anordnungsvoraussetzung ist verletzt. Unfallschwere schwer (NACA 7): Je höher die Kollisionsgeschwindigkeit, desto schwerer die Verletzungsfolgen.", "en": "Deviation large: per VSS 40 241 sec. 13, both signed and driven speed (V85 basis) at a pedestrian crossing may not exceed 60 km/h. If the V85 exceeds the signed limit, the required sight distance must be demonstrated on the basis of the V85 (sec. 14) – the siting requirement is violated. Severity severe (NACA 7): the higher the collision speed, the more severe the injuries.", "fr": "Écart grand: selon la norme VSS 40 241 ch. 13, la vitesse signalée et la vitesse pratiquée (base V85) ne doivent pas dépasser 60 km/h au passage pour piétons. Si le V85 dépasse la signalisation, la distance de visibilité nécessaire doit être justifiée sur la base du V85 (ch. 14) – la condition de mise en œuvre est violée. Gravité grave (NACA 7): plus la vitesse de collision est élevée, plus les blessures sont graves.", "it": "Scostamento grande: secondo la norma VSS 40 241 cifra 13 al passaggio pedonale la velocità segnalata e quella praticata (base V85) possono essere al massimo 60 km/h. Se il V85 supera la segnaletica, la distanza di visibilità necessaria deve essere dimostrata sulla base del V85 (cifra 14) – la condizione di attuazione è violata. Gravità grave (NACA 7): quanto più alta è la velocità di collisione, tanto più gravi sono le conseguenze."}, "beschreibungI18n": {"de": "Es bestehen Hinweise, dass die tatsächlich gefahrenen Geschwindigkeiten über der signalisierten Höchstgeschwindigkeit liegen. Ein erhöhter V85-Wert erhöht das Risiko von Unfällen und deren Schwere und stellt ein wesentliches Sicherheitsdefizit dar.", "en": "There are indications that actual driven speeds exceed the signed speed limit. An elevated V85 increases both accident risk and severity and constitutes a major safety deficit.", "fr": "Des indices montrent que les vitesses réellement pratiquées dépassent la vitesse maximale signalée. Une valeur V85 élevée augmente le risque d'accident et sa gravité et constitue un déficit de sécurité majeur.", "it": "Vi sono indizi che le velocità effettivamente praticate superino la velocità massima segnalata. Un valore V85 elevato aumenta il rischio di incidenti e la loro gravità e costituisce un deficit di sicurezza sostanziale."}, "correctAssessment": {"naca": 7, "abweichung": "gross", "relevanzSD": "hoch", "wichtigkeit": "gross", "unfallrisiko": "hoch", "unfallschwere": "schwer"}},"updated_at":"2026-06-21T22:29:04.27+00:00"}, 
- {"id":"d-1774784423874","scene_id":"sc-1774784383797","data":{"id": "d-1774784423874", "kontext": "io", "sceneId": "sc-1774784383797", "topicId": "fuss", "nameI18n": {"de": "Platzhalter", "en": "Platzhalter", "fr": "Platzhalter", "it": "Platzhalter"}, "normRefs": ["SN 641 723"], "isBooster": true, "isPflicht": true, "verortung": {"typ": "punkt", "position": {"phi": 127.84947368510564, "theta": 230.0990971992514}, "toleranz": 15}, "kriteriumId": "visuelle_linienfuehrung", "beschreibungI18n": {"de": "", "en": "", "fr": "", "it": ""}, "correctAssessment": {"naca": 7, "abweichung": "gross", "relevanzSD": "hoch", "wichtigkeit": "gross", "unfallrisiko": "hoch", "unfallschwere": "schwer"}},"updated_at":"2026-05-29T20:28:18.041+00:00"}, 
- {"id":"d-1776633965378","scene_id":"sc-1776633571569","data":{"id": "d-1776633965378", "kontext": "io", "sceneId": "sc-1776633571569", "topicId": "tp-1776298075242", "nameI18n": {"de": "Parkplatzlänge", "en": "Parking bay length", "fr": "Longueur de la place de stationnement", "it": "Lunghezza dello stallo di sosta"}, "normRefs": ["SN 641 723"], "isBooster": true, "isPflicht": true, "kategorie": "verkehrsablauf", "verortung": {"typ": "punkt", "position": {"phi": 108.27431898873685, "theta": 259.90052115318383}, "toleranz": 5}, "kriteriumId": "anlagen_ruhender_verkehr", "verortungen": {"persp-1776634491168": {"typ": "polygon", "punkte": [{"phi": 107.90149008065153, "theta": 182.7718329628958}, {"phi": 152.52692117694974, "theta": 157.20048495498727}, {"phi": 150.01987448614648, "theta": 222.3823524261266}, {"phi": 120.43672353466789, "theta": 257.9816800449796}, {"phi": 106.89867140433024, "theta": 226.3935442705044}, {"phi": 108.4028994188122, "theta": 191.79701461274584}, {"phi": 108.4028994188122, "theta": 191.79701461274584}], "toleranz": 15}}, "beschreibungI18n": {"de": "", "en": "", "fr": "", "it": ""}, "correctAssessment": {"naca": 0, "abweichung": "mittel", "relevanzSD": "mittel", "wichtigkeit": "gross", "unfallrisiko": "gering", "unfallschwere": "leicht"}},"updated_at":"2026-05-29T20:28:18.04+00:00"}, 
- {"id":"d-1774784555731","scene_id":"sc-1774784383797","data":{"id": "d-1774784555731", "kontext": "io", "sceneId": "sc-1774784383797", "topicId": "fuss", "nameI18n": {"de": "Platzhalter", "en": "Platzhalter", "fr": "Platzhalter", "it": "Platzhalter"}, "normRefs": ["SN 641 723"], "isBooster": false, "isPflicht": true, "verortung": {"typ": "punkt", "position": {"phi": 64.65442127470331, "theta": 132.79877840863193}, "toleranz": 15}, "kriteriumId": "angebot_vertraeglichkeit", "beschreibungI18n": {"de": "Platzhalter", "en": "Platzhalter", "fr": "Platzhalter", "it": "Platzhalter"}, "correctAssessment": {"naca": 7, "abweichung": "gross", "relevanzSD": "hoch", "wichtigkeit": "gross", "unfallrisiko": "hoch", "unfallschwere": "schwer"}},"updated_at":"2026-05-29T20:28:18.041+00:00"}, 
- {"id":"d-1776345706294","scene_id":"sc-1776345484548","data":{"id": "d-1776345706294", "kontext": "io", "sceneId": "sc-1776345484548", "topicId": "tp-1776342855361", "nameI18n": {"de": "Sichtweite FGS verdeckt", "en": "Sight distance at pedestrian crossing obstructed", "fr": "Distance de visibilité au passage piétons masquée", "it": "Distanza di visibilità al passaggio pedonale ostruita"}, "normRefs": ["SN 641 723"], "isBooster": true, "isPflicht": true, "kategorie": "sicht", "verortung": {"typ": "punkt", "position": {"phi": 85.84796441291243, "theta": 200.65933195543786}, "toleranz": 15}, "kriteriumId": "fussgaengerstreifen", "verortungen": {"persp-1776345640047": {"typ": "punkt", "position": {"phi": 88.4958217270195, "theta": 197.0473537604457}, "toleranz": 15}, "persp-1776345669424": {"typ": "punkt", "position": {"phi": 90.50139275766016, "theta": 28.57938718662953}, "toleranz": 15}}, "beschreibungI18n": {"de": "Platzhalter", "en": "Platzhalter", "fr": "Platzhalter", "it": "Platzhalter"}, "correctAssessment": {"naca": 7, "abweichung": "gross", "relevanzSD": "hoch", "wichtigkeit": "gross", "unfallrisiko": "hoch", "unfallschwere": "schwer"}},"updated_at":"2026-05-29T20:28:18.04+00:00"}, 
- {"id":"SD_0001","scene_id":"SZ_2026_001","data":{"id": "SD_0001", "kontext": "io", "sceneId": "SZ_2026_001", "topicId": "tp-1776644409542", "nameI18n": {"de": "Platzhalter", "en": "Platzhalter", "fr": "Platzhalter", "it": "Platzhalter"}, "normRefs": ["SN 641 723", "VSS 40 138 — Geometrisches Normalprofil"], "isBooster": false, "isPflicht": true, "kategorie": "ausruestung", "verortung": {"typ": "punkt", "position": {"phi": 72.75507949581934, "theta": 17.811568362858683}, "toleranz": 15}, "kriteriumId": "visuelle_linienfuehrung", "verortungen": {"persp-1776644487174": {"typ": "punkt", "position": {"phi": 72.80283640940574, "theta": 184.2760299045375}, "toleranz": 15}, "persp-1776644503643": {"typ": "punkt", "position": {"phi": 66.78592435147792, "theta": 128.62074306379546}, "toleranz": 15}}, "beschreibungI18n": {"de": "Platzhalter", "en": "Platzhalter", "fr": "Platzhalter", "it": "Platzhalter"}, "correctAssessment": {"naca": 0, "abweichung": "klein", "relevanzSD": "gering", "wichtigkeit": "klein", "unfallrisiko": "gering", "unfallschwere": "leicht"}},"updated_at":"2026-08-20T13:58:10.238+00:00"}, 
- {"id":"d-1776343347925","scene_id":"sc-1776342893087","data":{"id": "d-1776343347925", "kontext": "io", "sceneId": "sc-1776342893087", "topicId": "tp-1776297460539", "nameI18n": {"de": "Sichtweite FGS", "en": "Sight distance at pedestrian crossing", "fr": "Distance de visibilité au passage piétons", "it": "Distanza di visibilità al passaggio pedonale"}, "normRefs": ["SN 641 723"], "isBooster": true, "isPflicht": true, "verortung": {"typ": "punkt", "position": {"phi": 85.98885793871867, "theta": 201.05849582172704}, "toleranz": 5}, "kriteriumId": "fussgaengerstreifen", "verortungen": {"persp-1776342985344": {"typ": "punkt", "position": {"phi": 92.00557103064068, "theta": 39.108635097493035}, "toleranz": 15}, "persp-1776343050874": {"typ": "punkt", "position": {"phi": 93.00835654596102, "theta": 299.83286908078}, "toleranz": 15}, "persp-1776344543859": {"typ": "punkt", "position": {"phi": 91.00278551532034, "theta": 207.57660167130922}, "toleranz": 5}, "persp-1776344571781": {"typ": "punkt", "position": {"phi": 89.49860724233983, "theta": 32.590529247910865}, "toleranz": 5}, "persp-1776344600640": {"typ": "punkt", "position": {"phi": 93.00835654596102, "theta": 300.3342618384401}, "toleranz": 5}, "persp-1776344645426": {"typ": "punkt", "position": {"phi": 90.50139275766016, "theta": 221.11420612813373}, "toleranz": 5}}, "beschreibungI18n": {"de": "", "en": "", "fr": "", "it": ""}, "correctAssessment": {"naca": 7, "abweichung": "gross", "relevanzSD": "hoch", "wichtigkeit": "gross", "unfallrisiko": "hoch", "unfallschwere": "schwer"}},"updated_at":"2026-05-29T20:28:18.039+00:00"}, 
- {"id":"SD_0009","scene_id":"SZ_2026_002","data":{"id": "SD_0009", "kontext": "io", "sceneId": "SZ_2026_002", "topicId": "tp-1781537561454", "nameI18n": {"de": "Beleuchtung", "en": "Lighting", "fr": "Éclairage", "it": "Illuminazione"}, "normRefs": ["SN 641 723", "VSS 40 241 — Fussgaengerstreifen"], "isBooster": false, "isPflicht": true, "kategorie": "ausruestung", "verortung": {"typ": "punkt", "position": {"phi": 144.31137528060736, "theta": 134.4545046969601}, "toleranz": 15}, "kriteriumId": "fussgaengerstreifen", "verortungen": {"persp-1782066752407": {"typ": "punkt", "position": {"phi": 129.3844962006059, "theta": 223.86267905497368}, "toleranz": 16}, "persp-1782066767869": {"typ": "punkt", "position": {"phi": 19.30422663720032, "theta": 184.67959707078725}, "toleranz": 15}, "persp-1782066824895": {"typ": "punkt", "position": {"phi": 59.32826999358498, "theta": 162.03514255433748}, "toleranz": 5}}, "erklaerungI18n": {"de": "Abweichung gross: Nach VSS 40 241 Ziff. 23 müssen Fussgängerstreifen und ihre Annäherungsbereiche nachts so beleuchtet sein, dass Querende erkennbar sind (SLG-Richtlinie 202). Die nur einseitige Beleuchtung im lichtarmen Waldabschnitt erfüllt das nicht. Unfallschwere schwer (NACA 7): Nachts erfolgt die Erkennung zu spät für ein Anhalten aus 60 km/h.", "en": "Deviation large: per VSS 40 241 sec. 23, pedestrian crossings and their approach zones must be lit at night so that crossing pedestrians are detectable (SLG guideline 202). The one-sided lighting in this dark forest section does not achieve that. Severity severe (NACA 7): at night, detection comes too late to stop from 60 km/h.", "fr": "Écart grand: selon la norme VSS 40 241 ch. 23, les passages pour piétons et leurs zones d'approche doivent être éclairés de nuit de manière que les personnes qui traversent soient détectables (directive SLG 202). L'éclairage unilatéral dans ce tronçon forestier sombre ne le garantit pas. Gravité grave (NACA 7): de nuit, la détection intervient trop tard pour s'arrêter depuis 60 km/h.", "it": "Scostamento grande: secondo la norma VSS 40 241 cifra 23 i passaggi pedonali e le loro zone di avvicinamento devono essere illuminati di notte in modo che chi attraversa sia riconoscibile (direttiva SLG 202). L'illuminazione solo unilaterale nel tratto boschivo povero di luce non lo garantisce. Gravità grave (NACA 7): di notte il riconoscimento avviene troppo tardi per fermarsi da 60 km/h."}, "beschreibungI18n": {"de": "Die Beleuchtung des Fussgängerstreifens ist unzureichend und erfolgt nur einseitig. Insbesondere in diesem lichtarmen Waldabschnitt werden wartende und querende Fussgänger dadurch schlechter erkannt. Dies stellt ein wesentliches Sicherheitsdefizit dar.", "en": "The lighting of the pedestrian crossing is inadequate and exists on one side only. Particularly in this dark forest section, waiting and crossing pedestrians are harder to detect. This constitutes a major safety deficit.", "fr": "L'éclairage du passage pour piétons est insuffisant et n'existe que d'un côté. Dans ce tronçon forestier sombre en particulier, les piétons en attente et en train de traverser sont moins bien détectés. Cela constitue un déficit de sécurité majeur.", "it": "L'illuminazione del passaggio pedonale è insufficiente e presente solo su un lato. In particolare in questo tratto boschivo povero di luce, i pedoni in attesa e in attraversamento vengono riconosciuti peggio. Ciò costituisce un deficit di sicurezza sostanziale."}, "correctAssessment": {"naca": 7, "abweichung": "gross", "relevanzSD": "hoch", "wichtigkeit": "gross", "unfallrisiko": "hoch", "unfallschwere": "schwer"}},"updated_at":"2026-06-21T22:29:04.268+00:00"}, 
- {"id":"d-1776343377019","scene_id":"sc-1776342893087","data":{"id": "d-1776343377019", "kontext": "io", "sceneId": "sc-1776342893087", "topicId": "tp-1776297460539", "nameI18n": {"de": "Signal", "en": "Sign", "fr": "Signal", "it": "Segnale"}, "normRefs": ["SN 641 723"], "isBooster": false, "isPflicht": true, "verortung": {"typ": "punkt", "position": {"phi": 84.98607242339834, "theta": 251.19777158774374}, "toleranz": 5}, "kriteriumId": "signale_wegweiser", "verortungen": {"persp-1776342985344": {"typ": "punkt", "position": {"phi": 70.44568245125349, "theta": 85.23676880222841}, "toleranz": 15}, "persp-1776343050874": {"typ": "punkt", "position": {"phi": 84.98607242339834, "theta": 258.71866295264624}, "toleranz": 15}, "persp-1776344543859": {"typ": "punkt", "position": {"phi": 87.49303621169918, "theta": 292.31197771587745}, "toleranz": 5}, "persp-1776344571781": {"typ": "punkt", "position": {"phi": 71.44846796657383, "theta": 84.73537604456826}, "toleranz": 5}, "persp-1776344600640": {"typ": "punkt", "position": {"phi": 84.98607242339834, "theta": 259.7214484679666}, "toleranz": 5}, "persp-1776344645426": {"typ": "punkt", "position": {"phi": 86.49025069637884, "theta": 210.08356545961004}, "toleranz": 5}}, "beschreibungI18n": {"de": "", "en": "", "fr": "", "it": ""}, "correctAssessment": {"naca": 3, "abweichung": "mittel", "relevanzSD": "mittel", "wichtigkeit": "mittel", "unfallrisiko": "mittel", "unfallschwere": "mittel"}},"updated_at":"2026-05-29T20:28:18.038+00:00"}, 
- {"id":"SD_0002","scene_id":"SZ_2026_003","data":{"id": "SD_0002", "kontext": "io", "sceneId": "SZ_2026_003", "topicId": "tp-1776689553411", "nameI18n": {"de": "Sicht", "en": "Visibility", "fr": "Visibilité", "it": "Visibilità"}, "normRefs": ["SN 641 723"], "isBooster": true, "isPflicht": true, "kategorie": "sicht", "verortung": {"typ": "punkt", "position": {"phi": 90.82968647549679, "theta": 72.53569878385517}, "toleranz": 15}, "kriteriumId": "miv_oev_lw", "beschreibungI18n": {"de": "Sichtweiten", "en": "Sight distances", "fr": "Distances de visibilité", "it": "Distanze di visibilità"}, "correctAssessment": {"naca": 7, "abweichung": "mittel", "relevanzSD": "mittel", "wichtigkeit": "gross", "unfallrisiko": "hoch", "unfallschwere": "schwer"}, "boosterBonusProzent": 10},"updated_at":"2026-06-30T09:02:23.741+00:00"}, 
- {"id":"d-1776640642461","scene_id":"sc-1776639802186","data":{"id": "d-1776640642461", "kontext": "io", "sceneId": "sc-1776639802186", "topicId": "tp-1776297460539", "nameI18n": {"de": "Platzhalter", "en": "Platzhalter", "fr": "Platzhalter", "it": "Platzhalter"}, "normRefs": ["SN 641 723"], "isBooster": false, "isPflicht": true, "kategorie": "verkehrsfuehrung", "verortung": {"typ": "punkt", "position": {"phi": 89.98425301093728, "theta": 126.14457811695706}, "toleranz": 15}, "kriteriumId": "angebot_vertraeglichkeit", "verortungen": {"persp-1776640618354": {"typ": "punkt", "position": {"phi": 87.36757802195861, "theta": 200.58343192871962}, "toleranz": 15}, "persp-1776640621722": {"typ": "punkt", "position": {"phi": 89.37321537460122, "theta": 33.11617242594636}, "toleranz": 15}}, "beschreibungI18n": {"de": "Platzhalter", "en": "Platzhalter", "fr": "Platzhalter", "it": "Platzhalter"}, "correctAssessment": {"naca": 7, "abweichung": "gross", "relevanzSD": "hoch", "wichtigkeit": "gross", "unfallrisiko": "hoch", "unfallschwere": "schwer"}},"updated_at":"2026-05-29T20:28:18.037+00:00"}, 
- {"id":"d-1776638256470","scene_id":"sc-1776638200215","data":{"id": "d-1776638256470", "kontext": "io", "sceneId": "sc-1776638200215", "topicId": "fuss", "nameI18n": {"de": "Platzhalter", "en": "Platzhalter", "fr": "Platzhalter", "it": "Platzhalter"}, "normRefs": ["SN 641 723"], "isBooster": true, "isPflicht": true, "kategorie": "sicht", "verortung": {"typ": "punkt", "position": {"phi": 96.36907530295649, "theta": 148.17530330513725}, "toleranz": 15}, "kriteriumId": "visuelle_linienfuehrung", "verortungen": {"persp-1776638241394": {"typ": "punkt", "position": {"phi": 112.91558346225808, "theta": 132.63193490817324}, "toleranz": 15}, "persp-1776638246092": {"typ": "punkt", "position": {"phi": 117.42826750570399, "theta": 255.9760841227907}, "toleranz": 15}}, "beschreibungI18n": {"de": "Platzhalter", "en": "Platzhalter", "fr": "Platzhalter", "it": "Platzhalter"}, "correctAssessment": {"naca": 7, "abweichung": "gross", "relevanzSD": "hoch", "wichtigkeit": "gross", "unfallrisiko": "hoch", "unfallschwere": "schwer"}},"updated_at":"2026-05-29T20:28:18.04+00:00"}, 
- {"id":"SD_0005","scene_id":"SZ_2026_002","data":{"id": "SD_0005", "kontext": "io", "sceneId": "SZ_2026_002", "topicId": "tp-1781537561454", "nameI18n": {"de": "Mehrspurigkeit", "en": "Multi-lane crossing", "fr": "Traversée sur plusieurs voies", "it": "Attraversamento su più corsie"}, "normRefs": ["VSS 40 241 — Fussgaengerstreifen"], "isBooster": true, "isPflicht": true, "kategorie": "verkehrsfuehrung", "verortung": {"typ": "polygon", "punkte": [{"phi": 166.8907093684327, "theta": 168.21536938713996}, {"phi": 167.39211870659338, "theta": 177.90908301105299}, {"phi": 166.8907093684327, "theta": 188.43846160254472}, {"phi": 165.88789069211143, "theta": 197.965042232942}, {"phi": 161.208070202612, "theta": 192.11538745989105}, {"phi": 155.02402169863058, "theta": 188.7727275895762}, {"phi": 146.33292650384593, "theta": 185.76433370629283}, {"phi": 138.31037709327543, "theta": 184.26013676465112}, {"phi": 130.95637346691916, "theta": 182.9230728165252}, {"phi": 124.60518851688423, "theta": 181.92027485543076}, {"phi": 119.42395868922414, "theta": 181.25174288136782}, {"phi": 118.58827645895636, "theta": 179.41327995269467}, {"phi": 123.10096050240226, "theta": 178.57761498511593}, {"phi": 127.44650809979458, "theta": 178.0762160045687}, {"phi": 132.2934650353476, "theta": 177.74195001753722}, {"phi": 138.97892287748965, "theta": 176.9062850499585}, {"phi": 148.00429096438143, "theta": 176.23775307589554}, {"phi": 153.35265723809505, "theta": 174.7335561342539}, {"phi": 159.03529640391582, "theta": 173.22935919261224}, {"phi": 163.8822533394688, "theta": 170.8894972833918}, {"phi": 163.8822533394688, "theta": 170.8894972833918}], "toleranz": 15}, "kriteriumId": "fussgaengerstreifen", "verortungen": {"persp-1782066752407": {"typ": "punkt", "position": {"phi": 102.30839193993059, "theta": 124.08428192607583}, "toleranz": 16}, "persp-1782066767869": {"typ": "polygon", "punkte": [{"phi": 98.75073907527177, "theta": 123.97035354584465}, {"phi": 99.62218162486671, "theta": 118.59656883191433}, {"phi": 100.63886459939414, "theta": 108.86566137695942}, {"phi": 101.51030714898909, "theta": 97.82761709969712}, {"phi": 102.38174969858399, "theta": 87.51575994593894}, {"phi": 102.52699012351653, "theta": 78.36580218978732}, {"phi": 101.36506672405658, "theta": 61.95397319859471}, {"phi": 100.20314332459668, "theta": 51.06116634603325}, {"phi": 98.31501780047431, "theta": 39.442172369967686}, {"phi": 100.92934544925913, "theta": 37.699323273557845}, {"phi": 102.09126884871903, "theta": 40.89454661697588}, {"phi": 103.25319224817895, "theta": 47.28499330381194}, {"phi": 104.26987522270636, "theta": 52.51354059304145}, {"phi": 104.70559649750382, "theta": 56.58018848466439}, {"phi": 106.01276032189624, "theta": 63.261110020902095}, {"phi": 106.44848159669371, "theta": 69.07060700893487}, {"phi": 107.02944329642366, "theta": 77.20390279218076}, {"phi": 107.31992414628863, "theta": 86.93481024713567}, {"phi": 107.46516457122112, "theta": 97.82761709969712}, {"phi": 106.30324117176123, "theta": 105.52520060884056}, {"phi": 105.14131777230128, "theta": 112.35135956977909}, {"phi": 103.9793943728414, "theta": 122.8084541482381}, {"phi": 102.52699012351653, "theta": 129.4893756844758}, {"phi": 99.18646035006923, "theta": 123.97035354584465}, {"phi": 99.18646035006923, "theta": 123.97035354584465}], "toleranz": 15}, "persp-1782066806252": {"typ": "punkt", "position": {"phi": 97.63594342905897, "theta": 73.68864218191638}, "toleranz": 5}, "persp-1782066824895": {"typ": "polygon", "punkte": [{"phi": 98.6387621053803, "theta": 156.9208729527558}, {"phi": 100.44383572275865, "theta": 159.02674867105415}, {"phi": 102.14862747250486, "theta": 161.4334637776808}, {"phi": 102.14862747250486, "theta": 165.74549501038695}, {"phi": 101.74750000197633, "theta": 170.9600444080781}, {"phi": 101.34637253144781, "theta": 174.67039686412755}, {"phi": 101.04552692855142, "theta": 178.9824280968337}, {"phi": 100.54411759039077, "theta": 184.09669769841537}, {"phi": 100.24327198749437, "theta": 188.00760974668376}, {"phi": 99.3407351788052, "theta": 192.11908138717098}, {"phi": 98.83932584064456, "theta": 196.02999343543937}, {"phi": 97.93678903195539, "theta": 200.74314385258327}, {"phi": 97.0342522232662, "theta": 206.65965182304052}, {"phi": 95.53002420878424, "theta": 204.05237712419492}, {"phi": 96.03143354694488, "theta": 200.24174487203604}, {"phi": 96.83368848800193, "theta": 195.2277550665638}, {"phi": 97.23481595853045, "theta": 190.31404505720099}, {"phi": 97.73622529669112, "theta": 185.09949565950987}, {"phi": 98.03707089958749, "theta": 181.48942299956983}, {"phi": 98.53848023774816, "theta": 174.3695574757992}, {"phi": 98.53848023774816, "theta": 168.35276970923252}, {"phi": 98.53848023774816, "theta": 164.24129806874527}, {"phi": 98.83932584064456, "theta": 161.03234459324304}, {"phi": 98.83932584064456, "theta": 161.03234459324304}], "toleranz": 5}}, "erklaerungI18n": {"de": "Abweichung gross: Die Querung führt ohne Lichtsignalanlage über mehrere Fahrstreifen – Kinder können nicht alle Fahrstreifen gleichzeitig überblicken. Bei Querungen über mehrere Fahrstreifen verlangt VSS 40 241 Ziff. 24 grundsätzlich Schutzinseln (zwischen gleichgerichteten Fahrstreifen zwingend). Unfallschwere schwer (NACA 7): Bei signalisierten 60 km/h ist eine Kollision zwischen Fahrzeug und Kind mit tödlichem Ausgang wahrscheinlich.", "en": "Deviation large: the crossing spans several lanes without traffic signals – children cannot watch all lanes at once. For multi-lane crossings, VSS 40 241 sec. 24 requires refuge islands as a rule (mandatory between same-direction lanes). Severity severe (NACA 7): at a signed 60 km/h, a collision between a vehicle and a child is likely to be fatal.", "fr": "Écart grand: la traversée franchit plusieurs voies sans installation de feux – les enfants ne peuvent pas surveiller toutes les voies en même temps. Pour les traversées sur plusieurs voies, la norme VSS 40 241 ch. 24 exige en principe des îlots de protection des piétons (obligatoires entre voies de même sens). Gravité grave (NACA 7): à 60 km/h signalés, une collision entre un véhicule et un enfant a une issue probablement mortelle.", "it": "Scostamento grande: l'attraversamento supera più corsie senza impianto semaforico – i bambini non possono sorvegliare tutte le corsie contemporaneamente. Per gli attraversamenti su più corsie la norma VSS 40 241 cifra 24 esige di principio isole salvagente (obbligatorie tra corsie nello stesso senso). Gravità grave (NACA 7): con 60 km/h segnalati una collisione tra un veicolo e un bambino ha probabilmente esito mortale."}, "beschreibungI18n": {"de": "Die Mehrspurigkeit erschwert die sichere Querung insbesondere für Kinder. Verdeckte Sichtbeziehungen und die gleichzeitige Beobachtung mehrerer Fahrstreifen erhöhen das Unfallrisiko.", "en": "The multiple lanes make safe crossing difficult, especially for children. Obstructed sight lines and the need to watch several lanes at once increase the accident risk.", "fr": "La présence de plusieurs voies rend la traversée sûre difficile, en particulier pour les enfants. Les relations de visibilité masquées et l'observation simultanée de plusieurs voies augmentent le risque d'accident.", "it": "La presenza di più corsie rende difficile un attraversamento sicuro, in particolare per i bambini. Le relazioni di visibilità nascoste e l'osservazione simultanea di più corsie aumentano il rischio di incidente."}, "correctAssessment": {"naca": 7, "abweichung": "gross", "relevanzSD": "hoch", "wichtigkeit": "gross", "unfallrisiko": "hoch", "unfallschwere": "schwer"}, "boosterBonusProzent": 10},"updated_at":"2026-06-21T22:29:04.266+00:00"}, 
- {"id":"SD_0004","scene_id":"SZ_2026_001","data":{"id": "SD_0004", "kontext": "io", "sceneId": "SZ_2026_001", "topicId": "tp-1776644409542", "nameI18n": {"de": "Test 3", "en": "", "fr": "", "it": ""}, "normRefs": ["SN 641 723"], "isBooster": false, "isPflicht": true, "kategorie": "baustelle", "verortung": {"typ": "punkt", "position": {"phi": 87.8845179216403, "theta": 113.3807783767618}, "toleranz": 5}, "kriteriumId": "bepflanzung_strassenraum", "beschreibungI18n": {"de": "", "en": "", "fr": "", "it": ""}, "correctAssessment": {"naca": 7, "abweichung": "gross", "relevanzSD": "hoch", "wichtigkeit": "gross", "unfallrisiko": "hoch", "unfallschwere": "schwer"}},"updated_at":"2026-08-20T13:58:10.242+00:00"}, 
- {"id":"SD_0008","scene_id":"SZ_2026_002","data":{"id": "SD_0008", "kontext": "io", "sceneId": "SZ_2026_002", "topicId": "tp-1781537561454", "nameI18n": {"de": "Warteraum", "en": "Waiting area", "fr": "Espace d'attente", "it": "Area di attesa"}, "normRefs": ["SN 641 723"], "isBooster": false, "isPflicht": true, "kategorie": "verkehrsfuehrung", "verortung": {"typ": "polygon", "punkte": [{"phi": 161.54234309471906, "theta": 97.85237911701266}, {"phi": 168.72921027502179, "theta": 108.04749172147294}, {"phi": 168.72921027502179, "theta": 112.72721553991369}, {"phi": 168.22780093686112, "theta": 119.24540228702759}, {"phi": 167.2249822605398, "theta": 125.93072202765728}, {"phi": 166.05502713816497, "theta": 131.44611081367677}, {"phi": 164.8850720157901, "theta": 136.79436660618052}, {"phi": 159.0352964039158, "theta": 123.59086011843691}, {"phi": 160.03811508023713, "theta": 117.57407235187023}, {"phi": 161.04093375655842, "theta": 111.5572845853035}, {"phi": 161.04093375655842, "theta": 105.70762981225253}, {"phi": 161.54234309471906, "theta": 101.69643796787473}, {"phi": 161.54234309471906, "theta": 101.69643796787473}], "toleranz": 15}, "kriteriumId": "velolaengsfuehrung_geometrie", "verortungen": {"persp-1782066752407": {"typ": "punkt", "position": {"phi": 104.76768171714745, "theta": 209.82350759965132}, "toleranz": 5}, "persp-1782066767869": {"typ": "punkt", "position": {"phi": 103.81261995441257, "theta": 166.20179629204276}, "toleranz": 15}, "persp-1782066806252": {"typ": "punkt", "position": {"phi": 94.4269236648308, "theta": 46.61309723236622}, "toleranz": 5}, "persp-1782066824895": {"typ": "punkt", "position": {"phi": 93.22354125324522, "theta": 147.49457211846794}, "toleranz": 5}}, "erklaerungI18n": {"de": "Wichtigkeit mittel: Massgebend ist die Geometrie der Velolängsführung, die über den Warteraum führt — nach der Wichtigkeitstabelle des Fachkurses innerorts mittel. Abweichung gross: Der Warteraum ist gegen den durchgeführten Radverkehr nicht gesichert; wartende Fussgänger stehen in der Fahrlinie der Velos. Unfallschwere schwer (NACA 4): massgebend ist die Kollision Velo–wartendes Kind im Warteraum — schwer, aber im unteren Bereich der Gruppe, weil die Kollisionsgeschwindigkeit deutlich unter jener des motorisierten Verkehrs liegt.", "en": "Importance medium: decisive is the geometry of the longitudinal cycle route running across the waiting area — medium inside built-up areas according to the specialist course importance table. Deviation large: the waiting area is not protected against the cycle traffic passing through it; waiting pedestrians stand in the path of cyclists. Severity high (NACA 4): decisive is the collision between a cyclist and a waiting child — severe, but at the lower end of the group, because the collision speed is markedly lower than that of motorised traffic.", "fr": "Importance moyenne: c'est la géométrie de la conduite longitudinale des cycles, qui traverse la zone d'attente, qui est déterminante — selon le tableau d'importance du cours spécialisé, moyenne en localité. Écart important: la zone d'attente n'est pas protégée du trafic cycliste qui la traverse; les piétons en attente se trouvent sur la trajectoire des cycles. Gravité élevée (NACA 4): la collision entre un cycle et un enfant qui attend est déterminante — grave, mais dans la partie inférieure du groupe, car la vitesse de collision est nettement inférieure à celle du trafic motorisé.", "it": "Importanza media: è determinante la geometria della conduzione longitudinale delle biciclette che attraversa la zona di attesa — secondo la tabella delle importanze del corso specialistico, media all'interno delle località. Scostamento grande: la zona di attesa non è protetta dal traffico ciclistico che vi transita; i pedoni in attesa si trovano sulla traiettoria delle biciclette. Gravità elevata (NACA 4): è determinante la collisione tra bicicletta e bambino in attesa — grave, ma nella parte inferiore del gruppo, poiché la velocità di collisione è nettamente inferiore a quella del traffico motorizzato."}, "beschreibungI18n": {"de": "Massgebend ist der Konflikt mit dem Radverkehr: Die Velolängsführung verläuft über den Warteraum, sodass wartende Fussgänger — insbesondere Kinder — von Velofahrenden angefahren werden können. Der Warteraum ist gegen den Radverkehr nicht gesichert. Die starke Rückversetzung verschärft die Lage, weil Wartende dort später wahrgenommen werden; für die Beurteilung dieses Defizits ist jedoch die Führung des Radverkehrs über die Aufstellfläche massgebend.", "en": "The conflict with cycle traffic is decisive: the longitudinal cycle route runs across the waiting area, so that waiting pedestrians — children in particular — can be struck by cyclists. The waiting area is not protected against cycle traffic. The pronounced setback aggravates the situation, because people waiting there are noticed later; for assessing this deficit, however, it is the routing of cycle traffic across the waiting area that is decisive.", "fr": "Le conflit avec le trafic cycliste est déterminant: la conduite longitudinale des cycles traverse la zone d'attente, de sorte que les piétons qui attendent — en particulier les enfants — peuvent être heurtés par des cyclistes. La zone d'attente n'est pas protégée du trafic cycliste. Le fort retrait aggrave la situation, car les personnes qui attendent y sont perçues plus tard; pour l'appréciation de ce déficit, c'est toutefois le passage du trafic cycliste sur la surface d'attente qui est déterminant.", "it": "È determinante il conflitto con il traffico ciclistico: la conduzione longitudinale delle biciclette attraversa la zona di attesa, per cui i pedoni in attesa — in particolare i bambini — possono essere urtati dai ciclisti. La zona di attesa non è protetta dal traffico ciclistico. Il forte arretramento aggrava la situazione, poiché chi attende viene percepito più tardi; per la valutazione di questo deficit è tuttavia determinante il passaggio del traffico ciclistico sulla superficie di attesa."}, "correctAssessment": {"naca": 4, "abweichung": "gross", "relevanzSD": "hoch", "wichtigkeit": "mittel", "unfallrisiko": "hoch", "unfallschwere": "schwer"}},"updated_at":"2026-06-21T22:29:04.268+00:00"}, 
- {"id":"SD_0007","scene_id":"SZ_2026_002","data":{"id": "SD_0007", "kontext": "io", "sceneId": "SZ_2026_002", "topicId": "tp-1781537561454", "nameI18n": {"de": "Mittelinsel", "en": "Refuge island", "fr": "Îlot de protection", "it": "Isola salvagente"}, "normRefs": ["SN 641 723", "VSS 40 241 — Fussgaengerstreifen"], "isBooster": true, "isPflicht": true, "kategorie": "ausruestung", "verortung": {"typ": "polygon", "punkte": [{"phi": 169.0634831671289, "theta": 165.5412414908881}, {"phi": 169.23061961318245, "theta": 177.57481702402148}, {"phi": 169.397756059236, "theta": 183.4244717970724}, {"phi": 168.72921027502179, "theta": 192.11538745989105}, {"phi": 167.39211870659335, "theta": 201.80910108380408}, {"phi": 169.397756059236, "theta": 207.9930218438865}, {"phi": 171.73766630398572, "theta": 216.0154055326421}, {"phi": 172.40621208819988, "theta": 224.03778922139773}, {"phi": 174.0775765487354, "theta": 231.89303991663758}, {"phi": 174.24471299478898, "theta": 237.9098276832043}, {"phi": 176.58462323953873, "theta": 220.52799635756713}, {"phi": 177.42030546980646, "theta": 192.2825204534068}, {"phi": 177.25316902375292, "theta": 176.40488606941128}, {"phi": 177.58744191585998, "theta": 163.03424658815197}, {"phi": 176.91889613164582, "theta": 147.1566122041565}, {"phi": 174.0775765487354, "theta": 153.84193194478618}, {"phi": 172.23907564214636, "theta": 162.19858162057326}, {"phi": 171.23625696582505, "theta": 164.3713105362779}, {"phi": 171.23625696582505, "theta": 164.3713105362779}], "toleranz": 15}, "kriteriumId": "fussgaengerstreifen", "verortungen": {"persp-1782066752407": {"typ": "punkt", "position": {"phi": 98.29711723464536, "theta": 170.71438711696777}, "toleranz": 16}, "persp-1782066767869": {"typ": "punkt", "position": {"phi": 98.75073907527177, "theta": 135.15363524780778}, "toleranz": 5}, "persp-1782066806252": {"typ": "punkt", "position": {"phi": 93.62466872377374, "theta": 60.55198889157909}, "toleranz": 5}, "persp-1782066824895": {"typ": "polygon", "punkte": [{"phi": 98.23763463485176, "theta": 135.56127638144403}, {"phi": 99.64158078170158, "theta": 132.853721886489}, {"phi": 102.04834560487271, "theta": 129.44420881876786}, {"phi": 102.65003681066551, "theta": 133.2548410709268}, {"phi": 102.75031867829765, "theta": 137.2660329153046}, {"phi": 102.85060054592978, "theta": 140.77582577913518}, {"phi": 103.15144614882617, "theta": 145.18813680795077}, {"phi": 103.05116428119403, "theta": 150.50296600175136}, {"phi": 102.9508824135619, "theta": 156.8205931566464}, {"phi": 99.942426384598, "theta": 154.31359825391024}, {"phi": 99.84214451696585, "theta": 151.00436498229854}, {"phi": 99.942426384598, "theta": 145.48897619627908}, {"phi": 99.942426384598, "theta": 143.28282068187127}, {"phi": 99.942426384598, "theta": 140.37470659469741}, {"phi": 99.54129891406946, "theta": 138.26883087639902}, {"phi": 99.54129891406946, "theta": 137.96799148807068}, {"phi": 99.54129891406946, "theta": 135.9623955658818}, {"phi": 99.54129891406946, "theta": 135.9623955658818}], "toleranz": 10}, "persp-1782067731719": {"typ": "punkt", "position": {"phi": 148.70794830989652, "theta": 180.20343234186515}, "toleranz": 5}}, "erklaerungI18n": {"de": "Abweichung gross: Die Fahrbahn muss ohne Schutzinsel in einer Etappe gequert werden. Nach VSS 40 241 Ziff. 24 ist ein Verzicht auf die Schutzinsel nur bei einem DTV unter 3'000 Fahrzeugen möglich – hier liegt der DTV darüber. Gerade auf Schulwegen ist die Querung in zwei Etappen zentral. Unfallschwere schwer (NACA 7): Kinder müssen beide Fahrtrichtungen gleichzeitig beurteilen; bei 60 km/h bleibt für Fehler keine Reserve.", "en": "Deviation large: the carriageway must be crossed in a single stage, without a refuge island. Per VSS 40 241 sec. 24, the island may only be omitted if the ADT is below 3,000 vehicles – here it is above. On school routes in particular, two-stage crossing is essential. Severity severe (NACA 7): children must judge both directions at once; at 60 km/h there is no margin for error.", "fr": "Écart grand: la chaussée doit être traversée en une seule étape, sans îlot de protection. Selon la norme VSS 40 241 ch. 24, on ne peut renoncer à l'îlot que si le TJM est inférieur à 3'000 véhicules – ici, il est supérieur. Sur les chemins de l'école, la traversée en deux étapes est centrale. Gravité grave (NACA 7): les enfants doivent évaluer les deux sens de circulation en même temps; à 60 km/h, il n'y a aucune marge d'erreur.", "it": "Scostamento grande: la carreggiata deve essere attraversata in un'unica tappa, senza isola salvagente. Secondo la norma VSS 40 241 cifra 24 si può rinunciare all'isola solo con un TGM inferiore a 3'000 veicoli – qui è superiore. Proprio sui percorsi casa-scuola l'attraversamento in due tappe è centrale. Gravità grave (NACA 7): i bambini devono valutare contemporaneamente entrambi i sensi di marcia; a 60 km/h non c'è margine di errore."}, "beschreibungI18n": {"de": "Es fehlt eine Fussgängerschutzinsel. Bei einem DTV von über 3'000 Fahrzeugen und insbesondere auf Schulwegen stellt dies ein wesentliches Sicherheitsdefizit dar, da die sichere Querung nicht in zwei Etappen erfolgen kann.", "en": "A pedestrian refuge island is missing. With an ADT of more than 3,000 vehicles and especially on school routes, this is a major safety deficit, as safe crossing in two stages is not possible.", "fr": "Un îlot de protection des piétons fait défaut. Avec un TJM de plus de 3'000 véhicules et en particulier sur les chemins de l'école, cela constitue un déficit de sécurité majeur, car la traversée sûre ne peut pas se faire en deux étapes.", "it": "Manca un'isola salvagente. Con un TGM di oltre 3'000 veicoli e in particolare sui percorsi casa-scuola ciò costituisce un deficit di sicurezza sostanziale, poiché l'attraversamento sicuro non può avvenire in due tappe."}, "correctAssessment": {"naca": 7, "abweichung": "gross", "relevanzSD": "hoch", "wichtigkeit": "gross", "unfallrisiko": "hoch", "unfallschwere": "schwer"}, "boosterBonusProzent": 20},"updated_at":"2026-06-21T22:29:04.267+00:00"}, 
- {"id":"def2","scene_id":"sc1","data":{"id": "def2", "kontext": "io", "sceneId": "sc1", "topicId": "fuss", "nameI18n": {"de": "Sichtbehinderung Hecke", "en": "Visibility obstruction – hedge", "fr": "Obstruction par haie", "it": "Ostacolo alla visibilità"}, "normRefs": ["SN 640 273", "SN 641 723"], "isBooster": false, "isPflicht": true, "verortung": {"typ": "polygon", "punkte": [{"phi": 105.63321265598167, "theta": 243.91863827686265}, {"phi": 122.17972081528326, "theta": 261.96900157656273}, {"phi": 112.15153405207016, "theta": 271.99698118750723}, {"phi": 98.61348192173249, "theta": 255.95221380999604}, {"phi": 102.62475662701773, "theta": 243.41723929631544}, {"phi": 102.62475662701773, "theta": 243.41723929631544}], "toleranz": 15}, "kriteriumId": "erkennungsdistanz", "beschreibungI18n": {"de": "Hecke ragt in Sichtraum, Fahrzeuge werden zu spät erkannt.", "en": "Hedge intrudes into sight zone.", "fr": "Haie dans la zone de visibilité.", "it": "Siepe nella zona di visibilità."}, "correctAssessment": {"naca": 3, "abweichung": "mittel", "relevanzSD": "mittel", "wichtigkeit": "mittel", "unfallrisiko": "mittel", "unfallschwere": "mittel"}},"updated_at":"2026-06-21T22:37:57.462+00:00"}, 
- {"id":"SD_0006","scene_id":"SZ_2026_002","data":{"id": "SD_0006", "kontext": "io", "sceneId": "SZ_2026_002", "topicId": "tp-1781537561454", "nameI18n": {"de": "Fehlende Sichtweite bei 60 km/h", "en": "Insufficient sight distance at 60 km/h", "fr": "Distance de visibilité insuffisante à 60 km/h", "it": "Distanza di visibilità insufficiente a 60 km/h"}, "normRefs": ["SN 641 723", "VSS 40 241 — Fussgaengerstreifen"], "isBooster": false, "isPflicht": true, "kategorie": "sicht", "verortung": {"typ": "punkt", "position": {"phi": 159.85506476358762, "theta": 245.43081239141264}, "toleranz": 15}, "kriteriumId": "fussgaengerstreifen", "verortungen": {"persp-1782066752407": {"typ": "punkt", "position": {"phi": 84.7590651043077, "theta": 207.31651269691517}, "toleranz": 16}, "persp-1782066767869": {"typ": "punkt", "position": {"phi": 89.77315848591424, "theta": 6.756920478025125}, "toleranz": 15}, "persp-1782066806252": {"typ": "punkt", "position": {"phi": 93.78443319119948, "theta": 190.26894735830956}, "toleranz": 15}, "persp-1782066824895": {"typ": "punkt", "position": {"phi": 92.62185004745243, "theta": 230.42596350097898}, "toleranz": 10}, "persp-1782067731719": {"typ": "punkt", "position": {"phi": 124.74058194581724, "theta": 184.21462418624296}, "toleranz": 5}}, "erklaerungI18n": {"de": "Abweichung gross: Nach VSS 40 241 Tab. 1 braucht ein Fussgängerstreifen bei signalisierten 60 km/h innerorts 75 m Sichtweite (ausserorts 100 m). Diese Sichtweite ist hier nicht vorhanden – die Anlage ist damit nicht mehr sicher. Unfallschwere schwer (NACA 7): Ohne Sicht können Fahrzeuge nicht rechtzeitig anhalten; eine Kollision bei diesem Tempo endet für ein Kind meist tödlich oder mit schwersten Verletzungen.", "en": "Deviation large: per VSS 40 241 tab. 1, a pedestrian crossing at a signed 60 km/h requires 75 m of sight distance in urban areas (100 m rural). That distance is not available here – the facility is therefore no longer safe. Severity severe (NACA 7): without sight, vehicles cannot stop in time; at this speed a collision is usually fatal for a child or causes very serious injuries.", "fr": "Écart grand: selon la norme VSS 40 241 tab. 1, un passage pour piétons à 60 km/h signalés nécessite 75 m de distance de visibilité en localité (100 m hors localité). Cette distance n'est pas disponible ici – l'installation n'est donc plus sûre. Gravité grave (NACA 7): sans visibilité, les véhicules ne peuvent pas s'arrêter à temps; à cette vitesse, une collision est le plus souvent mortelle pour un enfant ou entraîne des blessures très graves.", "it": "Scostamento grande: secondo la norma VSS 40 241 tab. 1 un passaggio pedonale con 60 km/h segnalati necessita di 75 m di distanza di visibilità entro località (100 m fuori località). Questa distanza qui non è disponibile – l'impianto non è quindi più sicuro. Gravità grave (NACA 7): senza visibilità i veicoli non possono fermarsi in tempo; a questa velocità una collisione è per un bambino per lo più mortale o comporta ferite gravissime."}, "beschreibungI18n": {"de": "Die notwendige Sichtweite ist nicht gewährleistet. Gemeint ist der gegenseitige Blickkontakt zwischen den herannahenden Fahrzeuglenkenden und den Fussgängern auf dem Streifen oder im Annäherungsbereich (VSS 40 241 Ziff. 7). Bei 60 km/h sind dafür innerorts 75 m erforderlich, ausserorts 100 m (Tab. 1). Bestehen Anzeichen, dass schneller gefahren wird als signalisiert, ist die notwendige Sichtweite auf Basis des V85-Werts zu bestimmen (Ziff. 14). Abzugrenzen von der Erkennungsdistanz, die als eigenes Defizit erfasst ist: dort geht es darum, ab welcher Distanz die Anlage überhaupt als Querungsstelle erkennbar ist.", "en": "The required sight distance is not ensured. It refers to the mutual visual contact between approaching drivers and pedestrians on the crossing or in the approach zone (VSS 40 241, sec. 7). At 60 km/h, 75 m are required inside built-up areas and 100 m outside (table 1). If there are indications that actual speeds exceed the posted limit, the required sight distance must be determined on the basis of the V85 value (sec. 14). To be distinguished from the detection distance, recorded as a separate deficit: that one concerns the distance from which the facility can be identified as a crossing at all.", "fr": "La distance de visibilité nécessaire n'est pas garantie. Il s'agit du contact visuel mutuel entre les conducteurs qui s'approchent et les piétons se trouvant sur le passage ou dans la zone d'approche (VSS 40 241, ch. 7). À 60 km/h, 75 m sont requis en localité et 100 m hors localité (tab. 1). S'il existe des indices que la vitesse effective dépasse la vitesse signalée, la distance de visibilité nécessaire doit être déterminée sur la base de la valeur V85 (ch. 14). À distinguer de la distance de détection, saisie comme déficit distinct: celle-ci concerne la distance à partir de laquelle l'installation est reconnaissable en tant que passage.", "it": "La distanza di visibilità necessaria non è garantita. Si intende il contatto visivo reciproco tra i conducenti in avvicinamento e i pedoni sul passaggio pedonale o nella zona di avvicinamento (VSS 40 241, cifra 7). A 60 km/h sono richiesti 75 m all'interno delle località e 100 m fuori località (tab. 1). Se vi sono indizi che la velocità effettiva superi quella segnalata, la distanza di visibilità necessaria va determinata sulla base del valore V85 (cifra 14). Da distinguere dalla distanza di riconoscimento, rilevata come deficit separato: quest'ultima riguarda la distanza a partire dalla quale l'impianto è riconoscibile come passaggio pedonale."}, "correctAssessment": {"naca": 7, "abweichung": "gross", "relevanzSD": "hoch", "wichtigkeit": "gross", "unfallrisiko": "hoch", "unfallschwere": "schwer"}},"updated_at":"2026-06-21T22:29:04.267+00:00"}, 
- {"id":"SD_0012","scene_id":"SZ_2026_002","data":{"id": "SD_0012", "kontext": "io", "sceneId": "SZ_2026_002", "topicId": "tp-1781537561454", "nameI18n": {"de": "Signal 1.22 «Fussgängerstreifen» (Achtung Fussgängerstreifen)", "en": "Sign 1.22 'Pedestrian crossing'", "fr": "Signal 1.22 «Passage pour piétons»", "it": "Segnale 1.22 «Passaggio pedonale»"}, "normRefs": ["SN 641 723", "VSS 40 241 — Fussgaengerstreifen"], "isBooster": false, "isPflicht": false, "kategorie": "ausruestung", "verortung": null, "kriteriumId": "fussgaengerstreifen", "verortungen": {"persp-1782066847757": {"typ": "punkt", "position": {"phi": 55.61784089119613, "theta": 196.53139241598666}, "toleranz": 12}}, "erklaerungI18n": {"de": "Abweichung mittel: Die zusätzliche Signalisation ist eine reale, aber unzureichende Massnahme – sie kann die Unterschreitung der Mindest-Sichtweite nach VSS 40 241 Ziff. 22 keinesfalls kompensieren. Nach SSV Art. 11 Abs. 1 ist das Signal 1.22 zudem nur ausserorts vorgesehen und nur bei Fussgängerstreifen, die dem anerkannten Stand der Verkehrssicherheit entsprechen. Unfallschwere mittel (NACA 3): Das Signal reduziert die unvorbereitete Annäherung, das Grundproblem der Kuppenlage bleibt bestehen.", "en": "Deviation medium: the additional sign is a real but insufficient measure – it can never compensate for falling short of the minimum sight distance per VSS 40 241 sec. 22. Per Art. 11 para. 1 SSV, sign 1.22 is moreover intended for rural areas only and only for crossings that meet the recognised state of road safety. Severity medium (NACA 3): the sign reduces unprepared approaches; the underlying crest problem remains.", "fr": "Écart moyen: la signalisation supplémentaire est une mesure réelle mais insuffisante – elle ne peut en aucun cas compenser le non-respect de la distance de visibilité minimale selon la norme VSS 40 241 ch. 22. Selon l'art. 11 al. 1 OSR, le signal 1.22 n'est en outre prévu qu'hors localité et uniquement pour des passages conformes à l'état reconnu de la sécurité routière. Gravité moyenne (NACA 3): le signal réduit les approches non préparées, le problème de fond du sommet de côte subsiste.", "it": "Scostamento medio: la segnaletica supplementare è una misura reale ma insufficiente – non può in nessun caso compensare il mancato rispetto della distanza di visibilità minima secondo la norma VSS 40 241 cifra 22. Secondo l'art. 11 cpv. 1 OSStr il segnale 1.22 è inoltre previsto solo fuori località e solo per passaggi conformi allo stato riconosciuto della sicurezza stradale. Gravità media (NACA 3): il segnale riduce gli avvicinamenti impreparati, il problema di fondo del dosso rimane."}, "beschreibungI18n": {"de": "Aufgrund der Kuppenlage ist die Erkennbarkeit des Fussgängerstreifens eingeschränkt. Eine zusätzliche Signalisation «Achtung Fussgängerstreifen» ersetzt die erforderlichen Sichtweiten nicht und kann das bestehende Sicherheitsdefizit nicht beheben. Nach SSV Art. 11 Abs. 1 ist das Signal 1.22 «Fussgängerstreifen» nur ausserorts vorgesehen; es kündigt Fussgängerstreifen an, die aus einer Entfernung von 200 m nicht erkennbar sind. Die Aufstellung innerorts ist damit selbst erklärungsbedürftig.", "en": "Due to the crest location, the recognisability of the pedestrian crossing is limited. An additional 'Caution pedestrian crossing' sign does not replace the required sight distances and cannot remedy the existing safety deficit. Per Art. 11 para. 1 of the Swiss Signalisation Ordinance (SSV), sign 1.22 'Pedestrian crossing' is intended for rural areas only; it announces crossings that are not recognisable from a distance of 200 m. Its placement in an urban area is therefore itself questionable.", "fr": "En raison du sommet de côte, la détectabilité du passage pour piétons est limitée. Une signalisation supplémentaire «Attention passage pour piétons» ne remplace pas les distances de visibilité nécessaires et ne peut pas corriger le déficit de sécurité existant. Selon l'art. 11 al. 1 OSR, le signal 1.22 «Passage pour piétons» n'est prévu qu'hors localité; il annonce des passages qui ne sont pas visibles à une distance de 200 m. Son implantation en localité est donc elle-même discutable.", "it": "A causa della posizione su dosso la riconoscibilità del passaggio pedonale è limitata. Una segnaletica supplementare «Attenzione passaggio pedonale» non sostituisce le distanze di visibilità necessarie e non può eliminare il deficit di sicurezza esistente. Secondo l'art. 11 cpv. 1 OSStr il segnale 1.22 «Passaggio pedonale» è previsto solo fuori località; annuncia passaggi pedonali non riconoscibili da una distanza di 200 m. La sua posa entro località è quindi essa stessa da motivare."}, "correctAssessment": {"naca": 3, "abweichung": "mittel", "relevanzSD": "mittel", "wichtigkeit": "gross", "unfallrisiko": "mittel", "unfallschwere": "mittel"}},"updated_at":"2026-06-21T22:29:04.27+00:00"}, 
- {"id":"SD_0013","scene_id":"SZ_2026_001","data":{"id": "SD_0013", "kontext": "io", "sceneId": "SZ_2026_001", "topicId": "tp-1776644409542", "nameI18n": {"de": "Rutschgefahr", "en": "", "fr": "", "it": ""}, "normRefs": ["SN 641 723", "bfu Bericht 73 — NACA-Skala — Verletzungsschwere"], "isBooster": false, "isPflicht": true, "kategorie": "ausruestung", "verortung": {"typ": "punkt", "position": {"phi": 99.23180468326537, "theta": 188.1698766713615}, "toleranz": 5}, "kriteriumId": "griffigkeit", "verortungen": {"persp-1776644487174": {"typ": "punkt", "position": {"phi": 100.93654005930992, "theta": 282.73255076606904}, "toleranz": 5}}, "beschreibungI18n": {"de": "dd", "en": "", "fr": "", "it": ""}, "correctAssessment": {"naca": 7, "abweichung": "gross", "relevanzSD": "hoch", "wichtigkeit": "gross", "unfallrisiko": "hoch", "unfallschwere": "schwer"}},"updated_at":"2026-08-20T13:58:10.245+00:00"}, 
- {"id":"SD_0003","scene_id":"SZ_2026_001","data":{"id": "SD_0003", "kontext": "io", "sceneId": "SZ_2026_001", "topicId": "tp-1776644409542", "nameI18n": {"de": "Sichtweite FGS", "en": "Sight distance at pedestrian crossing", "fr": "Distance de visibilité au passage piétons", "it": "Distanza di visibilità al passaggio pedonale"}, "normRefs": ["SN 641 723"], "isBooster": true, "isPflicht": true, "kategorie": "sicht", "verortung": {"typ": "polygon", "punkte": [{"phi": 100.87220796368511, "theta": 223.55923062476435}, {"phi": 101.97530850763854, "theta": 235.09140717735056}, {"phi": 97.76347006708905, "theta": 241.20847474002667}, {"phi": 96.8609332583999, "theta": 236.99672330343}, {"phi": 97.46262446419266, "theta": 229.77657798354994}, {"phi": 100.06995302262807, "theta": 223.75979021698328}, {"phi": 100.06995302262807, "theta": 223.75979021698328}], "toleranz": 15}, "kriteriumId": "fussgaengerstreifen", "verortungen": {"persp-1776644487174": {"typ": "polygon", "punkte": [{"phi": 94.9555777733894, "theta": 271.8940923495168}, {"phi": 96.76065139076775, "theta": 279.51535685383465}, {"phi": 94.45416843522872, "theta": 281.72151236824243}, {"phi": 93.55163162653957, "theta": 277.108641747208}, {"phi": 94.654732170493, "theta": 272.0946519417358}, {"phi": 94.654732170493, "theta": 272.0946519417358}], "toleranz": 15}}, "beschreibungI18n": {"de": "Fehlende Sichtweite am FGS", "en": "Insufficient sight distance at the pedestrian crossing.", "fr": "Distance de visibilité insuffisante au passage piétons.", "it": "Distanza di visibilità insufficiente al passaggio pedonale."}, "correctAssessment": {"naca": 3, "abweichung": "mittel", "relevanzSD": "mittel", "wichtigkeit": "gross", "unfallrisiko": "mittel", "unfallschwere": "mittel"}, "boosterBonusProzent": 10},"updated_at":"2026-08-20T13:58:10.24+00:00"}]
+[
+  {
+    "id": "d-1776435763992",
+    "scene_id": "sc-1776345484548",
+    "data": {
+      "id": "d-1776435763992",
+      "kontext": "io",
+      "sceneId": "sc-1776345484548",
+      "topicId": "tp-1776342855361",
+      "nameI18n": {
+        "de": "Platzhalter",
+        "en": "Platzhalter",
+        "fr": "Platzhalter",
+        "it": "Platzhalter"
+      },
+      "normRefs": [
+        "Egal"
+      ],
+      "isBooster": true,
+      "isPflicht": true,
+      "verortung": {
+        "typ": "polygon",
+        "punkte": [
+          {
+            "phi": 106.04456824512536,
+            "theta": 204.06685236768806
+          },
+          {
+            "phi": 137.6323119777159,
+            "theta": 204.06685236768806
+          },
+          {
+            "phi": 137.6323119777159,
+            "theta": 210.08356545961004
+          },
+          {
+            "phi": 110.05571030640668,
+            "theta": 211.58774373259052
+          },
+          {
+            "phi": 105.54317548746519,
+            "theta": 211.58774373259052
+          },
+          {
+            "phi": 105.54317548746519,
+            "theta": 211.58774373259052
+          }
+        ],
+        "toleranz": 15
+      },
+      "kriteriumId": "flicke",
+      "beschreibungI18n": {
+        "de": "",
+        "en": "",
+        "fr": "",
+        "it": ""
+      },
+      "correctAssessment": {
+        "naca": 7,
+        "abweichung": "gross",
+        "relevanzSD": "mittel",
+        "wichtigkeit": "klein",
+        "unfallrisiko": "hoch",
+        "unfallschwere": "schwer"
+      }
+    },
+    "updated_at": "2026-05-29T20:28:18.035+00:00"
+  },
+  {
+    "id": "def1",
+    "scene_id": "sc1",
+    "data": {
+      "id": "def1",
+      "kontext": "io",
+      "sceneId": "sc1",
+      "topicId": "fuss",
+      "nameI18n": {
+        "de": "Fehlende Absenkung",
+        "en": "Missing kerb drop",
+        "fr": "Abaissement absent",
+        "it": "Abbassamento mancante"
+      },
+      "normRefs": [
+        "VSS SN 640 075",
+        "SN 641 723"
+      ],
+      "isBooster": false,
+      "isPflicht": true,
+      "verortung": {
+        "typ": "punkt",
+        "position": {
+          "phi": 115.1599900810341,
+          "theta": 134.11226153702032
+        },
+        "toleranz": 15
+      },
+      "kriteriumId": "fussgaengerfuehrung_geometrie",
+      "beschreibungI18n": {
+        "de": "Bordstein an Querungsstelle nicht abgesenkt — Barrierefreiheit verletzt.",
+        "en": "Kerb not dropped at crossing.",
+        "fr": "Bordure non abaissée à la traversée.",
+        "it": "Cordolo non ribassato all'attraversamento."
+      },
+      "correctAssessment": {
+        "naca": 2,
+        "abweichung": "gross",
+        "relevanzSD": "hoch",
+        "wichtigkeit": "mittel",
+        "unfallrisiko": "hoch",
+        "unfallschwere": "mittel"
+      }
+    },
+    "updated_at": "2026-06-21T22:37:57.46+00:00"
+  },
+  {
+    "id": "d-1776641627946",
+    "scene_id": "sc-1776640574069",
+    "data": {
+      "id": "d-1776641627946",
+      "kontext": "io",
+      "sceneId": "sc-1776640574069",
+      "topicId": "tp-1776297460539",
+      "nameI18n": {
+        "de": "Platzhalter",
+        "en": "Platzhalter",
+        "fr": "Platzhalter",
+        "it": "Platzhalter"
+      },
+      "normRefs": [
+        "SN 641 723"
+      ],
+      "isBooster": false,
+      "isPflicht": true,
+      "kategorie": "baustelle",
+      "verortung": {
+        "typ": "punkt",
+        "position": {
+          "phi": 71.29860839492379,
+          "theta": 184.77742888508467
+        },
+        "toleranz": 15
+      },
+      "kriteriumId": "angebot_vertraeglichkeit",
+      "beschreibungI18n": {
+        "de": "Platzhalter",
+        "en": "Platzhalter",
+        "fr": "Platzhalter",
+        "it": "Platzhalter"
+      },
+      "correctAssessment": {
+        "naca": 0,
+        "abweichung": "klein",
+        "relevanzSD": "gering",
+        "wichtigkeit": "klein",
+        "unfallrisiko": "gering",
+        "unfallschwere": "leicht"
+      }
+    },
+    "updated_at": "2026-05-29T20:28:18.035+00:00"
+  },
+  {
+    "id": "d-1776297647255",
+    "scene_id": "sc-1776297620183",
+    "data": {
+      "id": "d-1776297647255",
+      "kontext": "io",
+      "sceneId": "sc-1776297620183",
+      "topicId": "velo",
+      "nameI18n": {
+        "de": "Platzhalter",
+        "en": "Platzhalter",
+        "fr": "Platzhalter",
+        "it": "Platzhalter"
+      },
+      "normRefs": [
+        "SN 641 723"
+      ],
+      "isBooster": false,
+      "isPflicht": true,
+      "kategorie": "ausruestung",
+      "verortung": null,
+      "kriteriumId": "geschwindigkeit",
+      "beschreibungI18n": {
+        "de": "",
+        "en": "",
+        "fr": "",
+        "it": ""
+      },
+      "correctAssessment": {
+        "naca": 7,
+        "abweichung": "gross",
+        "relevanzSD": "hoch",
+        "wichtigkeit": "gross",
+        "unfallrisiko": "hoch",
+        "unfallschwere": "schwer"
+      }
+    },
+    "updated_at": "2026-05-29T20:28:18.035+00:00"
+  },
+  {
+    "id": "d-1776298200932",
+    "scene_id": "sc-1776298107808",
+    "data": {
+      "id": "d-1776298200932",
+      "kontext": "io",
+      "sceneId": "sc-1776298107808",
+      "topicId": "tp-1776298075242",
+      "nameI18n": {
+        "de": "Platzhalter",
+        "en": "Platzhalter",
+        "fr": "Platzhalter",
+        "it": "Platzhalter"
+      },
+      "normRefs": [
+        "SN 641 723"
+      ],
+      "isBooster": true,
+      "isPflicht": true,
+      "kategorie": "verkehrsfuehrung",
+      "verortung": {
+        "typ": "punkt",
+        "position": {
+          "phi": 97.37189397927781,
+          "theta": 145.57282715122267
+        },
+        "toleranz": 15
+      },
+      "kriteriumId": "visuelle_linienfuehrung",
+      "verortungen": {
+        "persp-1776298130026": {
+          "typ": "punkt",
+          "position": {
+            "phi": 89.85075390686798,
+            "theta": 291.9813294710125
+          },
+          "toleranz": 15
+        },
+        "persp-1776298134532": {
+          "typ": "punkt",
+          "position": {
+            "phi": 92.85920993583193,
+            "theta": 49.30422288615543
+          },
+          "toleranz": 15
+        }
+      },
+      "beschreibungI18n": {
+        "de": "",
+        "en": "",
+        "fr": "",
+        "it": ""
+      },
+      "correctAssessment": {
+        "naca": 7,
+        "abweichung": "gross",
+        "relevanzSD": "hoch",
+        "wichtigkeit": "gross",
+        "unfallrisiko": "hoch",
+        "unfallschwere": "schwer"
+      }
+    },
+    "updated_at": "2026-05-29T20:28:18.037+00:00"
+  },
+  {
+    "id": "d-1776331013137",
+    "scene_id": "sc1",
+    "data": {
+      "id": "d-1776331013137",
+      "kontext": "io",
+      "sceneId": "sc1",
+      "topicId": "fuss",
+      "nameI18n": {
+        "de": "Platzhalter",
+        "en": "Platzhalter",
+        "fr": "Platzhalter",
+        "it": "Platzhalter"
+      },
+      "normRefs": [
+        "SN 641 723"
+      ],
+      "isBooster": false,
+      "isPflicht": true,
+      "kategorie": "ausruestung",
+      "verortung": {
+        "typ": "polygon",
+        "punkte": [
+          {
+            "phi": 99.27576601671309,
+            "theta": 257.21448467966576
+          },
+          {
+            "phi": 108.3008356545961,
+            "theta": 244.67966573816153
+          },
+          {
+            "phi": 124.34540389972145,
+            "theta": 268.2451253481894
+          },
+          {
+            "phi": 111.81058495821728,
+            "theta": 280.7799442896936
+          },
+          {
+            "phi": 105.2924791086351,
+            "theta": 264.233983286908
+          },
+          {
+            "phi": 105.2924791086351,
+            "theta": 264.233983286908
+          }
+        ],
+        "toleranz": 15
+      },
+      "kriteriumId": "miv_oev_lw",
+      "verortungen": {
+        "persp-1776296925554": {
+          "typ": "polygon",
+          "punkte": [
+            {
+              "phi": 116.82451253481894,
+              "theta": 50.64066852367687
+            },
+            {
+              "phi": 133.87186629526462,
+              "theta": 62.17270194986072
+            },
+            {
+              "phi": 121.83844011142064,
+              "theta": 83.23119777158774
+            },
+            {
+              "phi": 107.29805013927576,
+              "theta": 93.76044568245126
+            },
+            {
+              "phi": 108.80222841225627,
+              "theta": 78.71866295264624
+            },
+            {
+              "phi": 112.8133704735376,
+              "theta": 60.16713091922006
+            },
+            {
+              "phi": 112.8133704735376,
+              "theta": 60.16713091922006
+            }
+          ],
+          "toleranz": 15
+        },
+        "persp-1776296930977": {
+          "typ": "polygon",
+          "punkte": [
+            {
+              "phi": 126.35097493036211,
+              "theta": 181.50417827298048
+            },
+            {
+              "phi": 156.43454038997214,
+              "theta": 176.49025069637884
+            },
+            {
+              "phi": 149.91643454038996,
+              "theta": 235.65459610027855
+            },
+            {
+              "phi": 122.33983286908077,
+              "theta": 225.6267409470752
+            },
+            {
+              "phi": 120.83565459610027,
+              "theta": 201.05849582172704
+            },
+            {
+              "phi": 120.83565459610027,
+              "theta": 201.05849582172704
+            }
+          ],
+          "toleranz": 15
+        }
+      },
+      "beschreibungI18n": {
+        "de": "Platzhalter",
+        "en": "Platzhalter",
+        "fr": "Platzhalter",
+        "it": "Platzhalter"
+      },
+      "correctAssessment": {
+        "naca": 7,
+        "abweichung": "gross",
+        "relevanzSD": "hoch",
+        "wichtigkeit": "mittel",
+        "unfallrisiko": "hoch",
+        "unfallschwere": "schwer"
+      }
+    },
+    "updated_at": "2026-06-21T22:37:57.461+00:00"
+  },
+  {
+    "id": "d-1776641679132",
+    "scene_id": "sc-1776639802186",
+    "data": {
+      "id": "d-1776641679132",
+      "kontext": "io",
+      "sceneId": "sc-1776639802186",
+      "topicId": "tp-1776297460539",
+      "nameI18n": {
+        "de": "Platzhalter",
+        "en": "Platzhalter",
+        "fr": "Platzhalter",
+        "it": "Platzhalter"
+      },
+      "normRefs": [
+        "SN 641 723"
+      ],
+      "isBooster": false,
+      "isPflicht": true,
+      "kategorie": "baustelle",
+      "verortung": {
+        "typ": "punkt",
+        "position": {
+          "phi": 115.42263015306135,
+          "theta": 207.84178199025703
+        },
+        "toleranz": 15
+      },
+      "kriteriumId": "visuelle_linienfuehrung",
+      "beschreibungI18n": {
+        "de": "Platzhalter",
+        "en": "Platzhalter",
+        "fr": "Platzhalter",
+        "it": "Platzhalter"
+      },
+      "correctAssessment": {
+        "naca": 2,
+        "abweichung": "mittel",
+        "relevanzSD": "mittel",
+        "wichtigkeit": "mittel",
+        "unfallrisiko": "mittel",
+        "unfallschwere": "mittel"
+      }
+    },
+    "updated_at": "2026-05-29T20:28:18.038+00:00"
+  },
+  {
+    "id": "SD_0010",
+    "scene_id": "SZ_2026_002",
+    "data": {
+      "id": "SD_0010",
+      "kontext": "io",
+      "sceneId": "SZ_2026_002",
+      "topicId": "tp-1781537561454",
+      "nameI18n": {
+        "de": "Erkennbarkeit",
+        "en": "Recognisability",
+        "fr": "Détectabilité",
+        "it": "Riconoscibilità"
+      },
+      "normRefs": [
+        "SN 641 723",
+        "VSS 40 241 — Fussgaengerstreifen"
+      ],
+      "isBooster": false,
+      "isPflicht": true,
+      "kategorie": "sicht",
+      "verortung": {
+        "typ": "punkt",
+        "position": {
+          "phi": 170.40057473555729,
+          "theta": 142.64402137923148
+        },
+        "toleranz": 15
+      },
+      "kriteriumId": "fussgaengerstreifen",
+      "verortungen": {
+        "persp-1782066767869": {
+          "typ": "punkt",
+          "position": {
+            "phi": 78.7075604345883,
+            "theta": 175.6748767393364
+          },
+          "toleranz": 5
+        },
+        "persp-1782066806252": {
+          "typ": "punkt",
+          "position": {
+            "phi": 85.90296491609966,
+            "theta": 43.30386396075453
+          },
+          "toleranz": 5
+        },
+        "persp-1782066824895": {
+          "typ": "punkt",
+          "position": {
+            "phi": 60.13052493464203,
+            "theta": 236.84387045198355
+          },
+          "toleranz": 5
+        },
+        "persp-1782067731719": {
+          "typ": "punkt",
+          "position": {
+            "phi": 164.4831498718517,
+            "theta": 34.3338644081225
+          },
+          "toleranz": 5
+        }
+      },
+      "erklaerungI18n": {
+        "de": "Abweichung gross: Wegen der Kuppenlage wird die Querungsstelle zu spät wahrgenommen. Nach VSS 40 241 Ziff. 15 sollte die Erkennungsdistanz doppelt so gross sein wie die notwendige Sichtweite und darf sie keinesfalls unterschreiten. Unfallschwere schwer (NACA 7): Späte Erkennung bei hohem Tempo lässt keinen ausreichenden Anhalteweg.",
+        "en": "Deviation large: due to the crest location, the crossing is perceived too late. Per VSS 40 241 sec. 15, the detection distance should be twice the required sight distance and must never fall below it. Severity severe (NACA 7): late detection at high speed leaves no adequate stopping distance.",
+        "fr": "Écart grand: en raison du sommet de côte, la traversée est perçue trop tard. Selon la norme VSS 40 241 ch. 15, la distance de détection devrait être deux fois plus grande que la distance de visibilité nécessaire et ne doit en aucun cas être inférieure. Gravité grave (NACA 7): une détection tardive à vitesse élevée ne laisse pas de distance d'arrêt suffisante.",
+        "it": "Scostamento grande: a causa della posizione su dosso l'attraversamento viene percepito troppo tardi. Secondo la norma VSS 40 241 cifra 15 la distanza di riconoscimento dovrebbe essere il doppio della distanza di visibilità necessaria e non deve in nessun caso essere inferiore. Gravità grave (NACA 7): un riconoscimento tardivo ad alta velocità non lascia una distanza di arresto sufficiente."
+      },
+      "beschreibungI18n": {
+        "de": "Die Erkennungsdistanz ist unzureichend. Erkennungsdistanz ist die Distanz, auf der die Querungsstelle als solche erkannt werden kann — also die Bodenmarkierung oder das Signal 4.11 (VSS 40 241 Ziff. 9). Wegen der Kuppenlage wird die Anlage erst spät sichtbar. Nach Ziff. 15 sollte die Erkennungsdistanz doppelt so gross sein wie die notwendige Sichtweite und darf diese keinesfalls unterschreiten. Abzugrenzen von der Sichtweite, die als eigenes Defizit erfasst ist: dort geht es um den gegenseitigen Blickkontakt zwischen Fahrzeuglenkenden und Fussgängern.",
+        "en": "The detection distance is insufficient. The detection distance is the distance at which the crossing can be identified as such — via the road marking or signal 4.11 (VSS 40 241, sec. 9). Because of the crest, the facility only becomes visible late. According to sec. 15, the detection distance should be twice the required sight distance and must never fall below it. To be distinguished from the sight distance, recorded as a separate deficit: that one concerns the mutual visual contact between drivers and pedestrians.",
+        "fr": "La distance de détection est insuffisante. La distance de détection est la distance à laquelle le passage piétons peut être détecté en tant que tel, soit par le marquage au sol, soit par le signal 4.11 (VSS 40 241, ch. 9). En raison du sommet de côte, l'installation n'est visible que tardivement. Selon le ch. 15, la distance de détection devrait être deux fois plus grande que la distance de visibilité nécessaire et ne doit en aucun cas être inférieure à celle-ci. À distinguer de la distance de visibilité, saisie comme déficit distinct: celle-ci concerne le contact visuel mutuel entre conducteurs et piétons.",
+        "it": "La distanza di riconoscimento è insufficiente. È la distanza alla quale il passaggio pedonale può essere riconosciuto come tale, ossia tramite la segnaletica orizzontale o il segnale 4.11 (VSS 40 241, cifra 9). A causa del dosso l'impianto diventa visibile solo tardi. Secondo la cifra 15 la distanza di riconoscimento dovrebbe essere il doppio della distanza di visibilità necessaria e non deve in nessun caso essere inferiore ad essa. Da distinguere dalla distanza di visibilità, rilevata come deficit separato: quest'ultima riguarda il contatto visivo reciproco tra conducenti e pedoni."
+      },
+      "correctAssessment": {
+        "naca": 7,
+        "abweichung": "gross",
+        "relevanzSD": "hoch",
+        "wichtigkeit": "gross",
+        "unfallrisiko": "hoch",
+        "unfallschwere": "schwer"
+      }
+    },
+    "updated_at": "2026-06-21T22:29:04.269+00:00"
+  },
+  {
+    "id": "d-1776641339582",
+    "scene_id": "sc-1776641264993",
+    "data": {
+      "id": "d-1776641339582",
+      "kontext": "io",
+      "sceneId": "sc-1776641264993",
+      "topicId": "tp-1776297472536",
+      "nameI18n": {
+        "de": "Platzhalter",
+        "en": "Platzhalter",
+        "fr": "Platzhalter",
+        "it": "Platzhalter"
+      },
+      "normRefs": [
+        "SN 641 723"
+      ],
+      "isBooster": true,
+      "isPflicht": true,
+      "kategorie": "sicht",
+      "verortung": {
+        "typ": "punkt",
+        "position": {
+          "phi": 74.30706442388771,
+          "theta": 16.307371421217002
+        },
+        "toleranz": 15
+      },
+      "kriteriumId": "angebot_vertraeglichkeit",
+      "verortungen": {
+        "persp-1776641297470": {
+          "typ": "punkt",
+          "position": {
+            "phi": 85.34513958375956,
+            "theta": 101.6109769620537
+          },
+          "toleranz": 15
+        }
+      },
+      "beschreibungI18n": {
+        "de": "Platzhalter",
+        "en": "Platzhalter",
+        "fr": "Platzhalter",
+        "it": "Platzhalter"
+      },
+      "correctAssessment": {
+        "naca": 7,
+        "abweichung": "gross",
+        "relevanzSD": "hoch",
+        "wichtigkeit": "gross",
+        "unfallrisiko": "hoch",
+        "unfallschwere": "schwer"
+      }
+    },
+    "updated_at": "2026-05-29T20:28:18.038+00:00"
+  },
+  {
+    "id": "d-1776345748371",
+    "scene_id": "sc-1776345484548",
+    "data": {
+      "id": "d-1776345748371",
+      "kontext": "io",
+      "sceneId": "sc-1776345484548",
+      "topicId": "tp-1776342855361",
+      "nameI18n": {
+        "de": "Signal T30 wird nicht beachtet",
+        "en": "T30 sign not observed",
+        "fr": "Signal T30 non respecté",
+        "it": "Segnale T30 non rispettato"
+      },
+      "normRefs": [
+        "SN 641 723"
+      ],
+      "isBooster": true,
+      "isPflicht": true,
+      "kategorie": "ausruestung",
+      "verortung": {
+        "typ": "punkt",
+        "position": {
+          "phi": 92.30199576721235,
+          "theta": 71.06087049051254
+        },
+        "toleranz": 8
+      },
+      "kriteriumId": "tempo30_begegnungszonen",
+      "verortungen": {
+        "persp-1776345640047": {
+          "typ": "punkt",
+          "position": {
+            "phi": 83.983286908078,
+            "theta": 213.5933147632312
+          },
+          "toleranz": 15
+        },
+        "persp-1776345669424": {
+          "typ": "punkt",
+          "position": {
+            "phi": 82.98050139275766,
+            "theta": 60.16713091922006
+          },
+          "toleranz": 15
+        }
+      },
+      "beschreibungI18n": {
+        "de": "",
+        "en": "",
+        "fr": "",
+        "it": ""
+      },
+      "correctAssessment": {
+        "naca": 5,
+        "abweichung": "mittel",
+        "relevanzSD": "mittel",
+        "wichtigkeit": "gross",
+        "unfallrisiko": "hoch",
+        "unfallschwere": "schwer"
+      }
+    },
+    "updated_at": "2026-05-29T20:28:18.039+00:00"
+  },
+  {
+    "id": "SD_0011",
+    "scene_id": "SZ_2026_002",
+    "data": {
+      "id": "SD_0011",
+      "kontext": "io",
+      "sceneId": "SZ_2026_002",
+      "topicId": "tp-1781537561454",
+      "nameI18n": {
+        "de": "Geschwindigkeit",
+        "en": "Speed",
+        "fr": "Vitesse",
+        "it": "Velocità"
+      },
+      "normRefs": [
+        "SN 641 723",
+        "VSS 40 241 — Fussgaengerstreifen"
+      ],
+      "isBooster": false,
+      "isPflicht": true,
+      "kategorie": "verkehrsablauf",
+      "verortung": {
+        "typ": "punkt",
+        "position": {
+          "phi": 124.56738287301982,
+          "theta": 354.22641399725217
+        },
+        "toleranz": 15
+      },
+      "kriteriumId": "fussgaengerstreifen",
+      "verortungen": {
+        "persp-1782066752407": {
+          "typ": "punkt",
+          "position": {
+            "phi": 89.77315848591424,
+            "theta": 48.874434843992034
+          },
+          "toleranz": 16
+        },
+        "persp-1782066767869": {
+          "typ": "punkt",
+          "position": {
+            "phi": 100.75640701186221,
+            "theta": 28.317076641555797
+          },
+          "toleranz": 15
+        },
+        "persp-1782066806252": {
+          "typ": "punkt",
+          "position": {
+            "phi": 86.00324678373181,
+            "theta": 226.91617063714844
+          },
+          "toleranz": 15
+        },
+        "persp-1782066824895": {
+          "typ": "punkt",
+          "position": {
+            "phi": 71.56265784470496,
+            "theta": 236.944150248093
+          },
+          "toleranz": 5
+        },
+        "persp-1782067731719": {
+          "typ": "punkt",
+          "position": {
+            "phi": 134.39858958221245,
+            "theta": 21.798889894441874
+          },
+          "toleranz": 5
+        }
+      },
+      "erklaerungI18n": {
+        "de": "Abweichung gross: Nach VSS 40 241 Ziff. 13 dürfen am Fussgängerstreifen signalisierte und gefahrene Geschwindigkeit (Basis V85) höchstens 60 km/h betragen. Liegt der V85 über der Signalisation, muss die notwendige Sichtweite auf Basis des V85 nachgewiesen werden (Ziff. 14) – die Anordnungsvoraussetzung ist verletzt. Unfallschwere schwer (NACA 7): Je höher die Kollisionsgeschwindigkeit, desto schwerer die Verletzungsfolgen.",
+        "en": "Deviation large: per VSS 40 241 sec. 13, both signed and driven speed (V85 basis) at a pedestrian crossing may not exceed 60 km/h. If the V85 exceeds the signed limit, the required sight distance must be demonstrated on the basis of the V85 (sec. 14) – the siting requirement is violated. Severity severe (NACA 7): the higher the collision speed, the more severe the injuries.",
+        "fr": "Écart grand: selon la norme VSS 40 241 ch. 13, la vitesse signalée et la vitesse pratiquée (base V85) ne doivent pas dépasser 60 km/h au passage pour piétons. Si le V85 dépasse la signalisation, la distance de visibilité nécessaire doit être justifiée sur la base du V85 (ch. 14) – la condition de mise en œuvre est violée. Gravité grave (NACA 7): plus la vitesse de collision est élevée, plus les blessures sont graves.",
+        "it": "Scostamento grande: secondo la norma VSS 40 241 cifra 13 al passaggio pedonale la velocità segnalata e quella praticata (base V85) possono essere al massimo 60 km/h. Se il V85 supera la segnaletica, la distanza di visibilità necessaria deve essere dimostrata sulla base del V85 (cifra 14) – la condizione di attuazione è violata. Gravità grave (NACA 7): quanto più alta è la velocità di collisione, tanto più gravi sono le conseguenze."
+      },
+      "beschreibungI18n": {
+        "de": "Es bestehen Hinweise, dass die tatsächlich gefahrenen Geschwindigkeiten über der signalisierten Höchstgeschwindigkeit liegen. Ein erhöhter V85-Wert erhöht das Risiko von Unfällen und deren Schwere und stellt ein wesentliches Sicherheitsdefizit dar.",
+        "en": "There are indications that actual driven speeds exceed the signed speed limit. An elevated V85 increases both accident risk and severity and constitutes a major safety deficit.",
+        "fr": "Des indices montrent que les vitesses réellement pratiquées dépassent la vitesse maximale signalée. Une valeur V85 élevée augmente le risque d'accident et sa gravité et constitue un déficit de sécurité majeur.",
+        "it": "Vi sono indizi che le velocità effettivamente praticate superino la velocità massima segnalata. Un valore V85 elevato aumenta il rischio di incidenti e la loro gravità e costituisce un deficit di sicurezza sostanziale."
+      },
+      "correctAssessment": {
+        "naca": 7,
+        "abweichung": "gross",
+        "relevanzSD": "hoch",
+        "wichtigkeit": "gross",
+        "unfallrisiko": "hoch",
+        "unfallschwere": "schwer"
+      }
+    },
+    "updated_at": "2026-06-21T22:29:04.27+00:00"
+  },
+  {
+    "id": "d-1774784423874",
+    "scene_id": "sc-1774784383797",
+    "data": {
+      "id": "d-1774784423874",
+      "kontext": "io",
+      "sceneId": "sc-1774784383797",
+      "topicId": "fuss",
+      "nameI18n": {
+        "de": "Platzhalter",
+        "en": "Platzhalter",
+        "fr": "Platzhalter",
+        "it": "Platzhalter"
+      },
+      "normRefs": [
+        "SN 641 723"
+      ],
+      "isBooster": true,
+      "isPflicht": true,
+      "verortung": {
+        "typ": "punkt",
+        "position": {
+          "phi": 127.84947368510564,
+          "theta": 230.0990971992514
+        },
+        "toleranz": 15
+      },
+      "kriteriumId": "visuelle_linienfuehrung",
+      "beschreibungI18n": {
+        "de": "",
+        "en": "",
+        "fr": "",
+        "it": ""
+      },
+      "correctAssessment": {
+        "naca": 7,
+        "abweichung": "gross",
+        "relevanzSD": "hoch",
+        "wichtigkeit": "gross",
+        "unfallrisiko": "hoch",
+        "unfallschwere": "schwer"
+      }
+    },
+    "updated_at": "2026-05-29T20:28:18.041+00:00"
+  },
+  {
+    "id": "d-1776633965378",
+    "scene_id": "sc-1776633571569",
+    "data": {
+      "id": "d-1776633965378",
+      "kontext": "io",
+      "sceneId": "sc-1776633571569",
+      "topicId": "tp-1776298075242",
+      "nameI18n": {
+        "de": "Parkplatzlänge",
+        "en": "Parking bay length",
+        "fr": "Longueur de la place de stationnement",
+        "it": "Lunghezza dello stallo di sosta"
+      },
+      "normRefs": [
+        "SN 641 723"
+      ],
+      "isBooster": true,
+      "isPflicht": true,
+      "kategorie": "verkehrsablauf",
+      "verortung": {
+        "typ": "punkt",
+        "position": {
+          "phi": 108.27431898873685,
+          "theta": 259.90052115318383
+        },
+        "toleranz": 5
+      },
+      "kriteriumId": "anlagen_ruhender_verkehr",
+      "verortungen": {
+        "persp-1776634491168": {
+          "typ": "polygon",
+          "punkte": [
+            {
+              "phi": 107.90149008065153,
+              "theta": 182.7718329628958
+            },
+            {
+              "phi": 152.52692117694974,
+              "theta": 157.20048495498727
+            },
+            {
+              "phi": 150.01987448614648,
+              "theta": 222.3823524261266
+            },
+            {
+              "phi": 120.43672353466789,
+              "theta": 257.9816800449796
+            },
+            {
+              "phi": 106.89867140433024,
+              "theta": 226.3935442705044
+            },
+            {
+              "phi": 108.4028994188122,
+              "theta": 191.79701461274584
+            },
+            {
+              "phi": 108.4028994188122,
+              "theta": 191.79701461274584
+            }
+          ],
+          "toleranz": 15
+        }
+      },
+      "beschreibungI18n": {
+        "de": "",
+        "en": "",
+        "fr": "",
+        "it": ""
+      },
+      "correctAssessment": {
+        "naca": 0,
+        "abweichung": "mittel",
+        "relevanzSD": "mittel",
+        "wichtigkeit": "gross",
+        "unfallrisiko": "gering",
+        "unfallschwere": "leicht"
+      }
+    },
+    "updated_at": "2026-05-29T20:28:18.04+00:00"
+  },
+  {
+    "id": "d-1774784555731",
+    "scene_id": "sc-1774784383797",
+    "data": {
+      "id": "d-1774784555731",
+      "kontext": "io",
+      "sceneId": "sc-1774784383797",
+      "topicId": "fuss",
+      "nameI18n": {
+        "de": "Platzhalter",
+        "en": "Platzhalter",
+        "fr": "Platzhalter",
+        "it": "Platzhalter"
+      },
+      "normRefs": [
+        "SN 641 723"
+      ],
+      "isBooster": false,
+      "isPflicht": true,
+      "verortung": {
+        "typ": "punkt",
+        "position": {
+          "phi": 64.65442127470331,
+          "theta": 132.79877840863193
+        },
+        "toleranz": 15
+      },
+      "kriteriumId": "angebot_vertraeglichkeit",
+      "beschreibungI18n": {
+        "de": "Platzhalter",
+        "en": "Platzhalter",
+        "fr": "Platzhalter",
+        "it": "Platzhalter"
+      },
+      "correctAssessment": {
+        "naca": 7,
+        "abweichung": "gross",
+        "relevanzSD": "hoch",
+        "wichtigkeit": "gross",
+        "unfallrisiko": "hoch",
+        "unfallschwere": "schwer"
+      }
+    },
+    "updated_at": "2026-05-29T20:28:18.041+00:00"
+  },
+  {
+    "id": "d-1776345706294",
+    "scene_id": "sc-1776345484548",
+    "data": {
+      "id": "d-1776345706294",
+      "kontext": "io",
+      "sceneId": "sc-1776345484548",
+      "topicId": "tp-1776342855361",
+      "nameI18n": {
+        "de": "Sichtweite FGS verdeckt",
+        "en": "Sight distance at pedestrian crossing obstructed",
+        "fr": "Distance de visibilité au passage piétons masquée",
+        "it": "Distanza di visibilità al passaggio pedonale ostruita"
+      },
+      "normRefs": [
+        "SN 641 723"
+      ],
+      "isBooster": true,
+      "isPflicht": true,
+      "kategorie": "sicht",
+      "verortung": {
+        "typ": "punkt",
+        "position": {
+          "phi": 85.84796441291243,
+          "theta": 200.65933195543786
+        },
+        "toleranz": 15
+      },
+      "kriteriumId": "fussgaengerstreifen",
+      "verortungen": {
+        "persp-1776345640047": {
+          "typ": "punkt",
+          "position": {
+            "phi": 88.4958217270195,
+            "theta": 197.0473537604457
+          },
+          "toleranz": 15
+        },
+        "persp-1776345669424": {
+          "typ": "punkt",
+          "position": {
+            "phi": 90.50139275766016,
+            "theta": 28.57938718662953
+          },
+          "toleranz": 15
+        }
+      },
+      "beschreibungI18n": {
+        "de": "Platzhalter",
+        "en": "Platzhalter",
+        "fr": "Platzhalter",
+        "it": "Platzhalter"
+      },
+      "correctAssessment": {
+        "naca": 7,
+        "abweichung": "gross",
+        "relevanzSD": "hoch",
+        "wichtigkeit": "gross",
+        "unfallrisiko": "hoch",
+        "unfallschwere": "schwer"
+      }
+    },
+    "updated_at": "2026-05-29T20:28:18.04+00:00"
+  },
+  {
+    "id": "SD_0001",
+    "scene_id": "SZ_2026_001",
+    "data": {
+      "id": "SD_0001",
+      "kontext": "io",
+      "sceneId": "SZ_2026_001",
+      "topicId": "tp-1776644409542",
+      "nameI18n": {
+        "de": "Platzhalter",
+        "en": "Platzhalter",
+        "fr": "Platzhalter",
+        "it": "Platzhalter"
+      },
+      "normRefs": [
+        "SN 641 723",
+        "VSS 40 138 — Geometrisches Normalprofil"
+      ],
+      "isBooster": false,
+      "isPflicht": true,
+      "kategorie": "ausruestung",
+      "verortung": {
+        "typ": "punkt",
+        "position": {
+          "phi": 72.75507949581934,
+          "theta": 17.811568362858683
+        },
+        "toleranz": 15
+      },
+      "kriteriumId": "visuelle_linienfuehrung",
+      "verortungen": {
+        "persp-1776644487174": {
+          "typ": "punkt",
+          "position": {
+            "phi": 72.80283640940574,
+            "theta": 184.2760299045375
+          },
+          "toleranz": 15
+        },
+        "persp-1776644503643": {
+          "typ": "punkt",
+          "position": {
+            "phi": 66.78592435147792,
+            "theta": 128.62074306379546
+          },
+          "toleranz": 15
+        }
+      },
+      "beschreibungI18n": {
+        "de": "Platzhalter",
+        "en": "Platzhalter",
+        "fr": "Platzhalter",
+        "it": "Platzhalter"
+      },
+      "correctAssessment": {
+        "naca": 0,
+        "abweichung": "klein",
+        "relevanzSD": "gering",
+        "wichtigkeit": "klein",
+        "unfallrisiko": "gering",
+        "unfallschwere": "leicht"
+      }
+    },
+    "updated_at": "2026-08-20T13:58:10.238+00:00"
+  },
+  {
+    "id": "d-1776343347925",
+    "scene_id": "sc-1776342893087",
+    "data": {
+      "id": "d-1776343347925",
+      "kontext": "io",
+      "sceneId": "sc-1776342893087",
+      "topicId": "tp-1776297460539",
+      "nameI18n": {
+        "de": "Sichtweite FGS",
+        "en": "Sight distance at pedestrian crossing",
+        "fr": "Distance de visibilité au passage piétons",
+        "it": "Distanza di visibilità al passaggio pedonale"
+      },
+      "normRefs": [
+        "SN 641 723"
+      ],
+      "isBooster": true,
+      "isPflicht": true,
+      "verortung": {
+        "typ": "punkt",
+        "position": {
+          "phi": 85.98885793871867,
+          "theta": 201.05849582172704
+        },
+        "toleranz": 5
+      },
+      "kriteriumId": "fussgaengerstreifen",
+      "verortungen": {
+        "persp-1776342985344": {
+          "typ": "punkt",
+          "position": {
+            "phi": 92.00557103064068,
+            "theta": 39.108635097493035
+          },
+          "toleranz": 15
+        },
+        "persp-1776343050874": {
+          "typ": "punkt",
+          "position": {
+            "phi": 93.00835654596102,
+            "theta": 299.83286908078
+          },
+          "toleranz": 15
+        },
+        "persp-1776344543859": {
+          "typ": "punkt",
+          "position": {
+            "phi": 91.00278551532034,
+            "theta": 207.57660167130922
+          },
+          "toleranz": 5
+        },
+        "persp-1776344571781": {
+          "typ": "punkt",
+          "position": {
+            "phi": 89.49860724233983,
+            "theta": 32.590529247910865
+          },
+          "toleranz": 5
+        },
+        "persp-1776344600640": {
+          "typ": "punkt",
+          "position": {
+            "phi": 93.00835654596102,
+            "theta": 300.3342618384401
+          },
+          "toleranz": 5
+        },
+        "persp-1776344645426": {
+          "typ": "punkt",
+          "position": {
+            "phi": 90.50139275766016,
+            "theta": 221.11420612813373
+          },
+          "toleranz": 5
+        }
+      },
+      "beschreibungI18n": {
+        "de": "",
+        "en": "",
+        "fr": "",
+        "it": ""
+      },
+      "correctAssessment": {
+        "naca": 7,
+        "abweichung": "gross",
+        "relevanzSD": "hoch",
+        "wichtigkeit": "gross",
+        "unfallrisiko": "hoch",
+        "unfallschwere": "schwer"
+      }
+    },
+    "updated_at": "2026-05-29T20:28:18.039+00:00"
+  },
+  {
+    "id": "SD_0009",
+    "scene_id": "SZ_2026_002",
+    "data": {
+      "id": "SD_0009",
+      "kontext": "io",
+      "sceneId": "SZ_2026_002",
+      "topicId": "tp-1781537561454",
+      "nameI18n": {
+        "de": "Beleuchtung",
+        "en": "Lighting",
+        "fr": "Éclairage",
+        "it": "Illuminazione"
+      },
+      "normRefs": [
+        "SN 641 723",
+        "VSS 40 241 — Fussgaengerstreifen"
+      ],
+      "isBooster": false,
+      "isPflicht": true,
+      "kategorie": "ausruestung",
+      "verortung": {
+        "typ": "punkt",
+        "position": {
+          "phi": 144.31137528060736,
+          "theta": 134.4545046969601
+        },
+        "toleranz": 15
+      },
+      "kriteriumId": "fussgaengerstreifen",
+      "verortungen": {
+        "persp-1782066752407": {
+          "typ": "punkt",
+          "position": {
+            "phi": 129.3844962006059,
+            "theta": 223.86267905497368
+          },
+          "toleranz": 16
+        },
+        "persp-1782066767869": {
+          "typ": "punkt",
+          "position": {
+            "phi": 19.30422663720032,
+            "theta": 184.67959707078725
+          },
+          "toleranz": 15
+        },
+        "persp-1782066824895": {
+          "typ": "punkt",
+          "position": {
+            "phi": 59.32826999358498,
+            "theta": 162.03514255433748
+          },
+          "toleranz": 5
+        }
+      },
+      "erklaerungI18n": {
+        "de": "Abweichung gross: Nach VSS 40 241 Ziff. 23 müssen Fussgängerstreifen und ihre Annäherungsbereiche nachts so beleuchtet sein, dass Querende erkennbar sind (SLG-Richtlinie 202). Die nur einseitige Beleuchtung im lichtarmen Waldabschnitt erfüllt das nicht. Unfallschwere schwer (NACA 7): Nachts erfolgt die Erkennung zu spät für ein Anhalten aus 60 km/h.",
+        "en": "Deviation large: per VSS 40 241 sec. 23, pedestrian crossings and their approach zones must be lit at night so that crossing pedestrians are detectable (SLG guideline 202). The one-sided lighting in this dark forest section does not achieve that. Severity severe (NACA 7): at night, detection comes too late to stop from 60 km/h.",
+        "fr": "Écart grand: selon la norme VSS 40 241 ch. 23, les passages pour piétons et leurs zones d'approche doivent être éclairés de nuit de manière que les personnes qui traversent soient détectables (directive SLG 202). L'éclairage unilatéral dans ce tronçon forestier sombre ne le garantit pas. Gravité grave (NACA 7): de nuit, la détection intervient trop tard pour s'arrêter depuis 60 km/h.",
+        "it": "Scostamento grande: secondo la norma VSS 40 241 cifra 23 i passaggi pedonali e le loro zone di avvicinamento devono essere illuminati di notte in modo che chi attraversa sia riconoscibile (direttiva SLG 202). L'illuminazione solo unilaterale nel tratto boschivo povero di luce non lo garantisce. Gravità grave (NACA 7): di notte il riconoscimento avviene troppo tardi per fermarsi da 60 km/h."
+      },
+      "beschreibungI18n": {
+        "de": "Die Beleuchtung des Fussgängerstreifens ist unzureichend und erfolgt nur einseitig. Insbesondere in diesem lichtarmen Waldabschnitt werden wartende und querende Fussgänger dadurch schlechter erkannt. Dies stellt ein wesentliches Sicherheitsdefizit dar.",
+        "en": "The lighting of the pedestrian crossing is inadequate and exists on one side only. Particularly in this dark forest section, waiting and crossing pedestrians are harder to detect. This constitutes a major safety deficit.",
+        "fr": "L'éclairage du passage pour piétons est insuffisant et n'existe que d'un côté. Dans ce tronçon forestier sombre en particulier, les piétons en attente et en train de traverser sont moins bien détectés. Cela constitue un déficit de sécurité majeur.",
+        "it": "L'illuminazione del passaggio pedonale è insufficiente e presente solo su un lato. In particolare in questo tratto boschivo povero di luce, i pedoni in attesa e in attraversamento vengono riconosciuti peggio. Ciò costituisce un deficit di sicurezza sostanziale."
+      },
+      "correctAssessment": {
+        "naca": 7,
+        "abweichung": "gross",
+        "relevanzSD": "hoch",
+        "wichtigkeit": "gross",
+        "unfallrisiko": "hoch",
+        "unfallschwere": "schwer"
+      }
+    },
+    "updated_at": "2026-06-21T22:29:04.268+00:00"
+  },
+  {
+    "id": "d-1776343377019",
+    "scene_id": "sc-1776342893087",
+    "data": {
+      "id": "d-1776343377019",
+      "kontext": "io",
+      "sceneId": "sc-1776342893087",
+      "topicId": "tp-1776297460539",
+      "nameI18n": {
+        "de": "Signal",
+        "en": "Sign",
+        "fr": "Signal",
+        "it": "Segnale"
+      },
+      "normRefs": [
+        "SN 641 723"
+      ],
+      "isBooster": false,
+      "isPflicht": true,
+      "verortung": {
+        "typ": "punkt",
+        "position": {
+          "phi": 84.98607242339834,
+          "theta": 251.19777158774374
+        },
+        "toleranz": 5
+      },
+      "kriteriumId": "signale_wegweiser",
+      "verortungen": {
+        "persp-1776342985344": {
+          "typ": "punkt",
+          "position": {
+            "phi": 70.44568245125349,
+            "theta": 85.23676880222841
+          },
+          "toleranz": 15
+        },
+        "persp-1776343050874": {
+          "typ": "punkt",
+          "position": {
+            "phi": 84.98607242339834,
+            "theta": 258.71866295264624
+          },
+          "toleranz": 15
+        },
+        "persp-1776344543859": {
+          "typ": "punkt",
+          "position": {
+            "phi": 87.49303621169918,
+            "theta": 292.31197771587745
+          },
+          "toleranz": 5
+        },
+        "persp-1776344571781": {
+          "typ": "punkt",
+          "position": {
+            "phi": 71.44846796657383,
+            "theta": 84.73537604456826
+          },
+          "toleranz": 5
+        },
+        "persp-1776344600640": {
+          "typ": "punkt",
+          "position": {
+            "phi": 84.98607242339834,
+            "theta": 259.7214484679666
+          },
+          "toleranz": 5
+        },
+        "persp-1776344645426": {
+          "typ": "punkt",
+          "position": {
+            "phi": 86.49025069637884,
+            "theta": 210.08356545961004
+          },
+          "toleranz": 5
+        }
+      },
+      "beschreibungI18n": {
+        "de": "",
+        "en": "",
+        "fr": "",
+        "it": ""
+      },
+      "correctAssessment": {
+        "naca": 3,
+        "abweichung": "mittel",
+        "relevanzSD": "mittel",
+        "wichtigkeit": "mittel",
+        "unfallrisiko": "mittel",
+        "unfallschwere": "mittel"
+      }
+    },
+    "updated_at": "2026-05-29T20:28:18.038+00:00"
+  },
+  {
+    "id": "d-1776640642461",
+    "scene_id": "sc-1776639802186",
+    "data": {
+      "id": "d-1776640642461",
+      "kontext": "io",
+      "sceneId": "sc-1776639802186",
+      "topicId": "tp-1776297460539",
+      "nameI18n": {
+        "de": "Platzhalter",
+        "en": "Platzhalter",
+        "fr": "Platzhalter",
+        "it": "Platzhalter"
+      },
+      "normRefs": [
+        "SN 641 723"
+      ],
+      "isBooster": false,
+      "isPflicht": true,
+      "kategorie": "verkehrsfuehrung",
+      "verortung": {
+        "typ": "punkt",
+        "position": {
+          "phi": 89.98425301093728,
+          "theta": 126.14457811695706
+        },
+        "toleranz": 15
+      },
+      "kriteriumId": "angebot_vertraeglichkeit",
+      "verortungen": {
+        "persp-1776640618354": {
+          "typ": "punkt",
+          "position": {
+            "phi": 87.36757802195861,
+            "theta": 200.58343192871962
+          },
+          "toleranz": 15
+        },
+        "persp-1776640621722": {
+          "typ": "punkt",
+          "position": {
+            "phi": 89.37321537460122,
+            "theta": 33.11617242594636
+          },
+          "toleranz": 15
+        }
+      },
+      "beschreibungI18n": {
+        "de": "Platzhalter",
+        "en": "Platzhalter",
+        "fr": "Platzhalter",
+        "it": "Platzhalter"
+      },
+      "correctAssessment": {
+        "naca": 7,
+        "abweichung": "gross",
+        "relevanzSD": "hoch",
+        "wichtigkeit": "gross",
+        "unfallrisiko": "hoch",
+        "unfallschwere": "schwer"
+      }
+    },
+    "updated_at": "2026-05-29T20:28:18.037+00:00"
+  },
+  {
+    "id": "d-1776638256470",
+    "scene_id": "sc-1776638200215",
+    "data": {
+      "id": "d-1776638256470",
+      "kontext": "io",
+      "sceneId": "sc-1776638200215",
+      "topicId": "fuss",
+      "nameI18n": {
+        "de": "Platzhalter",
+        "en": "Platzhalter",
+        "fr": "Platzhalter",
+        "it": "Platzhalter"
+      },
+      "normRefs": [
+        "SN 641 723"
+      ],
+      "isBooster": true,
+      "isPflicht": true,
+      "kategorie": "sicht",
+      "verortung": {
+        "typ": "punkt",
+        "position": {
+          "phi": 96.36907530295649,
+          "theta": 148.17530330513725
+        },
+        "toleranz": 15
+      },
+      "kriteriumId": "visuelle_linienfuehrung",
+      "verortungen": {
+        "persp-1776638241394": {
+          "typ": "punkt",
+          "position": {
+            "phi": 112.91558346225808,
+            "theta": 132.63193490817324
+          },
+          "toleranz": 15
+        },
+        "persp-1776638246092": {
+          "typ": "punkt",
+          "position": {
+            "phi": 117.42826750570399,
+            "theta": 255.9760841227907
+          },
+          "toleranz": 15
+        }
+      },
+      "beschreibungI18n": {
+        "de": "Platzhalter",
+        "en": "Platzhalter",
+        "fr": "Platzhalter",
+        "it": "Platzhalter"
+      },
+      "correctAssessment": {
+        "naca": 7,
+        "abweichung": "gross",
+        "relevanzSD": "hoch",
+        "wichtigkeit": "gross",
+        "unfallrisiko": "hoch",
+        "unfallschwere": "schwer"
+      }
+    },
+    "updated_at": "2026-05-29T20:28:18.04+00:00"
+  },
+  {
+    "id": "SD_0005",
+    "scene_id": "SZ_2026_002",
+    "data": {
+      "id": "SD_0005",
+      "kontext": "io",
+      "sceneId": "SZ_2026_002",
+      "topicId": "tp-1781537561454",
+      "nameI18n": {
+        "de": "Mehrspurigkeit",
+        "en": "Multi-lane crossing",
+        "fr": "Traversée sur plusieurs voies",
+        "it": "Attraversamento su più corsie"
+      },
+      "normRefs": [
+        "VSS 40 241 — Fussgaengerstreifen"
+      ],
+      "isBooster": true,
+      "isPflicht": true,
+      "kategorie": "verkehrsfuehrung",
+      "verortung": {
+        "typ": "polygon",
+        "punkte": [
+          {
+            "phi": 166.8907093684327,
+            "theta": 168.21536938713996
+          },
+          {
+            "phi": 167.39211870659338,
+            "theta": 177.90908301105299
+          },
+          {
+            "phi": 166.8907093684327,
+            "theta": 188.43846160254472
+          },
+          {
+            "phi": 165.88789069211143,
+            "theta": 197.965042232942
+          },
+          {
+            "phi": 161.208070202612,
+            "theta": 192.11538745989105
+          },
+          {
+            "phi": 155.02402169863058,
+            "theta": 188.7727275895762
+          },
+          {
+            "phi": 146.33292650384593,
+            "theta": 185.76433370629283
+          },
+          {
+            "phi": 138.31037709327543,
+            "theta": 184.26013676465112
+          },
+          {
+            "phi": 130.95637346691916,
+            "theta": 182.9230728165252
+          },
+          {
+            "phi": 124.60518851688423,
+            "theta": 181.92027485543076
+          },
+          {
+            "phi": 119.42395868922414,
+            "theta": 181.25174288136782
+          },
+          {
+            "phi": 118.58827645895636,
+            "theta": 179.41327995269467
+          },
+          {
+            "phi": 123.10096050240226,
+            "theta": 178.57761498511593
+          },
+          {
+            "phi": 127.44650809979458,
+            "theta": 178.0762160045687
+          },
+          {
+            "phi": 132.2934650353476,
+            "theta": 177.74195001753722
+          },
+          {
+            "phi": 138.97892287748965,
+            "theta": 176.9062850499585
+          },
+          {
+            "phi": 148.00429096438143,
+            "theta": 176.23775307589554
+          },
+          {
+            "phi": 153.35265723809505,
+            "theta": 174.7335561342539
+          },
+          {
+            "phi": 159.03529640391582,
+            "theta": 173.22935919261224
+          },
+          {
+            "phi": 163.8822533394688,
+            "theta": 170.8894972833918
+          },
+          {
+            "phi": 163.8822533394688,
+            "theta": 170.8894972833918
+          }
+        ],
+        "toleranz": 15
+      },
+      "kriteriumId": "fussgaengerstreifen",
+      "verortungen": {
+        "persp-1782066752407": {
+          "typ": "punkt",
+          "position": {
+            "phi": 102.30839193993059,
+            "theta": 124.08428192607583
+          },
+          "toleranz": 16
+        },
+        "persp-1782066767869": {
+          "typ": "polygon",
+          "punkte": [
+            {
+              "phi": 98.75073907527177,
+              "theta": 123.97035354584465
+            },
+            {
+              "phi": 99.62218162486671,
+              "theta": 118.59656883191433
+            },
+            {
+              "phi": 100.63886459939414,
+              "theta": 108.86566137695942
+            },
+            {
+              "phi": 101.51030714898909,
+              "theta": 97.82761709969712
+            },
+            {
+              "phi": 102.38174969858399,
+              "theta": 87.51575994593894
+            },
+            {
+              "phi": 102.52699012351653,
+              "theta": 78.36580218978732
+            },
+            {
+              "phi": 101.36506672405658,
+              "theta": 61.95397319859471
+            },
+            {
+              "phi": 100.20314332459668,
+              "theta": 51.06116634603325
+            },
+            {
+              "phi": 98.31501780047431,
+              "theta": 39.442172369967686
+            },
+            {
+              "phi": 100.92934544925913,
+              "theta": 37.699323273557845
+            },
+            {
+              "phi": 102.09126884871903,
+              "theta": 40.89454661697588
+            },
+            {
+              "phi": 103.25319224817895,
+              "theta": 47.28499330381194
+            },
+            {
+              "phi": 104.26987522270636,
+              "theta": 52.51354059304145
+            },
+            {
+              "phi": 104.70559649750382,
+              "theta": 56.58018848466439
+            },
+            {
+              "phi": 106.01276032189624,
+              "theta": 63.261110020902095
+            },
+            {
+              "phi": 106.44848159669371,
+              "theta": 69.07060700893487
+            },
+            {
+              "phi": 107.02944329642366,
+              "theta": 77.20390279218076
+            },
+            {
+              "phi": 107.31992414628863,
+              "theta": 86.93481024713567
+            },
+            {
+              "phi": 107.46516457122112,
+              "theta": 97.82761709969712
+            },
+            {
+              "phi": 106.30324117176123,
+              "theta": 105.52520060884056
+            },
+            {
+              "phi": 105.14131777230128,
+              "theta": 112.35135956977909
+            },
+            {
+              "phi": 103.9793943728414,
+              "theta": 122.8084541482381
+            },
+            {
+              "phi": 102.52699012351653,
+              "theta": 129.4893756844758
+            },
+            {
+              "phi": 99.18646035006923,
+              "theta": 123.97035354584465
+            },
+            {
+              "phi": 99.18646035006923,
+              "theta": 123.97035354584465
+            }
+          ],
+          "toleranz": 15
+        },
+        "persp-1782066806252": {
+          "typ": "punkt",
+          "position": {
+            "phi": 97.63594342905897,
+            "theta": 73.68864218191638
+          },
+          "toleranz": 5
+        },
+        "persp-1782066824895": {
+          "typ": "polygon",
+          "punkte": [
+            {
+              "phi": 98.6387621053803,
+              "theta": 156.9208729527558
+            },
+            {
+              "phi": 100.44383572275865,
+              "theta": 159.02674867105415
+            },
+            {
+              "phi": 102.14862747250486,
+              "theta": 161.4334637776808
+            },
+            {
+              "phi": 102.14862747250486,
+              "theta": 165.74549501038695
+            },
+            {
+              "phi": 101.74750000197633,
+              "theta": 170.9600444080781
+            },
+            {
+              "phi": 101.34637253144781,
+              "theta": 174.67039686412755
+            },
+            {
+              "phi": 101.04552692855142,
+              "theta": 178.9824280968337
+            },
+            {
+              "phi": 100.54411759039077,
+              "theta": 184.09669769841537
+            },
+            {
+              "phi": 100.24327198749437,
+              "theta": 188.00760974668376
+            },
+            {
+              "phi": 99.3407351788052,
+              "theta": 192.11908138717098
+            },
+            {
+              "phi": 98.83932584064456,
+              "theta": 196.02999343543937
+            },
+            {
+              "phi": 97.93678903195539,
+              "theta": 200.74314385258327
+            },
+            {
+              "phi": 97.0342522232662,
+              "theta": 206.65965182304052
+            },
+            {
+              "phi": 95.53002420878424,
+              "theta": 204.05237712419492
+            },
+            {
+              "phi": 96.03143354694488,
+              "theta": 200.24174487203604
+            },
+            {
+              "phi": 96.83368848800193,
+              "theta": 195.2277550665638
+            },
+            {
+              "phi": 97.23481595853045,
+              "theta": 190.31404505720099
+            },
+            {
+              "phi": 97.73622529669112,
+              "theta": 185.09949565950987
+            },
+            {
+              "phi": 98.03707089958749,
+              "theta": 181.48942299956983
+            },
+            {
+              "phi": 98.53848023774816,
+              "theta": 174.3695574757992
+            },
+            {
+              "phi": 98.53848023774816,
+              "theta": 168.35276970923252
+            },
+            {
+              "phi": 98.53848023774816,
+              "theta": 164.24129806874527
+            },
+            {
+              "phi": 98.83932584064456,
+              "theta": 161.03234459324304
+            },
+            {
+              "phi": 98.83932584064456,
+              "theta": 161.03234459324304
+            }
+          ],
+          "toleranz": 5
+        }
+      },
+      "erklaerungI18n": {
+        "de": "Abweichung gross: Die Querung führt ohne Lichtsignalanlage über mehrere Fahrstreifen – Kinder können nicht alle Fahrstreifen gleichzeitig überblicken. Bei Querungen über mehrere Fahrstreifen verlangt VSS 40 241 Ziff. 24 grundsätzlich Schutzinseln (zwischen gleichgerichteten Fahrstreifen zwingend). Unfallschwere schwer (NACA 7): Bei signalisierten 60 km/h ist eine Kollision zwischen Fahrzeug und Kind mit tödlichem Ausgang wahrscheinlich.",
+        "en": "Deviation large: the crossing spans several lanes without traffic signals – children cannot watch all lanes at once. For multi-lane crossings, VSS 40 241 sec. 24 requires refuge islands as a rule (mandatory between same-direction lanes). Severity severe (NACA 7): at a signed 60 km/h, a collision between a vehicle and a child is likely to be fatal.",
+        "fr": "Écart grand: la traversée franchit plusieurs voies sans installation de feux – les enfants ne peuvent pas surveiller toutes les voies en même temps. Pour les traversées sur plusieurs voies, la norme VSS 40 241 ch. 24 exige en principe des îlots de protection des piétons (obligatoires entre voies de même sens). Gravité grave (NACA 7): à 60 km/h signalés, une collision entre un véhicule et un enfant a une issue probablement mortelle.",
+        "it": "Scostamento grande: l'attraversamento supera più corsie senza impianto semaforico – i bambini non possono sorvegliare tutte le corsie contemporaneamente. Per gli attraversamenti su più corsie la norma VSS 40 241 cifra 24 esige di principio isole salvagente (obbligatorie tra corsie nello stesso senso). Gravità grave (NACA 7): con 60 km/h segnalati una collisione tra un veicolo e un bambino ha probabilmente esito mortale."
+      },
+      "beschreibungI18n": {
+        "de": "Die Mehrspurigkeit erschwert die sichere Querung insbesondere für Kinder. Verdeckte Sichtbeziehungen und die gleichzeitige Beobachtung mehrerer Fahrstreifen erhöhen das Unfallrisiko.",
+        "en": "The multiple lanes make safe crossing difficult, especially for children. Obstructed sight lines and the need to watch several lanes at once increase the accident risk.",
+        "fr": "La présence de plusieurs voies rend la traversée sûre difficile, en particulier pour les enfants. Les relations de visibilité masquées et l'observation simultanée de plusieurs voies augmentent le risque d'accident.",
+        "it": "La presenza di più corsie rende difficile un attraversamento sicuro, in particolare per i bambini. Le relazioni di visibilità nascoste e l'osservazione simultanea di più corsie aumentano il rischio di incidente."
+      },
+      "correctAssessment": {
+        "naca": 7,
+        "abweichung": "gross",
+        "relevanzSD": "hoch",
+        "wichtigkeit": "gross",
+        "unfallrisiko": "hoch",
+        "unfallschwere": "schwer"
+      },
+      "boosterBonusProzent": 10
+    },
+    "updated_at": "2026-06-21T22:29:04.266+00:00"
+  },
+  {
+    "id": "SD_0004",
+    "scene_id": "SZ_2026_001",
+    "data": {
+      "id": "SD_0004",
+      "kontext": "io",
+      "sceneId": "SZ_2026_001",
+      "topicId": "tp-1776644409542",
+      "nameI18n": {
+        "de": "Test 3",
+        "en": "",
+        "fr": "",
+        "it": ""
+      },
+      "normRefs": [
+        "SN 641 723"
+      ],
+      "isBooster": false,
+      "isPflicht": true,
+      "kategorie": "baustelle",
+      "verortung": {
+        "typ": "punkt",
+        "position": {
+          "phi": 87.8845179216403,
+          "theta": 113.3807783767618
+        },
+        "toleranz": 5
+      },
+      "kriteriumId": "bepflanzung_strassenraum",
+      "beschreibungI18n": {
+        "de": "",
+        "en": "",
+        "fr": "",
+        "it": ""
+      },
+      "correctAssessment": {
+        "naca": 7,
+        "abweichung": "gross",
+        "relevanzSD": "hoch",
+        "wichtigkeit": "gross",
+        "unfallrisiko": "hoch",
+        "unfallschwere": "schwer"
+      }
+    },
+    "updated_at": "2026-08-20T13:58:10.242+00:00"
+  },
+  {
+    "id": "SD_0008",
+    "scene_id": "SZ_2026_002",
+    "data": {
+      "id": "SD_0008",
+      "kontext": "io",
+      "sceneId": "SZ_2026_002",
+      "topicId": "tp-1781537561454",
+      "nameI18n": {
+        "de": "Warteraum",
+        "en": "Waiting area",
+        "fr": "Espace d'attente",
+        "it": "Area di attesa"
+      },
+      "normRefs": [
+        "SN 641 723"
+      ],
+      "isBooster": false,
+      "isPflicht": true,
+      "kategorie": "verkehrsfuehrung",
+      "verortung": {
+        "typ": "polygon",
+        "punkte": [
+          {
+            "phi": 161.54234309471906,
+            "theta": 97.85237911701266
+          },
+          {
+            "phi": 168.72921027502179,
+            "theta": 108.04749172147294
+          },
+          {
+            "phi": 168.72921027502179,
+            "theta": 112.72721553991369
+          },
+          {
+            "phi": 168.22780093686112,
+            "theta": 119.24540228702759
+          },
+          {
+            "phi": 167.2249822605398,
+            "theta": 125.93072202765728
+          },
+          {
+            "phi": 166.05502713816497,
+            "theta": 131.44611081367677
+          },
+          {
+            "phi": 164.8850720157901,
+            "theta": 136.79436660618052
+          },
+          {
+            "phi": 159.0352964039158,
+            "theta": 123.59086011843691
+          },
+          {
+            "phi": 160.03811508023713,
+            "theta": 117.57407235187023
+          },
+          {
+            "phi": 161.04093375655842,
+            "theta": 111.5572845853035
+          },
+          {
+            "phi": 161.04093375655842,
+            "theta": 105.70762981225253
+          },
+          {
+            "phi": 161.54234309471906,
+            "theta": 101.69643796787473
+          },
+          {
+            "phi": 161.54234309471906,
+            "theta": 101.69643796787473
+          }
+        ],
+        "toleranz": 15
+      },
+      "kriteriumId": "velolaengsfuehrung_geometrie",
+      "verortungen": {
+        "persp-1782066752407": {
+          "typ": "punkt",
+          "position": {
+            "phi": 104.76768171714745,
+            "theta": 209.82350759965132
+          },
+          "toleranz": 5
+        },
+        "persp-1782066767869": {
+          "typ": "punkt",
+          "position": {
+            "phi": 103.81261995441257,
+            "theta": 166.20179629204276
+          },
+          "toleranz": 15
+        },
+        "persp-1782066806252": {
+          "typ": "punkt",
+          "position": {
+            "phi": 94.4269236648308,
+            "theta": 46.61309723236622
+          },
+          "toleranz": 5
+        },
+        "persp-1782066824895": {
+          "typ": "punkt",
+          "position": {
+            "phi": 93.22354125324522,
+            "theta": 147.49457211846794
+          },
+          "toleranz": 5
+        }
+      },
+      "erklaerungI18n": {
+        "de": "Wichtigkeit mittel: Massgebend ist die Geometrie der Velolängsführung, die über den Warteraum führt — nach der Wichtigkeitstabelle des Fachkurses innerorts mittel. Abweichung gross: Der Warteraum ist gegen den durchgeführten Radverkehr nicht gesichert; wartende Fussgänger stehen in der Fahrlinie der Velos. Unfallschwere schwer (NACA 4): massgebend ist die Kollision Velo–wartendes Kind im Warteraum — schwer, aber im unteren Bereich der Gruppe, weil die Kollisionsgeschwindigkeit deutlich unter jener des motorisierten Verkehrs liegt.",
+        "en": "Importance medium: decisive is the geometry of the longitudinal cycle route running across the waiting area — medium inside built-up areas according to the specialist course importance table. Deviation large: the waiting area is not protected against the cycle traffic passing through it; waiting pedestrians stand in the path of cyclists. Severity high (NACA 4): decisive is the collision between a cyclist and a waiting child — severe, but at the lower end of the group, because the collision speed is markedly lower than that of motorised traffic.",
+        "fr": "Importance moyenne: c'est la géométrie de la conduite longitudinale des cycles, qui traverse la zone d'attente, qui est déterminante — selon le tableau d'importance du cours spécialisé, moyenne en localité. Écart important: la zone d'attente n'est pas protégée du trafic cycliste qui la traverse; les piétons en attente se trouvent sur la trajectoire des cycles. Gravité élevée (NACA 4): la collision entre un cycle et un enfant qui attend est déterminante — grave, mais dans la partie inférieure du groupe, car la vitesse de collision est nettement inférieure à celle du trafic motorisé.",
+        "it": "Importanza media: è determinante la geometria della conduzione longitudinale delle biciclette che attraversa la zona di attesa — secondo la tabella delle importanze del corso specialistico, media all'interno delle località. Scostamento grande: la zona di attesa non è protetta dal traffico ciclistico che vi transita; i pedoni in attesa si trovano sulla traiettoria delle biciclette. Gravità elevata (NACA 4): è determinante la collisione tra bicicletta e bambino in attesa — grave, ma nella parte inferiore del gruppo, poiché la velocità di collisione è nettamente inferiore a quella del traffico motorizzato."
+      },
+      "beschreibungI18n": {
+        "de": "Massgebend ist der Konflikt mit dem Radverkehr: Die Velolängsführung verläuft über den Warteraum, sodass wartende Fussgänger — insbesondere Kinder — von Velofahrenden angefahren werden können. Der Warteraum ist gegen den Radverkehr nicht gesichert. Die starke Rückversetzung verschärft die Lage, weil Wartende dort später wahrgenommen werden; für die Beurteilung dieses Defizits ist jedoch die Führung des Radverkehrs über die Aufstellfläche massgebend.",
+        "en": "The conflict with cycle traffic is decisive: the longitudinal cycle route runs across the waiting area, so that waiting pedestrians — children in particular — can be struck by cyclists. The waiting area is not protected against cycle traffic. The pronounced setback aggravates the situation, because people waiting there are noticed later; for assessing this deficit, however, it is the routing of cycle traffic across the waiting area that is decisive.",
+        "fr": "Le conflit avec le trafic cycliste est déterminant: la conduite longitudinale des cycles traverse la zone d'attente, de sorte que les piétons qui attendent — en particulier les enfants — peuvent être heurtés par des cyclistes. La zone d'attente n'est pas protégée du trafic cycliste. Le fort retrait aggrave la situation, car les personnes qui attendent y sont perçues plus tard; pour l'appréciation de ce déficit, c'est toutefois le passage du trafic cycliste sur la surface d'attente qui est déterminant.",
+        "it": "È determinante il conflitto con il traffico ciclistico: la conduzione longitudinale delle biciclette attraversa la zona di attesa, per cui i pedoni in attesa — in particolare i bambini — possono essere urtati dai ciclisti. La zona di attesa non è protetta dal traffico ciclistico. Il forte arretramento aggrava la situazione, poiché chi attende viene percepito più tardi; per la valutazione di questo deficit è tuttavia determinante il passaggio del traffico ciclistico sulla superficie di attesa."
+      },
+      "correctAssessment": {
+        "naca": 4,
+        "abweichung": "gross",
+        "relevanzSD": "hoch",
+        "wichtigkeit": "mittel",
+        "unfallrisiko": "hoch",
+        "unfallschwere": "schwer"
+      }
+    },
+    "updated_at": "2026-06-21T22:29:04.268+00:00"
+  },
+  {
+    "id": "SD_0007",
+    "scene_id": "SZ_2026_002",
+    "data": {
+      "id": "SD_0007",
+      "kontext": "io",
+      "sceneId": "SZ_2026_002",
+      "topicId": "tp-1781537561454",
+      "nameI18n": {
+        "de": "Mittelinsel",
+        "en": "Refuge island",
+        "fr": "Îlot de protection",
+        "it": "Isola salvagente"
+      },
+      "normRefs": [
+        "SN 641 723",
+        "VSS 40 241 — Fussgaengerstreifen"
+      ],
+      "isBooster": true,
+      "isPflicht": true,
+      "kategorie": "ausruestung",
+      "verortung": {
+        "typ": "polygon",
+        "punkte": [
+          {
+            "phi": 169.0634831671289,
+            "theta": 165.5412414908881
+          },
+          {
+            "phi": 169.23061961318245,
+            "theta": 177.57481702402148
+          },
+          {
+            "phi": 169.397756059236,
+            "theta": 183.4244717970724
+          },
+          {
+            "phi": 168.72921027502179,
+            "theta": 192.11538745989105
+          },
+          {
+            "phi": 167.39211870659335,
+            "theta": 201.80910108380408
+          },
+          {
+            "phi": 169.397756059236,
+            "theta": 207.9930218438865
+          },
+          {
+            "phi": 171.73766630398572,
+            "theta": 216.0154055326421
+          },
+          {
+            "phi": 172.40621208819988,
+            "theta": 224.03778922139773
+          },
+          {
+            "phi": 174.0775765487354,
+            "theta": 231.89303991663758
+          },
+          {
+            "phi": 174.24471299478898,
+            "theta": 237.9098276832043
+          },
+          {
+            "phi": 176.58462323953873,
+            "theta": 220.52799635756713
+          },
+          {
+            "phi": 177.42030546980646,
+            "theta": 192.2825204534068
+          },
+          {
+            "phi": 177.25316902375292,
+            "theta": 176.40488606941128
+          },
+          {
+            "phi": 177.58744191585998,
+            "theta": 163.03424658815197
+          },
+          {
+            "phi": 176.91889613164582,
+            "theta": 147.1566122041565
+          },
+          {
+            "phi": 174.0775765487354,
+            "theta": 153.84193194478618
+          },
+          {
+            "phi": 172.23907564214636,
+            "theta": 162.19858162057326
+          },
+          {
+            "phi": 171.23625696582505,
+            "theta": 164.3713105362779
+          },
+          {
+            "phi": 171.23625696582505,
+            "theta": 164.3713105362779
+          }
+        ],
+        "toleranz": 15
+      },
+      "kriteriumId": "fussgaengerstreifen",
+      "verortungen": {
+        "persp-1782066752407": {
+          "typ": "punkt",
+          "position": {
+            "phi": 98.29711723464536,
+            "theta": 170.71438711696777
+          },
+          "toleranz": 16
+        },
+        "persp-1782066767869": {
+          "typ": "punkt",
+          "position": {
+            "phi": 98.75073907527177,
+            "theta": 135.15363524780778
+          },
+          "toleranz": 5
+        },
+        "persp-1782066806252": {
+          "typ": "punkt",
+          "position": {
+            "phi": 93.62466872377374,
+            "theta": 60.55198889157909
+          },
+          "toleranz": 5
+        },
+        "persp-1782066824895": {
+          "typ": "polygon",
+          "punkte": [
+            {
+              "phi": 98.23763463485176,
+              "theta": 135.56127638144403
+            },
+            {
+              "phi": 99.64158078170158,
+              "theta": 132.853721886489
+            },
+            {
+              "phi": 102.04834560487271,
+              "theta": 129.44420881876786
+            },
+            {
+              "phi": 102.65003681066551,
+              "theta": 133.2548410709268
+            },
+            {
+              "phi": 102.75031867829765,
+              "theta": 137.2660329153046
+            },
+            {
+              "phi": 102.85060054592978,
+              "theta": 140.77582577913518
+            },
+            {
+              "phi": 103.15144614882617,
+              "theta": 145.18813680795077
+            },
+            {
+              "phi": 103.05116428119403,
+              "theta": 150.50296600175136
+            },
+            {
+              "phi": 102.9508824135619,
+              "theta": 156.8205931566464
+            },
+            {
+              "phi": 99.942426384598,
+              "theta": 154.31359825391024
+            },
+            {
+              "phi": 99.84214451696585,
+              "theta": 151.00436498229854
+            },
+            {
+              "phi": 99.942426384598,
+              "theta": 145.48897619627908
+            },
+            {
+              "phi": 99.942426384598,
+              "theta": 143.28282068187127
+            },
+            {
+              "phi": 99.942426384598,
+              "theta": 140.37470659469741
+            },
+            {
+              "phi": 99.54129891406946,
+              "theta": 138.26883087639902
+            },
+            {
+              "phi": 99.54129891406946,
+              "theta": 137.96799148807068
+            },
+            {
+              "phi": 99.54129891406946,
+              "theta": 135.9623955658818
+            },
+            {
+              "phi": 99.54129891406946,
+              "theta": 135.9623955658818
+            }
+          ],
+          "toleranz": 10
+        },
+        "persp-1782067731719": {
+          "typ": "punkt",
+          "position": {
+            "phi": 148.70794830989652,
+            "theta": 180.20343234186515
+          },
+          "toleranz": 5
+        }
+      },
+      "erklaerungI18n": {
+        "de": "Abweichung gross: Die Fahrbahn muss ohne Schutzinsel in einer Etappe gequert werden. Nach VSS 40 241 Ziff. 24 ist ein Verzicht auf die Schutzinsel nur bei einem DTV unter 3'000 Fahrzeugen möglich – hier liegt der DTV darüber. Gerade auf Schulwegen ist die Querung in zwei Etappen zentral. Unfallschwere schwer (NACA 7): Kinder müssen beide Fahrtrichtungen gleichzeitig beurteilen; bei 60 km/h bleibt für Fehler keine Reserve.",
+        "en": "Deviation large: the carriageway must be crossed in a single stage, without a refuge island. Per VSS 40 241 sec. 24, the island may only be omitted if the ADT is below 3,000 vehicles – here it is above. On school routes in particular, two-stage crossing is essential. Severity severe (NACA 7): children must judge both directions at once; at 60 km/h there is no margin for error.",
+        "fr": "Écart grand: la chaussée doit être traversée en une seule étape, sans îlot de protection. Selon la norme VSS 40 241 ch. 24, on ne peut renoncer à l'îlot que si le TJM est inférieur à 3'000 véhicules – ici, il est supérieur. Sur les chemins de l'école, la traversée en deux étapes est centrale. Gravité grave (NACA 7): les enfants doivent évaluer les deux sens de circulation en même temps; à 60 km/h, il n'y a aucune marge d'erreur.",
+        "it": "Scostamento grande: la carreggiata deve essere attraversata in un'unica tappa, senza isola salvagente. Secondo la norma VSS 40 241 cifra 24 si può rinunciare all'isola solo con un TGM inferiore a 3'000 veicoli – qui è superiore. Proprio sui percorsi casa-scuola l'attraversamento in due tappe è centrale. Gravità grave (NACA 7): i bambini devono valutare contemporaneamente entrambi i sensi di marcia; a 60 km/h non c'è margine di errore."
+      },
+      "beschreibungI18n": {
+        "de": "Es fehlt eine Fussgängerschutzinsel. Bei einem DTV von über 3'000 Fahrzeugen und insbesondere auf Schulwegen stellt dies ein wesentliches Sicherheitsdefizit dar, da die sichere Querung nicht in zwei Etappen erfolgen kann.",
+        "en": "A pedestrian refuge island is missing. With an ADT of more than 3,000 vehicles and especially on school routes, this is a major safety deficit, as safe crossing in two stages is not possible.",
+        "fr": "Un îlot de protection des piétons fait défaut. Avec un TJM de plus de 3'000 véhicules et en particulier sur les chemins de l'école, cela constitue un déficit de sécurité majeur, car la traversée sûre ne peut pas se faire en deux étapes.",
+        "it": "Manca un'isola salvagente. Con un TGM di oltre 3'000 veicoli e in particolare sui percorsi casa-scuola ciò costituisce un deficit di sicurezza sostanziale, poiché l'attraversamento sicuro non può avvenire in due tappe."
+      },
+      "correctAssessment": {
+        "naca": 7,
+        "abweichung": "gross",
+        "relevanzSD": "hoch",
+        "wichtigkeit": "gross",
+        "unfallrisiko": "hoch",
+        "unfallschwere": "schwer"
+      },
+      "boosterBonusProzent": 20
+    },
+    "updated_at": "2026-06-21T22:29:04.267+00:00"
+  },
+  {
+    "id": "def2",
+    "scene_id": "sc1",
+    "data": {
+      "id": "def2",
+      "kontext": "io",
+      "sceneId": "sc1",
+      "topicId": "fuss",
+      "nameI18n": {
+        "de": "Sichtbehinderung Hecke",
+        "en": "Visibility obstruction – hedge",
+        "fr": "Obstruction par haie",
+        "it": "Ostacolo alla visibilità"
+      },
+      "normRefs": [
+        "SN 640 273",
+        "SN 641 723"
+      ],
+      "isBooster": false,
+      "isPflicht": true,
+      "verortung": {
+        "typ": "polygon",
+        "punkte": [
+          {
+            "phi": 105.63321265598167,
+            "theta": 243.91863827686265
+          },
+          {
+            "phi": 122.17972081528326,
+            "theta": 261.96900157656273
+          },
+          {
+            "phi": 112.15153405207016,
+            "theta": 271.99698118750723
+          },
+          {
+            "phi": 98.61348192173249,
+            "theta": 255.95221380999604
+          },
+          {
+            "phi": 102.62475662701773,
+            "theta": 243.41723929631544
+          },
+          {
+            "phi": 102.62475662701773,
+            "theta": 243.41723929631544
+          }
+        ],
+        "toleranz": 15
+      },
+      "kriteriumId": "erkennungsdistanz",
+      "beschreibungI18n": {
+        "de": "Hecke ragt in Sichtraum, Fahrzeuge werden zu spät erkannt.",
+        "en": "Hedge intrudes into sight zone.",
+        "fr": "Haie dans la zone de visibilité.",
+        "it": "Siepe nella zona di visibilità."
+      },
+      "correctAssessment": {
+        "naca": 3,
+        "abweichung": "mittel",
+        "relevanzSD": "mittel",
+        "wichtigkeit": "mittel",
+        "unfallrisiko": "mittel",
+        "unfallschwere": "mittel"
+      }
+    },
+    "updated_at": "2026-06-21T22:37:57.462+00:00"
+  },
+  {
+    "id": "SD_0006",
+    "scene_id": "SZ_2026_002",
+    "data": {
+      "id": "SD_0006",
+      "kontext": "io",
+      "sceneId": "SZ_2026_002",
+      "topicId": "tp-1781537561454",
+      "nameI18n": {
+        "de": "Fehlende Sichtweite bei 60 km/h",
+        "en": "Insufficient sight distance at 60 km/h",
+        "fr": "Distance de visibilité insuffisante à 60 km/h",
+        "it": "Distanza di visibilità insufficiente a 60 km/h"
+      },
+      "normRefs": [
+        "SN 641 723",
+        "VSS 40 241 — Fussgaengerstreifen"
+      ],
+      "isBooster": false,
+      "isPflicht": true,
+      "kategorie": "sicht",
+      "verortung": {
+        "typ": "punkt",
+        "position": {
+          "phi": 159.85506476358762,
+          "theta": 245.43081239141264
+        },
+        "toleranz": 15
+      },
+      "kriteriumId": "fussgaengerstreifen",
+      "verortungen": {
+        "persp-1782066752407": {
+          "typ": "punkt",
+          "position": {
+            "phi": 84.7590651043077,
+            "theta": 207.31651269691517
+          },
+          "toleranz": 16
+        },
+        "persp-1782066767869": {
+          "typ": "punkt",
+          "position": {
+            "phi": 89.77315848591424,
+            "theta": 6.756920478025125
+          },
+          "toleranz": 15
+        },
+        "persp-1782066806252": {
+          "typ": "punkt",
+          "position": {
+            "phi": 93.78443319119948,
+            "theta": 190.26894735830956
+          },
+          "toleranz": 15
+        },
+        "persp-1782066824895": {
+          "typ": "punkt",
+          "position": {
+            "phi": 92.62185004745243,
+            "theta": 230.42596350097898
+          },
+          "toleranz": 10
+        },
+        "persp-1782067731719": {
+          "typ": "punkt",
+          "position": {
+            "phi": 124.74058194581724,
+            "theta": 184.21462418624296
+          },
+          "toleranz": 5
+        }
+      },
+      "erklaerungI18n": {
+        "de": "Abweichung gross: Nach VSS 40 241 Tab. 1 braucht ein Fussgängerstreifen bei signalisierten 60 km/h innerorts 75 m Sichtweite (ausserorts 100 m). Diese Sichtweite ist hier nicht vorhanden – die Anlage ist damit nicht mehr sicher. Unfallschwere schwer (NACA 7): Ohne Sicht können Fahrzeuge nicht rechtzeitig anhalten; eine Kollision bei diesem Tempo endet für ein Kind meist tödlich oder mit schwersten Verletzungen.",
+        "en": "Deviation large: per VSS 40 241 tab. 1, a pedestrian crossing at a signed 60 km/h requires 75 m of sight distance in urban areas (100 m rural). That distance is not available here – the facility is therefore no longer safe. Severity severe (NACA 7): without sight, vehicles cannot stop in time; at this speed a collision is usually fatal for a child or causes very serious injuries.",
+        "fr": "Écart grand: selon la norme VSS 40 241 tab. 1, un passage pour piétons à 60 km/h signalés nécessite 75 m de distance de visibilité en localité (100 m hors localité). Cette distance n'est pas disponible ici – l'installation n'est donc plus sûre. Gravité grave (NACA 7): sans visibilité, les véhicules ne peuvent pas s'arrêter à temps; à cette vitesse, une collision est le plus souvent mortelle pour un enfant ou entraîne des blessures très graves.",
+        "it": "Scostamento grande: secondo la norma VSS 40 241 tab. 1 un passaggio pedonale con 60 km/h segnalati necessita di 75 m di distanza di visibilità entro località (100 m fuori località). Questa distanza qui non è disponibile – l'impianto non è quindi più sicuro. Gravità grave (NACA 7): senza visibilità i veicoli non possono fermarsi in tempo; a questa velocità una collisione è per un bambino per lo più mortale o comporta ferite gravissime."
+      },
+      "beschreibungI18n": {
+        "de": "Die notwendige Sichtweite ist nicht gewährleistet. Gemeint ist der gegenseitige Blickkontakt zwischen den herannahenden Fahrzeuglenkenden und den Fussgängern auf dem Streifen oder im Annäherungsbereich (VSS 40 241 Ziff. 7). Bei 60 km/h sind dafür innerorts 75 m erforderlich, ausserorts 100 m (Tab. 1). Bestehen Anzeichen, dass schneller gefahren wird als signalisiert, ist die notwendige Sichtweite auf Basis des V85-Werts zu bestimmen (Ziff. 14). Abzugrenzen von der Erkennungsdistanz, die als eigenes Defizit erfasst ist: dort geht es darum, ab welcher Distanz die Anlage überhaupt als Querungsstelle erkennbar ist.",
+        "en": "The required sight distance is not ensured. It refers to the mutual visual contact between approaching drivers and pedestrians on the crossing or in the approach zone (VSS 40 241, sec. 7). At 60 km/h, 75 m are required inside built-up areas and 100 m outside (table 1). If there are indications that actual speeds exceed the posted limit, the required sight distance must be determined on the basis of the V85 value (sec. 14). To be distinguished from the detection distance, recorded as a separate deficit: that one concerns the distance from which the facility can be identified as a crossing at all.",
+        "fr": "La distance de visibilité nécessaire n'est pas garantie. Il s'agit du contact visuel mutuel entre les conducteurs qui s'approchent et les piétons se trouvant sur le passage ou dans la zone d'approche (VSS 40 241, ch. 7). À 60 km/h, 75 m sont requis en localité et 100 m hors localité (tab. 1). S'il existe des indices que la vitesse effective dépasse la vitesse signalée, la distance de visibilité nécessaire doit être déterminée sur la base de la valeur V85 (ch. 14). À distinguer de la distance de détection, saisie comme déficit distinct: celle-ci concerne la distance à partir de laquelle l'installation est reconnaissable en tant que passage.",
+        "it": "La distanza di visibilità necessaria non è garantita. Si intende il contatto visivo reciproco tra i conducenti in avvicinamento e i pedoni sul passaggio pedonale o nella zona di avvicinamento (VSS 40 241, cifra 7). A 60 km/h sono richiesti 75 m all'interno delle località e 100 m fuori località (tab. 1). Se vi sono indizi che la velocità effettiva superi quella segnalata, la distanza di visibilità necessaria va determinata sulla base del valore V85 (cifra 14). Da distinguere dalla distanza di riconoscimento, rilevata come deficit separato: quest'ultima riguarda la distanza a partire dalla quale l'impianto è riconoscibile come passaggio pedonale."
+      },
+      "correctAssessment": {
+        "naca": 7,
+        "abweichung": "gross",
+        "relevanzSD": "hoch",
+        "wichtigkeit": "gross",
+        "unfallrisiko": "hoch",
+        "unfallschwere": "schwer"
+      }
+    },
+    "updated_at": "2026-06-21T22:29:04.267+00:00"
+  },
+  {
+    "id": "SD_0012",
+    "scene_id": "SZ_2026_002",
+    "data": {
+      "id": "SD_0012",
+      "kontext": "io",
+      "sceneId": "SZ_2026_002",
+      "topicId": "tp-1781537561454",
+      "nameI18n": {
+        "de": "Signal 1.22 «Fussgängerstreifen» (Achtung Fussgängerstreifen)",
+        "en": "Sign 1.22 'Pedestrian crossing'",
+        "fr": "Signal 1.22 «Passage pour piétons»",
+        "it": "Segnale 1.22 «Passaggio pedonale»"
+      },
+      "normRefs": [
+        "SN 641 723",
+        "VSS 40 241 — Fussgaengerstreifen"
+      ],
+      "isBooster": false,
+      "isPflicht": false,
+      "kategorie": "ausruestung",
+      "verortung": null,
+      "kriteriumId": "fussgaengerstreifen",
+      "verortungen": {
+        "persp-1782066847757": {
+          "typ": "punkt",
+          "position": {
+            "phi": 55.61784089119613,
+            "theta": 196.53139241598666
+          },
+          "toleranz": 12
+        }
+      },
+      "erklaerungI18n": {
+        "de": "Abweichung mittel: Die zusätzliche Signalisation ist eine reale, aber unzureichende Massnahme – sie kann die Unterschreitung der Mindest-Sichtweite nach VSS 40 241 Ziff. 22 keinesfalls kompensieren. Nach SSV Art. 11 Abs. 1 ist das Signal 1.22 zudem nur ausserorts vorgesehen und nur bei Fussgängerstreifen, die dem anerkannten Stand der Verkehrssicherheit entsprechen. Unfallschwere mittel (NACA 3): Das Signal reduziert die unvorbereitete Annäherung, das Grundproblem der Kuppenlage bleibt bestehen.",
+        "en": "Deviation medium: the additional sign is a real but insufficient measure – it can never compensate for falling short of the minimum sight distance per VSS 40 241 sec. 22. Per Art. 11 para. 1 SSV, sign 1.22 is moreover intended for rural areas only and only for crossings that meet the recognised state of road safety. Severity medium (NACA 3): the sign reduces unprepared approaches; the underlying crest problem remains.",
+        "fr": "Écart moyen: la signalisation supplémentaire est une mesure réelle mais insuffisante – elle ne peut en aucun cas compenser le non-respect de la distance de visibilité minimale selon la norme VSS 40 241 ch. 22. Selon l'art. 11 al. 1 OSR, le signal 1.22 n'est en outre prévu qu'hors localité et uniquement pour des passages conformes à l'état reconnu de la sécurité routière. Gravité moyenne (NACA 3): le signal réduit les approches non préparées, le problème de fond du sommet de côte subsiste.",
+        "it": "Scostamento medio: la segnaletica supplementare è una misura reale ma insufficiente – non può in nessun caso compensare il mancato rispetto della distanza di visibilità minima secondo la norma VSS 40 241 cifra 22. Secondo l'art. 11 cpv. 1 OSStr il segnale 1.22 è inoltre previsto solo fuori località e solo per passaggi conformi allo stato riconosciuto della sicurezza stradale. Gravità media (NACA 3): il segnale riduce gli avvicinamenti impreparati, il problema di fondo del dosso rimane."
+      },
+      "beschreibungI18n": {
+        "de": "Aufgrund der Kuppenlage ist die Erkennbarkeit des Fussgängerstreifens eingeschränkt. Eine zusätzliche Signalisation «Achtung Fussgängerstreifen» ersetzt die erforderlichen Sichtweiten nicht und kann das bestehende Sicherheitsdefizit nicht beheben. Nach SSV Art. 11 Abs. 1 ist das Signal 1.22 «Fussgängerstreifen» nur ausserorts vorgesehen; es kündigt Fussgängerstreifen an, die aus einer Entfernung von 200 m nicht erkennbar sind. Die Aufstellung innerorts ist damit selbst erklärungsbedürftig.",
+        "en": "Due to the crest location, the recognisability of the pedestrian crossing is limited. An additional 'Caution pedestrian crossing' sign does not replace the required sight distances and cannot remedy the existing safety deficit. Per Art. 11 para. 1 of the Swiss Signalisation Ordinance (SSV), sign 1.22 'Pedestrian crossing' is intended for rural areas only; it announces crossings that are not recognisable from a distance of 200 m. Its placement in an urban area is therefore itself questionable.",
+        "fr": "En raison du sommet de côte, la détectabilité du passage pour piétons est limitée. Une signalisation supplémentaire «Attention passage pour piétons» ne remplace pas les distances de visibilité nécessaires et ne peut pas corriger le déficit de sécurité existant. Selon l'art. 11 al. 1 OSR, le signal 1.22 «Passage pour piétons» n'est prévu qu'hors localité; il annonce des passages qui ne sont pas visibles à une distance de 200 m. Son implantation en localité est donc elle-même discutable.",
+        "it": "A causa della posizione su dosso la riconoscibilità del passaggio pedonale è limitata. Una segnaletica supplementare «Attenzione passaggio pedonale» non sostituisce le distanze di visibilità necessarie e non può eliminare il deficit di sicurezza esistente. Secondo l'art. 11 cpv. 1 OSStr il segnale 1.22 «Passaggio pedonale» è previsto solo fuori località; annuncia passaggi pedonali non riconoscibili da una distanza di 200 m. La sua posa entro località è quindi essa stessa da motivare."
+      },
+      "correctAssessment": {
+        "naca": 3,
+        "abweichung": "mittel",
+        "relevanzSD": "mittel",
+        "wichtigkeit": "gross",
+        "unfallrisiko": "mittel",
+        "unfallschwere": "mittel"
+      }
+    },
+    "updated_at": "2026-06-21T22:29:04.27+00:00"
+  },
+  {
+    "id": "SD_0013",
+    "scene_id": "SZ_2026_001",
+    "data": {
+      "id": "SD_0013",
+      "kontext": "io",
+      "sceneId": "SZ_2026_001",
+      "topicId": "tp-1776644409542",
+      "nameI18n": {
+        "de": "Rutschgefahr",
+        "en": "",
+        "fr": "",
+        "it": ""
+      },
+      "normRefs": [
+        "SN 641 723",
+        "bfu Bericht 73 — NACA-Skala — Verletzungsschwere"
+      ],
+      "isBooster": false,
+      "isPflicht": true,
+      "kategorie": "ausruestung",
+      "verortung": {
+        "typ": "punkt",
+        "position": {
+          "phi": 99.23180468326537,
+          "theta": 188.1698766713615
+        },
+        "toleranz": 5
+      },
+      "kriteriumId": "griffigkeit",
+      "verortungen": {
+        "persp-1776644487174": {
+          "typ": "punkt",
+          "position": {
+            "phi": 100.93654005930992,
+            "theta": 282.73255076606904
+          },
+          "toleranz": 5
+        }
+      },
+      "beschreibungI18n": {
+        "de": "dd",
+        "en": "",
+        "fr": "",
+        "it": ""
+      },
+      "correctAssessment": {
+        "naca": 7,
+        "abweichung": "gross",
+        "relevanzSD": "hoch",
+        "wichtigkeit": "gross",
+        "unfallrisiko": "hoch",
+        "unfallschwere": "schwer"
+      }
+    },
+    "updated_at": "2026-08-20T13:58:10.245+00:00"
+  },
+  {
+    "id": "SD_0003",
+    "scene_id": "SZ_2026_001",
+    "data": {
+      "id": "SD_0003",
+      "kontext": "io",
+      "sceneId": "SZ_2026_001",
+      "topicId": "tp-1776644409542",
+      "nameI18n": {
+        "de": "Sichtweite FGS",
+        "en": "Sight distance at pedestrian crossing",
+        "fr": "Distance de visibilité au passage piétons",
+        "it": "Distanza di visibilità al passaggio pedonale"
+      },
+      "normRefs": [
+        "SN 641 723"
+      ],
+      "isBooster": true,
+      "isPflicht": true,
+      "kategorie": "sicht",
+      "verortung": {
+        "typ": "polygon",
+        "punkte": [
+          {
+            "phi": 100.87220796368511,
+            "theta": 223.55923062476435
+          },
+          {
+            "phi": 101.97530850763854,
+            "theta": 235.09140717735056
+          },
+          {
+            "phi": 97.76347006708905,
+            "theta": 241.20847474002667
+          },
+          {
+            "phi": 96.8609332583999,
+            "theta": 236.99672330343
+          },
+          {
+            "phi": 97.46262446419266,
+            "theta": 229.77657798354994
+          },
+          {
+            "phi": 100.06995302262807,
+            "theta": 223.75979021698328
+          },
+          {
+            "phi": 100.06995302262807,
+            "theta": 223.75979021698328
+          }
+        ],
+        "toleranz": 15
+      },
+      "kriteriumId": "fussgaengerstreifen",
+      "verortungen": {
+        "persp-1776644487174": {
+          "typ": "polygon",
+          "punkte": [
+            {
+              "phi": 94.9555777733894,
+              "theta": 271.8940923495168
+            },
+            {
+              "phi": 96.76065139076775,
+              "theta": 279.51535685383465
+            },
+            {
+              "phi": 94.45416843522872,
+              "theta": 281.72151236824243
+            },
+            {
+              "phi": 93.55163162653957,
+              "theta": 277.108641747208
+            },
+            {
+              "phi": 94.654732170493,
+              "theta": 272.0946519417358
+            },
+            {
+              "phi": 94.654732170493,
+              "theta": 272.0946519417358
+            }
+          ],
+          "toleranz": 15
+        }
+      },
+      "beschreibungI18n": {
+        "de": "Fehlende Sichtweite am FGS",
+        "en": "Insufficient sight distance at the pedestrian crossing.",
+        "fr": "Distance de visibilité insuffisante au passage piétons.",
+        "it": "Distanza di visibilità insufficiente al passaggio pedonale."
+      },
+      "correctAssessment": {
+        "naca": 3,
+        "abweichung": "mittel",
+        "relevanzSD": "mittel",
+        "wichtigkeit": "gross",
+        "unfallrisiko": "mittel",
+        "unfallschwere": "mittel"
+      },
+      "boosterBonusProzent": 10
+    },
+    "updated_at": "2026-08-20T13:58:10.24+00:00"
+  }
+]

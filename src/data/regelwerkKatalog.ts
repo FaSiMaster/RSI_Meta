@@ -42,8 +42,13 @@ export const REGELWERK_KATALOG: RegelwerkEintrag[] = [
   // Die Umnummerierung von SN 641 xxx auf VSS 41 xxx ist NICHT flächendeckend
   // erfolgt. Das Gesamt-Normenverzeichnis VSS 41 001, Ausgabe 2024-10, führt
   // beide Kreise nebeneinander: die Folgeabschätzung als VSS 41 721 und die
-  // Netzeinstufung als VSS 41 725, das Audit dagegen als SN 641 722:2008 und
-  // die Inspektion als SN 641 723:2017.
+  // Netzeinstufung als VSS 41 725, das Audit und die Inspektion dagegen als
+  // SN 641 722 und SN 641 723.
+  //
+  // Die Ausgabejahre stammen NICHT aus dem Verzeichnis: Dessen Textextraktion
+  // ist spaltenverschoben, die Jahre stehen dort neben der falschen Nummer.
+  // Sie kommen aus dem Normenbestand, der die PDF selbst führt
+  // (SN_641722_2017_de.pdf, SN_641723_2016_de_v2.pdf).
   //
   // Für «VSS 41 723» gibt es damit keinen Beleg — weder im Verzeichnis noch
   // im Normenbestand. Der Katalog führt deshalb die Nummern, die das
@@ -54,9 +59,9 @@ export const REGELWERK_KATALOG: RegelwerkEintrag[] = [
     themen: ['grundnorm', 'issi', 'sicherheit'] },
   { nummer: 'VSS 41 721', titel: 'Strassenverkehrssicherheit; Folgeabschätzung (RIA)', jahr: '2023',
     themen: ['ria', 'issi', 'folgeabschaetzung', 'planung'] },
-  { nummer: 'SN 641 722', titel: 'Strassenverkehrssicherheit; Audit (RSA)', jahr: '2008',
+  { nummer: 'SN 641 722', titel: 'Strassenverkehrssicherheit; Audit (RSA)', jahr: '2017',
     themen: ['rsa', 'issi', 'audit', 'projekt'] },
-  { nummer: 'SN 641 723', titel: 'Strassenverkehrssicherheit; Inspektion (RSI)', jahr: '2017',
+  { nummer: 'SN 641 723', titel: 'Strassenverkehrssicherheit; Inspektion (RSI)', jahr: '2016',
     themen: ['rsi', 'issi', 'inspektion', 'verfahren'] },
   { nummer: 'VSS 41 725', titel: 'Strassenverkehrssicherheit; Netzeinstufung (NSM)', jahr: '2001',
     themen: ['nsm', 'issi', 'netz', 'einstufung'] },

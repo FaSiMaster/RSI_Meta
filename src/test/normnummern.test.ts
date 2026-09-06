@@ -151,8 +151,8 @@ const BEKANNT: Record<string, string> = {
   // Ausgabe 2024-10, führt sie unter diesen Nummern; für «VSS 41 723» gibt es
   // keinen Beleg. Der Bestand markiert sie als veraltet, was hier nichts über
   // eine Umnummerierung sagt.
-  'SN641722': 'VSS 41 001:2024-10 führt das Audit unter dieser Nummer, Ausgabe 2008',
-  'SN641723': 'VSS 41 001:2024-10 führt die Inspektion unter dieser Nummer, Ausgabe 2017',
+  'SN641722': 'VSS 41 001:2024-10 führt das Audit unter dieser Nummer; Ausgabe 2017 laut Bestand',
+  'SN641723': 'VSS 41 001:2024-10 führt die Inspektion unter dieser Nummer; Ausgabe 2016 laut Bestand',
 }
 
 /**
