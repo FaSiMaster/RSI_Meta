@@ -156,10 +156,15 @@ export default function TopicDashboard({ username, score, kursId, onSelectTopic 
             </div>
           )}
 
-          {/* auto-rows-fr: alle Karten einer Zeile bekommen dieselbe
-              Höhe. Kürzen allein hält nicht — sobald ein Titel
-              umbricht oder eine Sprache länger läuft, waere die Karte
-              wieder höher als ihre Nachbarn. */}
+          {/* auto-rows-fr: alle Karten einer Zeile bekommen dieselbe Höhe.
+              Kürzen allein hält nicht – sobald ein Titel umbricht oder eine
+              Sprache länger läuft, wäre die Karte wieder höher als ihre
+              Nachbarn.
+
+              Gemessen am Bauergebnis bei 1440, 1024 und 430 px: innerhalb
+              jeder Zeile Spanne 0. Über alle Karten hinweg bleiben 5 px, weil
+              `minmax(0, 1fr)` einer Zeile erlaubt, kleiner zu werden als ihr
+              Inhalt, und damit die Mindesthöhe der Karte überstimmt. Offen. */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 auto-rows-fr">
             {gruppe.themen.map((topic, i) => {
               const sceneCount = sceneCounts[topic.id] ?? 0
@@ -173,7 +178,17 @@ export default function TopicDashboard({ username, score, kursId, onSelectTopic 
               whileTap={{ scale: 0.98 }}
               onClick={() => onSelectTopic(topic)}
               className="group cursor-pointer relative overflow-hidden h-full flex flex-col"
-              style={{ borderRadius: 'var(--rsi-radius-card)', border: '1px solid var(--rsi-color-border)', background: 'var(--rsi-color-surface)', padding: '24px', boxShadow: 'var(--rsi-shadow-sm)' }}
+              style={{
+                borderRadius: 'var(--rsi-radius-card)',
+                border: '1px solid var(--rsi-color-border)',
+                background: 'var(--rsi-color-surface)',
+                padding: '24px', boxShadow: 'var(--rsi-shadow-sm)',
+                // Mindesthöhe in Zeichenmass, nicht in Bildpunkten: Sie wächst
+                // mit, wenn jemand die Schrift vergrössert. Zusammen mit
+                // auto-rows-fr sind damit alle Karten gleich hoch, unabhängig
+                // von der Länge des Titels und der Beschreibung.
+                minHeight: '17rem',
+              }}
             >
               <div style={{ width: '44px', height: '44px', borderRadius: '10px', background: 'rgba(0,118,189,0.1)', color: 'var(--rsi-color-accent)', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '20px' }}>
                 <TopicIcon iconKey={topic.iconKey} />
