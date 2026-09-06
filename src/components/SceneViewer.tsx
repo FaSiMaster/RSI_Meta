@@ -750,9 +750,9 @@ interface VRBewertungWPanelProps {
 
 function VRBewertungWPanel({ kriteriumLabel, kontextLabel, onSelect, onCancel, t }: VRBewertungWPanelProps) {
   const options: { val: RSIDimension; labelKey: string }[] = [
-    { val: 'klein',  labelKey: 'scoring.dim_klein'  },
-    { val: 'mittel', labelKey: 'scoring.dim_mittel' },
-    { val: 'gross',  labelKey: 'scoring.dim_gross'  },
+    { val: 'klein',  labelKey: 'verfahren:dim_klein'  },
+    { val: 'mittel', labelKey: 'verfahren:dim_mittel' },
+    { val: 'gross',  labelKey: 'verfahren:dim_gross'  },
   ]
   const btnH    = 0.080
   const btnGap  = 0.010
@@ -773,10 +773,10 @@ function VRBewertungWPanel({ kriteriumLabel, kontextLabel, onSelect, onCancel, t
         <meshBasicMaterial color="#090d1b" transparent opacity={0.96} />
       </mesh>
       <Text position={[0, panelH / 2 - 0.040, 0.003]} fontSize={0.018} color="rgba(255,255,255,0.45)" anchorX="center" anchorY="middle">
-        {`${t('scoring.bewertung_schritt', { nr: 1 })} · ${t('scoring.methodik_schritt', { schritt: 1 })} — ${t('scoring.phase_a')}`}
+        {`${t('verfahren:bewertung_schritt', { nr: 1 })} · ${t('verfahren:methodik_schritt', { schritt: 1 })} — ${t('verfahren:phase_a')}`}
       </Text>
       <Text position={[0, panelH / 2 - 0.080, 0.003]} fontSize={0.034} color="#ffffff" anchorX="center" anchorY="middle" maxWidth={panelW - 0.08}>
-        {t('scoring.wie_wichtig')}
+        {t('verfahren:wie_wichtig')}
       </Text>
       <Text position={[0, panelH / 2 - 0.120, 0.003]} fontSize={0.022} color="rgba(255,255,255,0.55)" anchorX="center" anchorY="middle" maxWidth={panelW - 0.08}>
         {kriteriumLabel} · {kontextLabel}
@@ -842,10 +842,10 @@ function VRBewertungAPanel({ options, onSelect, onCancel, t }: VRBewertungAPanel
         <meshBasicMaterial color="#090d1b" transparent opacity={0.96} />
       </mesh>
       <Text position={[0, panelH / 2 - 0.040, 0.003]} fontSize={0.018} color="rgba(255,255,255,0.45)" anchorX="center" anchorY="middle">
-        {`${t('scoring.bewertung_schritt', { nr: 2 })} · ${t('scoring.methodik_schritt', { schritt: 3 })} — ${t('scoring.phase_b')}`}
+        {`${t('verfahren:bewertung_schritt', { nr: 2 })} · ${t('verfahren:methodik_schritt', { schritt: 3 })} — ${t('verfahren:phase_b')}`}
       </Text>
       <Text position={[0, panelH / 2 - 0.082, 0.003]} fontSize={0.032} color="#ffffff" anchorX="center" anchorY="middle" maxWidth={panelW - 0.08}>
-        {t('scoring.wie_abweichung')}
+        {t('verfahren:wie_abweichung')}
       </Text>
       {options.map((o, i) => {
         const yTop = panelH / 2 - headerH - 0.02 - i * btnStep
@@ -898,9 +898,9 @@ interface VRBewertungNPanelProps {
 }
 
 const VR_NACA_OPTIONS: VRBewertungNOption[] = [
-  { wert: 'leicht', labelKey: 'scoring.naca_leicht', subKey: 'scoring.naca_leicht_sub', color: '#1A7F1F' },
-  { wert: 'mittel', labelKey: 'scoring.naca_mittel', subKey: 'scoring.naca_mittel_sub', color: '#B87300' },
-  { wert: 'schwer', labelKey: 'scoring.naca_schwer', subKey: 'scoring.naca_schwer_sub', color: '#D40053' },
+  { wert: 'leicht', labelKey: 'verfahren:naca_leicht', subKey: 'verfahren:naca_leicht_sub', color: '#1A7F1F' },
+  { wert: 'mittel', labelKey: 'verfahren:naca_mittel', subKey: 'verfahren:naca_mittel_sub', color: '#B87300' },
+  { wert: 'schwer', labelKey: 'verfahren:naca_schwer', subKey: 'verfahren:naca_schwer_sub', color: '#D40053' },
 ]
 
 function VRBewertungNPanel({ onSelect, onCancel, t }: VRBewertungNPanelProps) {
@@ -923,13 +923,13 @@ function VRBewertungNPanel({ onSelect, onCancel, t }: VRBewertungNPanelProps) {
         <meshBasicMaterial color="#090d1b" transparent opacity={0.96} />
       </mesh>
       <Text position={[0, panelH / 2 - 0.040, 0.003]} fontSize={0.018} color="rgba(255,255,255,0.45)" anchorX="center" anchorY="middle">
-        {`${t('scoring.bewertung_schritt', { nr: 3 })} · ${t('scoring.methodik_schritt', { schritt: 7 })} — ${t('scoring.phase_d')}`}
+        {`${t('verfahren:bewertung_schritt', { nr: 3 })} · ${t('verfahren:methodik_schritt', { schritt: 7 })} — ${t('verfahren:phase_d')}`}
       </Text>
       <Text position={[0, panelH / 2 - 0.082, 0.003]} fontSize={0.032} color="#ffffff" anchorX="center" anchorY="middle" maxWidth={panelW - 0.08}>
-        {t('scoring.wie_schwer')}
+        {t('verfahren:wie_schwer')}
       </Text>
       <Text position={[0, panelH / 2 - 0.122, 0.003]} fontSize={0.020} color="rgba(255,255,255,0.50)" anchorX="center" anchorY="middle" maxWidth={panelW - 0.08}>
-        {t('scoring.stell_dir_vor')}
+        {t('verfahren:stell_dir_vor')}
       </Text>
       {VR_NACA_OPTIONS.map((o, i) => {
         const yTop = panelH / 2 - headerH - 0.02 - i * btnStep
@@ -979,7 +979,7 @@ const VR_RESULT_COLOR: Record<ResultDimension, string> = {
 }
 
 function resultLabelShort(v: ResultDimension, t: TFunction): string {
-  return t(v === 'hoch' ? 'scoring.result_hoch' : v === 'mittel' ? 'scoring.result_mittel' : 'scoring.result_gering')
+  return t(v === 'hoch' ? 'verfahren:result_hoch' : v === 'mittel' ? 'verfahren:result_mittel' : 'verfahren:result_gering')
 }
 
 // Achsen-Beschriftungen pro Matrix-Typ (Reihenfolge = Modell-Reihenfolge)
@@ -990,15 +990,15 @@ function vrMatrixLabels(model: MatrixModel, t: TFunction): {
     return {
       rowLabels: model.rows.map(r => dimLabelShort(r as RSIDimension, t)),
       colLabels: model.cols.map(c => dimLabelShort(c as RSIDimension, t)),
-      xLabel:    t('scoring.matrix_abweichung'),
-      yLabel:    t('scoring.matrix_wichtigkeit'),
+      xLabel:    t('verfahren:matrix_abweichung'),
+      yLabel:    t('verfahren:matrix_wichtigkeit'),
     }
   }
   return {
     rowLabels: model.rows.map(r => resultLabelShort(r as ResultDimension, t)),
     colLabels: model.cols.map(c => nacaLabelShort(c as NACADimension, t)),
-    xLabel:    t('scoring.matrix_unfallschwere'),
-    yLabel:    t('scoring.matrix_relevanz'),
+    xLabel:    t('verfahren:matrix_unfallschwere'),
+    yLabel:    t('verfahren:matrix_relevanz'),
   }
 }
 
@@ -1153,10 +1153,10 @@ interface VRScoringSummaryPanelProps {
 }
 
 function dimLabelShort(d: RSIDimension, t: TFunction): string {
-  return t(d === 'gross' ? 'scoring.dim_gross' : d === 'mittel' ? 'scoring.dim_mittel' : 'scoring.dim_klein')
+  return t(d === 'gross' ? 'verfahren:dim_gross' : d === 'mittel' ? 'verfahren:dim_mittel' : 'verfahren:dim_klein')
 }
 function nacaLabelShort(n: NACADimension, t: TFunction): string {
-  return t(n === 'leicht' ? 'scoring.schwere_leicht' : n === 'mittel' ? 'scoring.schwere_mittel' : 'scoring.schwere_schwer')
+  return t(n === 'leicht' ? 'verfahren:schwere_leicht' : n === 'mittel' ? 'verfahren:schwere_mittel' : 'verfahren:schwere_schwer')
 }
 
 // Zeilen-Schätzung für Lernkarten-Texte: troika bricht selbst um, die
@@ -1193,13 +1193,13 @@ function VRScoringSummaryPanel({ summary, onContinue, t }: VRScoringSummaryPanel
     { label: t('vr.kategorie'),   user: summary.kategorieRichtig ? t('vr.richtig') : t('vr.falsch'),
       correct: summary.kategorieRichtig ? t('vr.richtig') : korrekteKategorie, ok: summary.kategorieRichtig,
       pkt: summary.kategorieRichtig ? KATEGORIE_PUNKTE : KATEGORIE_TEILPUNKTE },
-    { label: t('scoring.phase_a'), user: dimLabelShort(summary.userW, t),
+    { label: t('verfahren:phase_a'), user: dimLabelShort(summary.userW, t),
       correct: dimLabelShort(summary.correctW, t), ok: summary.wichtigkeitKorrekt,
       pkt: summary.wichtigkeitKorrekt ? wPkt : 0 },
-    { label: t('scoring.phase_b'),  user: dimLabelShort(summary.userA, t),
+    { label: t('verfahren:phase_b'),  user: dimLabelShort(summary.userA, t),
       correct: dimLabelShort(summary.correctA, t), ok: summary.abweichungKorrekt,
       pkt: summary.abweichungKorrekt ? aPkt : 0 },
-    { label: t('scoring.phase_d'), user: nacaLabelShort(summary.userN, t),
+    { label: t('verfahren:phase_d'), user: nacaLabelShort(summary.userN, t),
       correct: nacaLabelShort(summary.correctN, t), ok: summary.nacaKorrekt,
       pkt: summary.nacaKorrekt ? nPkt : 0 },
   ]
@@ -1356,7 +1356,7 @@ function VRScoringSummaryPanel({ summary, onContinue, t }: VRScoringSummaryPanel
           })()}
 
           <VRButton
-            label={t('scoring.herleitung')}
+            label={t('verfahren:herleitung')}
             position={[-btnX, footerY, 0.002]}
             width={btnW}
             height={0.075}
@@ -1382,10 +1382,10 @@ function VRScoringSummaryPanel({ summary, onContinue, t }: VRScoringSummaryPanel
       {seite === 'herleitung' && (
         <>
           <group position={[0, panelH / 2 - 0.030, 0]}>
-            <VRMatrix model={relevanzMatrix} titel={t('scoring.relevanz_matrix_kurz')} t={t} />
+            <VRMatrix model={relevanzMatrix} titel={t('verfahren:relevanz_matrix_kurz')} t={t} />
           </group>
           <group position={[0, panelH / 2 - 0.030 - MX_BLOCK_H - 0.030, 0]}>
-            <VRMatrix model={risikoMatrix} titel={t('scoring.unfallrisiko_matrix_kurz')} t={t} />
+            <VRMatrix model={risikoMatrix} titel={t('verfahren:unfallrisiko_matrix_kurz')} t={t} />
           </group>
           <VRButton
             label={t('einstieg.zurück')}
@@ -1875,8 +1875,8 @@ function MiniMatrixTable({ typ, t }: { typ: 'relevanz' | 'risiko'; t: TFunction 
   const rowLabel = (r: string) => t(typ === 'relevanz' ? `scoring.dim_${r}` : `scoring.result_${r}`)
   const colLabel = (c: string) => t(typ === 'relevanz' ? `scoring.dim_${c}` : `scoring.schwere_${c}`)
   const valColor = (v: ResultDimension) => v === 'hoch' ? '#FF7BAC' : v === 'mittel' ? '#F0A500' : '#6FCF73'
-  const yLabel = t(typ === 'relevanz' ? 'scoring.matrix_wichtigkeit' : 'scoring.matrix_relevanz')
-  const xLabel = t(typ === 'relevanz' ? 'scoring.matrix_abweichung' : 'scoring.matrix_unfallschwere')
+  const yLabel = t(typ === 'relevanz' ? 'verfahren:matrix_wichtigkeit' : 'verfahren:matrix_relevanz')
+  const xLabel = t(typ === 'relevanz' ? 'verfahren:matrix_abweichung' : 'verfahren:matrix_unfallschwere')
 
   const cell: React.CSSProperties = {
     padding: '4px 6px', fontSize: '10px', textAlign: 'center',
@@ -1934,13 +1934,13 @@ function MiniReferenz({ schritt, t }: { schritt: 'w' | 'a' | 'n'; t: TFunction }
         }}>
           {schritt === 'w' && (
             <p style={{ fontSize: '11px', color: 'rgba(255,255,255,0.70)', lineHeight: 1.5, margin: 0 }}>
-              {t('scoring.referenz_wichtigkeit')}
+              {t('verfahren:referenz_wichtigkeit')}
             </p>
           )}
           {schritt === 'a' && (
             <>
               <p style={{ fontSize: '11px', color: 'rgba(255,255,255,0.70)', lineHeight: 1.5, margin: '0 0 8px' }}>
-                {t('scoring.referenz_relevanz_hint')}
+                {t('verfahren:referenz_relevanz_hint')}
               </p>
               <MiniMatrixTable typ="relevanz" t={t} />
             </>
@@ -1948,7 +1948,7 @@ function MiniReferenz({ schritt, t }: { schritt: 'w' | 'a' | 'n'; t: TFunction }
           {schritt === 'n' && (
             <>
               <p style={{ fontSize: '11px', color: 'rgba(255,255,255,0.70)', lineHeight: 1.5, margin: '0 0 8px' }}>
-                {t('scoring.referenz_risiko_hint')}
+                {t('verfahren:referenz_risiko_hint')}
               </p>
               <MiniMatrixTable typ="risiko" t={t} />
             </>
@@ -2771,10 +2771,10 @@ export default function SceneViewer({
             boxShadow: '0 16px 48px rgba(0,0,0,0.7)', zIndex: 300, fontFamily: 'var(--rsi-font)',
           }}>
             <p style={{ fontSize: '10px', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.16em', color: 'rgba(255,255,255,0.45)', marginBottom: '3px' }}>
-              {t('scoring.bewertung_schritt', { nr: 1 })} · {t('scoring.methodik_schritt', { schritt: 1 })} — {t('scoring.phase_a')}
+              {t('verfahren:bewertung_schritt', { nr: 1 })} · {t('verfahren:methodik_schritt', { schritt: 1 })} — {t('verfahren:phase_a')}
             </p>
             <h3 style={{ fontSize: '17px', fontWeight: 700, color: 'white', marginBottom: '12px' }}>
-              {t('scoring.wie_wichtig')}
+              {t('verfahren:wie_wichtig')}
             </h3>
             <p style={{ fontSize: '12px', color: 'rgba(255,255,255,0.55)', marginBottom: '14px' }}>
               {KRITERIUM_LABELS[d.kriteriumId] ?? d.kriteriumId} · {t(d.kontext === 'io' ? 'einstieg.kontext_io' : 'einstieg.kontext_ao')}
@@ -2793,7 +2793,7 @@ export default function SceneViewer({
                   onMouseEnter={e => { e.currentTarget.style.background = 'rgba(0,118,189,0.45)'; e.currentTarget.style.borderColor = 'rgba(0,118,189,0.6)' }}
                   onMouseLeave={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.05)'; e.currentTarget.style.borderColor = 'rgba(255,255,255,0.10)' }}
                 >
-                  {t(w === 'gross' ? 'scoring.dim_gross' : w === 'mittel' ? 'scoring.dim_mittel' : 'scoring.dim_klein')}
+                  {t(w === 'gross' ? 'verfahren:dim_gross' : w === 'mittel' ? 'verfahren:dim_mittel' : 'verfahren:dim_klein')}
                 </button>
               ))}
             </div>
@@ -2811,10 +2811,10 @@ export default function SceneViewer({
           boxShadow: '0 16px 48px rgba(0,0,0,0.7)', zIndex: 300, fontFamily: 'var(--rsi-font)',
         }}>
           <p style={{ fontSize: '10px', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.16em', color: 'rgba(255,255,255,0.45)', marginBottom: '3px' }}>
-            {t('scoring.bewertung_schritt', { nr: 2 })} · {t('scoring.methodik_schritt', { schritt: 3 })} — {t('scoring.phase_b')}
+            {t('verfahren:bewertung_schritt', { nr: 2 })} · {t('verfahren:methodik_schritt', { schritt: 3 })} — {t('verfahren:phase_b')}
           </p>
           <h3 style={{ fontSize: '17px', fontWeight: 700, color: 'white', marginBottom: '14px' }}>
-            {t('scoring.wie_abweichung')}
+            {t('verfahren:wie_abweichung')}
           </h3>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
             {ABWEICHUNG_I18N.map(k => (
@@ -2848,19 +2848,19 @@ export default function SceneViewer({
           boxShadow: '0 16px 48px rgba(0,0,0,0.7)', zIndex: 300, fontFamily: 'var(--rsi-font)',
         }}>
           <p style={{ fontSize: '10px', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.16em', color: 'rgba(255,255,255,0.45)', marginBottom: '3px' }}>
-            {t('scoring.bewertung_schritt', { nr: 3 })} · {t('scoring.methodik_schritt', { schritt: 7 })} — {t('scoring.phase_d')}
+            {t('verfahren:bewertung_schritt', { nr: 3 })} · {t('verfahren:methodik_schritt', { schritt: 7 })} — {t('verfahren:phase_d')}
           </p>
           <h3 style={{ fontSize: '17px', fontWeight: 700, color: 'white', marginBottom: '8px' }}>
-            {t('scoring.wie_schwer')}
+            {t('verfahren:wie_schwer')}
           </h3>
           <p style={{ fontSize: '12px', color: 'rgba(255,255,255,0.45)', marginBottom: '14px' }}>
-            {t('scoring.stell_dir_vor')}
+            {t('verfahren:stell_dir_vor')}
           </p>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
             {([
-              { wert: 'leicht' as NACADimension, label: t('scoring.naca_leicht'), sub: t('scoring.naca_leicht_sub'), color: '#1A7F1F' },
-              { wert: 'mittel' as NACADimension, label: t('scoring.naca_mittel'), sub: t('scoring.naca_mittel_sub'), color: '#B87300' },
-              { wert: 'schwer' as NACADimension, label: t('scoring.naca_schwer'), sub: t('scoring.naca_schwer_sub'), color: '#D40053' },
+              { wert: 'leicht' as NACADimension, label: t('verfahren:naca_leicht'), sub: t('verfahren:naca_leicht_sub'), color: '#1A7F1F' },
+              { wert: 'mittel' as NACADimension, label: t('verfahren:naca_mittel'), sub: t('verfahren:naca_mittel_sub'), color: '#B87300' },
+              { wert: 'schwer' as NACADimension, label: t('verfahren:naca_schwer'), sub: t('verfahren:naca_schwer_sub'), color: '#D40053' },
             ]).map(g => (
               <button
                 key={g.wert}

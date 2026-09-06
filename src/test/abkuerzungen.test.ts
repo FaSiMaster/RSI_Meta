@@ -82,6 +82,28 @@ function i18nWerte(lang: string): Array<{ pfad: string; text: string }> {
       for (const [k, v] of Object.entries(o)) gehe(v, pfad ? `${pfad}.${k}` : k)
   }
   gehe(daten, '')
+  // Seit v0.16.1 liegen die Verfahrensbezeichnungen nicht mehr in den
+  // JSON-Dateien, sondern in src/i18n/verfahren.bfu.ts. Ohne diesen Zusatz
+  // prüft der Wächter sie nicht mehr – und gerade dort stehen die
+  // bfu-Nennungen, die er kontrollieren soll.
+  aus.push(...verfahrensWerte(lang))
+  return aus
+}
+
+/**
+ * Werte der Verfahrensdatei. Gelesen wird der Quelltext, nicht das Modul:
+ * der Wächter soll sehen, was in der Datei steht, auch wenn sie eines Tages
+ * mehrere Verfahren enthält.
+ */
+function verfahrensWerte(lang: string): Array<{ pfad: string; text: string }> {
+  const quelle = lies('src/i18n/verfahren.bfu.ts')
+  const anfang = quelle.indexOf(`  ${lang}: {`)
+  if (anfang < 0) return []
+  const block = quelle.slice(anfang).split('\n  },')[0]
+  const aus: Array<{ pfad: string; text: string }> = []
+  for (const m of block.matchAll(/^\s*"([^"]+)": ("(?:[^"\\]|\\.)*"),?$/gm)) {
+    aus.push({ pfad: `verfahren.${m[1]}`, text: JSON.parse(m[2]) as string })
+  }
   return aus
 }
 
@@ -97,7 +119,14 @@ function benutzertexte(): Array<{ quelle: string; text: string }> {
     ...SPRACHEN.flatMap(l =>
       i18nWerte(l)
         .filter(w => !STATUSLABEL.test(w.pfad))
-        .map(w => ({ quelle: `src/i18n/${l}.json → ${w.pfad}`, text: w.text }))),
+        // Die Verfahrenswerte kommen aus einer anderen Datei – der Befund
+        // muss dorthin zeigen, sonst sucht man an der falschen Stelle.
+        .map(w => ({
+          quelle: w.pfad.startsWith('verfahren.')
+            ? `src/i18n/verfahren.bfu.ts → ${l}.${w.pfad.slice('verfahren.'.length)}`
+            : `src/i18n/${l}.json → ${w.pfad}`,
+          text: w.text,
+        }))),
     ...RECHTSSEITEN.map(p => ({ quelle: p, text: lies(p) })),
   ]
 }

@@ -29,15 +29,15 @@ function resultBg(v: ResultDimension): string {
   return 'rgba(26,127,31,0.10)'
 }
 function resultLabel(v: ResultDimension, t: (k: string) => string): string {
-  const map: Record<ResultDimension, string> = { hoch: t('scoring.result_hoch'), mittel: t('scoring.result_mittel'), gering: t('scoring.result_gering') }
+  const map: Record<ResultDimension, string> = { hoch: t('verfahren:result_hoch'), mittel: t('verfahren:result_mittel'), gering: t('verfahren:result_gering') }
   return map[v]
 }
 function dimLabel(v: RSIDimension, t: (k: string) => string): string {
-  const map: Record<RSIDimension, string> = { gross: t('scoring.dim_gross'), mittel: t('scoring.dim_mittel'), klein: t('scoring.dim_klein') }
+  const map: Record<RSIDimension, string> = { gross: t('verfahren:dim_gross'), mittel: t('verfahren:dim_mittel'), klein: t('verfahren:dim_klein') }
   return map[v]
 }
 function nacaGruppeLabel(v: NACADimension, t: (k: string) => string): string {
-  const map: Record<NACADimension, string> = { leicht: t('scoring.schwere_leicht'), mittel: t('scoring.schwere_mittel'), schwer: t('scoring.schwere_schwer') }
+  const map: Record<NACADimension, string> = { leicht: t('verfahren:schwere_leicht'), mittel: t('verfahren:schwere_mittel'), schwer: t('verfahren:schwere_schwer') }
   return map[v]
 }
 
@@ -63,13 +63,13 @@ function CompactMatrix({ type, highlightRow, highlightCol, showIntersection, cor
     : (['leicht', 'mittel', 'schwer'] as const)
   const { t } = useTranslation()
   const rowLabels = isR
-    ? [t('scoring.dim_gross'), t('scoring.dim_mittel'), t('scoring.dim_klein')]
-    : [t('scoring.result_hoch'), t('scoring.result_mittel'), t('scoring.result_gering')]
+    ? [t('verfahren:dim_gross'), t('verfahren:dim_mittel'), t('verfahren:dim_klein')]
+    : [t('verfahren:result_hoch'), t('verfahren:result_mittel'), t('verfahren:result_gering')]
   const colLabels = isR
-    ? [t('scoring.dim_klein'), t('scoring.dim_mittel'), t('scoring.dim_gross')]
-    : [t('scoring.schwere_leicht'), t('scoring.schwere_mittel'), t('scoring.schwere_schwer')]
-  const xLabel    = isR ? t('scoring.matrix_abweichung') : t('scoring.matrix_unfallschwere')
-  const yLabel    = isR ? t('scoring.matrix_wichtigkeit') : t('scoring.matrix_relevanz')
+    ? [t('verfahren:dim_klein'), t('verfahren:dim_mittel'), t('verfahren:dim_gross')]
+    : [t('verfahren:schwere_leicht'), t('verfahren:schwere_mittel'), t('verfahren:schwere_schwer')]
+  const xLabel    = isR ? t('verfahren:matrix_abweichung') : t('verfahren:matrix_unfallschwere')
+  const yLabel    = isR ? t('verfahren:matrix_wichtigkeit') : t('verfahren:matrix_relevanz')
 
   function cellVal(row: string, col: string): ResultDimension {
     if (isR) return calcRelevanzSD(row as RSIDimension, col as RSIDimension)
@@ -310,9 +310,9 @@ function StepCard({ nr, title, subtitle, isActive, isCompleted, onChange, change
 
 // ── NACA-Gruppen ──
 const NACA_GRUPPEN: { wert: NACADimension; color: string; titleKey: string; subKey: string }[] = [
-  { wert: 'leicht', color: 'var(--rsi-gruen)', titleKey: 'scoring.naca_leicht', subKey: 'scoring.naca_leicht_sub' },
-  { wert: 'mittel', color: 'var(--rsi-orange)', titleKey: 'scoring.naca_mittel', subKey: 'scoring.naca_mittel_sub' },
-  { wert: 'schwer', color: 'var(--rsi-rot)', titleKey: 'scoring.naca_schwer', subKey: 'scoring.naca_schwer_sub' },
+  { wert: 'leicht', color: 'var(--rsi-gruen)', titleKey: 'verfahren:naca_leicht', subKey: 'verfahren:naca_leicht_sub' },
+  { wert: 'mittel', color: 'var(--rsi-orange)', titleKey: 'verfahren:naca_mittel', subKey: 'verfahren:naca_mittel_sub' },
+  { wert: 'schwer', color: 'var(--rsi-rot)', titleKey: 'verfahren:naca_schwer', subKey: 'verfahren:naca_schwer_sub' },
 ]
 
 // ── Props ──
@@ -410,12 +410,12 @@ export default function ScoringFlow({ deficit, scene, kategorieRichtig = true, h
           }}
         >
           <h3 style={{ fontSize: '16px', fontWeight: 700, color: 'var(--rsi-color-text)', marginBottom: '16px' }}>
-            {t('scoring.methodik_titel')}
+            {t('verfahren:methodik_titel')}
           </h3>
 
           {/* Normhierarchie */}
           <p style={{ fontSize: '12px', fontWeight: 700, color: 'var(--rsi-color-text-muted)', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: '8px' }}>
-            {t('scoring.normhierarchie_label')}
+            {t('verfahren:normhierarchie_label')}
           </p>
           <div style={{ marginBottom: '16px' }}>
             {NORMHIERARCHIE.map(n => (
@@ -428,7 +428,7 @@ export default function ScoringFlow({ deficit, scene, kategorieRichtig = true, h
 
           {/* Relevanz-Matrix */}
           <p style={{ fontSize: '12px', fontWeight: 700, color: 'var(--rsi-color-text-muted)', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: '8px' }}>
-            {t('scoring.relevanz_matrix_label')}
+            {t('verfahren:relevanz_matrix_label')}
           </p>
           <div style={{ marginBottom: '16px' }}>
             <CompactMatrix type="relevanz" />
@@ -436,7 +436,7 @@ export default function ScoringFlow({ deficit, scene, kategorieRichtig = true, h
 
           {/* Unfallrisiko-Matrix */}
           <p style={{ fontSize: '12px', fontWeight: 700, color: 'var(--rsi-color-text-muted)', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: '8px' }}>
-            {t('scoring.unfallrisiko_matrix_label')}
+            {t('verfahren:unfallrisiko_matrix_label')}
           </p>
           <div style={{ marginBottom: '16px' }}>
             <CompactMatrix type="unfallrisiko" />
@@ -444,7 +444,7 @@ export default function ScoringFlow({ deficit, scene, kategorieRichtig = true, h
 
           {/* NACA-Erklaerung */}
           <p style={{ fontSize: '12px', fontWeight: 700, color: 'var(--rsi-color-text-muted)', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: '8px' }}>
-            {t('scoring.naca_einstufung_label')}
+            {t('verfahren:naca_einstufung_label')}
           </p>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', marginBottom: '16px' }}>
             {NACA_GRUPPEN.map(g => (
@@ -458,7 +458,7 @@ export default function ScoringFlow({ deficit, scene, kategorieRichtig = true, h
 
           {/* Abweichung-Kategorien */}
           <p style={{ fontSize: '12px', fontWeight: 700, color: 'var(--rsi-color-text-muted)', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: '8px' }}>
-            {t('scoring.abweichung_kategorien_label')}
+            {t('verfahren:abweichung_kategorien_label')}
           </p>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', marginBottom: '20px' }}>
             {ABWEICHUNG_I18N.map(k => (
@@ -474,7 +474,7 @@ export default function ScoringFlow({ deficit, scene, kategorieRichtig = true, h
             background: 'rgba(0,118,189,0.06)', border: '1px solid rgba(0,118,189,0.18)',
           }}>
             <p style={{ fontSize: '11px', color: 'var(--rsi-color-text-muted)', margin: 0, lineHeight: 1.6 }}>
-              {t('scoring.quellen')}
+              {t('verfahren:quellen')}
             </p>
           </div>
 
@@ -511,11 +511,11 @@ export default function ScoringFlow({ deficit, scene, kategorieRichtig = true, h
     const finalCorrect = unfallrisiko === ca.unfallrisiko
 
     const decisions: { label: string; user: string; correct: string; ok: boolean }[] = [
-      { label: t('scoring.phase_a'), user: wichtigkeit ? dimLabel(wichtigkeit, t) : '—', correct: dimLabel(ca.wichtigkeit, t), ok: wichtigkeit === ca.wichtigkeit },
-      { label: t('scoring.phase_b'), user: abweichung ? dimLabel(abweichung, t) : '—', correct: dimLabel(ca.abweichung, t), ok: abweichung === ca.abweichung },
-      { label: t('scoring.phase_c'), user: relevanzSD ? resultLabel(relevanzSD, t) : '—', correct: resultLabel(ca.relevanzSD, t), ok: relevanzSD === ca.relevanzSD },
-      { label: t('scoring.phase_d'), user: nacaSchwere ? nacaGruppeLabel(nacaSchwere, t) : '—', correct: nacaGruppeLabel(ca.unfallschwere, t), ok: nacaSchwere === ca.unfallschwere },
-      { label: t('scoring.unfallrisiko_titel'), user: unfallrisiko ? resultLabel(unfallrisiko, t) : '—', correct: resultLabel(ca.unfallrisiko, t), ok: finalCorrect },
+      { label: t('verfahren:phase_a'), user: wichtigkeit ? dimLabel(wichtigkeit, t) : '—', correct: dimLabel(ca.wichtigkeit, t), ok: wichtigkeit === ca.wichtigkeit },
+      { label: t('verfahren:phase_b'), user: abweichung ? dimLabel(abweichung, t) : '—', correct: dimLabel(ca.abweichung, t), ok: abweichung === ca.abweichung },
+      { label: t('verfahren:phase_c'), user: relevanzSD ? resultLabel(relevanzSD, t) : '—', correct: resultLabel(ca.relevanzSD, t), ok: relevanzSD === ca.relevanzSD },
+      { label: t('verfahren:phase_d'), user: nacaSchwere ? nacaGruppeLabel(nacaSchwere, t) : '—', correct: nacaGruppeLabel(ca.unfallschwere, t), ok: nacaSchwere === ca.unfallschwere },
+      { label: t('verfahren:unfallrisiko_titel'), user: unfallrisiko ? resultLabel(unfallrisiko, t) : '—', correct: resultLabel(ca.unfallrisiko, t), ok: finalCorrect },
     ]
 
     const allCorrect = decisions.every(d => d.ok) && kategorieRichtig
@@ -635,7 +635,7 @@ export default function ScoringFlow({ deficit, scene, kategorieRichtig = true, h
         </div>
 
         {/* Matrizen mit Vergleich (User-Wahl vs. korrekt) */}
-        <Collapsible title={t('scoring.relevanz_matrix_kurz')} defaultOpen={!allCorrect}>
+        <Collapsible title={t('verfahren:relevanz_matrix_kurz')} defaultOpen={!allCorrect}>
           <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', marginBottom: '8px', fontSize: '10px' }}>
             <span style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
               <span style={{ width: '10px', height: '10px', borderRadius: '3px', background: resultColor(relevanzSD ?? 'gering'), display: 'inline-block' }} />
@@ -657,7 +657,7 @@ export default function ScoringFlow({ deficit, scene, kategorieRichtig = true, h
             correctCol={ca.abweichung}
           />
         </Collapsible>
-        <Collapsible title={t('scoring.unfallrisiko_matrix_kurz')} defaultOpen={!allCorrect}>
+        <Collapsible title={t('verfahren:unfallrisiko_matrix_kurz')} defaultOpen={!allCorrect}>
           <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', marginBottom: '8px', fontSize: '10px' }}>
             <span style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
               <span style={{ width: '10px', height: '10px', borderRadius: '3px', background: resultColor(unfallrisiko ?? 'gering'), display: 'inline-block' }} />
@@ -767,7 +767,7 @@ export default function ScoringFlow({ deficit, scene, kategorieRichtig = true, h
             {/* ── Schritt 1: Wichtigkeit ── */}
             <StepCard
               nr={1}
-              title={t('scoring.phase_a')}
+              title={t('verfahren:phase_a')}
               subtitle={`${KRITERIUM_LABELS[deficit.kriteriumId] ?? deficit.kriteriumId} · ${deficit.kontext === 'io' ? 'io' : 'ao'}`}
               isActive={activeStep === 1}
               isCompleted={!!wichtigkeit}
@@ -778,7 +778,7 @@ export default function ScoringFlow({ deficit, scene, kategorieRichtig = true, h
                 {prefillWichtigkeit && (
                   <div style={{ padding: '6px 10px', borderRadius: '6px', background: 'rgba(0,118,189,0.06)', border: '1px solid rgba(0,118,189,0.18)', marginBottom: '10px' }}>
                     <p style={{ fontSize: '11px', color: 'var(--rsi-color-text-muted)', margin: 0 }}>
-                      {t('scoring.gemäss_tabelle', { wert: dimLabel(prefillWichtigkeit, t) })}
+                      {t('verfahren:gemäss_tabelle', { wert: dimLabel(prefillWichtigkeit, t) })}
                     </p>
                   </div>
                 )}
@@ -819,7 +819,7 @@ export default function ScoringFlow({ deficit, scene, kategorieRichtig = true, h
             {/* ── Schritt 2: Abweichung ── */}
             <StepCard
               nr={2}
-              title={t('scoring.phase_b')}
+              title={t('verfahren:phase_b')}
               isActive={activeStep === 2}
               isCompleted={!!abweichung}
               changeLabel={t('scoring.aendern')}
@@ -874,7 +874,7 @@ export default function ScoringFlow({ deficit, scene, kategorieRichtig = true, h
                 }}
               >
                 <span style={{ fontSize: '11px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--rsi-color-text-muted)' }}>
-                  {t('scoring.phase_c')}
+                  {t('verfahren:phase_c')}
                 </span>
                 <span style={{ fontSize: '16px', fontWeight: 900, color: resultColor(relevanzSD) }}>
                   {resultLabel(relevanzSD, t)}
@@ -886,7 +886,7 @@ export default function ScoringFlow({ deficit, scene, kategorieRichtig = true, h
             {/* ── Schritt 3: NACA-Schwere ── */}
             <StepCard
               nr={3}
-              title={t('scoring.phase_d')}
+              title={t('verfahren:phase_d')}
               isActive={activeStep === 3}
               isCompleted={!!nacaSchwere}
               changeLabel={t('scoring.aendern')}
@@ -896,13 +896,13 @@ export default function ScoringFlow({ deficit, scene, kategorieRichtig = true, h
                 {/* bfu-Badge */}
                 <div style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', padding: '2px 8px', borderRadius: '4px', background: 'rgba(184,115,0,0.08)', border: '1px solid rgba(184,115,0,0.3)', marginBottom: '10px' }}>
                   <AlertTriangle size={11} style={{ color: 'var(--rsi-orange)' }} />
-                  <span style={{ fontSize: '10px', fontWeight: 700, color: 'var(--rsi-orange)' }}>{t('scoring.bfu_badge')}</span>
+                  <span style={{ fontSize: '10px', fontWeight: 700, color: 'var(--rsi-orange)' }}>{t('verfahren:bfu_badge')}</span>
                 </div>
 
                 {/* Leitfrage */}
                 <div style={{ padding: '10px 14px', borderRadius: '8px', background: 'rgba(0,64,124,0.06)', border: '1px solid rgba(0,64,124,0.14)', marginBottom: '12px' }}>
                   <p style={{ fontSize: '13px', fontWeight: 700, color: 'var(--rsi-dunkelblau)', lineHeight: 1.4, margin: 0 }}>
-                    {t('scoring.naca_leitfrage')}
+                    {t('verfahren:naca_leitfrage')}
                   </p>
                 </div>
 
@@ -957,7 +957,7 @@ export default function ScoringFlow({ deficit, scene, kategorieRichtig = true, h
                 }}
               >
                 <span style={{ fontSize: '11px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--rsi-color-text-muted)' }}>
-                  {t('scoring.unfallrisiko_titel')}
+                  {t('verfahren:unfallrisiko_titel')}
                 </span>
                 <span style={{ fontSize: '16px', fontWeight: 900, color: resultColor(unfallrisiko) }}>
                   {resultLabel(unfallrisiko, t)}

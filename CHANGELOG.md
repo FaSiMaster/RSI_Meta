@@ -9,6 +9,57 @@ Versionierung nach [Semantic Versioning](https://semver.org/lang/de/).
 
 ## [Unreleased]
 
+### Geändert – Verfahrensbezeichnungen in einer eigenen Datei (v0.16.1)
+
+Zweiter von vier Schritten auf dem Weg zu einem zweiten Land. Die Wörter des
+Beurteilungsverfahrens stehen nicht mehr zwischen Knöpfen und Meldungen,
+sondern in `src/i18n/verfahren.bfu.ts`: die Namen der neun Schritte, die
+Phasen, die Dimensionen, die Beschriftungen beider Matrizen, die NACA-Stufen
+und die Abweichungskategorien – 104 Schlüssel in vier Sprachen. In den
+allgemeinen Sprachdateien bleiben 23 Schlüssel unter `scoring`, und das sind
+genau die, die jedes Verfahren gleich braucht: Weiter, Abbrechen, Punkte
+erhalten, Hinweis genutzt.
+
+Gelesen wird über den i18next-Namensraum `verfahren`. Im Code heisst das
+`t('verfahren:step1Title')`; die Weiche auf ein anderes Verfahren wird später
+diesen Namensraum füllen, ohne dass ein einziger Aufruf sich ändert.
+
+Umgestellt sind alle fünf Leser, nicht nur der Bewertungsfluss:
+`ScoringFlow` (34 Aufrufe), `SceneViewer` (42 – das ist der vollständige
+zweite Ablauf in der Brille), `TopicDashboard` (46), `LernKarte` (5) und
+`abweichungLabels` (3). Bliebe einer zurück, spräche er beim zweiten Land
+weiter Schweizerisch.
+
+Kein Wort hat sich geändert. Nachgewiesen an allen 508 Werten der Blöcke
+`scoring` und `methodik` in vier Sprachen, verglichen gegen den Stand vor dem
+Umzug: null Abweichungen, und die Gegenprobe mit einem eingebauten Fehler
+findet ihn. `scoringEngine.ts` ist unberührt.
+
+Zwei Wächter kommen dazu. `verfahren.test.ts` prüft Sprachparität,
+Vollständigkeit und dass kein verschobener Schlüssel zusätzlich in der alten
+Datei stehen bleibt; er liest die Aufrufe aus dem Quellbaum und meldet jeden,
+der ins Leere zeigt. `e2e/verfahren.spec.ts` prüft dasselbe im Browser, weil
+sich erst zur Laufzeit entscheidet, ob die Registrierung greift – fehlt sie,
+zeigt die Anwendung rohe Schlüssel, und keine Prüfung an den Dateien merkt
+davon etwas. Der Nachweis: Nimmt man den deutschen Namensraum aus der
+Registrierung, fallen genau die vier deutschen Prüfungen.
+
+Der Abkürzungswächter liest die neue Datei mit. Ohne diese Erweiterung hätte
+er die bfu-Nennungen aus dem Blick verloren, die zu prüfen sein Zweck ist;
+belegt an einer eingebauten undefinierten Abkürzung, die er meldet – mit der
+richtigen Fundstelle, nachdem er zuerst auf die falsche Datei zeigte.
+
+**Zwei Befunde, nicht in diesem Schritt geändert.** Die Quellenzeile der
+Methodik-Karte steht hartkodiert im JSX von `TopicDashboard` und ist deshalb
+in allen vier Sprachen deutsch; sie nennt den «Fachkurs FK RSI», während der
+Sprachschlüssel `quellen` weiterhin vom «TBA-Fachkurs» spricht. Die beiden
+Angaben derselben Quelle sind beim Rückbau der Behördenbezüge (v0.12.0)
+auseinandergelaufen, und der Wächter über die Behördenbezüge kennt das Kürzel
+TBA nicht. Dazu: `assessment` (16 Schlüssel) und `result` (6) werden nirgends
+im Code aufgerufen – 88 Einträge über vier Sprachen, die niemand liest.
+
+---
+
 ### Hinzugefügt – Leseregel Land (v0.16.0)
 
 Erster von vier Schritten, die das Werkzeug auf ein zweites Land vorbereiten.

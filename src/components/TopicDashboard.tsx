@@ -257,10 +257,10 @@ export default function TopicDashboard({ username, score, kursId, onSelectTopic 
             </div>
             <div>
               <div style={{ fontSize: '15px', fontWeight: 700, color: 'var(--rsi-color-text)' }}>
-                {t('methodik.title')}
+                {t('verfahren:methodik_title')}
               </div>
               <div style={{ fontSize: '12px', color: 'var(--rsi-color-text-muted)' }}>
-                {t('methodik.subtitle')}
+                {t('verfahren:methodik_subtitle')}
               </div>
             </div>
           </div>
@@ -290,101 +290,101 @@ export default function TopicDashboard({ username, score, kursId, onSelectTopic 
                   {/* Relevanz-Matrix */}
                   <div>
                     <h4 style={{ fontSize: '12px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.1em', color: 'var(--rsi-color-text-muted)', marginBottom: '10px' }}>
-                      {t('methodik.relevanz_title')}
+                      {t('verfahren:methodik_relevanz_title')}
                     </h4>
                     <p style={{ fontSize: '11px', color: 'var(--rsi-color-text-disabled)', marginBottom: '10px' }}>
-                      {t('methodik.relevanz_desc')}
+                      {t('verfahren:methodik_relevanz_desc')}
                     </p>
                     <table style={{ width: '100%', fontSize: '11px', borderCollapse: 'collapse' }}>
                       <thead>
                         <tr>
-                          <th style={{ ...thStyle(), textAlign: 'left' }}>{t('methodik.wichtigkeit')}</th>
-                          <th style={thStyle()}>{t('scoring.dim_klein')}</th>
-                          <th style={thStyle()}>{t('scoring.dim_mittel')}</th>
-                          <th style={thStyle()}>{t('scoring.dim_gross')}</th>
+                          <th style={{ ...thStyle(), textAlign: 'left' }}>{t('verfahren:methodik_wichtigkeit')}</th>
+                          <th style={thStyle()}>{t('verfahren:dim_klein')}</th>
+                          <th style={thStyle()}>{t('verfahren:dim_mittel')}</th>
+                          <th style={thStyle()}>{t('verfahren:dim_gross')}</th>
                         </tr>
                       </thead>
                       <tbody>
                         <tr>
-                          <td style={{ ...tdStyle(), fontWeight: 600 }}>{t('scoring.dim_gross')}</td>
-                          <td style={tdCell('gering')}>{t('scoring.result_gering')}</td>
-                          <td style={tdCell('mittel')}>{t('scoring.result_mittel')}</td>
-                          <td style={tdCell('hoch')}>{t('scoring.result_hoch')}</td>
+                          <td style={{ ...tdStyle(), fontWeight: 600 }}>{t('verfahren:dim_gross')}</td>
+                          <td style={tdCell('gering')}>{t('verfahren:result_gering')}</td>
+                          <td style={tdCell('mittel')}>{t('verfahren:result_mittel')}</td>
+                          <td style={tdCell('hoch')}>{t('verfahren:result_hoch')}</td>
                         </tr>
                         <tr>
-                          <td style={{ ...tdStyle(), fontWeight: 600 }}>{t('scoring.dim_mittel')}</td>
-                          <td style={tdCell('gering')}>{t('scoring.result_gering')}</td>
-                          <td style={tdCell('mittel')}>{t('scoring.result_mittel')}</td>
-                          <td style={tdCell('hoch')}>{t('scoring.result_hoch')}</td>
+                          <td style={{ ...tdStyle(), fontWeight: 600 }}>{t('verfahren:dim_mittel')}</td>
+                          <td style={tdCell('gering')}>{t('verfahren:result_gering')}</td>
+                          <td style={tdCell('mittel')}>{t('verfahren:result_mittel')}</td>
+                          <td style={tdCell('hoch')}>{t('verfahren:result_hoch')}</td>
                         </tr>
                         <tr>
-                          <td style={{ ...tdStyle(), fontWeight: 600 }}>{t('scoring.dim_klein')}</td>
-                          <td style={tdCell('gering')}>{t('scoring.result_gering')}</td>
-                          <td style={tdCell('gering')}>{t('scoring.result_gering')}</td>
-                          <td style={tdCell('mittel')}>{t('scoring.result_mittel')}</td>
+                          <td style={{ ...tdStyle(), fontWeight: 600 }}>{t('verfahren:dim_klein')}</td>
+                          <td style={tdCell('gering')}>{t('verfahren:result_gering')}</td>
+                          <td style={tdCell('gering')}>{t('verfahren:result_gering')}</td>
+                          <td style={tdCell('mittel')}>{t('verfahren:result_mittel')}</td>
                         </tr>
                       </tbody>
                     </table>
                     <div style={{ fontSize: '9px', color: 'var(--rsi-color-text-disabled)', marginTop: '6px' }}>
-                      {t('methodik.achse')}: {t('methodik.zeile_wichtigkeit')}, {t('methodik.spalte_abweichung')}
+                      {t('verfahren:methodik_achse')}: {t('verfahren:methodik_zeile_wichtigkeit')}, {t('verfahren:methodik_spalte_abweichung')}
                     </div>
                   </div>
 
                   {/* Unfallrisiko-Matrix */}
                   <div>
                     <h4 style={{ fontSize: '12px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.1em', color: 'var(--rsi-color-text-muted)', marginBottom: '10px' }}>
-                      {t('methodik.risiko_title')}
+                      {t('verfahren:methodik_risiko_title')}
                     </h4>
                     <p style={{ fontSize: '11px', color: 'var(--rsi-color-text-disabled)', marginBottom: '10px' }}>
-                      {t('methodik.risiko_desc')}
+                      {t('verfahren:methodik_risiko_desc')}
                     </p>
                     <table style={{ width: '100%', fontSize: '11px', borderCollapse: 'collapse' }}>
                       <thead>
                         <tr>
-                          <th style={{ ...thStyle(), textAlign: 'left' }}>{t('methodik.relevanz_sd')}</th>
-                          <th style={thStyle()}>{t('scoring.schwere_leicht')}</th>
-                          <th style={thStyle()}>{t('scoring.schwere_mittel')}</th>
-                          <th style={thStyle()}>{t('scoring.schwere_schwer')}</th>
+                          <th style={{ ...thStyle(), textAlign: 'left' }}>{t('verfahren:methodik_relevanz_sd')}</th>
+                          <th style={thStyle()}>{t('verfahren:schwere_leicht')}</th>
+                          <th style={thStyle()}>{t('verfahren:schwere_mittel')}</th>
+                          <th style={thStyle()}>{t('verfahren:schwere_schwer')}</th>
                         </tr>
                       </thead>
                       <tbody>
                         <tr>
-                          <td style={{ ...tdStyle(), fontWeight: 600 }}>{t('scoring.result_hoch')}</td>
-                          <td style={tdCell('mittel')}>{t('scoring.result_mittel')}</td>
-                          <td style={tdCell('hoch')}>{t('scoring.result_hoch')}</td>
-                          <td style={tdCell('hoch')}>{t('scoring.result_hoch')}</td>
+                          <td style={{ ...tdStyle(), fontWeight: 600 }}>{t('verfahren:result_hoch')}</td>
+                          <td style={tdCell('mittel')}>{t('verfahren:result_mittel')}</td>
+                          <td style={tdCell('hoch')}>{t('verfahren:result_hoch')}</td>
+                          <td style={tdCell('hoch')}>{t('verfahren:result_hoch')}</td>
                         </tr>
                         <tr>
-                          <td style={{ ...tdStyle(), fontWeight: 600 }}>{t('scoring.result_mittel')}</td>
-                          <td style={tdCell('gering')}>{t('scoring.result_gering')}</td>
-                          <td style={tdCell('mittel')}>{t('scoring.result_mittel')}</td>
-                          <td style={tdCell('hoch')}>{t('scoring.result_hoch')}</td>
+                          <td style={{ ...tdStyle(), fontWeight: 600 }}>{t('verfahren:result_mittel')}</td>
+                          <td style={tdCell('gering')}>{t('verfahren:result_gering')}</td>
+                          <td style={tdCell('mittel')}>{t('verfahren:result_mittel')}</td>
+                          <td style={tdCell('hoch')}>{t('verfahren:result_hoch')}</td>
                         </tr>
                         <tr>
-                          <td style={{ ...tdStyle(), fontWeight: 600 }}>{t('scoring.result_gering')}</td>
-                          <td style={tdCell('gering')}>{t('scoring.result_gering')}</td>
-                          <td style={tdCell('gering')}>{t('scoring.result_gering')}</td>
-                          <td style={tdCell('mittel')}>{t('scoring.result_mittel')}</td>
+                          <td style={{ ...tdStyle(), fontWeight: 600 }}>{t('verfahren:result_gering')}</td>
+                          <td style={tdCell('gering')}>{t('verfahren:result_gering')}</td>
+                          <td style={tdCell('gering')}>{t('verfahren:result_gering')}</td>
+                          <td style={tdCell('mittel')}>{t('verfahren:result_mittel')}</td>
                         </tr>
                       </tbody>
                     </table>
                     <div style={{ fontSize: '9px', color: 'var(--rsi-color-text-disabled)', marginTop: '6px' }}>
-                      {t('methodik.achse')}: {t('methodik.zeile_relevanz')}, {t('methodik.spalte_schwere')}
+                      {t('verfahren:methodik_achse')}: {t('verfahren:methodik_zeile_relevanz')}, {t('verfahren:methodik_spalte_schwere')}
                     </div>
                   </div>
 
                   {/* NACA-Skala */}
                   <div>
                     <h4 style={{ fontSize: '12px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.1em', color: 'var(--rsi-color-text-muted)', marginBottom: '10px' }}>
-                      {t('methodik.naca_title')}
+                      {t('verfahren:methodik_naca_title')}
                     </h4>
                     <p style={{ fontSize: '11px', color: 'var(--rsi-color-text-disabled)', marginBottom: '10px' }}>
-                      {t('methodik.naca_desc')}
+                      {t('verfahren:methodik_naca_desc')}
                     </p>
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-                      <NacaBar label={t('scoring.schwere_leicht')} range="NACA 0–1" color="var(--rsi-gruen)" width="33%" />
-                      <NacaBar label={t('scoring.schwere_mittel')} range="NACA 2–3" color="var(--rsi-orange)" width="50%" />
-                      <NacaBar label={t('scoring.schwere_schwer')} range="NACA 4–7" color="var(--rsi-rot)" width="100%" />
+                      <NacaBar label={t('verfahren:schwere_leicht')} range="NACA 0–1" color="var(--rsi-gruen)" width="33%" />
+                      <NacaBar label={t('verfahren:schwere_mittel')} range="NACA 2–3" color="var(--rsi-orange)" width="50%" />
+                      <NacaBar label={t('verfahren:schwere_schwer')} range="NACA 4–7" color="var(--rsi-rot)" width="100%" />
                     </div>
                   </div>
                 </div>
@@ -397,7 +397,7 @@ export default function TopicDashboard({ username, score, kursId, onSelectTopic 
                   fontSize: '11px', color: 'var(--rsi-color-text-muted)', lineHeight: 1.6,
                 }}>
                   <div style={{ fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.1em', whiteSpace: 'nowrap', minWidth: '80px' }}>
-                    {t('methodik.quellen')}
+                    {t('verfahren:methodik_quellen')}
                   </div>
                   <div style={{ display: 'flex', flexWrap: 'wrap', gap: '4px 16px' }}>
                     <span>Fachkurs FK RSI (V 16.09.2020)</span>

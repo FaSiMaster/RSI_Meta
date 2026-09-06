@@ -20,11 +20,11 @@ interface Props {
 // Labels via i18n (i18n-Sweep v0.9.8): vorher hartcodiert Deutsch
 type TFn = (k: string) => string
 function dimLabel(v: RSIDimension, t: TFn): string {
-  const map: Record<RSIDimension, string> = { gross: t('scoring.dim_gross'), mittel: t('scoring.dim_mittel'), klein: t('scoring.dim_klein') }
+  const map: Record<RSIDimension, string> = { gross: t('verfahren:dim_gross'), mittel: t('verfahren:dim_mittel'), klein: t('verfahren:dim_klein') }
   return map[v]
 }
 function nacaLabel(v: NACADimension, t: TFn): string {
-  const map: Record<NACADimension, string> = { leicht: t('scoring.schwere_leicht'), mittel: t('scoring.schwere_mittel'), schwer: t('scoring.schwere_schwer') }
+  const map: Record<NACADimension, string> = { leicht: t('verfahren:schwere_leicht'), mittel: t('verfahren:schwere_mittel'), schwer: t('verfahren:schwere_schwer') }
   return map[v]
 }
 
@@ -36,9 +36,9 @@ export default function LernKarte({ deficit, kategorieRichtig, wichtigkeitKorrek
   // Review R-25: Soll-NACA-Wert (0-7) sichtbar machen — die Musterlösung
   // unterscheidet z.B. NACA 4 von NACA 7, die Gruppe «Schwer» allein nicht.
   const feedbackRows: { label: string; korrekt: boolean; korrekterWert: string }[] = [
-    { label: t('scoring.phase_a'), korrekt: wichtigkeitKorrekt, korrekterWert: dimLabel(ca.wichtigkeit, t) },
-    { label: t('scoring.phase_b'), korrekt: abweichungKorrekt,  korrekterWert: dimLabel(ca.abweichung, t) },
-    { label: t('scoring.phase_d'), korrekt: nacaKorrekt,        korrekterWert: `${nacaLabel(ca.unfallschwere, t)} (NACA ${ca.naca})` },
+    { label: t('verfahren:phase_a'), korrekt: wichtigkeitKorrekt, korrekterWert: dimLabel(ca.wichtigkeit, t) },
+    { label: t('verfahren:phase_b'), korrekt: abweichungKorrekt,  korrekterWert: dimLabel(ca.abweichung, t) },
+    { label: t('verfahren:phase_d'), korrekt: nacaKorrekt,        korrekterWert: `${nacaLabel(ca.unfallschwere, t)} (NACA ${ca.naca})` },
   ]
 
   const erklaerung = deficit.erklaerungI18n ? ml(deficit.erklaerungI18n, lang).trim() : ''

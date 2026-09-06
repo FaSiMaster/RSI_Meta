@@ -13,7 +13,7 @@ export interface AbweichungI18nOption {
 }
 
 export const ABWEICHUNG_I18N: AbweichungI18nOption[] = [
-  { wert: 'klein',  labelKey: 'scoring.abw_klein',  beschreibungKey: 'scoring.abw_klein_sub'  },
-  { wert: 'mittel', labelKey: 'scoring.abw_mittel', beschreibungKey: 'scoring.abw_mittel_sub' },
-  { wert: 'gross',  labelKey: 'scoring.abw_gross',  beschreibungKey: 'scoring.abw_gross_sub'  },
+  { wert: 'klein',  labelKey: 'verfahren:abw_klein',  beschreibungKey: 'verfahren:abw_klein_sub'  },
+  { wert: 'mittel', labelKey: 'verfahren:abw_mittel', beschreibungKey: 'verfahren:abw_mittel_sub' },
+  { wert: 'gross',  labelKey: 'verfahren:abw_gross',  beschreibungKey: 'verfahren:abw_gross_sub'  },
 ]
