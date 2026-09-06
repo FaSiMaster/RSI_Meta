@@ -63,6 +63,58 @@ schriftliche Zustimmung braucht.
 Im Impressum wechselten «Tool» und «Werkzeug» für dieselbe Sache; der Text
 führt neu durchgehend «Werkzeug».
 
+### Behoben — ISSI war falsch aufgelöst (v0.14.0)
+
+«ISSI» stand an fünf Stellen für «In-Service Safety Inspection». Das ist
+falsch. ISSI heisst **Infrastruktur-Sicherheitsinstrumente** und bezeichnet
+den Oberbegriff für die Instrumente, die 2013 in Umsetzung von Artikel 6a SVG
+geschaffen wurden; die Road Safety Inspection ist eines davon, daneben stehen
+Audit, Folgeabschätzung und Netzeinstufung. Belegt im ASTRA-Forschungsbericht
+1730 «Velo-Infrastruktur-Sicherheitsinstrumente VISSI» (September 2022, S. 7).
+Die Abkürzung fehlte zudem in beiden Glossaren.
+
+**Zweiter Sachfehler im selben Satz:** Das Impressum nannte «VSS 41 722» als
+einschlägige Norm. Diese Nummer gibt es nicht — im Normenkorpus nicht
+auffindbar. Das Audit ist SN 641 722:2017 «Strassenverkehrssicherheit –
+Audit». Auch der Titel von SN 641 723 war falsch wiedergegeben; er lautet
+«Strassenverkehrssicherheit; Inspektion».
+
+Korrigiert im Impressum und in den vier Sprachfassungen des Einstiegstextes.
+
+### Geändert — Abkürzungsbestand vereinheitlicht
+
+Der systematische Abgleich beider Glossare förderte fünf weitere Befunde
+zutage: `FK RSI`, `PIN` und `SHA-256` waren in `public/glossar.html` und
+`GLOSSAR.md` verschieden aufgelöst; `DSGVO` und `UI / UX` standen nur in der
+einen Fassung, `CI`, `DSG` und `SSV` nur in der anderen. Nicht definiert waren
+`ISSI`, `URG`, `EDÖB`, `IP`, `SR` und `SVG` — Letzteres mit dem Hinweis, dass
+es hier das Strassenverkehrsgesetz meint und nicht das Bildformat.
+
+Beide Glossare führen neu dieselben 29 Kürzel mit derselben Auflösung. Die
+Kontextspalte darf abweichen, sie ist Erläuterung und nicht Definition.
+
+Im französischen und italienischen Text hiess die Beratungsstelle für
+Unfallverhütung «bfu»; sie heisst dort bpa und upi.
+
+### Hinzugefügt — Wächter über die Abkürzungen
+
+`src/test/abkuerzungen.test.ts`, zehn Prüfungen: Deckungsgleichheit beider
+Glossare, Definiertheit jeder verwendeten Abkürzung, Schreibweise der
+Auflösung, Landeskürzel der bfu je Sprache, Gleichheit der Kürzel über die
+vier Sprachen, dazu eine Liste bekannter Falschauflösungen.
+
+Ein Wächter kann eine unbekannte Falschauflösung nicht erkennen — dazu müsste
+er wissen, was richtig ist. Er verhindert, dass eine gefundene wiederkehrt.
+Das steht so im Kopf der Datei.
+
+**Zwei eigene Fehler beim Bauen:** Die erste Fassung erkannte Auflösungen über
+das Muster «Langform (KÜRZEL)» und lieferte zehn Fehlbefunde, weil eine
+Klammer meist keine Auflösung ist. Und `` bricht in JavaScript an
+akzentuierten Buchstaben, weshalb «RÉUSSI» den Scheinbefund «USSI» ergab;
+die Wortgrenzen laufen neu über Unicode-Eigenschaften.
+
+Gegen sechs eingebaute Fehler geprüft, alle sechs gefunden.
+
 ### Hinzugefügt — Nutzungsbedingungen (v0.13.0)
 
 Neue Seite `public/nutzungsbedingungen.html`, verlinkt im Footer der

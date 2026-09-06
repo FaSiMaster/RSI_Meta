@@ -13,24 +13,32 @@ Schulungsunterlagen: Wo dieselbe Sache gemeint ist, steht dieselbe Bezeichnung.
 | Kürzel | Bedeutung | Kontext |
 |---|---|---|
 | **RSI** | Road Safety Inspection | Strasseninspektion nach normativem 9-Schritte-Verfahren |
+| **ISSI** | Infrastruktur-Sicherheitsinstrumente | Oberbegriff für die 2013 in Umsetzung von Art. 6a SVG geschaffenen Instrumente; die RSI ist eines davon, daneben Audit, Folgeabschätzung und Netzeinstufung |
+| **FK RSI** | Fachkurs Road Safety Inspection | Schulungsreferenz V 16.09.2020, Herausgeber TBA |
 | **TBA** | Tiefbauamt | Herausgeber des Fachkurses FK RSI (Quellenangabe) |
-| **FK RSI** | Fachkurs Road Safety Inspection | Schulungsreferenz V 16.09.2020 |
-| **bfu** | Beratungsstelle für Unfallverhütung | Schweizer Kompetenzstelle für Unfallprävention |
+| **bfu** | Beratungsstelle für Unfallverhütung | Schweizer Kompetenzstelle für Unfallprävention; französisch bpa, italienisch upi |
 | **ASTRA** | Bundesamt für Strassen | Oberbehörde für Nationalstrassen und Strassenverkehr |
 | **NACA** | National Advisory Committee for Aeronautics | Skala 0–7 zur Einstufung der Unfallschwere, angewendet nach bfu-Bericht 73 |
 | **SD** | Sicherheitsdefizit | Einzelne Abweichung von einer normativen Sicherheitsanforderung |
 | **io / ao** | innerorts / ausserorts | Kontext der Wichtigkeits-Bewertung |
 | **VSS** | Verband der Strassen- und Verkehrsfachleute | Schweizer Normenherausgeber (VSS 40 xxx) |
 | **SN** | Schweizer Norm | Etwa SN 640 xxx (Strassenbau), SN 641 xxx (Verkehr) |
-| **SSV** | Signalisationsverordnung | Bundesrecht zu Signalen und Markierungen |
-| **DSG** | Datenschutzgesetz | Revidiert in Kraft seit 2023; die EU-DSGVO gilt hier nicht unmittelbar |
+| **SVG** | Strassenverkehrsgesetz | SR 741.01; nicht zu verwechseln mit dem Bildformat Scalable Vector Graphics |
+| **SSV** | Signalisationsverordnung | SR 741.21, Bundesrecht zu Signalen und Markierungen |
+| **SR** | Systematische Rechtssammlung | Nummerierung des Bundesrechts, etwa SR 741.01 |
+| **URG** | Urheberrechtsgesetz | SR 231.1, Bundesgesetz über das Urheberrecht und verwandte Schutzrechte |
+| **DSG** | Datenschutzgesetz | SR 235.1, totalrevidiert in Kraft seit 2023 |
+| **DSGVO** | Datenschutz-Grundverordnung | EU-Verordnung; sie gilt in der Schweiz nicht unmittelbar, massgebend ist das DSG |
+| **EDÖB** | Eidgenössischer Datenschutz- und Öffentlichkeitsbeauftragter | Aufsichtsbehörde des Bundes für den Datenschutz |
+| **IP** | Internet Protocol | IP-Adresse als Kennung eines Geräts im Netz |
 | **WCAG** | Web Content Accessibility Guidelines | W3C-Richtlinien zur Barrierefreiheit |
 | **WebXR** | Web Extended Reality | Browser-Schnittstelle für VR und AR |
 | **PWA** | Progressive Web App | Installierbare, offlinefähige Web-Anwendung |
 | **CI** | Continuous Integration | Automatisierte Test- und Build-Kette |
-| **PIN** | Persönliche Identifikationsnummer | Zugang zum Administrationsbereich |
+| **PIN** | Persönliche Identifikationsnummer | 4-stelliger Zugang zum Administrationsbereich |
+| **UI / UX** | User Interface / User Experience | Benutzeroberfläche / Nutzererfahrung |
 | **RLS** | Row Level Security | Zugriffsrechte auf Zeilenebene in Supabase |
-| **SHA-256** | Secure Hash Algorithm | Einwegfunktion zur Pseudonymisierung |
+| **SHA-256** | Secure Hash Algorithm 256 Bit | Einwegfunktion zur Pseudonymisierung |
 | **HDRI** | High Dynamic Range Imaging | Panorama-Bildformat mit hoher Dynamik |
 | **UV** | UV-Mapping | Zweidimensionale Texturkoordinaten auf 3D-Oberflächen |
 
