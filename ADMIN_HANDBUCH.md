@@ -1,6 +1,6 @@
 # Admin-Handbuch – RSI VR Tool
 
-> Für die Kursleitung. Stand v0.16.3.
+> Für die Kursleitung. Stand v0.18.0.
 > Voraussetzung: Admin-PIN als Supabase-Secret gesetzt, Edge Functions
 > `admin-auth`, `admin-write` und `kurs-auth` deployt.
 
@@ -245,9 +245,17 @@ sie mit dem deutschen Text gefüllt.
 
 ### 5.1 Neue Szene
 
-Unterthema wählen, **Neue Szene**, dann Titel, Kontextbeschreibung, Merkmale zu
-Funktionalität, Geschwindigkeit und Geometrie sowie wahlweise einen
-Trainerhinweis erfassen, der im Einstieg gelb hinterlegt erscheint. Nach dem
+Unterthema wählen, **Neue Szene**, dann Titel, Kontextbeschreibung,
+Strassenmerkmale sowie wahlweise einen Trainerhinweis erfassen, der im Einstieg
+gelb hinterlegt erscheint.
+
+Die Merkmale lassen sich mit **Katalog laden** in einem Zug anlegen: 21 Felder
+in drei Gruppen – Funktionalität, Verkehr, Verkehrsteilnehmende. Jedes bringt
+seine Wertliste mit; nur der durchschnittliche tägliche Verkehr hat ein
+Eingabefeld statt eines Auswahlfelds. Merkmale ohne Wert erscheinen im Einstieg
+nicht und dürfen stehen bleiben. Wer ein Merkmal braucht, das der Katalog nicht
+führt, trägt es mit **Merkmal hinzufügen** frei ein; solche Einträge haben kein
+Auswahlfeld und keine Übersetzung. Nach dem
 Speichern trägt die Szene die Kennung `SZ_YYYY_NNN`; das Panorama kommt separat
 über den Bild-Upload dazu.
 
@@ -418,6 +426,14 @@ verschmelzen.** Importiert wird nur aus vertrauenswürdiger Quelle.
 
 Sinnvoll ist der Export vor grösseren Änderungen, beim Transfer zwischen
 Entwicklungs- und Produktivstand und für die Archivierung abgeschlossener Kurse.
+
+Ein Import ist der einzige Weg, viele Datensätze auf einmal einzuspielen, und
+der einzige, eine Szene über eine Landesgrenze zu bewegen. Er ergänzt und
+ersetzt, aber er löscht nicht: Ein Datensatz, der in der Datei fehlt, bleibt
+bestehen. Wer etwas entfernen will, löscht es in der Oberfläche.
+
+**Zählen Sie nach.** Die Meldung nennt die Zahl der geladenen Datensätze und
+die der abgewiesenen Szenen. Ob der Inhalt angekommen ist, sagt sie nicht.
 
 ---
 

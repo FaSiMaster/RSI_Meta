@@ -15,7 +15,7 @@
 
 | Schicht | Technologie | Version |
 |---|---|---|
-| Version | **v0.18.0** (2026-09-06) | Normbezug aus SN 641 700 Tab. 2, Strassenmerkmale, Lernkarte, vier Sprachen |
+| Version | **v0.18.0** (2026-09-06) | Strassenmerkmale, Lernkarte, vier Sprachen, Normbezug aus SN 641 700 Tab. 2 |
 | Framework | React + Vite + TypeScript | React 18.3, **Vite 7.3**, TS strict |
 | Styling | Tailwind CSS (`@tailwindcss/vite`) | v4.2 |
 | Animation | Framer Motion (motion/react) | v12 |
@@ -47,7 +47,18 @@ RSI_Meta/
 ├── ADMIN_HANDBUCH.md · BENUTZERHANDBUCH.md
 ├── BACKUP.md · BROWSER.md · OFFLINE.md · META_STORE_CHECKLIST.md
 ├── AUDIT_REPORT.md · REVIEW_CODE.md · REVIEW_SECURITY.md
-├── docs/VR_SMOKE_REPORT.md         # Headset-Testprotokolle (A–J)
+├── docs/
+│   ├── VR_SMOKE_REPORT.md          # Headset-Testprotokolle (A–J)
+│   ├── NORMREFERENZEN_PRUEFUNG.md  # Normnummern gegen Verzeichnis und Bestand
+│   └── METADATEN.md
+├── daten/                          # Erzeugte Datensätze, nicht gebündelt
+│   ├── entscheide_2026_09_06.py    # Was entschieden wurde, mit Grund
+│   ├── sprachen_2026_09_06.py      # fr, it, en zu allem Erzeugten
+│   ├── merkmale_lesen.py           # Strassenmerkmale aus der Geodatenbank
+│   ├── normlogik.py                # liest scoringEngine.ts und rechnet damit
+│   ├── anlegen.py · pruefe.py · pruefe_die_pruefung.py
+│   ├── einlesen.mjs                # Einfuhr über die Oberfläche, gesteuert
+│   └── bestand/                    # Kopie des Supabase-Stands
 ├── package.json · vite.config.ts · tsconfig.json · index.html
 ├── .github/workflows/              # CI + Supabase-Keep-Alive
 ├── public/
@@ -170,6 +181,35 @@ Die RSI-Beurteilung folgt exakt dem TBA-Fachkurs FK RSI (V 16.09.2020):
 ### WICHTIGKEIT_TABLE
 
 58 Kriterien aus dem TBA-Fachkurs FK RSI, je mit io- und ao-Wert (RSIDimension | ''). Gespeichert in `src/data/scoringEngine.ts`. Jede Änderung muss gegen den Fachkurs FK RSI V 16.09.2020 verifiziert werden.
+
+### Normbezug (seit v0.18.0)
+
+**Quelle der Zuordnung:** SN 641 700:2022 «Strassenverkehrssicherheit;
+Grundnorm», Anhang G, Ziff. 16, Tabelle 2 «Thematische Zuordnung der
+sicherheitsrelevanten Normen», S. 11–14. Die Norm ordnet dort jedem
+Sicherheitskriterium ihre Normen zu und sagt selbst, die Liste sei nicht
+abschliessend. `src/data/regelwerkKatalog.ts` folgt ihr: 84 Einträge, Titel aus
+der Tabelle, Ausgabejahr aus dem Normenbestand des Projekts `vss_Normen`.
+
+**Der Normbezug eines Defizits kommt aus drei Quellen**, in dieser Reihenfolge:
+was der Inspektionsbericht im Text nennt, was Tabelle 2 dem Sicherheitskriterium
+zuordnet, und — nur wo die Liste des Kriteriums vierzehn oder acht Normen
+umfasst — eine Auswahl je Einzelfall. Die dritte ist eine Schlussfolgerung und
+in `daten/entscheide_2026_09_06.py` als solche gekennzeichnet.
+
+**Zwei Fallen, beide belegt:**
+
+- **«VSS 41 723» gibt es nicht.** Das Gesamt-Normenverzeichnis VSS 41 001,
+  Ausgabe 2024-10, führt die Inspektion als SN 641 723:2016 und das Audit als
+  SN 641 722:2017; umgenummert sind nur VSS 41 721 und VSS 41 725. Wer die
+  Nummer ändert, braucht einen Beleg, keine Analogie.
+- **Das Feld `gueltigkeit` des Normenbestands taugt nicht als Massstab.** Es
+  steht bei der geltenden VSS 40 241:2019 auf «veraltet» und ist nur bei 1536
+  von 3882 Einträgen gesetzt.
+
+Der Wächter `src/test/normnummern.test.ts` hält jede im Quellbaum verwendete
+Nummer gegen den Bestand. Vollständige Gegenüberstellung:
+`docs/NORMREFERENZEN_PRUEFUNG.md`.
 
 ---
 

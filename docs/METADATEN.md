@@ -1,6 +1,6 @@
 # Metadaten – RSI VR Tool
 
-> Stand v0.16.3, 6. September 2026.
+> Stand v0.18.0, 6. September 2026.
 
 Alle Datensätze, ihre Felder und ihre Ablage. Massgebend ist der Quelltext:
 `src/data/appData.ts` für Themen, Szenen, Defizite, Kurse und Ergebnisse,
@@ -68,11 +68,32 @@ Untergeordnete Themen tragen bewusst kein `country`. Ihr Land liefert
 | `startblick` | `{theta, phi}` \| null | nein | Blickrichtung beim Start, Grad |
 | `perspektiven` | Perspektive[] | nein | weitere Standorte |
 | `vorschauBild1`, `vorschauBild2` | string \| null | nein | `panorama` übernimmt das Panoramabild |
-| `strassenmerkmale` | StrassenMerkmal[] | nein | Angaben zur Strasse, mehrsprachig |
+| `strassenmerkmale` | StrassenMerkmal[] | nein | Angaben zur Strasse, mehrsprachig; siehe Ziff. 3.1 |
 | `isActive` | boolean | ja | `false` blendet die Szene aus |
 | `createdAt` | number | nein | Anlage |
 | `bestandenKriterium` | Objekt \| null | nein | Abweichung vom Standard je Szene |
 | `country` | LandCode | nein | Land; fehlt es, gilt CH |
+
+### 3.1 Strassenmerkmal (`StrassenMerkmal`)
+
+| Feld | Typ | Pflicht | Beschreibung |
+|---|---|---|---|
+| `id` | string | nein | Kennung aus `STRASSENMERKMALE_KATALOG`; fehlt sie, ist das Merkmal frei eingetragen |
+| `labelI18n` | MultiLang | ja | Bezeichnung; bei Katalogmerkmalen die des Katalogs |
+| `wertI18n` | MultiLang | ja | Wert; muss bei Katalogmerkmalen mit Wertliste in dieser Liste stehen |
+
+Der Katalog in `src/data/strassenmerkmale.ts` führt 21 Merkmale in drei Gruppen:
+Funktionalität, Verkehr und Verkehrsteilnehmende. Ein Katalogmerkmal erscheint
+im Administrationsbereich als Auswahlfeld; ein Wert, der in keiner Option steht,
+wäre dort nicht darstellbar und ginge beim nächsten Speichern verloren. Einzige
+Ausnahme ist der durchschnittliche tägliche Verkehr – er führt keine Wertliste
+und bekommt ein Eingabefeld.
+
+Die Merkmale der dreizehn Szenen vom 6. September 2026 stammen aus der
+Perimeterebene der RSI-Geodatenbank, die Domänencodes aufgelöst über die
+Codeliste des Auswertungsprojekts. Sechs Codes kommen in keinem Portalexport mit
+Klartext vor; die betroffenen 20 Werte bleiben leer statt geraten. Der Weg ist in
+`daten/LIESMICH.md` beschrieben.
 
 Eine Szene gehört in den Themenbereich ihres eigenen Landes. Der Import weist
 Szenen ab, die dagegen verstossen; die Oberfläche bietet kein Verschieben an.
@@ -97,7 +118,7 @@ Szenen ab, die dagegen verstossen; die Oberfläche bietet kein Verschieben an.
 | `isPflicht` | boolean | ja | zählt für das Bestehen |
 | `isBooster` | boolean | ja | prozentualer Zuschlag |
 | `boosterBonusProzent` | 10 \| 20 | nein | Höhe des Zuschlags |
-| `normRefs` | string[] | ja | Normbezüge, etwa `VSS 41 723` |
+| `normRefs` | string[] | ja | Normbezüge als «Nummer — Titel», etwa `SN 641 723 — Strassenverkehrssicherheit; Inspektion (RSI)` |
 | `kategorie` | DefizitKategorie | nein | eine von sieben Kategorien |
 | `verortung` | DefizitVerortung \| null | nein | Lage im Haupt-Panorama |
 | `verortungen` | Record<string, …> | nein | Lage je Perspektive |

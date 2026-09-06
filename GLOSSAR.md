@@ -1,6 +1,6 @@
 # Glossar und Abkürzungsverzeichnis – RSI VR Tool
 
-> Stand v0.16.3.
+> Stand v0.18.0.
 
 Fachbegriffe und Abkürzungen der Strassenverkehrssicherheit in der Bedeutung,
 die sie im RSI VR Tool haben. Verbindlich für Oberfläche, Handbücher und
@@ -42,6 +42,11 @@ Schulungsunterlagen: Wo dieselbe Sache gemeint ist, steht dieselbe Bezeichnung.
 | **HDRI** | High Dynamic Range Imaging | Panorama-Bildformat mit hoher Dynamik |
 | **UV** | UV-Mapping | Zweidimensionale Texturkoordinaten auf 3D-Oberflächen |
 | **ISO** | Internationale Organisation für Normung | Herausgeberin von ISO 3166-1, dem Verzeichnis der Ländercodes |
+| **DTV** | Durchschnittlicher täglicher Verkehr | Fahrzeuge in 24 Stunden; Strassenmerkmal aus der Perimeterebene |
+| **LOS** | Level of Service | Verkehrsqualitätsstufe A bis F; Strassenmerkmal |
+| **HVS / RVS** | Hauptverkehrsstrasse / Verbindungsstrasse | Klassierung im Strassennetz; Merkmal «Strassenklassierung» |
+| **LSA** | Lichtsignalanlage | Strassenmerkmal; umgangssprachlich Ampel |
+| **GNP** | Geometrisches Normalprofil | Gegenstand von VSS 40 200 bis 40 202 |
 
 ---
 
@@ -201,6 +206,41 @@ Einstufung nach dem erreichten Prozentwert: unter 60 % ein Stern, von 60 bis
 Eine Szene gilt als bestanden, wenn alle Pflichtdefizite gefunden sind und
 mindestens 60 % der Punkte erreicht wurden. Der Wert gilt für die ganze App und
 lässt sich je Szene überschreiben. Sterne und Punkte bleiben davon unberührt.
+
+### Strassenmerkmal
+
+Eine Angabe zur Anlage, in der eine Szene liegt: Klassierung, Lage innerorts
+oder ausserorts, signalisierte Geschwindigkeit, Trottoir, Veloinfrastruktur und
+weitere. Die Merkmale beschreiben den Ort, nicht den Mangel; sie stehen in der
+Einstiegsansicht über dem Startknopf und im Szenenformular.
+
+Der Katalog `src/data/strassenmerkmale.ts` führt 21 Merkmale in drei Gruppen und
+gibt je Merkmal die Wertliste vor. Die Werte stammen aus der Erfassung, nicht
+aus einer Erfindung: In der RSI-Geodatenbank stehen sie als Domänencode, den
+Klartext liefert die Codeliste des Auswertungsprojekts.
+
+### Sicherheitskriterium
+
+Die Bezeichnung, unter der ein Mangel geführt wird – Anhaltesichtweite,
+Knotengeometrie, Bankette. Zwei Verzeichnisse verwenden den Begriff: die
+WICHTIGKEIT_TABLE des Fachkurses mit 58 Kriterien, aus der die Wichtigkeit
+abgelesen wird, und Tabelle 2 der SN 641 700:2022, die jedem Kriterium ihre
+Normen zuordnet. Die beiden decken sich nicht vollständig; für sieben Kriterien
+des Fachkurses führt Tabelle 2 keine Entsprechung.
+
+### Normbezug
+
+Die Normen, auf die sich ein Defizit stützt, als Liste von «Nummer — Titel».
+Drei Quellen speisen sie: der Text des Inspektionsberichts, die Zuordnung aus
+Tabelle 2 der SN 641 700:2022, und dort, wo diese Zuordnung vierzehn oder acht
+Normen umfasst, eine begründete Auswahl je Einzelfall. Die dritte ist eine
+Schlussfolgerung, keine Normvorgabe.
+
+### Lernkarte
+
+Die Rückmeldung nach einem beurteilten Defizit: richtige und falsche Antwort je
+Schritt, die Matrix-Herleitung und ein Erklärungstext. Der Text gibt wieder, was
+der Inspektionsbericht als Massnahme vorschlägt.
 
 ### Kriterium
 

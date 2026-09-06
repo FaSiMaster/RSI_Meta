@@ -146,7 +146,7 @@ Nummer und Titel, und sagt selbst, die Liste sei nicht abschliessend.
 ### 5.1 Was der Katalog jetzt führt
 
 `src/data/regelwerkKatalog.ts` ist neu geschrieben und folgt dieser Tabelle:
-79 Einträge mit dem dort geschriebenen Titel, dazu das Ausgabejahr aus dem
+84 Einträge mit dem dort geschriebenen Titel, dazu das Ausgabejahr aus dem
 Normenbestand. Die zehn Einträge aus Ziffer 2.2 sind damit erledigt — nicht
 durch eine Auswahl unter Kandidaten, sondern weil die Grundnorm die Zuordnung
 selbst vornimmt. Drei Beispiele:

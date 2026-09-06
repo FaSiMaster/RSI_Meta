@@ -14,7 +14,7 @@ Versionierung nach [Semantic Versioning](https://semver.org/lang/de/).
 **Der Regelwerkkatalog folgt jetzt einer Quelle.** SN 641 700:2022, Anhang G,
 Ziff. 16, Tabelle 2 «Thematische Zuordnung der sicherheitsrelevanten Normen»,
 S. 11–14 ordnet jedem Sicherheitskriterium seine Normen zu. Der Katalog ist
-danach neu geschrieben: 79 Einträge, Titel aus der Tabelle, Ausgabejahr aus dem
+danach neu geschrieben: 84 Einträge, Titel aus der Tabelle, Ausgabejahr aus dem
 Normenbestand.
 
 Das war nötig, weil elf Einträge einen Titel trugen, der zu einer anderen Norm

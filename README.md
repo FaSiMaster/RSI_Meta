@@ -3,14 +3,13 @@
 **Road Safety Inspection – Immersive Training**
 Privates Projekt von Stevan Skeledzic
 
-Stand: v0.16.3 (6. September 2026) · Live: [rsi-meta.vercel.app](https://rsi-meta.vercel.app)
+Stand: v0.18.0 (6. September 2026) · Live: [rsi-meta.vercel.app](https://rsi-meta.vercel.app)
 
 Ein Trainingswerkzeug für die normative 9-Schritte-Methodik der Road Safety
 Inspection. Inspektorinnen und Inspektoren beurteilen Strassenszenen im
 360°-Panorama nach Wichtigkeit, Abweichung, Relevanz SD, NACA-Skala und
 Unfallrisiko, im Browser oder in VR auf der Meta Quest 3. Grundlage sind der
-TBA-Fachkurs FK RSI V 16.09.2020, der bfu-Bericht 73 und VSS 41 723
-(frühere Nummer SN 641 723).
+TBA-Fachkurs FK RSI V 16.09.2020, der bfu-Bericht 73 und SN 641 723:2016.
 
 Seit v0.16.0 trägt jeder Inhalt ein Land. Beurteilt wird nur dort, wo für dieses
 Land ein Verfahren hinterlegt ist; das ist heute allein die Schweiz.
@@ -147,9 +146,15 @@ Der Administrationsbereich ist über eine Edge Function token-gesichert und
 umfasst die Pflege von Themen, Szenen und Defiziten samt automatischer
 Neuberechnung von Relevanz SD und Unfallrisiko, den Verortungs-Editor, den
 Bild-Upload in den Supabase-Bucket `rsi-textures`, einen Piktogramm-Katalog aus
-23 Icons, ein Normfeld mit 32 VSS- und SN-Einträgen samt Autovervollständigung,
+23 Icons, ein Normfeld mit 84 VSS- und SN-Einträgen samt Autovervollständigung,
 die Kursverwaltung mit optionaler Themen-Exklusivität sowie Export und Import der
 gesamten Datenbasis als JSON.
+
+Je Szene lassen sich Strassenmerkmale erfassen – 21 Merkmale in drei Gruppen,
+von der Strassenklassierung über den massgebenden Begegnungsfall bis zur
+Veloinfrastruktur. Der Katalog gibt die Wertlisten vor; ein Wert ausserhalb
+dieser Listen erschiene im Auswahlfeld nicht und ginge beim Speichern verloren.
+Die Einstiegsansicht zeigt die Merkmale als Tabelle über dem Startknopf.
 
 Seit v0.16.2 ist das Land beim obersten Themenbereich ein Pflichtfeld mit Vorgabe
 Schweiz und einer Auswahl über alle 249 Codes. Ein Landfilter in der Seitenleiste
@@ -236,13 +241,27 @@ RSI_Meta/
 | TBA-Fachkurs FK RSI, V 16.09.2020 | WICHTIGKEIT_TABLE mit 58 Kriterien, 9-Schritte-Methodik, Matrizen |
 | bfu-Bericht 73 | NACA-Skala 0–7, Verletzungsschwere |
 | SN 641 723:2016, Abb. 2 | Normative Unfallrisiko-Matrix (Ausgabe, aus der die Abbildung stammt) |
-| VSS 41 723 / VSS 41 722 | Geltende Nummern für Inspektion und Audit (früher SN 641 723 / SN 641 722) |
-| bfu-Werkzeugkasten | Weitere Normbezüge in `regelwerkKatalog.ts` |
+| SN 641 700:2022, Anhang G, Ziff. 16, Tab. 2 | Zuordnung Sicherheitskriterium zu Norm; Grundlage von `regelwerkKatalog.ts` |
+| VSS 41 001:2024-10 | Gesamt-Normenverzeichnis; massgebend für die Nummern selbst |
 | ISO 3166-1 alpha-2 | Ländercodes in `laender.ts`, 249 offiziell zugeteilte, Stand 6. September 2026 |
 
 Die Matrizen `calcRelevanzSD` und `calcUnfallrisiko` wurden gegen die
 Originalfolien des Fachkurses geprüft; der Befund steht im `AUDIT_REPORT.md` vom
 28. März 2026. Unit-Tests pinnen alle 18 Zellwerte gegen die Engine.
+
+Die Nummern der Verfahrensnormen richten sich nach dem Gesamt-Normenverzeichnis
+und nicht nach Analogie. Es führt beide Nummernkreise nebeneinander: die
+Folgeabschätzung als VSS 41 721 und die Netzeinstufung als VSS 41 725, das Audit
+dagegen als SN 641 722:2017 und die Inspektion als SN 641 723:2016. **Eine Norm
+VSS 41 723 gibt es dort nicht.** Bis v0.17.0 stand sie an acht Stellen im
+Quellbaum. Die Gegenüberstellung aller im Werkzeug verwendeten Nummern steht in
+`docs/NORMREFERENZEN_PRUEFUNG.md`.
+
+Der Normbezug eines Defizits kommt aus drei Quellen: was der Inspektionsbericht
+im Text nennt, was Tabelle 2 dem Sicherheitskriterium zuordnet, und – wo die
+Liste des Kriteriums vierzehn oder acht Normen umfasst – eine begründete Auswahl
+je Einzelfall. Die dritte ist eine Schlussfolgerung und in
+`daten/entscheide_2026_09_06.py` als solche gekennzeichnet.
 
 ---
 

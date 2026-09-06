@@ -1,6 +1,6 @@
 # Benutzerhandbuch – RSI VR Tool
 
-> Für Inspektorinnen und Inspektoren im Schulungseinsatz. Stand v0.16.3.
+> Für Inspektorinnen und Inspektoren im Schulungseinsatz. Stand v0.18.0.
 > Begleitend zum TBA-Fachkurs FK RSI (V 16.09.2020).
 
 ---
@@ -72,9 +72,14 @@ Karte zusätzlich ein Bestanden-Kennzeichen.
 ## 4. Szenen-Einführung
 
 Vor jeder Szene sehen Sie, wo Sie stehen und welche Verkehrssituation Sie
-erwartet, dazu die Merkmale der Strasse – Funktionalität, Geschwindigkeitsregime,
-Geometrie –, die Zielsetzung der Übung sowie die Anzahl der Defizite, der
-Pflichtdefizite und allfälliger Booster. Genannt wird auch, was für das Bestehen
+erwartet, dazu die Merkmale der Strasse, die Zielsetzung der Übung sowie die
+Anzahl der Defizite, der Pflichtdefizite und allfälliger Booster.
+
+Die Merkmale stehen als Tabelle: Klassierung und Funktion der Strasse, Lage
+innerorts oder ausserorts, signalisierte Geschwindigkeit, Verkehrsmenge,
+Trottoir, Veloinfrastruktur und weitere. Sie beschreiben den Ort, nicht den
+Mangel – was fehlt oder falsch ist, suchen Sie selbst. Bei vielen Merkmalen
+scrollt die Tabelle für sich; der Startknopf bleibt darunter erreichbar. Genannt wird auch, was für das Bestehen
 verlangt ist.
 
 Lesen Sie diesen Abschnitt gründlich. Er enthält normative Hinweise, die bei der
@@ -173,7 +178,9 @@ prozentualen Bonus. Die Hinweis-Abzüge aus Abschnitt 5.3 kommen davon in Abzug.
 ### 6.7 Lernkarte
 
 Nach der Eingabe zeigt die Lernkarte Ihr Ergebnis, die normative Soll-Lösung mit
-dem NACA-Wert im Klartext, die fachliche Begründung und den Normbezug. Wer die
+dem NACA-Wert im Klartext, die fachliche Begründung und den Normbezug. Wo der
+Inspektionsbericht eine Massnahme vorschlägt, steht sie als Erklärung darunter –
+mit ihrer Art, von der Sofortmassnahme bis zum Sanierungsprojekt. Wer die
 Herleitung nachvollziehen will, findet beide Matrizen mit dem eigenen und dem
 richtigen Schnittpunkt.
 
@@ -208,7 +215,7 @@ Der Bericht lässt sich auch später abrufen: In der Szenenübersicht trägt jed
 Szene, die Sie bereits absolviert haben, neben dem Startknopf ein Symbol mit
 Pfeil nach unten. Es erzeugt den Bericht Ihres besten Versuchs. Das Symbol
 erscheint erst nach dem ersten Durchgang. Grundlage sind die auf diesem Gerät
-gespeicherten Ergebnisse — auf einem anderen Gerät, in einem anderen Browser
+gespeicherten Ergebnisse – auf einem anderen Gerät, in einem anderen Browser
 oder nach einem Zurücksetzen der App ist der nachträgliche Bericht nicht mehr
 verfügbar. Wer ihn sicher braucht, erzeugt ihn direkt nach der Szene.
 
