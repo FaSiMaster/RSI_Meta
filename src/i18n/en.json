@@ -570,6 +570,16 @@
     "label": "Country",
     "ohne_verfahren": "no procedure",
     "pflicht_hinweis": "The country applies to every scene and deficit in this topic area.",
-    "zurueck": "Back to the scene"
+    "zurueck": "Back to the scene",
+    "zust_grundlage": "Technical basis",
+    "zust_gruppe_ohne": "Without a country",
+    "zust_hinweis": "Note",
+    "zust_kein_eintrag": "No body has been recorded for this country yet.",
+    "zust_offen_hinweis": "Contents provisional, not approved by any body of this country, for training purposes only.",
+    "zust_offen_org": "not yet determined",
+    "zust_organisation": "Responsible body",
+    "zust_pflege_hinweis": "These entries apply to every topic area, scene and finding of this country. They are entered here and stay on this device; they travel by export and import.",
+    "zust_stand": "As at",
+    "zust_titel": "Responsibility"
   }
 }

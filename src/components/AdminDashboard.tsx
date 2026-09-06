@@ -20,6 +20,7 @@ import {
 } from '../data/appData'
 import BildEditor from './admin/BildEditor'
 import AdminRanking from './admin/AdminRanking'
+import ZustaendigkeitTab from './admin/ZustaendigkeitTab'
 import DefizitModal from './admin/modals/DefizitModal'
 import SzeneModal from './admin/modals/SzeneModal'
 import ThemaModal from './admin/modals/ThemaModal'
@@ -29,6 +30,9 @@ import {
   type AdminTab,
 } from './admin/utils/adminHelpers'
 import { landName, istLandCode } from '../data/laender'
+import {
+  getZustaendigkeiten, setZustaendigkeiten, type Zustaendigkeit,
+} from '../data/zustaendigkeit'
 
 export default function AdminDashboard() {
   const { t, i18n } = useTranslation()
@@ -244,7 +248,7 @@ export default function AdminDashboard() {
     if (idx < 0) return
     const swapIdx = dir === 'up' ? idx - 1 : idx + 1
     if (swapIdx < 0 || swapIdx >= siblings.length) return
-    // Zuerst alle Geschwister normalisieren (1, 2, 3, …) — verhindert Duplikate
+    // Zuerst alle Geschwister normalisieren (1, 2, 3, …) – verhindert Duplikate
     siblings.forEach((s, i) => { s.sortOrder = i + 1 })
     const tmp = siblings[idx].sortOrder
     siblings[idx].sortOrder = siblings[swapIdx].sortOrder
@@ -307,6 +311,9 @@ export default function AdminDashboard() {
       scenes:   getAllScenes(),
       deficits: getAllDeficits(),
       kurse:    getKurse(),
+      // v0.16.3: Die Zuständigkeiten liegen nur auf dem Gerät. Ohne sie im
+      // Auszug wären sie nach einem Gerätewechsel weg.
+      zustaendigkeiten: getZustaendigkeiten(),
     }
     const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' })
     const url  = URL.createObjectURL(blob)
@@ -331,6 +338,7 @@ export default function AdminDashboard() {
 
   function validateImport(data: unknown): { ok: true; data: {
     topics?: AppTopic[]; scenes?: AppScene[]; deficits?: AppDeficit[]; kurse?: Kurs[];
+    zustaendigkeiten?: Zustaendigkeit[];
   } } | { ok: false; reason: string } {
     if (!data || typeof data !== 'object') return { ok: false, reason: 'Kein gültiges JSON-Objekt' }
     const d = data as Record<string, unknown>
@@ -371,6 +379,9 @@ export default function AdminDashboard() {
         scenes:   d.scenes as AppScene[] | undefined,
         deficits: d.deficits as AppDeficit[] | undefined,
         kurse:    d.kurse as Kurs[] | undefined,
+        zustaendigkeiten: Array.isArray(d.zustaendigkeiten)
+          ? (d.zustaendigkeiten as Zustaendigkeit[])
+          : undefined,
       },
     }
   }
@@ -391,7 +402,7 @@ export default function AdminDashboard() {
 
         // Landesgrenze (v0.16.2): Eine Szene gehoert in den Themenbereich
         // ihres eigenen Landes. Der Import ist heute der einzige Weg, eine
-        // Szene ueber diese Grenze zu bewegen — die Oberflaeche bietet kein
+        // Szene ueber diese Grenze zu bewegen – die Oberflaeche bietet kein
         // Verschieben an. Abgewiesene Szenen werden gezaehlt und gemeldet,
         // nicht still verworfen.
         let szenenAbgelehnt = 0
@@ -408,6 +419,9 @@ export default function AdminDashboard() {
         }
         if (data.deficits) data.deficits.forEach(saveDeficit)
         if (data.kurse)    await Promise.all(data.kurse.map(k => saveKurs(k)))
+        // Die Zuständigkeiten ersetzen den Bestand vollständig – sie sind je
+        // Land eindeutig, ein Zusammenführen ergäbe zwei Stellen für dasselbe.
+        if (data.zustaendigkeiten) setZustaendigkeiten(data.zustaendigkeiten)
         const ts = getTopics()
         setTopics(ts)
         setTopicsTree(getTopicsTree())
@@ -507,6 +521,7 @@ export default function AdminDashboard() {
             {tabPill('themen', t('admin.topics'))}
             {tabPill('kurse', t('admin.kurse'))}
             {tabPill('rangliste', t('admin.rangliste_titel'))}
+            {tabPill('zustaendigkeit', t('land.zust_titel'))}
           </div>
           <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
             {importFeedback && (
@@ -794,6 +809,8 @@ export default function AdminDashboard() {
         {activeTab === 'rangliste' && (
           <AdminRanking />
         )}
+
+        {activeTab === 'zustaendigkeit' && <ZustaendigkeitTab />}
       </main>
 
       {/* ═══ MODALS ═══ */}

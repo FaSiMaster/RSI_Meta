@@ -9,6 +9,49 @@ Versionierung nach [Semantic Versioning](https://semver.org/lang/de/).
 
 ## [Unreleased]
 
+### Hinzugefügt – Einstieg nach Land und Zuständigkeit (v0.16.3)
+
+Vierter und letzter Schritt der Vorbereitung auf ein zweites Land.
+
+**Der Einstieg gruppiert nach Land.** Ab dem zweiten Land steht über den
+Themenbereichen eine Reihe Pillen: «Alle Länder» und je eine pro Land. Der
+Filter blendet aus, er sperrt nicht, und die zuletzt getroffene Wahl bleibt auf
+dem Gerät gemerkt. Bei einem einzigen Land erscheint weder Filter noch
+Gruppenüberschrift – beides sagte in jeder Zeile dasselbe.
+
+**Je Land eine Zuständigkeit.** Verantwortliche Stelle, fachliche Grundlage,
+Stand und Hinweis, gepflegt in einem eigenen Reiter im Administrationsbereich,
+angezeigt beim Themenbereich und auf dem Rückmeldebildschirm jeder Szene. Beide
+Orte lesen dieselbe Karte aus derselben Quelle; zweimal geschrieben liefen sie
+irgendwann auseinander.
+
+**Ohne Eintrag sagt die Anwendung das auch:** noch nicht bestimmt, Inhalte
+vorläufig, keine Freigabe durch eine Stelle dieses Landes, nur zu
+Trainingszwecken. Das gilt für jedes Land, auch für die Schweiz.
+
+**Warum die Schweiz nicht vorbelegt ist.** Der Auftrag sah eine Vorbelegung mit
+der Trägerschaft vor. Genau diese Wörter hält der Wächter `keine-affiliation`
+aus dem Quellbaum heraus, seit das Werkzeug in v0.12.0 zum privaten Projekt
+wurde. Eingetragen statt ausgeliefert: Die Angaben werden im
+Administrationsbereich erfasst und liegen dann in den Daten, nicht im Code. Der
+Wächter hat das beim ersten Lauf zweimal bestätigt – er fand den Behördennamen
+auch dort, wo ich ihn nicht erwartet hatte, nämlich in meinen eigenen
+Testdaten.
+
+Die Angaben liegen im localStorage, nicht in Supabase: Dieser Schritt fasst
+kein Backend an. Sie wandern über Ausfuhr und Einfuhr des
+Administrationsbereichs, und der Bildschirm sagt das auch. Ohne einen solchen
+Auszug bleibt ein Eintrag auf dem Gerät, auf dem er gemacht wurde.
+
+22 neue Prüfungen: 13 am Datensatz, davon fünf allein zur Frage, ob ein leerer
+Eintrag als leer erkannt wird, und neun im Browser über Gruppierung, Filter,
+gemerkte Wahl und beide Anzeigeorte. Drei eingebaute Fehler belegen, dass sie
+messen: ein Eintrag, der nie als leer gilt, lässt eine Prüfung fallen; ein
+Filter ohne Gedächtnis eine; eine Karte, die den Vorläufigkeitshinweis
+verschweigt, ebenfalls eine.
+
+---
+
 ### Hinzugefügt – Ablaufwahl nach Land und Regeln (v0.16.2)
 
 Dritter von vier Schritten. Das Land entscheidet jetzt, ob überhaupt beurteilt

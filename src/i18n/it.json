@@ -570,6 +570,16 @@
     "label": "Paese",
     "ohne_verfahren": "senza metodo",
     "pflicht_hinweis": "Il paese vale per tutte le scene e tutti i deficit di questo ambito tematico.",
-    "zurueck": "Torna alla scena"
+    "zurueck": "Torna alla scena",
+    "zust_grundlage": "Base tecnica",
+    "zust_gruppe_ohne": "Senza indicazione del paese",
+    "zust_hinweis": "Nota",
+    "zust_kein_eintrag": "Per questo paese non è ancora registrato alcun servizio.",
+    "zust_offen_hinweis": "Contenuti provvisori, senza approvazione da parte di un servizio di questo paese, solo a scopo formativo.",
+    "zust_offen_org": "non ancora stabilito",
+    "zust_organisation": "Servizio responsabile",
+    "zust_pflege_hinweis": "Le indicazioni valgono per tutti gli ambiti tematici, le scene e i rilievi di questo paese. Vengono inserite qui e restano su questo dispositivo; la trasmissione avviene tramite esportazione e importazione.",
+    "zust_stand": "Stato",
+    "zust_titel": "Responsabilità"
   }
 }

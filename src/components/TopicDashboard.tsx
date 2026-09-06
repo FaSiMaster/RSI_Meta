@@ -3,9 +3,11 @@
 
 import { motion, AnimatePresence } from 'motion/react'
 import { Trophy, Eye, MousePointerClick, BarChart3, ChevronDown, ChevronUp, BookOpen } from 'lucide-react'
-import { getSichtbareTopics, getScenes, ml, type AppTopic } from '../data/appData'
+import { getSichtbareTopics, getScenes, getTopicCountry, ml, type AppTopic } from '../data/appData'
+import { landName } from '../data/laender'
+import ZustaendigkeitKarte from './ZustaendigkeitKarte'
 import { getTopicIcon } from '../data/topicIcons'
-import { useEffect, useState } from 'react'
+import { useEffect, useState, type CSSProperties } from 'react'
 import { useTranslation } from 'react-i18next'
 
 // D-4: Pikogramm aus zentralem Katalog (src/data/topicIcons.ts).
@@ -32,6 +34,24 @@ export default function TopicDashboard({ username, score, kursId, onSelectTopic 
   const [sceneCounts, setSceneCounts] = useState<Record<string, number>>({})
   const [showMethodik, setShowMethodik] = useState(false)
 
+  // ── Landfilter (v0.16.3) ──
+  // Der Filter blendet aus, er sperrt nicht: Vorgabe ist «alle Länder», und
+  // die zuletzt getroffene Wahl bleibt auf dem Gerät gemerkt. Wer nur mit
+  // einem Land arbeitet, sieht davon nichts – die Bedienung erscheint erst ab
+  // dem zweiten.
+  const K_LANDFILTER = 'rsi-v3-landfilter'
+  const [landFilter, setLandFilter] = useState<string>(() => {
+    try { return localStorage.getItem(K_LANDFILTER) ?? '' } catch { return '' }
+  })
+
+  function waehleLand(code: string): void {
+    setLandFilter(code)
+    try {
+      if (code) localStorage.setItem(K_LANDFILTER, code)
+      else localStorage.removeItem(K_LANDFILTER)
+    } catch { /* Merken ist Zugabe, kein Muss */ }
+  }
+
   useEffect(() => {
     // v0.10.1: strikte Kurs-Sicht + isActive-Filter (archivierte Themen
     // erschienen vorher weiterhin im Teilnehmer-Dashboard)
@@ -42,7 +62,32 @@ export default function TopicDashboard({ username, score, kursId, onSelectTopic 
     setSceneCounts(counts)
   }, [kursId])
 
-  // Schritt-für-Schritt Daten — mit erweitertem Tooltip-Text (E-2)
+  // Oberste Themen nach Land gruppieren. Die Reihenfolge folgt dem
+  // Ländernamen in der Sprache der Oberfläche, nicht dem Code – «Schweiz»
+  // steht im Deutschen an anderer Stelle als «Suisse» im Französischen.
+  const oberste = topics.filter(tp => !tp.parentTopicId)
+  const laender = Array.from(new Set(oberste.map(tp => getTopicCountry(tp.id, topics))))
+    .sort((a, b) => landName(a, lang).localeCompare(landName(b, lang), lang))
+  const mehrereLaender = laender.length > 1
+
+  const sichtbareLaender = landFilter && laender.some(c => c === landFilter) ? [landFilter] : laender
+  const gruppen = sichtbareLaender.map(code => ({
+    code,
+    name: landName(code, lang),
+    themen: oberste.filter(tp => getTopicCountry(tp.id, topics) === code),
+  })).filter(g => g.themen.length > 0)
+
+  function filterPille(aktiv: boolean): CSSProperties {
+    return {
+      padding: '5px 14px', borderRadius: '20px', fontSize: '12px', fontWeight: 600,
+      cursor: 'pointer', fontFamily: 'var(--rsi-font)',
+      border: aktiv ? 'none' : '1px solid var(--rsi-color-border)',
+      background: aktiv ? 'var(--rsi-dunkelblau)' : 'transparent',
+      color: aktiv ? 'white' : 'var(--rsi-color-text-muted)',
+    }
+  }
+
+  // Schritt-für-Schritt Daten – mit erweitertem Tooltip-Text (E-2)
   const schritte = [
     { nr: 1, icon: <Eye size={20} />,                title: t('guide.step1_title'), desc: t('guide.step1_desc'), detail: t('guide.step1_detail', t('guide.step1_desc')) },
     { nr: 2, icon: <MousePointerClick size={20} />,  title: t('guide.step2_title'), desc: t('guide.step2_desc'), detail: t('guide.step2_detail', t('guide.step2_desc')) },
@@ -65,11 +110,52 @@ export default function TopicDashboard({ username, score, kursId, onSelectTopic 
         </div>
       </div>
 
-      {/* Topic-Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        {topics.map((topic, i) => {
-          const sceneCount = sceneCounts[topic.id] ?? 0
-          return (
+      {/* Landfilter – erscheint erst ab dem zweiten Land. Er blendet aus,
+          er sperrt nicht: «Alle Länder» bleibt die Vorgabe. */}
+      {mehrereLaender && (
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap', marginBottom: '20px' }}>
+          <span style={{ fontSize: '11px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.12em', color: 'var(--rsi-color-text-disabled)' }}>
+            {t('land.label')}
+          </span>
+          <button
+            onClick={() => waehleLand('')}
+            aria-pressed={landFilter === ''}
+            style={filterPille(landFilter === '')}
+          >
+            {t('land.filter_alle')}
+          </button>
+          {laender.map(code => (
+            <button
+              key={code}
+              onClick={() => waehleLand(code)}
+              aria-pressed={landFilter === code}
+              style={filterPille(landFilter === code)}
+            >
+              {landName(code, lang)}
+            </button>
+          ))}
+        </div>
+      )}
+
+      {/* Themen, nach Land gruppiert. Bei nur einem Land bleibt die
+          Überschrift weg – sie sagte in jeder Zeile dasselbe. */}
+      {gruppen.map(gruppe => (
+        <section key={gruppe.code} style={{ marginBottom: '28px' }}>
+          {mehrereLaender && (
+            <div style={{ display: 'flex', alignItems: 'baseline', gap: '10px', marginBottom: '12px' }}>
+              <h2 style={{ fontSize: '15px', fontWeight: 700, color: 'var(--rsi-color-text)', margin: 0 }}>
+                {gruppe.name}
+              </h2>
+              <span style={{ fontSize: '12px', color: 'var(--rsi-color-text-disabled)' }}>
+                {gruppe.themen.length}
+              </span>
+            </div>
+          )}
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            {gruppe.themen.map((topic, i) => {
+              const sceneCount = sceneCounts[topic.id] ?? 0
+              return (
             <motion.div
               key={topic.id}
               initial={{ opacity: 0, y: 20 }}
@@ -98,9 +184,16 @@ export default function TopicDashboard({ username, score, kursId, onSelectTopic 
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M9 18l6-6-6-6"/></svg>
               </div>
             </motion.div>
-          )
-        })}
-      </div>
+            )
+            })}
+          </div>
+
+          {/* Wer hinter den Inhalten dieses Landes steht */}
+          <div style={{ marginTop: '14px' }}>
+            <ZustaendigkeitKarte country={gruppe.code} kompakt />
+          </div>
+        </section>
+      ))}
 
       {/* E-1: Visueller Trenner zwischen Themen-Bereich und «So funktioniert» */}
       <div style={{
@@ -237,7 +330,7 @@ export default function TopicDashboard({ username, score, kursId, onSelectTopic 
           marginBottom: '48px',
         }}
       >
-        {/* Header — immer sichtbar */}
+        {/* Header – immer sichtbar */}
         <button
           onClick={() => setShowMethodik(v => !v)}
           style={{
@@ -269,7 +362,7 @@ export default function TopicDashboard({ username, score, kursId, onSelectTopic 
           </div>
         </button>
 
-        {/* Inhalt — aufklappbar */}
+        {/* Inhalt – aufklappbar */}
         <AnimatePresence>
           {showMethodik && (
             <motion.div

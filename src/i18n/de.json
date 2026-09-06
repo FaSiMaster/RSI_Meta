@@ -570,6 +570,16 @@
     "label": "Land",
     "ohne_verfahren": "ohne Verfahren",
     "pflicht_hinweis": "Das Land gilt für alle Szenen und Defizite dieses Themenbereichs.",
-    "zurueck": "Zurück zur Szene"
+    "zurueck": "Zurück zur Szene",
+    "zust_grundlage": "Fachliche Grundlage",
+    "zust_gruppe_ohne": "Ohne Landangabe",
+    "zust_hinweis": "Hinweis",
+    "zust_kein_eintrag": "Für dieses Land ist noch keine Stelle eingetragen.",
+    "zust_offen_hinweis": "Inhalte vorläufig, keine Freigabe durch eine Stelle dieses Landes, nur zu Trainingszwecken.",
+    "zust_offen_org": "noch nicht bestimmt",
+    "zust_organisation": "Verantwortliche Stelle",
+    "zust_pflege_hinweis": "Die Angaben gelten für alle Themenbereiche, Szenen und Befunde dieses Landes. Sie werden hier eingetragen und liegen auf diesem Gerät; weitergegeben werden sie über Ausfuhr und Einfuhr.",
+    "zust_stand": "Stand",
+    "zust_titel": "Zuständigkeit"
   }
 }

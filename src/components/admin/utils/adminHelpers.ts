@@ -115,4 +115,4 @@ export function getVorschauModus(val: string | null | undefined): VorschauModus 
   return 'upload'
 }
 
-export type AdminTab = 'defizite' | 'themen' | 'kurse' | 'rangliste'
+export type AdminTab = 'defizite' | 'themen' | 'kurse' | 'rangliste' | 'zustaendigkeit'

@@ -3,6 +3,7 @@
 
 import { useState } from 'react'
 import { Trophy, CheckCircle2, XCircle, ArrowLeft, ChevronRight, BarChart3, Clock, TrendingUp, Award, FileDown } from 'lucide-react'
+import ZustaendigkeitKarte from './ZustaendigkeitKarte'
 import { useTranslation } from 'react-i18next'
 import { ml, getBestResult, getVersuchAnzahl, berechneSterne, type AppScene, type AppDeficit, type FoundDeficit, type SceneResult } from '../data/appData'
 import { istBestanden, kriteriumFuerSzene } from '../data/bestandenKriterium'
@@ -19,7 +20,7 @@ interface Props {
   onToTopics:     () => void
   onToRanking:    () => void
   onNextScene:    (() => void) | null
-  /** Nur für den PDF-Bericht (v0.11.0) — Kopfangaben, sonst nicht verwendet. */
+  /** Nur für den PDF-Bericht (v0.11.0) – Kopfangaben, sonst nicht verwendet. */
   themaName?:     string | null
   kursName?:      string | null
 }
@@ -73,7 +74,7 @@ export default function SzenenAbschluss({
   const bestanden = istBestanden(prozentAktuell, pflichtGefunden, pflichtTotal, kriterium)
   const pflichtFehlt = kriterium.allePflicht ? pflichtTotal - pflichtGefunden : 0
 
-  // Review R-15: Standort-Vermerk für verpasste Defizite — wo wäre es
+  // Review R-15: Standort-Vermerk für verpasste Defizite – wo wäre es
   // verortet gewesen? (Perspektiven-Ids auf Standort-Labels auflösen)
   const perspLabel = new Map((scene.perspektiven ?? []).map(p => [p.id, p.label]))
   function standorteFür(d: AppDeficit): string {
@@ -311,6 +312,13 @@ export default function SzenenAbschluss({
               </div>
             )
           })}
+        </div>
+
+        {/* Wer hinter den Inhalten dieses Landes steht (v0.16.3). Steht vor
+            den Schaltflächen, damit die Auskunft im Blick ist, solange das
+            Ergebnis gelesen wird – und nicht erst nach dem Weiterklicken. */}
+        <div style={{ marginBottom: '20px' }}>
+          <ZustaendigkeitKarte country={scene.country} kompakt />
         </div>
 
         {/* Aktions-Buttons */}
