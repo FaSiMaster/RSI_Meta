@@ -4,6 +4,7 @@
 import type { RSIDimension, NACADimension, ResultDimension } from '../types'
 import type { NacaRaw } from './scoringEngine'
 import type { DefizitVerortung } from '../utils/sphereCoords'
+import { LAND_VORGABE, istLandCode, type LandCode } from './laender'
 import { logger } from '../lib/logger'
 import {
   getTopicsSync, saveTopicSupabase, deleteTopicSupabase,
@@ -47,6 +48,10 @@ export interface AppTopic {
   // v0.10.1: Thema erscheint NICHT im freien Training — nur in Kursen,
   // bei denen es in kurs.topicIds angehakt ist. Default false (frei sichtbar).
   kursExklusiv?: boolean
+  // Land nach ISO 3166-1 alpha-2 (v0.16.0). Nur am OBERSTEN Thema geführt;
+  // untergeordnete Themen erben es und tragen deshalb kein eigenes Feld.
+  // Optional, weil Bestandsdaten es nicht haben – die Leseregel setzt es.
+  country?: LandCode
 }
 
 // Perspektive innerhalb einer Szene (mehrere Blickwinkel auf dieselben Defizite)
@@ -90,6 +95,8 @@ export interface AppScene {
   // minProzent: null = keine Prozent-Schwelle. Fehlt das Feld, gilt der
   // Default aus bestandenKriterium.ts (alle Pflicht + 60 %).
   bestandenKriterium?: { allePflicht?: boolean; minProzent?: number | null } | null
+  // Land nach ISO 3166-1 alpha-2 (v0.16.0). Optional; die Leseregel setzt es.
+  country?: LandCode
 }
 
 export interface AppDeficit {
@@ -144,6 +151,8 @@ export interface RankingEntry {
   timestamp: string
   kursId?: string | null
   stunde?: string | null
+  // Land nach ISO 3166-1 alpha-2 (v0.16.0). Optional; die Leseregel setzt es.
+  country?: LandCode
 }
 
 // Gefundenes Defizit innerhalb einer Szenen-Session
@@ -202,6 +211,8 @@ export interface SceneResult {
   pflichtGefunden?: number
   pflichtTotal?:    number
   bestanden?:       boolean
+  // Land nach ISO 3166-1 alpha-2 (v0.16.0). Optional; die Leseregel setzt es.
+  country?:         LandCode
 }
 
 // Sterne-Berechnung (1-3 basierend auf Prozent)
@@ -242,6 +253,9 @@ export interface Kurs {
   // Vom Server (kurs-auth-Upsert) gesetztes Flag — zeigt an, ob ein Passwort
   // aktuell gesetzt ist. Client prueft damit, ob der Passwort-Prompt noetig ist.
   hatPasswort?: boolean
+  // Land nach ISO 3166-1 alpha-2 (v0.16.0). Ein Kurs gehört zu genau einem
+  // Land. Optional; die Leseregel setzt es.
+  country?: LandCode
 }
 
 // Topic-Hierarchie-Knoten
@@ -684,6 +698,61 @@ function writeJSON<T>(key: string, data: T[]): void {
   }
 }
 
+// ── Leseregel Land (v0.16.0) ────────────────────────────────────────────────
+//
+// Es gibt keinen Ort, an dem der Bestand zentral berichtigt werden könnte:
+// die Daten liegen im localStorage jedes Geräts und in Supabase als JSON.
+// Also nimmt der Code die Anpassung beim Lesen selbst vor. Ein Datensatz ohne
+// `country` – und ebenso einer mit einem Wert, den ISO 3166-1 nicht kennt –
+// gilt als schweizerisch. Geschrieben wird der Wert nicht beim Lesen, sondern
+// beim nächsten regulären Speichern: die save-Funktionen lesen über genau
+// diese Getter und schreiben die vollständige Liste zurück.
+//
+// Untergeordnete Themen bleiben bewusst OHNE Feld. Sie erben vom obersten
+// Thema; zwei Felder könnten auseinanderlaufen, sobald ein Thema umhängt.
+//
+// Diese Fassung setzt das Feld nirgends voraus. Jede Funktion liefert mit und
+// ohne Feld dasselbe Ergebnis wie vorher.
+
+type MitLand = { country?: LandCode }
+
+/** Ein Datensatz mit gültigem Land. Fehlt es oder ist es unbekannt: CH. */
+function mitLand<T extends MitLand>(datensatz: T): T {
+  if (istLandCode(datensatz.country)) return datensatz
+  return { ...datensatz, country: LAND_VORGABE }
+}
+
+function alleMitLand<T extends MitLand>(liste: T[]): T[] {
+  return liste.map(mitLand)
+}
+
+/**
+ * Themen: nur das oberste trägt ein Land, untergeordnete erben es.
+ * Ein Unterthema, das aus Versehen ein Feld trägt, behält es – entfernt wird
+ * hier nichts, damit diese Fassung keine Bestandsdaten verändert.
+ */
+function themenMitLand(liste: AppTopic[]): AppTopic[] {
+  return liste.map(tp => (tp.parentTopicId ? tp : mitLand(tp)))
+}
+
+/**
+ * Land eines Themas. Für ein Unterthema das Land seines obersten Themas.
+ * Die Kette wird begrenzt verfolgt, damit ein fehlerhafter Verweis auf sich
+ * selbst nicht in eine Endlosschleife läuft.
+ */
+export function getTopicCountry(topicId: string, bestand?: AppTopic[]): LandCode {
+  const alle = bestand ?? getTopics()
+  let aktuell = alle.find(tp => tp.id === topicId)
+  let tiefe = 0
+  while (aktuell?.parentTopicId && tiefe < 20) {
+    const eltern = alle.find(tp => tp.id === aktuell!.parentTopicId)
+    if (!eltern) break
+    aktuell = eltern
+    tiefe++
+  }
+  return istLandCode(aktuell?.country) ? aktuell.country : LAND_VORGABE
+}
+
 // SHA-256 Hash für Username (DSGVO: kein Klarname in Supabase)
 // Gibt die ersten 8 Hex-Zeichen zurück (z.B. "a3f2b8c1").
 //
@@ -769,16 +838,19 @@ export function getVerortungFürPerspektive(
 export function getTopics(): AppTopic[] {
   initIfNeeded()
   const synced = getTopicsSync()
-  return synced.length > 0 ? synced : readJSON<AppTopic>(K_TOPICS, DEFAULT_TOPICS)
+  return themenMitLand(synced.length > 0 ? synced : readJSON<AppTopic>(K_TOPICS, DEFAULT_TOPICS))
 }
 export function saveTopic(t: AppTopic): void {
+  // Das Thema selbst geht durch die Leseregel, sonst schreibt genau der
+  // gespeicherte Datensatz das Land nicht mit. Unterthemen bleiben ohne Feld.
+  const thema = t.parentTopicId ? t : mitLand(t)
   // localStorage sofort (synchron für UI)
   const list = getTopics()
-  const i = list.findIndex(x => x.id === t.id)
-  if (i >= 0) list[i] = t; else list.push(t)
+  const i = list.findIndex(x => x.id === thema.id)
+  if (i >= 0) list[i] = thema; else list.push(thema)
   writeJSON(K_TOPICS, list)
   // Supabase async (fire-and-forget)
-  saveTopicSupabase(t).catch(() => {})
+  saveTopicSupabase(thema).catch(() => {})
 }
 export function deleteTopic(id: string): void {
   // Kaskade: Scenes und Deficits dieses Topics löschen
@@ -851,19 +923,20 @@ export function getNextSortOrder(parentTopicId: string | null): number {
 export function getScenes(topicId: string): AppScene[] {
   initIfNeeded()
   const synced = getScenesSync(topicId)
-  return synced.length > 0 ? synced : readJSON<AppScene>(K_SCENES, DEFAULT_SCENES).filter(s => s.topicId === topicId)
+  return alleMitLand(synced.length > 0 ? synced : readJSON<AppScene>(K_SCENES, DEFAULT_SCENES).filter(s => s.topicId === topicId))
 }
 export function getAllScenes(): AppScene[] {
   initIfNeeded()
   const synced = getScenesSync()
-  return synced.length > 0 ? synced : readJSON<AppScene>(K_SCENES, DEFAULT_SCENES)
+  return alleMitLand(synced.length > 0 ? synced : readJSON<AppScene>(K_SCENES, DEFAULT_SCENES))
 }
 export function saveScene(s: AppScene): void {
+  const szene = mitLand(s)
   const list = getAllScenes()
-  const i = list.findIndex(x => x.id === s.id)
-  if (i >= 0) list[i] = s; else list.push(s)
+  const i = list.findIndex(x => x.id === szene.id)
+  if (i >= 0) list[i] = szene; else list.push(szene)
   writeJSON(K_SCENES, list)
-  saveSceneSupabase(s).catch(() => {})
+  saveSceneSupabase(szene).catch(() => {})
 }
 export function deleteScene(id: string): void {
   writeJSON(K_SCENES, getAllScenes().filter(s => s.id !== id))
@@ -924,7 +997,7 @@ export function getKurse(): Kurs[] {
   // localStorage wird durch initSupabaseData() nach erfolgreicher Load synchron
   // mit Supabase gehalten (writeLocal in supabaseSync.ts). Teilnehmer-Devices
   // sehen damit nach erstem Load die vom Admin gespeicherten Kurse.
-  return readJSON<Kurs>(K_KURSE, [])
+  return alleMitLand(readJSON<Kurs>(K_KURSE, []))
 }
 
 export function getKurseZeitlichAktiv(): Kurs[] {
@@ -959,21 +1032,22 @@ export async function saveKurs(kurs: Kurs): Promise<{ ok: boolean; supabaseError
     : hasRemovePasswort
       ? false
       : (kurs.hatPasswort ?? false)
-  const toLocal: Kurs = {
+  const toLocal: Kurs = mitLand({
     ...kurs,
     passwort: undefined,
     hatPasswort: hatPasswortLocal,
-  }
+  })
 
-  const list = readJSON<Kurs>(K_KURSE, [])
+  const list = getKurse()
   const i = list.findIndex(x => x.id === toLocal.id)
   if (i >= 0) list[i] = toLocal; else list.push(toLocal)
   writeJSON(K_KURSE, list)
 
   // An den Server geht das Original-Objekt inkl. Klartext-Passwort (oder null zum
   // Entfernen, oder undefined = "nicht aendern"). Edge Function hasht + speichert.
+  // Das Land geht mit, sonst trägt es nur der lokale Bestand.
   try {
-    await saveKursSupabase(kurs)
+    await saveKursSupabase(mitLand(kurs))
     return { ok: true }
   } catch (err) {
     const msg = err instanceof Error ? err.message : String(err)
@@ -982,7 +1056,7 @@ export async function saveKurs(kurs: Kurs): Promise<{ ok: boolean; supabaseError
   }
 }
 export async function deleteKurs(id: string): Promise<{ ok: boolean; supabaseError?: string }> {
-  writeJSON(K_KURSE, readJSON<Kurs>(K_KURSE, []).filter(k => k.id !== id))
+  writeJSON(K_KURSE, getKurse().filter(k => k.id !== id))
   try {
     await deleteKursSupabase(id)
     return { ok: true }
@@ -996,7 +1070,7 @@ export async function deleteKurs(id: string): Promise<{ ok: boolean; supabaseErr
 // ── Ranking ──
 export function getRanking(): RankingEntry[] {
   initIfNeeded()
-  return readJSON<RankingEntry>(K_RANKING, DEFAULT_RANKING).sort((a, b) => b.score - a.score)
+  return alleMitLand(readJSON<RankingEntry>(K_RANKING, DEFAULT_RANKING)).sort((a, b) => b.score - a.score)
 }
 
 export function getRankingGesamt(): RankingEntry[] {
@@ -1004,27 +1078,27 @@ export function getRankingGesamt(): RankingEntry[] {
 }
 
 export function getRankingByKurs(kursId: string): RankingEntry[] {
-  return readJSON<RankingEntry>(K_RANKING, DEFAULT_RANKING)
+  return getRanking()
     .filter(r => r.kursId === kursId)
     .sort((a, b) => b.score - a.score)
 }
 
 export function getRankingByStunde(datum: string): RankingEntry[] {
-  return readJSON<RankingEntry>(K_RANKING, DEFAULT_RANKING)
+  return getRanking()
     .filter(r => (r.stunde ?? r.timestamp?.slice(0, 10)) === datum)
     .sort((a, b) => b.score - a.score)
 }
 
 export function saveRankingEntry(entry: RankingEntry): void {
   const SEED = ['RSI_Expert', 'Max Muster', 'SicherheitsPro']
-  const list = readJSON<RankingEntry>(K_RANKING, DEFAULT_RANKING)
+  const list = getRanking()
     .filter(r => !SEED.includes(r.username) || r.username === entry.username)
 
-  const entryWithId: RankingEntry = {
+  const entryWithId: RankingEntry = mitLand({
     ...entry,
     id: entry.id ?? crypto.randomUUID(),
     stunde: entry.stunde ?? entry.timestamp.slice(0, 10),
-  }
+  })
 
   if (entryWithId.kursId) {
     list.push(entryWithId)
@@ -1044,12 +1118,12 @@ export function saveRankingEntry(entry: RankingEntry): void {
 // ── SceneResults (Best-of Punktesystem) ──
 
 export function getAllSceneResults(): SceneResult[] {
-  return readJSON<SceneResult>(K_SCENE_RESULTS, [])
+  return alleMitLand(readJSON<SceneResult>(K_SCENE_RESULTS, []))
 }
 
 export function saveSceneResult(result: SceneResult): void {
   const list = getAllSceneResults()
-  list.push(result)
+  list.push(mitLand(result))
   writeJSON(K_SCENE_RESULTS, list)
 
   // Fire-and-forget: zusaetzlich nach Supabase schreiben (kein await, kein UI-Block)

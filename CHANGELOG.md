@@ -9,6 +9,64 @@ Versionierung nach [Semantic Versioning](https://semver.org/lang/de/).
 
 ## [Unreleased]
 
+### Hinzugefügt – Leseregel Land (v0.16.0)
+
+Erster von vier Schritten, die das Werkzeug auf ein zweites Land vorbereiten.
+Dieser Schritt legt allein die Grundlage; das Verhalten der Anwendung bleibt in
+jedem Punkt, wie es war.
+
+Themenbereich, Szene, Kurs und Ergebnis tragen neu ein Feld `country` mit einem
+Ländercode nach ISO 3166-1 alpha-2. Es ist überall wahlfrei. Ein Datensatz ohne
+Feld – und ebenso einer mit einem Wert, den ISO 3166-1 nicht kennt – gilt beim
+Lesen als schweizerisch; festgeschrieben wird der Wert beim nächsten regulären
+Speichern. Das ist nötig, weil die Daten im localStorage jedes Geräts und in
+Supabase liegen und es keinen Ort gibt, an dem der Bestand zentral berichtigt
+werden könnte.
+
+Untergeordnete Themen bleiben bewusst ohne eigenes Feld. Sie erben das Land vom
+obersten Thema; `getTopicCountry()` liest es dort. Zwei Felder könnten
+auseinanderlaufen, sobald ein Thema umhängt.
+
+Die Liste der Ländercodes steht in `src/data/laender.ts`: 249 offiziell
+zugeteilte Codes, Stand 6. September 2026. Sie ist gegen drei Quellen gestellt –
+die Tabelle der offiziell zugeteilten Codeelemente aus dem Artikel «ISO 3166-1
+alpha-2», die Regionendaten des mitgelieferten ICU und die M49-Übersicht der
+Statistikabteilung der Vereinten Nationen. Ausnahmsweise reservierte Codes
+(darunter CQ für Sark), benutzerdefinierte (XK) und gelöschte Codes
+untergegangener Staaten sind nicht enthalten, jeder Ausschluss ist im Kopf der
+Datei begründet. Die Ländernamen stehen nicht in der Datei, sondern kommen zur
+Anzeigezeit aus `Intl.DisplayNames` und damit in der Sprache der Oberfläche.
+
+Ein Code in der Liste heisst nur, dass ein Land benennbar ist. Ob für ein Land
+ein Beurteilungsverfahren hinterlegt ist, entscheidet die Verfahrensauswahl –
+und dort trägt bis auf Weiteres einzig die Schweiz eines.
+
+Zwei Wächter, 36 Prüfungen: `laender.test.ts` hält die Liste gegen die
+Regionendaten der Laufzeit, statt sie gegen sich selbst zu prüfen, und weist am
+erfundenen Code QQ nach, dass die Gegenprobe wirklich misst.
+`landLeseregel.test.ts` prüft beide Richtungen – dass ein Bestand ohne Feld die
+Schweiz erhält, und dass sich sonst kein Feld und kein Wert ändert. Beim ersten
+Lauf schlug er an: das zu speichernde Objekt lief an der Regel vorbei, sodass
+gerade der eben bearbeitete Datensatz sein Land nicht mitgeschrieben hätte.
+
+Dazu sieben Prüfungen im Browser (`e2e/land.spec.ts`). Sie gibt es, weil man
+von der Sache nichts sieht: Das Feld erscheint in keiner Ansicht, und wer die
+Anwendung öffnet, kann nicht feststellen, ob die Regel greift oder fehlt. Der
+Browser schaut deshalb selbst nach – was im Speicher des Geräts steht, was im
+Aufruf an den Server steht, und dass am Bildschirm weder der Feldname noch der
+Code auftaucht.
+
+Dass die Prüfungen wirklich messen, ist an drei eingebauten Fehlern belegt:
+eine Regel, die nichts tut, lässt drei Prüfungen im Browser fallen; ein
+falsches Vorgabeland zusätzlich 13 der Wächterprüfungen; eine gebrochene
+Vererbung genau die eine, die sie betrifft.
+
+`scoringEngine.ts` ist unberührt, die Musterlösungen aller Szenen sind es
+ebenso – geprüft über den Fingerabdruck der sechs `correctAssessment`-Blöcke
+gegen die Sicherung vor dem Umbau.
+
+---
+
 ### Geändert — Rückbau aller Behördenbezüge (v0.12.0)
 
 Das Werkzeug wird als privates Projekt von Stevan Skeledzic geführt. Entfernt
