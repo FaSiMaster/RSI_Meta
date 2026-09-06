@@ -9,6 +9,86 @@ Versionierung nach [Semantic Versioning](https://semver.org/lang/de/).
 
 ## [Unreleased]
 
+### Hinzugefügt – Die Szenen tragen ihre Merkmale, Lernkarte und drei Sprachen (v0.17.0)
+
+Die dreizehn Szenen vom 6. September 2026 waren angelegt, aber halb: Ihnen
+fehlten die Strassenmerkmale, den Defiziten die Lernkarte und beiden jede
+Sprache ausser Deutsch. Alles drei steht in der Quelle oder lässt sich daraus
+bilden.
+
+**Die Merkmale kommen aus der Erfassung, nicht aus der Vorstellung.** Die
+Perimeterebene der RSI-Geodatenbank führt je Perimeter zwei Dutzend Angaben zur
+Anlage — Klassierung, Lage, signalisierte Geschwindigkeit, Trottoir,
+Veloinfrastruktur, Begegnungsfall. Dort stehen sie als Domänencode; den
+Klartext liefert die Codeliste des Auswertungsprojekts. **251 Merkmalswerte**
+über dreizehn Szenen. Neu ist dafür `daten/merkmale_lesen.py`, der einzige Ort,
+der die Geodatenbank anfasst.
+
+**Sechs Codes bleiben ohne Klartext**, weil sie in keinem der ausgewerteten
+Portalexporte vorkommen: Verkehrslastklasse 1, Längsgefälle 3, Beleuchtung 3,
+Begegnungsfall 5, LOS 2 und Fussgängerstreifen 1. Sie betreffen 18 der 269
+möglichen Werte und bleiben leer. Dass zwischen «LOS A» und «LOS C» ein «LOS B»
+liegt, sieht plausibel aus und ist trotzdem geraten.
+
+**Der Merkmalskatalog wächst von 9 auf 21 Merkmale**, in drei Gruppen:
+Funktionalität, Verkehr, Verkehrsteilnehmende. Die Wertlisten führen jetzt die
+Werte, die in der Erfassung wirklich vorkommen. Das war kein Schönheitsfehler:
+Ein Katalogmerkmal erscheint im Administrationsbereich als **Auswahlfeld**, und
+ein Wert, der in keiner Option steht, wäre dort unsichtbar und beim nächsten
+Speichern verloren gewesen. Ein Merkmal ohne Wertliste — der durchschnittliche
+tägliche Verkehr — bekommt neu ein Eingabefeld statt eines leeren
+Auswahlfelds.
+
+**Die Lernkarte sagt, was der Bericht vorschlägt.** `erklaerungI18n` trägt je
+Defizit Massnahmenart und Massnahmentext aus dem Inspektionsbericht. Die
+Zuständigkeit bleibt weg: Sie steht in der Quelle als Kürzel einer
+Organisationseinheit, und aufgelöst wäre sie geraten.
+
+**Französisch, Italienisch und Englisch für alles Neue** — 5 Themen, 13
+Szenennamen und Bemerkungen, 17 Bezeichnungen von Sicherheitskriterien, 36
+Beschreibungen, 36 Erklärungen, 21 Merkmalsbezeichnungen und 32 Merkmalswerte.
+Sie stehen in `daten/sprachen_2026_09_06.py`, getrennt von den deutschen
+Texten: Das Deutsche stammt aus dem Bericht und ist belegt, die Übersetzung
+nicht.
+
+**Die Defizitnamen waren aus der Kennung gebildet** und lasen sich danach:
+«Velolaengsfuehrung art», «Randabschluesse randstein». Sie kommen neu aus
+`src/data/kriteriumLabels.ts`, wo die richtigen Bezeichnungen stehen — mit
+Umlauten und richtiger Schreibung.
+
+### Geändert
+
+- **Die Merkmalstabelle im Einstieg hat eine Höhenbegrenzung.** Mit zwanzig
+  Merkmalen stand der Startknopf auf dem Telefon bei 1725 px, der Inhalt war
+  1808 px hoch bei 844 px Fenster — mehr als zwei Bildhöhen. Neu 1108 px, ohne
+  dass ein Merkmal verschwindet; der Bereich scrollt für sich und ist über die
+  Tastatur erreichbar.
+
+### Behoben
+
+- **Ein Massnahmentext trug zwei Ortsbezüge** («Knoten Zumikerstr./ In der
+  Hinterzelg»). Die Ortsprüfung hatte ihn nicht gemeldet: Sie kannte
+  «Zumikerstrasse», nicht die abgekürzte Form, und «Hinterzelg» ist ein
+  Flurname, der aus keiner Spalte folgt. Beides ist ergänzt.
+- **Die Ortsprüfung sah nur Deutsch und nur die oberste Ebene.** Ein Ortsname
+  in einem Strassenmerkmal oder in der französischen Fassung wäre ihr
+  entgangen. Sie durchsucht jetzt jeden Text jedes Feldes in allen vier
+  Sprachen, auch die, die in Listen stecken.
+
+### Prüfung
+
+- `daten/pruefe.py` prüft neu, ob jeder Merkmalswert aus der Quelle stammt und
+  im Katalog steht, ob die Bezeichnung mit dem Katalog übereinstimmt und ob
+  jedes mehrsprachige Feld alle vier Sprachen trägt oder bewusst nur Deutsch.
+- `daten/pruefe_die_pruefung.py` ist neu und hält jede dieser Prüfungen gegen
+  einen absichtlich eingebauten Fehler: **9 von 9 gemeldet**. Eine Prüfung, die
+  noch nie etwas gemeldet hat, ist keine.
+- `e2e/merkmale.spec.ts` misst die Einstiegsansicht mit zwanzig Merkmalen. Der
+  Test fiel, bevor die Höhenbegrenzung da war — die erste Fassung mass
+  allerdings `document.body.scrollHeight` und bekam immer die Fensterhöhe
+  zurück, weil hier ein inneres Element scrollt.
+- Stand: **193 Unit-Prüfungen, 47 im Browser**, tsc ohne Fehler.
+
 ### Hinzugefügt – Einstieg nach Land und Zuständigkeit (v0.16.3)
 
 Vierter und letzter Schritt der Vorbereitung auf ein zweites Land.

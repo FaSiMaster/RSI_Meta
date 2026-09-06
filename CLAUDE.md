@@ -15,7 +15,7 @@
 
 | Schicht | Technologie | Version |
 |---|---|---|
-| Version | **v0.16.3** (2026-09-06) | Länderweiche: Feld country, Verfahren je Land, Zuständigkeit |
+| Version | **v0.17.0** (2026-09-06) | Szenen tragen ihre Strassenmerkmale, Lernkarte je Defizit, vier Sprachen |
 | Framework | React + Vite + TypeScript | React 18.3, **Vite 7.3**, TS strict |
 | Styling | Tailwind CSS (`@tailwindcss/vite`) | v4.2 |
 | Animation | Framer Motion (motion/react) | v12 |
@@ -26,7 +26,7 @@
 | PDF | pdfmake (dynamisch nachgeladen) | v0.3 |
 | Icons | lucide-react | — |
 | Build | Vite 7 + vite-plugin-pwa | v1.2, Service Worker |
-| Tests | Vitest + Playwright | 193 Unit-Prüfungen in 19 Dateien, 42 im Browser in 7 Dateien |
+| Tests | Vitest + Playwright | 193 Unit-Prüfungen in 19 Dateien, 47 im Browser in 8 Dateien |
 | Hosting | Vercel (Primär) | HTTPS-Pflicht für WebXR |
 | Persistenz | localStorage (`rsi-v3-*`) + **Supabase** | Postgres, Storage, 3 Edge Functions |
 

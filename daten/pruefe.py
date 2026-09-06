@@ -1,15 +1,20 @@
 # -*- coding: utf-8 -*-
 """Prüft die erzeugten Datensätze, bevor sie eingelesen werden.
 
-Sechs Fragen: Stimmt die Zahl? Trägt ein Text einen Ortsbezug? Ist je Szene
-genau ein Pflichtdefizit gesetzt? Ist keine Szene aktiv? Rechnet die
-Beurteilung so, wie das Werkzeug rechnen würde? Und erzeugt ein zweiter Lauf
-dieselbe Datei?
+Acht Fragen: Stimmt die Zahl? Trägt ein Text einen Ortsbezug? Ist je Szene
+genau ein Pflichtdefizit gesetzt? Ist keine Szene aktiv? Stammt jedes
+Strassenmerkmal aus der Quelle und steht sein Wert im Katalog? Trägt jedes
+mehrsprachige Feld alle vier Sprachen? Rechnet die Beurteilung so, wie das
+Werkzeug rechnen würde? Und erzeugt ein zweiter Lauf dieselbe Datei?
+
+Ob diese Prüfungen etwas taugen, prüft `pruefe_die_pruefung.py`: Sie baut je
+Frage einen Fehler ein und erwartet, dass er gemeldet wird.
 
 Aufruf:
     python daten/pruefe.py
 """
 
+import collections
 import csv
 import hashlib
 import io
@@ -49,6 +54,14 @@ def verbotene_woerter():
                 'Maschwanderstrasse', 'Schiedhaldenstrasse', 'Dielsdorferstrasse',
                 'Zürichstrasse', 'Dorfstrasse', 'Albisstrasse',
                 'Untere Bahnhofstrasse', 'Zürcherstrasse'}
+    # Flurname aus einem Massnahmentext. Gefunden beim Lesen, nicht von dieser
+    # Prüfung: Ein Flurname sieht aus wie ein gewöhnliches Wort und lässt sich
+    # aus keiner Spalte ableiten.
+    woerter |= {'Hinterzelg'}
+    # Die Quelle kürzt Strassennamen ab — «Zumikerstr.» statt
+    # «Zumikerstrasse». Ohne die abgekürzte Form lief die Prüfung an einem
+    # Ortsbezug vorbei, der die ganze Zeit dastand.
+    woerter |= {w[:-4] for w in list(woerter) if w.endswith('strasse')}
     woerter = {w for w in woerter if len(w) > 3}
     return sorted(woerter)
 
@@ -73,15 +86,38 @@ def neue(daten, art):
 
 
 def texte(daten):
-    """Jeder Benutzertext der neuen Datensätze mit seiner Fundstelle."""
+    """Jeder Benutzertext der neuen Datensätze mit seiner Fundstelle.
+
+    Alle vier Sprachen, und auch die Texte, die in einer Liste stecken — die
+    Strassenmerkmale einer Szene sind eine Liste von Sätzen mit Bezeichnung
+    und Wert. Die frühere Fassung sah nur Deutsch und nur die oberste Ebene;
+    ein Ortsname in einem Merkmal oder in der französischen Fassung wäre ihr
+    entgangen.
+    """
     aus = []
+
+    def sammle(ort, wert):
+        if isinstance(wert, dict):
+            if 'de' in wert:
+                for sprache, text in wert.items():
+                    if text:
+                        aus.append((f'{ort}/{sprache}', text))
+            else:
+                for schluessel, unterwert in wert.items():
+                    if schluessel not in ('id',):
+                        sammle(f'{ort}/{schluessel}', unterwert)
+        elif isinstance(wert, list):
+            for i, eintrag in enumerate(wert):
+                sammle(f'{ort}[{i}]', eintrag)
+        elif isinstance(wert, str):
+            aus.append((ort, wert))
+
     for art in ('topics', 'scenes', 'deficits'):
         for e in neue(daten, art):
             for feld, wert in e.items():
-                if isinstance(wert, dict) and 'de' in wert:
-                    aus.append((f"{art}/{e['id']}/{feld}", wert['de']))
-                elif isinstance(wert, str) and feld not in ('id', 'sceneId', 'topicId'):
-                    aus.append((f"{art}/{e['id']}/{feld}", wert))
+                if feld in ('id', 'sceneId', 'topicId'):
+                    continue
+                sammle(f"{art}/{e['id']}/{feld}", wert)
     return aus
 
 
@@ -185,6 +221,100 @@ def main():
     fehler += [f'Szene aktiv: {s}' for s in aktiv]
     fehler += [f'Szene mit Bild: {s}' for s in mit_bild]
     fehler += [f'Defizit verortet: {d}' for d in verortet]
+
+    # 4b — Strassenmerkmale: gegen die Quelle und gegen den Katalog
+    print('\n── Strassenmerkmale ──')
+    quelle = json.load(open(os.path.join(HIER, 'merkmale_2026-09-06.json'),
+                            encoding='utf-8'))
+    katalog_text = open(os.path.join(HIER, '..', 'src', 'data',
+                                     'strassenmerkmale.ts'),
+                        encoding='utf-8').read()
+    katalog = {}
+    for m in re.finditer(r"id:\s*'(\w+)',\s*\n\s*label:\s*'([^']+)',\s*\n"
+                         r"\s*optionen:\s*\[([^\]]*)\]", katalog_text):
+        katalog[m.group(1)] = (m.group(2),
+                               re.findall(r"'((?:[^'\\]|\\.)*)'", m.group(3)))
+
+    # Die Szenenkennung führt nicht zur Standort-Kennung zurück; die
+    # Zuordnung läuft über die Reihenfolge, die anlegen.py festlegt. Geprüft
+    # wird deshalb die Menge: Jeder Wert, der in einer Szene steht, muss aus
+    # der Quelle stammen, und jeder Wert der Quelle muss in genau einer Szene
+    # stehen.
+    aus_quelle = collections.Counter()
+    for werte in quelle['merkmale'].values():
+        for kennung, wert in werte.items():
+            aus_quelle[(kennung, wert)] += 1
+    in_szenen = collections.Counter()
+    nicht_im_katalog, ohne_wert = [], []
+    for s in neue(daten, 'scenes'):
+        for m in s.get('strassenmerkmale', []):
+            kennung = m.get('id')
+            wert = m['wertI18n']['de']
+            in_szenen[(kennung, wert)] += 1
+            if kennung not in katalog:
+                nicht_im_katalog.append(f"{s['id']}: Merkmal «{kennung}» "
+                                        'steht in keinem Katalog')
+                continue
+            label, optionen = katalog[kennung]
+            if m['labelI18n']['de'] != label:
+                nicht_im_katalog.append(
+                    f"{s['id']}/{kennung}: Bezeichnung «{m['labelI18n']['de']}» "
+                    f'statt «{label}»')
+            # Ein Katalogmerkmal erscheint im Administrationsbereich als
+            # Auswahlfeld. Ein Wert, der in keiner Option steht, wäre dort
+            # nicht darstellbar und beim nächsten Speichern verloren.
+            if optionen and wert not in optionen:
+                nicht_im_katalog.append(
+                    f"{s['id']}/{kennung}: Wert «{wert}» steht in keiner "
+                    'Option des Katalogs')
+            if not wert:
+                ohne_wert.append(f"{s['id']}/{kennung}")
+
+    fehlend = aus_quelle - in_szenen
+    zuviel = in_szenen - aus_quelle
+    print(f'  {sum(in_szenen.values())} Merkmalswerte in {len(neue(daten, "scenes"))} '
+          f'Szenen, {sum(aus_quelle.values())} in der Quelle')
+    print(f'  {len(quelle["offene_codes"])} Codes der Quelle ohne Klartext, '
+          'deshalb nicht gesetzt')
+    print(f'  Katalogverstösse {len(nicht_im_katalog)}, leere Werte {len(ohne_wert)}')
+    fehler += nicht_im_katalog
+    fehler += [f'Merkmal ohne Wert: {o}' for o in ohne_wert]
+    fehler += [f'Merkmal der Quelle fehlt in den Szenen: {k} = {w} ({n}x)'
+               for (k, w), n in fehlend.items()]
+    fehler += [f'Merkmal ohne Deckung in der Quelle: {k} = {w} ({n}x)'
+               for (k, w), n in zuviel.items()]
+
+    # 4c — Sprachen
+    print('\n── Sprachen ──')
+    # Ein mehrsprachiges Feld trägt entweder alle vier Sprachen oder nur
+    # Deutsch. Halb übersetzt heisst, dass eine Sprache im Betrieb auf Deutsch
+    # zurückfällt, ohne dass es jemand merkt.
+    luecken, nur_deutsch = [], []
+    for art in ('topics', 'scenes', 'deficits'):
+        for e in neue(daten, art):
+            for feld, wert in e.items():
+                if not (isinstance(wert, dict) and 'de' in wert):
+                    continue
+                besetzt = [s for s in ('de', 'fr', 'it', 'en') if wert.get(s)]
+                if not besetzt:
+                    continue
+                if len(besetzt) == 1 and besetzt[0] == 'de':
+                    nur_deutsch.append(f"{art}/{e['id']}/{feld}")
+                elif len(besetzt) != 4:
+                    luecken.append(f"{art}/{e['id']}/{feld}: nur {besetzt}")
+    for s in neue(daten, 'scenes'):
+        for m in s.get('strassenmerkmale', []):
+            for feld in ('labelI18n', 'wertI18n'):
+                besetzt = [x for x in ('de', 'fr', 'it', 'en') if m[feld].get(x)]
+                if len(besetzt) != 4:
+                    luecken.append(f"{s['id']}/{m.get('id')}/{feld}: "
+                                   f'nur {besetzt}')
+    print(f'  Felder mit Lücke {len(luecken)}, Felder nur auf Deutsch '
+          f'{len(nur_deutsch)}')
+    for n in nur_deutsch:
+        print(f'    nur Deutsch: {n}')
+    fehler += luecken
+    fehler += [f'nur Deutsch: {n}' for n in nur_deutsch]
 
     # 5 — Beurteilung gegen die Normlogik
     print('\n── Beurteilung ──')

@@ -267,6 +267,16 @@ MASSNAHMEN = {
         'Berücksichtigung der Zufahrt zur Tankstelle im Rahmen einer '
         'Umgestaltung, um Konflikte mit dem Knotenpunkt der einmündenden '
         'Nebenstrasse zu vermeiden.',
+    # Der Quelltext nennt zwei Strassennamen, einen davon abgekürzt
+    # («Knoten Zumikerstr./ In der Hinterzelg»). Gefunden wurde er nicht von
+    # der Prüfung, sondern beim Lesen: Sie suchte nach «Zumikerstrasse» und
+    # nach ganzen Wörtern, und beides passte nicht. Die Prüfung kennt seither
+    # auch die abgekürzte Form.
+    ('P260-2687395-1242447', '18'):
+        'Zurückschneiden der Hecke prüfen, Verkehrsspiegel montieren | '
+        'Fahrverbot auf dem Verbindungsweg prüfen, um weiteren Verkehr zu '
+        'vermeiden; die Erschliessung bleibt über den benachbarten Knoten '
+        'sichergestellt.',
 }
 
 

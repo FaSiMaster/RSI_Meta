@@ -11,18 +11,27 @@ Was hier liegt, kommt nicht in das ausgelieferte Erzeugnis.
 | Datei | Inhalt |
 |---|---|
 | `entscheide_2026_09_06.py` | Was nicht aus den Quelldaten folgt: Kontext je Szene, neutraler Szenenname, bereinigte Beschreibungen und Massnahmentexte, Normbezüge |
+| `sprachen_2026_09_06.py` | Französisch, Italienisch und Englisch zu allem, was hier entsteht |
 | `normlogik.py` | Liest Wichtigkeitstabelle und beide Matrizen aus `src/data/scoringEngine.ts` und rechnet damit |
+| `merkmale_lesen.py` | Liest die Strassenmerkmale aus der Perimeterebene der Geodatenbank |
 | `anlegen.py` | Erzeugt die Einfuhrdatei, die Beilage und die Arbeitsliste |
-| `pruefe.py` | Prüft das Erzeugte in sechs Punkten |
+| `pruefe.py` | Prüft das Erzeugte |
+| `pruefe_die_pruefung.py` | Hält jede Prüfung gegen einen absichtlich eingebauten Fehler |
+| `merkmale_2026-09-06.json` | Strassenmerkmale je Standort, aus der Quelle gelesen |
 | `rsi-import_2026-09-06.json` | Einfuhrdatei für den Administrationsbereich |
 | `massnahmen_2026-09-06.json` | Massnahmenart, Massnahmentext und Zuständigkeit je Defizit |
 
 ## Ablauf
 
 ```bash
-python daten/anlegen.py     # erzeugen
-python daten/pruefe.py      # prüfen
+python daten/merkmale_lesen.py      # nur nötig, wenn die Quelle sich ändert
+python daten/anlegen.py             # erzeugen
+python daten/pruefe.py              # prüfen
+python daten/pruefe_die_pruefung.py # die Prüfung prüfen
 ```
+
+`merkmale_lesen.py` braucht die Geodatenbank und `pyogrio`. Die übrigen
+Schritte laufen ohne beides, weil das Ergebnis als JSON danebenliegt.
 
 Danach im Administrationsbereich unter **Export / Import** die Datei
 `rsi-import_2026-09-06.json` einlesen.
@@ -37,6 +46,42 @@ und schreibt über die Edge Function nach Supabase.
 Alle Kennungen sind aus der Standort-Kennung abgeleitet und damit stabil. Die
 save-Funktionen ersetzen einen Datensatz gleicher Kennung, statt einen zweiten
 anzulegen: Ein zweiter Import verdoppelt nichts.
+
+## Woher die Strassenmerkmale kommen
+
+Aus der Perimeterebene der RSI-Geodatenbank, nicht aus dem Kopf. Dort stehen
+sie als Domänencode; den Klartext liefert `output/tabellen/codelisten.csv` des
+Auswertungsprojekts, das ihn aus den Portalexporten gewonnen hat. Die
+Geodatenbank selbst führt keine Domänen mit — sie liegen im Portal, nicht in
+der Kopie.
+
+Sechs Codes kommen in keinem ausgewerteten Export vor und haben deshalb keinen
+Klartext: Verkehrslastklasse 1, Längsgefälle 3, Beleuchtung 3, Begegnungsfall
+5, LOS 2 und Fussgängerstreifen 1. Sie betreffen 18 Werte über alle Szenen und
+bleiben leer; `merkmale_2026-09-06.json` führt sie unter `offene_codes`. Dass
+zwischen «LOS A» und «LOS C» ein «LOS B» liegen dürfte, ist eine Vermutung und
+kein Beleg.
+
+Die Schreibweise ist angepasst, die Aussage nicht: aus «3 - 6 %» wird «3–6 %»,
+aus «beidseitigs lückenlos» «beidseitig lückenlos». Die Tabelle dazu steht in
+`merkmale_lesen.py` unter `SCHREIBWEISE`.
+
+**Ein Wert muss im Katalog stehen.** `src/data/strassenmerkmale.ts` bestimmt,
+was der Administrationsbereich als Auswahlfeld anbietet; ein Wert, der dort in
+keiner Option vorkommt, erschiene nicht und ginge beim nächsten Speichern
+verloren. `pruefe.py` hält jeden geschriebenen Wert gegen den Katalog.
+
+## Warum die Übersetzungen getrennt liegen
+
+Die deutschen Texte stammen aus dem Inspektionsbericht und sind belegt. Die
+Übersetzung ist es nicht — sie ist gemacht. Wer prüfen will, was das Werkzeug
+behauptet, liest `entscheide_2026_09_06.py`; wer die Übersetzung prüfen will,
+liest `sprachen_2026_09_06.py`.
+
+Fehlt eine Übersetzung, bleibt das Feld leer statt den deutschen Satz zu
+tragen. Ein deutscher Satz unter der Kennung «fr» sieht aus wie eine
+Übersetzung und ist keine; die Anwendung fällt beim Lesen ohnehin auf Deutsch
+zurück.
 
 ## Was die Einfuhrdatei bereits fertig trägt
 

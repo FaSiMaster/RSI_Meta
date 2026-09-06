@@ -301,7 +301,7 @@ Die Precache-Grenze steht in `vite.config.ts` auf 3 MiB, weil der Hauptchunk die
 voreingestellten 2 MiB überschreitet.
 
 Gates zum selben Stand: `tsc --noEmit` ohne Fehler, 193 Unit-Prüfungen in 19
-Dateien und 42 Prüfungen im Browser in 7 Dateien, alle grün.
+Dateien und 47 Prüfungen im Browser in 8 Dateien, alle grün.
 
 ---
 

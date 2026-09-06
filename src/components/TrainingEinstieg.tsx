@@ -205,11 +205,23 @@ export default function TrainingEinstieg({ scene, topic, deficits, onStart, onBa
           }}>
             {t('einstieg.merkmale')}
           </p>
-          <div style={{
-            borderRadius: '8px',
-            border: '1px solid var(--rsi-color-border)',
-            overflow: 'hidden',
-          }}>
+          {/* Seit die Szenen ihre Merkmale aus der Perimeterebene mitbringen,
+              sind es bis zu zwanzig. Ohne Höhenbegrenzung schob die Tabelle
+              den Startknopf auf dem Telefon auf 1725 px hinunter — gemessen,
+              nicht geschätzt (e2e/merkmale.spec.ts). Der eigene Scrollbereich
+              braucht tabIndex, sonst ist er mit der Tastatur nicht zu
+              erreichen. */}
+          <div
+            tabIndex={0}
+            role="group"
+            aria-label={t('einstieg.merkmale')}
+            style={{
+              borderRadius: '8px',
+              border: '1px solid var(--rsi-color-border)',
+              overflowX: 'hidden',
+              overflowY: 'auto',
+              maxHeight: '304px',
+            }}>
             <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '13px' }}>
               <thead>
                 <tr style={{ background: 'var(--rsi-color-bg-secondary)' }}>

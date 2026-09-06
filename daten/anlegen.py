@@ -41,16 +41,27 @@ from entscheide_2026_09_06 import (  # noqa: E402
     THEMEN, SZENEN, BESCHREIBUNGEN, NORMREFS, MASSNAHMEN,
     BESTAND_BESCHREIBUNG,
 )
+import sprachen_2026_09_06 as SPR  # noqa: E402
 from normlogik import beurteilung  # noqa: E402
 
 AUSWAHL = 'C:/ClaudeAI/RSI_Analyse/output/RSI_Aufnahme_Auswahl_2026-09-06.csv'
 BESTAND = os.path.join(HIER, 'bestand')
 BAU = 'C:/ClaudeAI/RSI_Analyse/output/THEMEN_BAUANLEITUNG.html'
+MERKMALE = os.path.join(HIER, 'merkmale_2026-09-06.json')
 ARBEITSLISTE = ('C:/ClaudeAI/RSI_Analyse/output/'
                 'AUFNAHMELISTE_ARBEIT_2026-09-06.md')
 
+# Der Werkzeugquellbaum ist hier die massgebende Fassung: Die Bezeichnung
+# eines Sicherheitskriteriums und der Merkmalskatalog stehen dort, und ein
+# zweites Verzeichnis daneben liefe irgendwann auseinander.
+KRITERIUM_LABELS_TS = os.path.join(HIER, '..', 'src', 'data',
+                                   'kriteriumLabels.ts')
+MERKMALSKATALOG_TS = os.path.join(HIER, '..', 'src', 'data',
+                                  'strassenmerkmale.ts')
+
 LAND = 'CH'
 STAND = '2026-09-06'
+SPRACHEN = ('de', 'fr', 'it', 'en')
 
 
 def lies_bestand():
@@ -80,8 +91,149 @@ def lies_bestand():
 
 
 def leer_ml(de=''):
-    """Mehrsprachiges Feld. fr, it und en bleiben leer wie im Bestand."""
+    """Mehrsprachiges Feld, nur deutsch besetzt.
+
+    Für Felder, die keine Entsprechung in einer anderen Sprache haben — die
+    Szenenbeschreibung etwa ist überall leer.
+    """
     return {'de': de, 'fr': '', 'it': '', 'en': ''}
+
+
+def ml(de, andere=None):
+    """Mehrsprachiges Feld aus dem deutschen Text und den Übersetzungen.
+
+    Fehlt eine Übersetzung, bleibt das Feld leer statt den deutschen Text zu
+    tragen: Ein deutscher Satz unter der Kennung «fr» sieht aus wie eine
+    Übersetzung und ist keine. Die Anwendung fällt beim Lesen ohnehin auf
+    Deutsch zurück (`ml()` in appData.ts).
+    """
+    andere = andere or {}
+    aus = {'de': saeubere(de) if de else ''}
+    for s in ('fr', 'it', 'en'):
+        wert = andere.get(s, '')
+        aus[s] = saeubere(wert) if wert else ''
+    return aus
+
+
+def lies_kriteriumlabels():
+    """Die deutschen Bezeichnungen der Sicherheitskriterien.
+
+    Gelesen aus src/data/kriteriumLabels.ts, nicht aus der Kennung gebildet:
+    Aus «velolaengsfuehrung_art» wird sonst «Velolaengsfuehrung art» — mit
+    ae/oe/ue, wo Umlaute hingehören, und mit einem kleingeschriebenen Wort,
+    das gross gehört.
+    """
+    text = open(KRITERIUM_LABELS_TS, encoding='utf-8').read()
+    labels = {m.group(1): m.group(2)
+              for m in re.finditer(r"^\s{2}(\w+):\s+'([^']+)',", text, re.M)}
+    if not labels:
+        raise SystemExit('kriteriumLabels.ts: keine Bezeichnungen gelesen')
+    return labels
+
+
+def lies_merkmalskatalog():
+    """Kennung, Bezeichnung und Wertliste je Merkmal, in der Reihenfolge des
+    Katalogs. Gelesen aus src/data/strassenmerkmale.ts."""
+    text = open(MERKMALSKATALOG_TS, encoding='utf-8').read()
+    aus = []
+    for m in re.finditer(
+            r"id:\s*'([\w]+)',\s*\n\s*label:\s*'([^']+)',\s*\n"
+            r"\s*optionen:\s*\[([^\]]*)\]", text):
+        optionen = re.findall(r"'((?:[^'\\]|\\.)*)'", m.group(3))
+        aus.append((m.group(1), m.group(2), optionen))
+    if not aus:
+        raise SystemExit('strassenmerkmale.ts: kein Merkmal gelesen')
+    return aus
+
+
+def zahl(wert, sprache):
+    """Tausendertrennung je Sprache.
+
+    Deutsch, Französisch und Italienisch: Festabstand ab fünf Ziffern,
+    vierstellige Zahlen ungegliedert (Weisungen der Bundeskanzlei, Rz. 512;
+    Instructions Ziff. 4; Istruzioni Ziff. 8.3). Englisch: Komma im
+    Fliesstext (General Style Guide Kap. 7).
+    """
+    s = str(int(wert))
+    if sprache == 'en':
+        return f'{int(wert):,}'
+    if len(s) < 5:
+        return s
+    teile = []
+    while len(s) > 3:
+        teile.insert(0, s[-3:])
+        s = s[:-3]
+    teile.insert(0, s)
+    return ' '.join(teile)
+
+
+def merkmale_der_szene(katalog, werte):
+    """Die Strassenmerkmale einer Szene, in der Reihenfolge des Katalogs.
+
+    Ein Merkmal, das die Quelle nicht führt, wird gar nicht erst angelegt:
+    Ein leeres Merkmal erschiene im Administrationsbereich als Zeile ohne
+    Wert und liesse offen, ob niemand es erfasst hat oder ob es nicht
+    zutrifft.
+    """
+    aus = []
+    for kennung, label, _optionen in katalog:
+        wert = werte.get(kennung)
+        if not wert:
+            continue
+        label_uebersetzt = SPR.MERKMAL_LABEL.get(kennung, {})
+        if kennung == 'dtv':
+            wert_ml = {s: zahl(wert, s) for s in SPRACHEN}
+        else:
+            wert_uebersetzt = SPR.MERKMAL_WERT.get(wert, {})
+            wert_ml = {'de': wert}
+            wert_ml.update({s: wert_uebersetzt.get(s, '') for s in
+                            ('fr', 'it', 'en')})
+        aus.append({
+            'id': kennung,
+            'labelI18n': {'de': label,
+                          **{s: label_uebersetzt.get(s, '') for s in
+                             ('fr', 'it', 'en')}},
+            'wertI18n': wert_ml,
+        })
+    return aus
+
+
+def saetze(text):
+    """Der senkrechte Strich der Quelle trennt mehrere Massnahmen. Aus jeder
+    wird ein Satz."""
+    teile = [t.strip() for t in text.split('|') if t.strip()]
+    return ' '.join(t if t.endswith(('.', '!', '?')) else t + '.'
+                    for t in teile)
+
+
+def erklaerung(art, text_de, text_uebersetzt):
+    """Die Erklärung auf der Lernkarte: was der Inspektionsbericht als
+    Massnahme vorschlägt.
+
+    Weggelassen ist die Zuständigkeit. Sie steht in der Quelle als Kürzel
+    einer Organisationseinheit; wer das Kürzel nicht kennt, liest nichts
+    daraus, und aufgelöst würde es raten heissen.
+    """
+    arten = [a.strip() for a in art.split(';') if a.strip()]
+    aus = {}
+    for sprache in SPRACHEN:
+        if sprache == 'de':
+            art_text = ', '.join(arten)
+            inhalt = saetze(text_de)
+        else:
+            uebersetzt = [SPR.MASSNAHMENART.get(a, {}).get(sprache, '')
+                          for a in arten]
+            if not all(uebersetzt):
+                aus[sprache] = ''
+                continue
+            art_text = ', '.join(uebersetzt)
+            inhalt = text_uebersetzt.get(sprache, '')
+        if not inhalt:
+            aus[sprache] = ''
+            continue
+        aus[sprache] = SPR.ERKLAERUNG_RAHMEN[sprache].format(
+            art=art_text, text=saeubere(inhalt))
+    return aus
 
 
 def lies_auswahl():
@@ -139,6 +291,19 @@ DEUTLICH = {'A': 0, 'B': 1, 'C': 2, 'D': 3, 'U': 4}
 def main():
     zeilen = lies_auswahl()
     vorschlag = lies_bauanleitung()
+    labels = lies_kriteriumlabels()
+    katalog = lies_merkmalskatalog()
+    merkmale = json.load(open(MERKMALE, encoding='utf-8'))['merkmale']
+
+    # Die deutschen Bezeichnungen stehen in beiden Dateien: im Quellbaum, wo
+    # die Anwendung sie liest, und in der Sprachdatei, wo die Übersetzung
+    # danebensteht. Läuft das auseinander, ist die Übersetzung zu einem
+    # anderen Begriff gemacht worden als dem, der angezeigt wird.
+    for kid, satz in SPR.KRITERIEN.items():
+        if labels.get(kid) != satz['de']:
+            raise SystemExit(
+                f'{kid}: kriteriumLabels.ts sagt «{labels.get(kid)}», die '
+                f'Sprachdatei «{satz["de"]}»')
 
     standorte = {}
     for z in zeilen:
@@ -162,10 +327,11 @@ def main():
 
     themen_aus = []
     for tid, parent, sort, icon, name, beschr in THEMEN:
+        sp = SPR.THEMEN.get(tid, {})
         t = {
             'id': tid,
-            'nameI18n': leer_ml(name),
-            'beschreibungI18n': leer_ml(saeubere(beschr)),
+            'nameI18n': ml(name, sp.get('name')),
+            'beschreibungI18n': ml(beschr, sp.get('beschreibung')),
             'iconKey': icon,
             'sortOrder': sort,
             'isActive': True,
@@ -184,14 +350,16 @@ def main():
         erste = ds[0]
         szene_id = f'SZ_2026_1{i:02d}'
 
+        sp = SPR.SZENEN.get(sid, {})
         szenen_aus.append({
             'id': szene_id,
             'topicId': e['thema'],
-            'nameI18n': leer_ml(e['name']),
+            'nameI18n': ml(e['name'], sp.get('name')),
             'beschreibungI18n': leer_ml(''),
-            'bemerkungI18n': leer_ml(saeubere(e['bemerkung'])),
+            'bemerkungI18n': ml(e['bemerkung'], sp.get('bemerkung')),
             'kontext': e['kontext'],
-            'strassenmerkmale': [],
+            'strassenmerkmale': merkmale_der_szene(katalog,
+                                                   merkmale.get(sid, {})),
             'vorschauBilder': [],
             'vorschauBild1': None,
             'vorschauBild2': None,
@@ -214,12 +382,17 @@ def main():
             v = vorschlag[(sid, nr)]
             defizit_id = f'SD_01{i:02d}{j}'
             beschreibung = BESCHREIBUNGEN.get((sid, nr)) or saeubere(d['Beschreibung'])
+            massnahmenart = saeubere(d['Massnahmenart'])
+            massnahmentext = saeubere(
+                MASSNAHMEN.get((sid, nr)) or d['Massnahmentext'])
             defizite_aus.append({
                 'id': defizit_id,
                 'sceneId': szene_id,
                 'topicId': e['thema'],
-                'nameI18n': leer_ml(v['kriteriumId'].replace('_', ' ').capitalize()),
-                'beschreibungI18n': leer_ml(saeubere(beschreibung)),
+                'nameI18n': ml(labels[v['kriteriumId']],
+                               SPR.KRITERIEN.get(v['kriteriumId'])),
+                'beschreibungI18n': ml(beschreibung,
+                                       SPR.BESCHREIBUNGEN.get((sid, nr))),
                 'kriteriumId': v['kriteriumId'],
                 'kontext': e['kontext'],
                 # Die Einfuhr rechnet nichts nach; die Werte müssen fertig
@@ -232,15 +405,17 @@ def main():
                 'isBooster': False,
                 'normRefs': NORMREFS.get((sid, nr), []),
                 'kategorie': v['kategorie'],
+                'erklaerungI18n': erklaerung(
+                    massnahmenart, massnahmentext,
+                    SPR.MASSNAHMEN.get((sid, nr), {})),
                 'verortung': None,
                 'verortungen': None,
             })
 
             massnahmen[defizit_id] = {
-                'massnahmenart': saeubere(d['Massnahmenart']),
+                'massnahmenart': massnahmenart,
                 # Dieselbe Regel wie bei den Beschreibungen: kein Ortsbezug.
-                'massnahmentext': saeubere(
-                    MASSNAHMEN.get((sid, nr)) or d['Massnahmentext']),
+                'massnahmentext': massnahmentext,
                 'zustaendigkeit': saeubere(d['Zustaendigkeit']),
             }
 

@@ -226,7 +226,7 @@ export default function SzeneModal({ open, initial, isNew, onClose, onSave, onOp
           <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
             {(draft.strassenmerkmale ?? []).length === 0 && (
               <button onClick={initMerkmaleFromKatalog} style={{ padding: '10px 14px', borderRadius: '6px', border: '1px dashed var(--rsi-color-border)', background: 'rgba(0,118,189,0.04)', color: 'var(--rsi-blau)', fontSize: '13px', fontWeight: 600, cursor: 'pointer', textAlign: 'left' }}>
-                Katalog laden (Funktionalität)
+                Katalog laden
               </button>
             )}
             {(draft.strassenmerkmale ?? []).map((m, i) => {
@@ -243,7 +243,7 @@ export default function SzeneModal({ open, initial, isNew, onClose, onSave, onOp
                     ) : null}
                   </div>
                   <div style={{ flex: 1 }}>
-                    {katalogDef ? (
+                    {katalogDef && katalogDef.optionen.length > 0 ? (
                       <select
                         value={m.wertI18n.de}
                         onChange={e => updateMerkmal(i, 'wertI18n', e.target.value)}
