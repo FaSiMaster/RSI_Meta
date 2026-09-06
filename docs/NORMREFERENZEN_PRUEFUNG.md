@@ -67,6 +67,28 @@ Bestand «Querungen für den Fussgänger- und leichten Zweiradverkehr» führt.
 Normalprofil; das GNP-Werkzeug der Fachstelle arbeitet unter derselben Nummer.
 Der Katalogtitel «Fussverkehr — Grundnorm» passt dazu nicht.
 
+### 2.2.1 Kandidaten aus dem Bestand
+
+Für jeden der zehn Einträge: was die Katalognummer im Bestand trägt, und
+welche anderen Normen den gemeinten Gegenstand führen. Auswahl fachlich.
+
+| Katalog | Diese Nummer trägt im Bestand | Kandidaten zum gemeinten Gegenstand |
+|---|---|---|
+| VSS 40 050 «Strassenraum — Grundabmessungen» | Grundstückzufahrten (2019, veraltet) | VSS 40 210/40 212/40 214/40 215 «Entwurf des Strassenraums» (2019); VSS 40 180 «Strassenraumgestaltung in Zentrumsgebieten» (2003, aktiv) |
+| VSS 40 201 «Fussverkehr — Grundnorm» | Geometrisches Normalprofil (2019, **aktiv**) | SN 640 070 «Fussgängerverkehr; Grundnorm» (2014, veraltet); SN 640 075 «Hindernisfreier Verkehrsraum» (2014, aktiv) |
+| VSS 40 202 «Fussverkehr — Gehwegbreite» | Geometrisches Normalprofil; Erarbeitung (2021) | SN 640 153 «Elemente des Querschnittes Gehwege» (veraltet); VSS 40 242 «Trottoirüberfahrten» (2022) |
+| VSS 40 212 «Veloverkehr — Radwege und Radstreifen» | Entwurf des Strassenraums – Gestaltungselemente (2019) | SN 640 151 «Elemente des Querschnittes Radwege und Radstreifen» (veraltet); SN 640 060 «Leichter Zweiradverkehr; Grundlagen» (2000) |
+| VSS 40 213 «Veloverkehr — Führung an Knoten» | Entwurf des Strassenraumes; Verkehrsberuhigungselemente (2019) | **VSS 40 252 «Knoten; Führung des Veloverkehrs» (1994)**; SN 640 064 (2009) |
+| VSS 40 241 «Fussgaengerstreifen» | Querungen für den Fussgänger- und leichten Zweiradverkehr (2019, veraltet) | **Von der Fachstelle bestätigt.** Daneben VSS 40 093 «Fussgängerstreifen» (2012, aktiv) und VSS 40 008 «Fussgängerstreifen; Anforderungen» (2011, aktiv) |
+| VSS 40 263 «Querschnitt Hauptverkehrsstrassen» | Knoten; Knoten mit Kreisverkehr (2019) | **VSS 40 067 «Querschnitte Hauptstrassen» (2012, aktiv)**; VSS 40 068 «Querschnitte Verbindungsstrassen» |
+| VSS 40 281 «Knoten mit Lichtsignalanlagen» | Parkieren – Angebot an Parkfeldern (2019) | SN 640 837 «Lichtsignalanlagen» (2015, ausser Kraft); VSS 40 085 «Betriebssicherheit von Lichtsignalanlagen» (2006, aktiv) |
+| VSS 40 360 «Markierungen» | Strassenentwässerung, Sammelleitungen und Drainagen (2019) | **VSS 40 164 «Strassenmarkierung» (2011, aktiv)**; SN 640 850A «Markierungen; Ausgestaltung und Anwendungsbereiche» (2005, aktiv) |
+| SN 640 886 «Sicherheit in Strassentunneln — Baustellen» | Temporäre Signalisation (ausser Kraft) | VSS 40 886.1 «Signalisation von Baustellen auf Haupt- und Nebenstrassen» (2019); VSS 40 885 «Temporäre Signalisation» (2019); VSS 40 346 «Baustellensignalisation» (2008, aktiv) |
+
+Fett hervorgehoben ist, wo ein Kandidat den Katalogtitel besonders genau
+trifft. Auch das ist ein Hinweis, kein Urteil — VSS 40 241 zeigt, dass eine
+scheinbar bessere Übereinstimmung in die Irre führen kann.
+
 ### 2.3 Bestand führt die Nummer ohne Titel — nicht prüfbar
 
 VSS 40 138 · SN 640 080 · VSS 40 372 · VSS 40 380 · VSS 40 384 ·

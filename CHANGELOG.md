@@ -63,6 +63,34 @@ schriftliche Zustimmung braucht.
 Im Impressum wechselten «Tool» und «Werkzeug» für dieselbe Sache; der Text
 führt neu durchgehend «Werkzeug».
 
+### Hinzugefügt — Wächter über die Normnummern (v0.15.0)
+
+`src/test/normnummern.test.ts` hält jede Normnummer aus Regelwerkkatalog und
+Seed-Daten gegen die Tracking-Datenbank des Projekts vss_Normen und meldet,
+was dort als veraltet oder ausser Kraft geführt wird oder gar nicht vorkommt.
+Der Pfad zur Datenbank ist über `VSS_NORMEN_DB` setzbar; fehlt sie,
+überspringt sich der Test **mit sichtbarem Hinweis** statt still.
+
+Der bekannte Stand steht in zwei Ausnahmelisten mit Begründung je Eintrag;
+jede neue Meldung lässt den Test anschlagen. Eine sechste Prüfung räumt die
+Listen wieder auf: Eine Ausnahme, die nicht mehr gebraucht wird, verdeckt
+künftige Befunde.
+
+**Beim ersten Lauf gefunden:** Der Kopfkommentar des Katalogs nennt als Quelle
+VSS 41 002, im Bestand **ausser Kraft**. Die Seed-Daten verweisen auf
+SN 640 852 «Taktil-visuelle Markierungen», dort **veraltet**.
+
+**Was der Wächter nicht kann**, steht in seinem Kopf: beurteilen, ob eine
+Nummer den gemeinten Gegenstand trifft. Den ISSI-Fehler hätte er nicht
+gefunden. Er hätte gemeldet, dass 29 Defizite auf eine veraltete Norm zeigen.
+
+Gegen vier eingebaute Fehler geprüft, alle vier gefunden. Ein eigener Fehler
+beim Bauen: Die erste Regex verlangte nur zwei Ziffern und meldete «VSS 41»
+aus dem Fliesstext «SN 641 xxx auf VSS 41 xxx» als unauffindbare Norm.
+
+`docs/NORMREFERENZEN_PRUEFUNG.md` um Abschnitt 2.2.1 ergänzt: die zehn offenen
+Katalogeinträge mit allen Bestandskandidaten.
+
 ### Geändert — Normbezüge durchgehend nachgezogen (v0.14.2)
 
 Die geltende Nummer VSS 41 723 steht neu in README, CLAUDE.md, im
