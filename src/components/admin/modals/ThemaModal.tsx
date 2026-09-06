@@ -3,7 +3,8 @@
 import { useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { X, Save, Sparkles } from 'lucide-react'
-import { type AppTopic, getOberthemen, ml } from '../../../data/appData'
+import { type AppTopic, getOberthemen, getTopicCountry, ml } from '../../../data/appData'
+import { laenderNachName, landName, LAND_VORGABE, istLandCode, type LandCode } from '../../../data/laender'
 import { TOPIC_ICONS, suggestIconKey } from '../../../data/topicIcons'
 import { useFocusTrap } from '../../../lib/useFocusTrap'
 import { Section } from '../fields/Section'
@@ -48,11 +49,20 @@ export default function ThemaModal({ open, initial, initialTyp, onClose, onSave 
     setDraft(prev => prev ? { ...prev, [field]: { ...prev[field], [l]: v } } : prev)
   }
 
+  // Das Land ist Pflicht am obersten Thema (v0.16.2). Untergeordnete Themen
+  // erben es und bekommen deshalb kein eigenes Feld — auch dann nicht, wenn
+  // eines aus einem frueheren Stand mitkommt.
+  const land: LandCode = istLandCode(draft.country) ? draft.country : LAND_VORGABE
+  const geerbtesLand: LandCode | null =
+    typ === 'unter' && draft.parentTopicId ? getTopicCountry(draft.parentTopicId) : null
+
   function handleSave() {
     if (!draft) return
+    const istUnter = typ === 'unter'
     const thema: AppTopic = {
       ...draft,
-      parentTopicId: typ === 'unter' ? (draft.parentTopicId ?? null) : null,
+      parentTopicId: istUnter ? (draft.parentTopicId ?? null) : null,
+      country: istUnter ? undefined : land,
     }
     onSave(thema, typ)
   }
@@ -144,6 +154,33 @@ export default function ThemaModal({ open, initial, initialTyp, onClose, onSave 
               </span>
             </span>
           </label>
+        </Section>
+
+        {/* Land — Pflicht am obersten Thema, geerbt beim Unterthema */}
+        <Section label={t('land.label')}>
+          {typ === 'ober' ? (
+            <>
+              <select
+                value={land}
+                onChange={e => setDraft(prev => prev ? { ...prev, country: e.target.value as LandCode } : prev)}
+                aria-label={t('land.label')}
+                style={{ width: '100%', padding: '8px 10px', borderRadius: '6px', border: '1px solid var(--rsi-color-border)', background: 'var(--rsi-color-bg-secondary)', color: 'var(--rsi-color-text)', fontSize: '13px', fontFamily: 'var(--rsi-font)' }}
+              >
+                {laenderNachName(lang).map(l => (
+                  <option key={l.code} value={l.code}>{l.name} ({l.code})</option>
+                ))}
+              </select>
+              <p style={{ fontSize: '11px', color: 'var(--rsi-color-text-disabled)', marginTop: '6px' }}>
+                {t('land.pflicht_hinweis')}
+              </p>
+            </>
+          ) : (
+            <p style={{ fontSize: '13px', color: 'var(--rsi-color-text-muted)', margin: 0 }}>
+              {geerbtesLand
+                ? t('land.geerbt', { land: `${landName(geerbtesLand, lang)} (${geerbtesLand})` })
+                : t('land.pflicht_hinweis')}
+            </p>
+          )}
         </Section>
 
         <Section label={t('admin.thema_typ')}>

@@ -556,5 +556,20 @@
   },
   "footer": {
     "nutzungsbedingungen": "Nutzungsbedingungen"
+  },
+  "land": {
+    "filter_alle": "Alle Länder",
+    "geerbt": "Erbt das Land vom obersten Themenbereich: {{land}}",
+    "import_abgelehnt": "{{anzahl}} Szenen nicht übernommen: Das Land passt nicht zum Themenbereich.",
+    "kein_verfahren_punkte": "Es werden keine Punkte vergeben und nichts gespeichert.",
+    "kein_verfahren_text": "Die Beurteilung folgt dem Schweizer Neunschrittpfad. Für das Land {{land}} ist kein Verfahren hinterlegt, deshalb lässt sich dieses Defizit nicht beurteilen.",
+    "kein_verfahren_titel": "Für dieses Land ist noch kein Verfahren hinterlegt",
+    "kurs_anderes_land": "Nicht wählbar. Dieser Themenbereich gehört zum Land {{land}}, der Kurs zum Land {{kursland}}.",
+    "kurs_gehoert_zu": "Land des Kurses: {{land}}",
+    "kurs_noch_offen": "Das Land ergibt sich aus dem ersten zugeordneten Themenbereich.",
+    "label": "Land",
+    "ohne_verfahren": "ohne Verfahren",
+    "pflicht_hinweis": "Das Land gilt für alle Szenen und Defizite dieses Themenbereichs.",
+    "zurueck": "Zurück zur Szene"
   }
 }

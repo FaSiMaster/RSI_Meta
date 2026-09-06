@@ -15,6 +15,8 @@ import {
 import { ABWEICHUNG_I18N } from '../data/abweichungLabels'
 import { KRITERIUM_LABELS } from '../data/kriteriumLabels'
 import { calcScore as calcScorePure, MAX_PUNKTE_PRO_DEFIZIT, KATEGORIE_TEILPUNKTE, HINT_ABZUG_HOTSPOTS } from '../data/scoreCalc'
+import { hatVerfahren } from '../data/verfahren'
+import { landName } from '../data/laender'
 import type { RSIDimension, NACADimension, ResultDimension } from '../types'
 
 // ── Farbhilfen ──
@@ -719,6 +721,73 @@ export default function ScoringFlow({ deficit, scene, kategorieRichtig = true, h
           />
         )}
       </motion.div>
+    )
+  }
+
+  // ── Kein Verfahren fuer dieses Land (v0.16.2) ──
+  // Der Neunschrittpfad gilt fuer die Schweiz. Traegt die Szene ein anderes
+  // Land, gibt es hier nichts zu beurteilen: kein Ersatzablauf, keine Punkte,
+  // kein Speichern. Der Abbruch fuehrt ueber onBack() zurueck in die Szene,
+  // damit kein halbes Ergebnis entsteht.
+  if (!hatVerfahren(scene.country)) {
+    const land = landName(scene.country ?? '', lang)
+    return (
+      <div style={{ flex: 1, overflow: 'auto', background: 'var(--rsi-color-bg)', display: 'flex', flexDirection: 'column' }}>
+        <div style={{ padding: '12px 20px 10px', borderBottom: '1px solid var(--rsi-color-border)', flexShrink: 0 }}>
+          <button
+            onClick={onBack}
+            style={{
+              display: 'flex', alignItems: 'center', gap: '6px', background: 'none', border: 'none',
+              color: 'var(--rsi-color-text-muted)', fontSize: '13px', fontWeight: 600, cursor: 'pointer',
+              padding: 0, fontFamily: 'var(--rsi-font)',
+            }}
+          >
+            <ArrowLeft size={15} /> {t('land.zurueck')}
+          </button>
+        </div>
+
+        <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '32px 20px' }}>
+          <div
+            role="alert"
+            style={{
+              maxWidth: '520px', textAlign: 'center', display: 'flex',
+              flexDirection: 'column', alignItems: 'center', gap: '14px',
+            }}
+          >
+            <div style={{
+              width: '52px', height: '52px', borderRadius: '50%',
+              background: 'color-mix(in srgb, var(--rsi-orange) 13%, transparent)',
+              color: 'var(--rsi-orange)',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+            }}>
+              <AlertTriangle size={26} />
+            </div>
+
+            <h2 style={{ fontSize: '19px', fontWeight: 700, color: 'var(--rsi-color-text)', margin: 0 }}>
+              {t('land.kein_verfahren_titel')}
+            </h2>
+
+            <p style={{ fontSize: '14px', color: 'var(--rsi-color-text-muted)', margin: 0, lineHeight: 1.6 }}>
+              {t('land.kein_verfahren_text', { land })}
+            </p>
+
+            <p style={{ fontSize: '13px', color: 'var(--rsi-color-text-disabled)', margin: 0 }}>
+              {t('land.kein_verfahren_punkte')}
+            </p>
+
+            <button
+              onClick={onBack}
+              style={{
+                marginTop: '6px', padding: '10px 20px', borderRadius: 'var(--rsi-radius-btn)',
+                background: 'var(--rsi-dunkelblau)', color: 'white', border: 'none',
+                fontSize: '14px', fontWeight: 700, cursor: 'pointer', fontFamily: 'var(--rsi-font)',
+              }}
+            >
+              {t('land.zurueck')}
+            </button>
+          </div>
+        </div>
+      </div>
     )
   }
 

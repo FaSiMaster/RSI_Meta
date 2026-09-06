@@ -556,5 +556,20 @@
   },
   "footer": {
     "nutzungsbedingungen": "Conditions d'utilisation"
+  },
+  "land": {
+    "filter_alle": "Tous les pays",
+    "geerbt": "Hérite le pays du domaine thématique principal : {{land}}",
+    "import_abgelehnt": "{{anzahl}} scènes non reprises : le pays ne correspond pas au domaine thématique.",
+    "kein_verfahren_punkte": "Aucun point n’est attribué et rien n’est enregistré.",
+    "kein_verfahren_text": "L’évaluation suit la méthode suisse en neuf étapes. Aucune méthode n’est définie pour le pays {{land}}, ce déficit ne peut donc pas être évalué.",
+    "kein_verfahren_titel": "Aucune méthode n’est encore définie pour ce pays",
+    "kurs_anderes_land": "Non sélectionnable. Ce domaine thématique relève du pays {{land}}, le cours du pays {{kursland}}.",
+    "kurs_gehoert_zu": "Pays du cours : {{land}}",
+    "kurs_noch_offen": "Le pays découle du premier domaine thématique attribué.",
+    "label": "Pays",
+    "ohne_verfahren": "sans méthode",
+    "pflicht_hinweis": "Le pays vaut pour toutes les scènes et tous les déficits de ce domaine thématique.",
+    "zurueck": "Retour à la scène"
   }
 }

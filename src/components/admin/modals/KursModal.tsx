@@ -3,7 +3,8 @@
 import { useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { X, Save, Eye, EyeOff } from 'lucide-react'
-import { type AppTopic, type Kurs, ml } from '../../../data/appData'
+import { type AppTopic, type Kurs, ml, getTopicCountry } from '../../../data/appData'
+import { landName, type LandCode } from '../../../data/laender'
 import { useFocusTrap } from '../../../lib/useFocusTrap'
 import { Section } from '../fields/Section'
 import { generateKursCode } from '../utils/adminHelpers'
@@ -42,6 +43,23 @@ export default function KursModal({ open, initial, topics, onClose, onSave }: Pr
 
   if (!open || !draft) return null
 
+  // Ein Kurs gehoert zu genau einem Land (v0.16.2). Das Land ergibt sich aus
+  // dem ersten zugeordneten Themenbereich und steht danach fest, solange
+  // mindestens ein Thema angehakt ist. Nimmt man alle wieder weg, ist das Land
+  // wieder offen — sonst haenge ein Kurs an einem Land, das er nicht mehr
+  // fuehrt.
+  const kursLand: LandCode | null = (() => {
+    const erstes = draft.topicIds
+      .map(id => topics.find(tp => tp.id === id))
+      .find(tp => tp != null)
+    if (!erstes) return null
+    return getTopicCountry(erstes.id, topics)
+  })()
+
+  function landDesThemas(thema: AppTopic): LandCode {
+    return getTopicCountry(thema.id, topics)
+  }
+
   function toggleKursTopic(topicId: string) {
     setDraft(prev => {
       if (!prev) return prev
@@ -54,7 +72,9 @@ export default function KursModal({ open, initial, topics, onClose, onSave }: Pr
 
   function handleSave() {
     if (!draft) return
-    onSave(draft)
+    // Das abgeleitete Land wird mitgespeichert. Ohne Themen bleibt der
+    // bisherige Wert stehen; die Leseregel setzt sonst die Vorgabe.
+    onSave(kursLand ? { ...draft, country: kursLand } : draft)
   }
 
   return (
@@ -153,15 +173,51 @@ export default function KursModal({ open, initial, topics, onClose, onSave }: Pr
         </Section>
 
         <Section label={t('admin.kurs_topics')}>
+          <p style={{ fontSize: '12px', color: 'var(--rsi-color-text-muted)', margin: '0 0 10px' }}>
+            {kursLand
+              ? t('land.kurs_gehoert_zu', { land: landName(kursLand, lang) })
+              : t('land.kurs_noch_offen')}
+          </p>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-            {topics.filter(tp => tp.isActive).map(tp => (
-              <label key={tp.id} style={{ display: 'flex', alignItems: 'center', gap: '10px', fontSize: '14px', color: 'var(--rsi-color-text)', cursor: 'pointer' }}>
-                <input type="checkbox"
-                  checked={draft.topicIds.includes(tp.id)}
-                  onChange={() => toggleKursTopic(tp.id)} />
-                {ml(tp.nameI18n, lang)}
-              </label>
-            ))}
+            {topics.filter(tp => tp.isActive).map(tp => {
+              const land = landDesThemas(tp)
+              const angehakt = draft!.topicIds.includes(tp.id)
+              // Gesperrt ist nur, was ein anderes Land traegt. Bereits
+              // angehakte Themen bleiben bedienbar, damit ein Kurs, dessen
+              // Themen einmal auseinanderliefen, sich aufloesen laesst.
+              const gesperrt = kursLand != null && land !== kursLand && !angehakt
+              const begruendung = gesperrt
+                ? t('land.kurs_anderes_land', {
+                    land: landName(land, lang),
+                    kursland: landName(kursLand, lang),
+                  })
+                : undefined
+              return (
+                <label
+                  key={tp.id}
+                  title={begruendung}
+                  style={{
+                    display: 'flex', alignItems: 'flex-start', gap: '10px', fontSize: '14px',
+                    color: gesperrt ? 'var(--rsi-color-text-disabled)' : 'var(--rsi-color-text)',
+                    cursor: gesperrt ? 'not-allowed' : 'pointer',
+                  }}
+                >
+                  <input type="checkbox"
+                    checked={angehakt}
+                    disabled={gesperrt}
+                    onChange={() => toggleKursTopic(tp.id)}
+                    style={{ marginTop: '3px' }} />
+                  <span>
+                    {ml(tp.nameI18n, lang)}
+                    {gesperrt && (
+                      <span style={{ display: 'block', fontSize: '11px', color: 'var(--rsi-color-text-disabled)', marginTop: '2px' }}>
+                        {begruendung}
+                      </span>
+                    )}
+                  </span>
+                </label>
+              )
+            })}
           </div>
         </Section>
 

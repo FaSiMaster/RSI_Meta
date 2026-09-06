@@ -15,7 +15,7 @@ import {
   getScenes, saveScene, deleteScene, getAllScenes,
   getDeficits, saveDeficit, deleteDeficit, getAllDeficits,
   getKurse, saveKurs, deleteKurs, getKursStatus,
-  getTopicsTree, ml,
+  getTopicsTree, getTopicCountry, ml,
   type AppTopic, type AppScene, type AppDeficit, type TopicNode, type Kurs,
 } from '../data/appData'
 import BildEditor from './admin/BildEditor'
@@ -28,6 +28,7 @@ import {
   emptyDeficit, emptyScene, emptyTopic, emptyKurs, riskBg,
   type AdminTab,
 } from './admin/utils/adminHelpers'
+import { landName, istLandCode } from '../data/laender'
 
 export default function AdminDashboard() {
   const { t, i18n } = useTranslation()
@@ -63,6 +64,15 @@ export default function AdminDashboard() {
   const [themaTyp, setThemaTyp] = useState<'ober' | 'unter'>('ober')
 
   const [szeneGespeichertFeedback, setSzeneGespeichertFeedback] = useState(false)
+
+  // ── Landfilter (v0.16.2) ──
+  const [landFilter, setLandFilter] = useState<string>('')
+  const laenderImBestand = Array.from(
+    new Set(topics.map(tp => getTopicCountry(tp.id, topics))),
+  ).sort()
+  const sichtbareTopics = landFilter
+    ? topics.filter(tp => getTopicCountry(tp.id, topics) === landFilter)
+    : topics
 
   // ── Kurse-Tab State ──
   const [kurse, setKurse] = useState<Kurs[]>([])
@@ -378,7 +388,24 @@ export default function AdminDashboard() {
         }
         const data = check.data
         if (data.topics)   data.topics.forEach(saveTopic)
-        if (data.scenes)   data.scenes.forEach(saveScene)
+
+        // Landesgrenze (v0.16.2): Eine Szene gehoert in den Themenbereich
+        // ihres eigenen Landes. Der Import ist heute der einzige Weg, eine
+        // Szene ueber diese Grenze zu bewegen — die Oberflaeche bietet kein
+        // Verschieben an. Abgewiesene Szenen werden gezaehlt und gemeldet,
+        // nicht still verworfen.
+        let szenenAbgelehnt = 0
+        if (data.scenes) {
+          const themenNachher = getTopics()
+          for (const szene of data.scenes) {
+            const themaLand = getTopicCountry(szene.topicId, themenNachher)
+            if (istLandCode(szene.country) && szene.country !== themaLand) {
+              szenenAbgelehnt++
+              continue
+            }
+            saveScene(szene)
+          }
+        }
         if (data.deficits) data.deficits.forEach(saveDeficit)
         if (data.kurse)    await Promise.all(data.kurse.map(k => saveKurs(k)))
         const ts = getTopics()
@@ -390,8 +417,11 @@ export default function AdminDashboard() {
           setScenes(sc)
           setSelectedScene(sc[0] ?? null)
         }
-        const count = (data.topics?.length ?? 0) + (data.scenes?.length ?? 0) + (data.deficits?.length ?? 0)
-        setImportFeedback(`Import erfolgreich: ${count} Datensätze geladen.`)
+        const count = (data.topics?.length ?? 0) + (data.scenes?.length ?? 0) - szenenAbgelehnt + (data.deficits?.length ?? 0)
+        const hinweis = szenenAbgelehnt > 0
+          ? ` ${t('land.import_abgelehnt', { anzahl: szenenAbgelehnt })}`
+          : ''
+        setImportFeedback(`Import erfolgreich: ${count} Datensätze geladen.${hinweis}`)
         setTimeout(() => setImportFeedback(null), 4000)
       } catch (err) {
         const msg = err instanceof Error ? err.message : 'Unbekannter Fehler'
@@ -429,10 +459,36 @@ export default function AdminDashboard() {
       {/* Sidebar (nur bei Defizite-Tab) */}
       {activeTab === 'defizite' && (
         <aside style={{ width: '200px', minWidth: '200px', borderRight: '1px solid var(--rsi-color-border)', background: 'var(--rsi-color-bg-secondary)', display: 'flex', flexDirection: 'column', padding: '16px 0', overflowY: 'auto' }}>
+          {/* Landfilter (v0.16.2): filtert Themen und damit den ganzen
+              Defizitkatalog, weil Szenen und Defizite am Thema haengen.
+              Erscheint erst, wenn es mehr als ein Land gibt — bei einem
+              einzigen waere er eine Auswahl ohne Wahl. */}
+          {laenderImBestand.length > 1 && (
+            <div style={{ padding: '0 16px 12px' }}>
+              <label
+                htmlFor="admin-landfilter"
+                style={{ display: 'block', fontSize: '10px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.14em', color: 'var(--rsi-color-text-disabled)', paddingBottom: '6px' }}
+              >
+                {t('land.label')}
+              </label>
+              <select
+                id="admin-landfilter"
+                value={landFilter}
+                onChange={e => setLandFilter(e.target.value)}
+                style={{ width: '100%', padding: '6px 8px', borderRadius: '6px', border: '1px solid var(--rsi-color-border)', background: 'var(--rsi-color-bg)', color: 'var(--rsi-color-text)', fontSize: '12px', fontFamily: 'var(--rsi-font)' }}
+              >
+                <option value="">{t('land.filter_alle')}</option>
+                {laenderImBestand.map(code => (
+                  <option key={code} value={code}>{landName(code, lang)}</option>
+                ))}
+              </select>
+            </div>
+          )}
+
           <p style={{ fontSize: '10px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.14em', color: 'var(--rsi-color-text-disabled)', padding: '0 16px 8px' }}>
             {t('admin.topics')}
           </p>
-          {topics.map(tp => (
+          {sichtbareTopics.map(tp => (
             <button key={tp.id} onClick={() => setSelectedTopic(tp)}
               style={{ textAlign: 'left', padding: '10px 16px', fontSize: '13px', fontWeight: selectedTopic?.id === tp.id ? 700 : 500, color: selectedTopic?.id === tp.id ? 'var(--rsi-color-accent)' : 'var(--rsi-color-text)', borderLeft: selectedTopic?.id === tp.id ? '3px solid var(--rsi-blau)' : '3px solid transparent', background: selectedTopic?.id === tp.id ? 'rgba(0,118,189,0.07)' : 'transparent', border: 'none', cursor: 'pointer' }}>
               {ml(tp.nameI18n, lang)}

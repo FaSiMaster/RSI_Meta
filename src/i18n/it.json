@@ -556,5 +556,20 @@
   },
   "footer": {
     "nutzungsbedingungen": "Condizioni d'uso"
+  },
+  "land": {
+    "filter_alle": "Tutti i paesi",
+    "geerbt": "Eredita il paese dall’ambito tematico principale: {{land}}",
+    "import_abgelehnt": "{{anzahl}} scene non acquisite: il paese non corrisponde all’ambito tematico.",
+    "kein_verfahren_punkte": "Non vengono assegnati punti e non viene salvato nulla.",
+    "kein_verfahren_text": "La valutazione segue il metodo svizzero a nove passi. Per il paese {{land}} non è definito alcun metodo, quindi questo deficit non può essere valutato.",
+    "kein_verfahren_titel": "Per questo paese non è ancora definito alcun metodo",
+    "kurs_anderes_land": "Non selezionabile. Questo ambito tematico appartiene al paese {{land}}, il corso al paese {{kursland}}.",
+    "kurs_gehoert_zu": "Paese del corso: {{land}}",
+    "kurs_noch_offen": "Il paese deriva dal primo ambito tematico assegnato.",
+    "label": "Paese",
+    "ohne_verfahren": "senza metodo",
+    "pflicht_hinweis": "Il paese vale per tutte le scene e tutti i deficit di questo ambito tematico.",
+    "zurueck": "Torna alla scena"
   }
 }

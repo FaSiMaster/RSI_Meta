@@ -1253,6 +1253,17 @@ export function getGesamtRanking(): RankingEntryAggregat[] {
   return buildRanking(getAllSceneResults())
 }
 
+/**
+ * Gesamt-Ranking, eingeschränkt auf eine Menge von Szenen (v0.16.2).
+ * Gebraucht für den Landfilter: die Rangliste fasst sonst über alle Themen
+ * und damit über alle Länder hinweg zu einer Zahl zusammen. Ohne Einschränkung
+ * (null) verhält sie sich wie zuvor.
+ */
+export function getGesamtRankingFuerSzenen(sceneIds: ReadonlySet<string> | null): RankingEntryAggregat[] {
+  const alle = getAllSceneResults()
+  return buildRanking(sceneIds ? alle.filter(r => sceneIds.has(r.sceneId)) : alle)
+}
+
 // Thema-Ranking: beste Resultate pro User, gefiltert nach TopicId
 export function getThemaRanking(topicId: string): RankingEntryAggregat[] {
   return buildRanking(getAllSceneResults().filter(r => r.topicId === topicId))

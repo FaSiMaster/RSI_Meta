@@ -556,5 +556,20 @@
   },
   "footer": {
     "nutzungsbedingungen": "Terms of use"
+  },
+  "land": {
+    "filter_alle": "All countries",
+    "geerbt": "Inherits the country from the top-level topic area: {{land}}",
+    "import_abgelehnt": "{{anzahl}} scenes not imported: the country does not match the topic area.",
+    "kein_verfahren_punkte": "No points are awarded and nothing is saved.",
+    "kein_verfahren_text": "The assessment follows the Swiss nine-step procedure. No procedure is defined for the country {{land}}, so this deficit cannot be assessed.",
+    "kein_verfahren_titel": "No procedure is defined for this country yet",
+    "kurs_anderes_land": "Not selectable. This topic area belongs to the country {{land}}, the course to the country {{kursland}}.",
+    "kurs_gehoert_zu": "Country of the course: {{land}}",
+    "kurs_noch_offen": "The country follows from the first topic area assigned.",
+    "label": "Country",
+    "ohne_verfahren": "no procedure",
+    "pflicht_hinweis": "The country applies to every scene and deficit in this topic area.",
+    "zurueck": "Back to the scene"
   }
 }

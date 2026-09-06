@@ -10,6 +10,8 @@ import {
   saveSceneResult, getVersuchAnzahl, getGesamtScore, ml,
 } from './data/appData'
 import { MAX_PUNKTE_PRO_DEFIZIT, calcScoreFromChoices, KATEGORIE_TEILPUNKTE } from './data/scoreCalc'
+import { hatVerfahren } from './data/verfahren'
+import { logger } from './lib/logger'
 import { KATEGORIE_PUNKTE } from './data/scoringEngine'
 import { istBestanden, kriteriumFuerSzene } from './data/bestandenKriterium'
 import type { AppTopic, AppScene, AppDeficit, FoundDeficit, DefizitResult, SceneResult } from './data/appData'
@@ -177,6 +179,18 @@ export default function App() {
   // ── Defizit im Viewer bestätigt → ScoringFlow (Auswertung) starten ────────
   function handleDeficitConfirmed(payload: DeficitConfirmedPayload) {
     const inVR = xrStore.getState().session != null
+
+    // Kein Verfahren für das Land der Szene (v0.16.2): nichts berechnen,
+    // nichts speichern. Im Browser übernimmt ScoringFlow den Hinweis; in der
+    // Brille gibt es dafür noch kein Panel, deshalb endet der Weg hier still.
+    // Ohne diese Abfrage rechnete der VR-Pfad die Punkte selbst weiter und die
+    // Regel «kein Ersatzablauf, keine Punkte» gälte nur im Browser.
+    if (inVR && !hatVerfahren(currentScene?.country)) {
+      logger.warn(
+        `Bewertung abgebrochen: für das Land «${currentScene?.country ?? '—'}» ist kein Verfahren hinterlegt.`,
+      )
+      return
+    }
 
     if (!inVR) {
       // Browser-Pfad: ScoringFlow-HTML-Overlay wie bisher.

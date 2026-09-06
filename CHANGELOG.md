@@ -9,6 +9,65 @@ Versionierung nach [Semantic Versioning](https://semver.org/lang/de/).
 
 ## [Unreleased]
 
+### Hinzugefügt – Ablaufwahl nach Land und Regeln (v0.16.2)
+
+Dritter von vier Schritten. Das Land entscheidet jetzt, ob überhaupt beurteilt
+wird, und es bindet Kurs, Themenbereich und Rangliste.
+
+**Ohne Verfahren keine Beurteilung.** `src/data/verfahren.ts` hält die
+Zuordnung Land → Verfahren; heute trägt genau ein Land eines, die Schweiz mit
+dem Neunschrittpfad. Für jedes andere Land zeigt der Bewertungsfluss einen
+Hinweis und bricht ab: kein Ersatzablauf, keine Punkte, nichts gespeichert.
+Ein Bestand ohne Landangabe gilt weiter als schweizerisch und läuft
+unverändert.
+
+Die Sperre steht an beiden Wegen. Der Bewertungsfluss im Browser zeigt den
+Hinweis; der VR-Pfad rechnete die Punkte bisher selbst in `App.tsx` und wäre
+an der Regel vorbeigelaufen – dort endet er nun still, weil es für die Brille
+noch kein Hinweis-Panel gibt. Das ist der bewusst offene Rest dieses Schritts.
+
+**Ein Kurs gehört zu einem Land.** Das Land ergibt sich aus dem ersten
+zugeordneten Themenbereich und steht danach fest; Themen anderer Länder sind
+nicht mehr wählbar und tragen die Begründung sichtbar an sich. Nimmt man alle
+Themen wieder weg, ist das Land erneut offen.
+
+**Im Administrationsbereich** ist das Land beim obersten Themenbereich ein
+Pflichtfeld mit Vorgabe Schweiz und einer Auswahl über alle 249 Codes;
+untergeordnete Themen zeigen das geerbte Land und wählen keines. Ein Landfilter
+in der Seitenleiste schränkt Themen und damit den ganzen Defizitkatalog ein –
+er erscheint erst, wenn es mehr als ein Land gibt.
+
+**Die Landesgrenze der Szene** wird beim Import durchgesetzt. Das ist heute der
+einzige Weg, eine Szene über sie hinweg zu bewegen: Die Oberfläche bietet gar
+kein Verschieben an, eine Szene gehört zu dem Thema, unter dem sie angelegt
+wurde. Abgewiesene Szenen werden gezählt und gemeldet, nicht still verworfen.
+
+**Die Gesamtrangliste** summierte über alle Themen und damit über alle Länder
+zu einer Zahl. Sie tut es weiterhin – aber das Land steht jetzt als Spalte
+dabei, und ein Filter trennt es; Vorgabe bleibt «alle Länder». Spalte und
+Filter erscheinen erst, wenn Ergebnisse aus mehr als einem Land vorliegen.
+Kurs-, Thema- und Szenenrangliste waren nie länderübergreifend: Sie filtern
+schon vorher auf einen Kurs, ein Thema oder eine Szene.
+
+**Ein Sprachbefund aus der Prüfung.** Die erste Fassung schrieb «Dieser Kurs
+gehört zu Schweiz» – Ländernamen tragen einen Artikel oder keinen, und ein
+Satzbau mit Präposition trägt deshalb nicht über 249 Namen. Drei
+Formulierungen sind umgestellt, sodass jeder Name passt.
+
+25 neue Prüfungen: die Weiche gegen alle 249 Codes, die Landbindung des Kurses,
+die gefilterte Rangliste an einem Fall, in dem sich die Reihenfolge zwischen
+den Ländern umkehrt, der Hinweis am gerenderten Bewertungsfluss in vier
+Sprachen (über `react-dom/server`, ohne neues Paket) und sechs Prüfungen im
+Browser. Drei eingebaute Fehler belegen, dass sie messen: ein Verfahren für
+jedes Land lässt 12 fallen, eine entfernte Sperre 9, ein Kurs ohne Landbindung
+genau die eine Browserprüfung dafür.
+
+**Merksatz aus demselben Lauf:** Ein fehlgeschlagener Build lässt den
+Browserlauf gegen das alte Bauergebnis laufen – und der meldet grün. Der
+Mutationsnachweis prüft seither zuerst, ob der Build durchlief.
+
+---
+
 ### Geändert – Verfahrensbezeichnungen in einer eigenen Datei (v0.16.1)
 
 Zweiter von vier Schritten auf dem Weg zu einem zweiten Land. Die Wörter des

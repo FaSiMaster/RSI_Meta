@@ -4,7 +4,8 @@
 
 import { Trophy, ArrowLeft, Clock, Loader2 } from 'lucide-react'
 import {
-  getGesamtRanking, getThemaRanking, getSzeneRanking, getKursRanking,
+  getGesamtRanking, getGesamtRankingFuerSzenen, getAllSceneResults,
+  getThemaRanking, getSzeneRanking, getKursRanking,
   getTopics, getAllScenes, getKurse, berechneSterne, ml, hashUsername,
   type AppTopic, type AppScene, type SceneResult, type Kurs,
 } from '../data/appData'
@@ -12,6 +13,7 @@ import { useEffect, useState, useRef } from 'react'
 import { useTranslation } from 'react-i18next'
 import { SterneAnzeige } from './SceneList'
 import { supabase, setSupabaseStatus, type SupabaseResult } from '../lib/supabase'
+import { landName } from '../data/laender'
 import type { RealtimeChannel } from '@supabase/supabase-js'
 
 interface Props {
@@ -133,6 +135,19 @@ export default function RankingView({ username, onBack }: Props) {
   const [selectedKursId, setSelectedKursId] = useState<string>('')
   const [kursCodeInput, setKursCodeInput] = useState('')
 
+  // ── Landfilter der Gesamtrangliste (v0.16.2) ──
+  // Die Gesamtrangliste summiert ueber alle Themen und damit ueber alle
+  // Laender hinweg zu einer Zahl. Solange nur ein Land Daten hat, ist das
+  // richtig; sobald ein zweites dazukommt, stuenden zwei Verfahren in
+  // derselben Spalte. Der Filter macht das Land sichtbar und trennbar,
+  // ohne die Zahl zu aendern: Vorgabe ist «alle Laender».
+  const [landFilter, setLandFilter] = useState<string>('')
+
+  /** Land einer Szene, ueber die Szenenliste. Unbekannt: leer. */
+  function landDerSzene(sceneId: string): string {
+    return scenes.find(s => s.id === sceneId)?.country ?? ''
+  }
+
   // Supabase-Daten
   const [sbResults, setSbResults] = useState<SupabaseResult[]>([])
   const [loading, setLoading] = useState(true)
@@ -240,7 +255,22 @@ export default function RankingView({ username, onBack }: Props) {
 
   // ── Aggregierte Daten (Supabase oder localStorage) ──
 
-  const gesamtData = useSupabase ? aggregateGesamt(sbResults) : gesamtLocal
+  // Laender, zu denen es ueberhaupt Ergebnisse gibt.
+  const laenderInDaten = Array.from(new Set(
+    (useSupabase ? sbResults.map(r => r.scene_id) : getAllSceneResults().map(r => r.sceneId))
+      .map(landDerSzene)
+      .filter(l => l !== ''),
+  )).sort()
+
+  const szenenDesLandes: ReadonlySet<string> | null = landFilter
+    ? new Set(scenes.filter(s => s.country === landFilter).map(s => s.id))
+    : null
+
+  const gesamtData = useSupabase
+    ? aggregateGesamt(
+        szenenDesLandes ? sbResults.filter(r => szenenDesLandes.has(r.scene_id)) : sbResults,
+      )
+    : (szenenDesLandes ? getGesamtRankingFuerSzenen(szenenDesLandes) : gesamtLocal)
 
   const kursData = useSupabase
     ? (() => {
@@ -289,14 +319,29 @@ export default function RankingView({ username, onBack }: Props) {
 
   // ── Tabellen-Renderer ──
 
+  /**
+   * Die Länder, zu denen eine Person Ergebnisse beigetragen hat. Abgeleitet
+   * aus den Szenen, nicht aus dem Ergebnis selbst — so gilt dieselbe Auskunft
+   * für beide Quellen, den lokalen Bestand und Supabase.
+   */
+  function laenderDerPerson(username: string): string[] {
+    const roh = useSupabase
+      ? sbResults.filter(r => r.username === username).map(r => r.scene_id)
+      : getAllSceneResults().filter(r => r.username === username).map(r => r.sceneId)
+    return Array.from(new Set(roh.map(landDerSzene).filter(l => l !== ''))).sort()
+  }
+
   function renderGesamtTable(data: Aggregat[], emptyMsg: string) {
+    // Die Spalte erscheint nur, wenn es mehr als ein Land gibt. Eine Spalte,
+    // die in jeder Zeile dasselbe sagt, trägt nichts bei.
+    const zeigeLand = laenderInDaten.length > 1
     return (
       <div style={{ borderRadius: 'var(--rsi-radius-card)', border: '1px solid var(--rsi-color-border)', background: 'var(--rsi-color-surface)', overflow: 'hidden', boxShadow: 'var(--rsi-shadow-sm)' }}>
         <table style={{ width: '100%', borderCollapse: 'collapse' }}>
           <thead>
             <tr style={{ borderBottom: '1px solid var(--rsi-color-border)', background: 'var(--rsi-color-bg-secondary)' }}>
-              {[t('ranking.rank'), t('ranking.name'), t('ranking.score'), t('ranking.scenes'), t('ranking.bestanden'), t('ranking.avg_prozent')].map((h, hi) => (
-                <th key={h} style={{ padding: '10px 16px', fontSize: '10px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.12em', color: 'var(--rsi-color-text-muted)', textAlign: hi === 1 ? 'left' : 'right' }}>
+              {[t('ranking.rank'), t('ranking.name'), ...(zeigeLand ? [t('land.label')] : []), t('ranking.score'), t('ranking.scenes'), t('ranking.bestanden'), t('ranking.avg_prozent')].map((h, hi) => (
+                <th key={h} style={{ padding: '10px 16px', fontSize: '10px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.12em', color: 'var(--rsi-color-text-muted)', textAlign: (hi === 1 || (zeigeLand && hi === 2)) ? 'left' : 'right' }}>
                   {h}
                 </th>
               ))}
@@ -311,6 +356,11 @@ export default function RankingView({ username, onBack }: Props) {
                   <td style={{ padding: '12px 16px', fontSize: '14px', fontWeight: isOwn ? 700 : 500, color: isOwn ? 'var(--rsi-blau)' : 'var(--rsi-color-text)', textAlign: 'left' }}>
                     {displayName(entry.username)}{isOwn && <span style={{ marginLeft: '6px', fontSize: '10px', fontWeight: 700, color: 'var(--rsi-blau)', opacity: 0.7 }}>{t('ranking.du')}</span>}
                   </td>
+                  {zeigeLand && (
+                    <td style={{ padding: '12px 16px', fontSize: '13px', color: 'var(--rsi-color-text-muted)', textAlign: 'left' }}>
+                      {laenderDerPerson(entry.username).map(code => landName(code, lang)).join(', ') || '—'}
+                    </td>
+                  )}
                   <td style={{ padding: '12px 16px', fontSize: '15px', fontWeight: 800, color: 'var(--rsi-blau)', textAlign: 'right' }}>{entry.score.toLocaleString('de-CH')}</td>
                   <td style={{ padding: '12px 16px', fontSize: '13px', color: 'var(--rsi-color-text-muted)', textAlign: 'right' }}>{entry.szenen}</td>
                   <td style={{ padding: '12px 16px', fontSize: '13px', fontWeight: 700, color: entry.bestandenSzenen > 0 ? 'var(--rsi-gruen)' : 'var(--rsi-color-text-disabled)', textAlign: 'right' }}>
@@ -321,7 +371,7 @@ export default function RankingView({ username, onBack }: Props) {
               )
             })}
             {data.length === 0 && (
-              <tr><td colSpan={6} style={{ padding: '32px', textAlign: 'center', color: 'var(--rsi-color-text-disabled)', fontSize: '13px' }}>{emptyMsg}</td></tr>
+              <tr><td colSpan={zeigeLand ? 7 : 6} style={{ padding: '32px', textAlign: 'center', color: 'var(--rsi-color-text-disabled)', fontSize: '13px' }}>{emptyMsg}</td></tr>
             )}
           </tbody>
         </table>
@@ -366,7 +416,32 @@ export default function RankingView({ username, onBack }: Props) {
       )}
 
       {/* ═══ TAB: GESAMT ═══ */}
-      {!loading && tab === 'gesamt' && renderGesamtTable(gesamtData, t('ranking.leer'))}
+      {!loading && tab === 'gesamt' && (
+        <>
+          {/* Der Filter erscheint erst, wenn Ergebnisse aus mehr als einem
+              Land vorliegen. Bei einem einzigen Land waere er eine Auswahl
+              ohne Wahl — und der Hinweis darauf ist die Landspalte. */}
+          {laenderInDaten.length > 1 && (
+            <div style={{ marginBottom: '16px', maxWidth: '260px' }}>
+              <label htmlFor="ranking-landfilter" style={{ display: 'block', fontSize: '10px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.12em', color: 'var(--rsi-color-text-muted)', marginBottom: '6px' }}>
+                {t('land.label')}
+              </label>
+              <select
+                id="ranking-landfilter"
+                value={landFilter}
+                onChange={e => setLandFilter(e.target.value)}
+                style={selectStyle}
+              >
+                <option value="">{t('land.filter_alle')}</option>
+                {laenderInDaten.map(code => (
+                  <option key={code} value={code}>{landName(code, lang)}</option>
+                ))}
+              </select>
+            </div>
+          )}
+          {renderGesamtTable(gesamtData, t('ranking.leer'))}
+        </>
+      )}
 
       {/* ═══ TAB: KURS ═══ */}
       {!loading && tab === 'kurs' && (
