@@ -63,6 +63,42 @@ schriftliche Zustimmung braucht.
 Im Impressum wechselten «Tool» und «Werkzeug» für dieselbe Sache; der Text
 führt neu durchgehend «Werkzeug».
 
+### Geändert — Normbezüge durchgehend nachgezogen (v0.14.2)
+
+Die geltende Nummer VSS 41 723 steht neu in README, CLAUDE.md, im
+Regelwerkkatalog und in den Seed-Daten. Die Fundstelle der Unfallrisiko-Matrix
+trägt neu die Ausgabe: **SN 641 723:2016 Abb. 2** — die Abbildungsnummer gilt
+für diese Ausgabe, und dass sie in der VSS-Fassung gleich nummeriert ist, ist
+nicht belegt. Betroffen: CLAUDE.md, AUDIT_REPORT.md, README.md,
+`TopicDashboard.tsx` und die vier Sprachfassungen.
+
+Die Kern-Normen im Regelwerkkatalog sind am Normenbestand geprüft und neu
+gesetzt: VSS 41 723 (Inspektion), VSS 41 722 (Audit), VSS 41 721
+(Folgeabschätzung), VSS 41 725 (Netzeinstufung), SN 641 700 (Grundnorm). Der
+frühere Eintrag «SN 641 723 — In-Service Safety Inspection (ISSI)» trug beide
+Fehler zugleich.
+
+Acht `normRefs` in Seed- und Beispieldaten von `SN 641 723` auf `VSS 41 723`.
+
+### Hinzugefügt — Prüfliste der Normreferenzen
+
+`docs/NORMREFERENZEN_PRUEFUNG.md` stellt den Regelwerkkatalog und die 41
+Normreferenzen der 31 Defizite dem Normenbestand gegenüber. Sie ist eine
+Gegenüberstellung, kein Urteil: Ob eine Nummer den gemeinten Gegenstand trifft,
+entscheidet die Fachstelle.
+
+**Zwei eigene Fehlversuche stehen darin.** Eine Volltextsuche nach Titelwörtern
+wurde als Zuordnung ausgegeben und stufte den korrekten Eintrag
+`VSS 40 241 «Fussgaengerstreifen»` als falsch ein — der Bestand führt ihn als
+«Querungen für den Fussgänger- und leichten Zweiradverkehr», was dieselbe Sache
+ist. Der zweite Versuch über Wortüberlappung scheitert am selben Fall.
+**Für die Zuordnung Nummer zu Gegenstand gibt es kein maschinelles Kriterium.**
+
+Aus den Produktivdaten: 29 Defizite tragen die veraltete Nummer SN 641 723,
+eines die Referenz «Egal», eines das doppelte Präfix «VSS SN 640 075». Zwölf
+Defizite heissen «Platzhalter», eines «Test 3». Kein Schreibzugriff von hier;
+Bereinigung im Admin-Bereich.
+
 ### Behoben — Normnummern auf die VSS-Systematik (v0.14.1)
 
 Die Inspektion heisst **VSS 41 723**, das Audit **VSS 41 722**. Die VSS

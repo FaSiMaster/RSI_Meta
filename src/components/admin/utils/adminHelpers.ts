@@ -35,7 +35,7 @@ export function emptyDeficit(sceneId: string, topicId: string): AppDeficit {
       unfallschwere: 'mittel', unfallrisiko: 'mittel',
     },
     isPflicht: true, isBooster: false,
-    normRefs: ['SN 641 723'],
+    normRefs: ['VSS 41 723'],
     verortung: null,
   }
 }

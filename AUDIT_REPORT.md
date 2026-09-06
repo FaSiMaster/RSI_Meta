@@ -125,7 +125,7 @@
 | 6 | Übertrag Relevanz SD | TBA-Fachkurs FK RSI, Folie 6 | Automatisch, InfoBox "Relevanz=Proxy" | ✅ |
 | 7 | NACA-Einstufung | bfu-Bericht 73 (NACA-Skala) | NACA_TABLE, gruppiert, Pflicht-Leitfrage | ✅ |
 | 8 | Übertrag Unfallschwere → Matrix | TBA-Fachkurs FK RSI, Folie 6 | Automatisch, Unfallrisiko-Matrix | ✅ |
-| 9 | Unfallrisiko (Ergebnis) | TBA-Fachkurs FK RSI, Folie 6 / SN 641 723 Abb. 2 | calcUnfallrisiko(), Feedback-Screen | ✅ |
+| 9 | Unfallrisiko (Ergebnis) | TBA-Fachkurs FK RSI, Folie 6 / SN 641 723:2016 Abb. 2 | calcUnfallrisiko(), Feedback-Screen | ✅ |
 
 ### Matrix-Korrektheit (verifiziert)
 

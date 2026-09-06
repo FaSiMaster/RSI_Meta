@@ -404,7 +404,7 @@ export default function TopicDashboard({ username, score, kursId, onSelectTopic 
                     <span>·</span>
                     <span>bfu-Bericht 73 (NACA)</span>
                     <span>·</span>
-                    <span>SN 641 723 Abb. 2</span>
+                    <span>SN 641 723:2016 Abb. 2</span>
                   </div>
                 </div>
               </div>

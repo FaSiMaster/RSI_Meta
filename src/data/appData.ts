@@ -449,7 +449,7 @@ const DEFAULT_DEFICITS: AppDeficit[] = [
     "kontext": "io",
     "isPflicht": true,
     "isBooster": false,
-    "normRefs": ["VSS SN 640 075", "SN 641 723"],
+    "normRefs": ["VSS SN 640 075", "VSS 41 723"],
     "nameI18n": {
       "de": "Fehlende Absenkung",
       "fr": "Abaissement absent",
@@ -480,7 +480,7 @@ const DEFAULT_DEFICITS: AppDeficit[] = [
     "kontext": "io",
     "isPflicht": true,
     "isBooster": false,
-    "normRefs": ["SN 640 273", "SN 641 723"],
+    "normRefs": ["SN 640 273", "VSS 41 723"],
     "nameI18n": {
       "de": "Sichtbehinderung Hecke",
       "fr": "Obstruction par haie",
@@ -518,7 +518,7 @@ const DEFAULT_DEFICITS: AppDeficit[] = [
     "kontext": "ao",
     "isPflicht": true,
     "isBooster": false,
-    "normRefs": ["SN 640 238", "SN 641 723"],
+    "normRefs": ["SN 640 238", "VSS 41 723"],
     "nameI18n": {
       "de": "Unterbrochener Radstreifen",
       "fr": "Piste cyclable interrompue",
@@ -544,7 +544,7 @@ const DEFAULT_DEFICITS: AppDeficit[] = [
     "kontext": "io",
     "isPflicht": false,
     "isBooster": true,
-    "normRefs": ["SN 640 852", "SN 641 723"],
+    "normRefs": ["SN 640 852", "VSS 41 723"],
     "nameI18n": {
       "de": "Fehlende Wartelinie",
       "fr": "Ligne d'attente manquante",
@@ -576,7 +576,7 @@ const DEFAULT_DEFICITS: AppDeficit[] = [
     },
     "isPflicht": true,
     "isBooster": true,
-    "normRefs": ["SN 641 723"],
+    "normRefs": ["VSS 41 723"],
     "verortung": {
       "typ": "punkt",
       "position": { "theta": 271.99698118750723, "phi": 132.0718240138629 },
@@ -597,7 +597,7 @@ const DEFAULT_DEFICITS: AppDeficit[] = [
     },
     "isPflicht": true,
     "isBooster": false,
-    "normRefs": ["SN 641 723"],
+    "normRefs": ["VSS 41 723"],
     "verortung": {
       "typ": "polygon",
       "punkte": [

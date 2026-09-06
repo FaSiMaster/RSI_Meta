@@ -9,7 +9,8 @@ Ein Trainingswerkzeug für die normative 9-Schritte-Methodik der Road Safety
 Inspection. Inspektorinnen und Inspektoren beurteilen Strassenszenen im
 360°-Panorama nach Wichtigkeit, Abweichung, Relevanz SD, NACA-Skala und
 Unfallrisiko, im Browser oder in VR auf der Meta Quest 3. Grundlage sind der
-TBA-Fachkurs FK RSI V 16.09.2020, der bfu-Bericht 73 und SN 641 723.
+TBA-Fachkurs FK RSI V 16.09.2020, der bfu-Bericht 73 und VSS 41 723
+(frühere Nummer SN 641 723).
 
 ---
 
@@ -78,7 +79,7 @@ Headset aus.
 | 8 | Automatisch | Unfallschwere in die Unfallrisiko-Matrix |
 | 9 | Automatisch | Unfallrisiko als Gesamtergebnis |
 
-Quelle: TBA-Fachkurs FK RSI V 16.09.2020 und SN 641 723 Abb. 2.
+Quelle: TBA-Fachkurs FK RSI V 16.09.2020 und SN 641 723:2016 Abb. 2.
 
 ### Training
 
@@ -197,8 +198,9 @@ RSI_Meta/
 |---|---|
 | TBA-Fachkurs FK RSI, V 16.09.2020 | WICHTIGKEIT_TABLE mit 58 Kriterien, 9-Schritte-Methodik, Matrizen |
 | bfu-Bericht 73 | NACA-Skala 0–7, Verletzungsschwere |
-| VSS SN 641 723, Abb. 2 | Normative Unfallrisiko-Matrix |
-| VSS 41 722 / bfu-Werkzeugkasten | Weitere Normbezüge in `regelwerkKatalog.ts` |
+| SN 641 723:2016, Abb. 2 | Normative Unfallrisiko-Matrix (Ausgabe, aus der die Abbildung stammt) |
+| VSS 41 723 / VSS 41 722 | Geltende Nummern für Inspektion und Audit (früher SN 641 723 / SN 641 722) |
+| bfu-Werkzeugkasten | Weitere Normbezüge in `regelwerkKatalog.ts` |
 
 Die Matrizen `calcRelevanzSD` und `calcUnfallrisiko` wurden gegen die
 Originalfolien des Fachkurses geprüft; der Befund steht im `AUDIT_REPORT.md` vom

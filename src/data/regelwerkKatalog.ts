@@ -17,13 +17,20 @@ export interface RegelwerkEintrag {
 }
 
 export const REGELWERK_KATALOG: RegelwerkEintrag[] = [
-  // ── Kern-Normen RSI / ISSI ─────────────────────────────────────
-  { nummer: 'SN 641 723',  titel: 'In-Service Safety Inspection (ISSI) / Road Safety Inspection (RSI) — Verfahren',
+  // ── Kern-Normen der Infrastruktur-Sicherheitsinstrumente (ISSI) ─
+  // Titel nach dem Normenbestand geprüft (Projekt vss_Normen, 06.09.2026).
+  // Die VSS nummeriert SN 641 xxx auf VSS 41 xxx um; SN 641 722:2017 und
+  // SN 641 723:2016 sind dort als «veraltet» geführt, Stand 15.06.2026.
+  { nummer: 'VSS 41 723',  titel: 'Strassenverkehrssicherheit; Inspektion (RSI, früher SN 641 723)',
     themen: ['rsi', 'issi', 'inspektion', 'sicherheit', 'verfahren'] },
-  { nummer: 'VSS 41 722',  titel: 'Strassenverkehrsunfaelle — Erfassung, Aufbereitung, Auswertung',
-    themen: ['unfall', 'erfassung', 'auswertung', 'naca'] },
-  { nummer: 'VSS 41 723',  titel: 'Sicherheitsbeurteilung von Verkehrsanlagen',
-    themen: ['beurteilung', 'sicherheit', 'verkehrsanlage'] },
+  { nummer: 'VSS 41 722',  titel: 'Strassenverkehrssicherheit; Audit (RSA, früher SN 641 722)',
+    themen: ['rsa', 'issi', 'audit', 'sicherheit', 'projekt'] },
+  { nummer: 'VSS 41 721',  titel: 'Strassenverkehrssicherheit; Folgeabschätzung (RIA)',
+    themen: ['ria', 'issi', 'folgeabschaetzung', 'planung'] },
+  { nummer: 'VSS 41 725',  titel: 'Strassenverkehrssicherheit; Netzeinstufung (NSM)',
+    themen: ['nsm', 'issi', 'netz', 'einstufung'] },
+  { nummer: 'SN 641 700',  titel: 'Strassenverkehrssicherheit; Grundnorm',
+    themen: ['grundnorm', 'issi', 'sicherheit'] },
 
   // ── Querschnitt / Geometrie ────────────────────────────────────
   { nummer: 'VSS 40 040',  titel: 'Projektierung — Grundlagen',

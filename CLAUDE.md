@@ -136,7 +136,7 @@ Die RSI-Beurteilung folgt exakt dem TBA-Fachkurs FK RSI (V 16.09.2020):
 | 6 | Automatisch | Relevanz SD in Unfallrisiko-Matrix einzeichnen | TBA FK RSI, Folie 6 |
 | 7 | Benutzereingabe | NACA-Einstufung (0–7) | bfu-Bericht 73 |
 | 8 | Automatisch | Unfallschwere in Unfallrisiko-Matrix einzeichnen | TBA FK RSI, Folie 6 |
-| 9 | Automatisch | Unfallrisiko = calcUnfallrisiko(R, US) | TBA FK RSI, Folie 6 / SN 641 723 Abb. 2 |
+| 9 | Automatisch | Unfallrisiko = calcUnfallrisiko(R, US) | TBA FK RSI, Folie 6 / SN 641 723:2016 Abb. 2 |
 
 ### Matrizen (normativ)
 
