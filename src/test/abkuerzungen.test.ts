@@ -16,6 +16,20 @@
 //   3. Eine Abkürzung wird nirgends anders aufgelöst als im Glossar.
 //   4. Sprachlich: Die Kürzel bleiben über alle vier Sprachen gleich, und die
 //      landessprachlichen Varianten der bfu erscheinen in der richtigen Sprache.
+//
+// Zurückgenommen: Eine frühere Fassung führte «VSS 41 722/41 723» als
+// nicht existierende Normnummern in der Verbotsliste, weil der Normenkorpus
+// sie nicht kennt. Das war falsch, und der Fehlschluss ist lehrreich: Das
+// Schweigen eines unvollständigen Bestands ist kein Beleg für Nichtexistenz.
+//
+// Die VSS nummeriert SN 641 xxx auf VSS 41 xxx um. In der Tracking-Datenbank
+// des Projekts vss_Normen liegen VSS 41 711:2023, VSS 41 712, VSS 41 713:2023,
+// VSS 41 721:2023 und VSS 41 725 nebeneinander mit ihren SN-Vorgängern; für
+// die Reihe 640/40 ist derselbe Schritt an SN 640 241 → VSS 40 241:2019
+// belegt. Entscheidend: SN 641 722:2017 und SN 641 723:2016 tragen dort beide
+// die Gültigkeit «veraltet», Stand 15. Juni 2026 — sie sind abgelöst. Die
+// Nachfolger VSS 41 722 und VSS 41 723 fehlen im Bestand; das ist eine Lücke
+// des Bestands, kein Befund über die Normen.
 
 import { describe, it, expect } from 'vitest'
 import { readFileSync } from 'node:fs'
@@ -189,11 +203,6 @@ describe('Abkürzungen', () => {
         text: /In-Service Safety Inspection/i,
         statt: 'ISSI heisst Infrastruktur-Sicherheitsinstrumente',
         fund: 'stand bis v0.13.0 an fünf Stellen; belegt im ASTRA-Forschungsbericht 1730 (September 2022), S. 7',
-      },
-      {
-        text: /VSS 41 ?72[23]/,
-        statt: 'SN 641 722 (Audit) bzw. SN 641 723 (Inspektion)',
-        fund: 'diese VSS-Nummern gibt es nicht; im Normenkorpus nicht auffindbar',
       },
     ]
     const befunde: string[] = []

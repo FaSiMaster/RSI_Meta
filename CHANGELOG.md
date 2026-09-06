@@ -63,6 +63,27 @@ schriftliche Zustimmung braucht.
 Im Impressum wechselten «Tool» und «Werkzeug» für dieselbe Sache; der Text
 führt neu durchgehend «Werkzeug».
 
+### Behoben — Normnummern auf die VSS-Systematik (v0.14.1)
+
+Die Inspektion heisst **VSS 41 723**, das Audit **VSS 41 722**. Die VSS
+nummeriert SN 641 xxx auf VSS 41 xxx um; die früheren Nummern SN 641 723:2016
+und SN 641 722:2017 tragen in der Tracking-Datenbank des Projekts vss_Normen
+beide die Gültigkeit «veraltet», Stand 15. Juni 2026. Belegt ist die
+Umnummerierung an VSS 41 711:2023, VSS 41 712, VSS 41 713:2023, VSS 41 721:2023
+und VSS 41 725, die dort neben ihren SN-Vorgängern liegen; für die Reihe
+640/40 an SN 640 241 zu VSS 40 241:2019.
+
+**Eigener Fehlschluss, zurückgenommen:** Die Fassung v0.14.0 hatte «VSS 41 722»
+als nicht existierende Nummer in die Verbotsliste des Abkürzungswächters
+aufgenommen, weil der Normenkorpus sie nicht kennt. Der Korpus führt 401
+Normen als «not_licensed» und 170 als «not_in_portal» — sein Schweigen ist
+kein Beleg für Nichtexistenz. Der Eintrag ist entfernt, die Begründung im Kopf
+der Wächterdatei nachlesbar.
+
+**Offene Lücke, nicht in diesem Projekt zu schliessen:** VSS 41 722 und
+VSS 41 723 fehlen in der Tracking-Datenbank vollständig, obwohl ihre Vorgänger
+als veraltet markiert sind. Nachbezug im Projekt vss_Normen.
+
 ### Behoben — ISSI war falsch aufgelöst (v0.14.0)
 
 «ISSI» stand an fünf Stellen für «In-Service Safety Inspection». Das ist
