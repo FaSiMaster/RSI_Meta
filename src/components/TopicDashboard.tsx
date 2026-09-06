@@ -156,7 +156,11 @@ export default function TopicDashboard({ username, score, kursId, onSelectTopic 
             </div>
           )}
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+          {/* auto-rows-fr: alle Karten einer Zeile bekommen dieselbe
+              Höhe. Kürzen allein hält nicht — sobald ein Titel
+              umbricht oder eine Sprache länger läuft, waere die Karte
+              wieder höher als ihre Nachbarn. */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 auto-rows-fr">
             {gruppe.themen.map((topic, i) => {
               const sceneCount = sceneCounts[topic.id] ?? 0
               return (
@@ -168,7 +172,7 @@ export default function TopicDashboard({ username, score, kursId, onSelectTopic 
               whileHover={{ scale: 1.02, translateY: -4 }}
               whileTap={{ scale: 0.98 }}
               onClick={() => onSelectTopic(topic)}
-              className="group cursor-pointer relative overflow-hidden"
+              className="group cursor-pointer relative overflow-hidden h-full flex flex-col"
               style={{ borderRadius: 'var(--rsi-radius-card)', border: '1px solid var(--rsi-color-border)', background: 'var(--rsi-color-surface)', padding: '24px', boxShadow: 'var(--rsi-shadow-sm)' }}
             >
               <div style={{ width: '44px', height: '44px', borderRadius: '10px', background: 'rgba(0,118,189,0.1)', color: 'var(--rsi-color-accent)', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '20px' }}>
@@ -177,10 +181,20 @@ export default function TopicDashboard({ username, score, kursId, onSelectTopic 
               <h3 style={{ fontSize: '16px', fontWeight: 600, color: 'var(--rsi-color-text)', marginBottom: '6px' }}>
                 {ml(topic.nameI18n, lang)}
               </h3>
-              <p style={{ fontSize: '13px', color: 'var(--rsi-color-text-muted)', lineHeight: 1.5, marginBottom: '20px' }}>
+              <p
+                title={ml(topic.beschreibungI18n, lang)}
+                style={{
+                  fontSize: '13px', color: 'var(--rsi-color-text-muted)',
+                  lineHeight: 1.5, marginBottom: '20px', flex: 1,
+                  // Drei Zeilen, danach Auslassungspunkte. Der ganze Text
+                  // bleibt im title-Attribut lesbar.
+                  display: '-webkit-box', WebkitBoxOrient: 'vertical',
+                  WebkitLineClamp: 3, overflow: 'hidden',
+                }}
+              >
                 {ml(topic.beschreibungI18n, lang)}
               </p>
-              <div className="flex items-center justify-between">
+              <div className="flex items-center justify-between mt-auto">
                 <span style={{ fontSize: '10px', padding: '3px 10px', borderRadius: '20px', background: 'rgba(0,118,189,0.1)', color: 'var(--rsi-color-accent)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.12em' }}>RSI</span>
                 <span style={{ fontSize: '12px', color: 'var(--rsi-color-text-disabled)', fontWeight: 600 }}>{sceneCount} {t('topics.scenesCount')}</span>
               </div>

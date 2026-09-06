@@ -39,6 +39,7 @@ sys.path.insert(0, HIER)
 
 from entscheide_2026_09_06 import (  # noqa: E402
     THEMEN, SZENEN, BESCHREIBUNGEN, NORMREFS, MASSNAHMEN,
+    BESTAND_BESCHREIBUNG,
 )
 from normlogik import beurteilung  # noqa: E402
 
@@ -273,6 +274,13 @@ def main():
     # wird es trotzdem, denn eine Kollision hiesse, dass ein bestehender
     # Datensatz überschrieben würde.
     b_themen, b_szenen, b_defizite = lies_bestand()
+
+    # Eine Beschreibung des Bestands ist zu lang für die Themenkarte und wird
+    # gekürzt. Sonst bleibt der Bestand unangetastet.
+    for thema in b_themen:
+        kurz = BESTAND_BESCHREIBUNG.get(thema['id'])
+        if kurz:
+            thema['beschreibungI18n'] = dict(thema['beschreibungI18n'], de=kurz)
     for name, bestand, neue in (('Themen', b_themen, themen_aus),
                                 ('Szenen', b_szenen, szenen_aus),
                                 ('Defizite', b_defizite, defizite_aus)):

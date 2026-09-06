@@ -18,27 +18,26 @@ THEMEN_BAUANLEITUNG.html, beide unter C:/ClaudeAI/RSI_Analyse/output/.
 
 THEMEN = [
     # (id, parentTopicId, sortOrder, iconKey, name, beschreibung)
+    # Die Beschreibungen bleiben kurz und einzeilig: Die Themenkarte am
+    # Einstieg soll bei allen Themen gleich hoch sein, und der Bestand liegt
+    # zwischen 26 und 60 Zeichen.
     ('tp-sicht', None, 6, 'eye',
      'Sicht',
-     'Sichtverhältnisse als eigenes Prüffeld. Das Oberthema trägt selbst keine '
-     'Szenen; es fasst die beiden Themen darunter zusammen.'),
+     'Sichtverhältnisse als eigenes Prüffeld. Fasst die Themen darunter zusammen.'),
     ('tp-sicht-knoten', 'tp-sicht', 1, 'junction',
      'Sicht am Knoten',
-     'Sichtverhältnisse an Einmündungen, Zufahrten und Grundstücksausfahrten. '
-     'Der Blick geht zur Seite: Was sieht die wartende Person, und ab wann?'),
+     'Einmündungen, Zufahrten und Grundstücksausfahrten. Der Blick geht zur Seite.'),
     ('tp-sicht-strecke', 'tp-sicht', 2, 'road',
      'Sicht auf der Strecke',
-     'Anhalte-, Kurven- und Überholsichtweite. Der Blick geht nach vorn: Reicht '
-     'die Sicht, um vor dem Hindernis anzuhalten?'),
+     'Anhalte-, Kurven- und Überholsichtweite. Der Blick geht nach vorn.'),
     ('tp-strassenrand-ao', None, 7, 'tree',
      'Strassenrand ausserorts',
-     'Der Seitenraum als Gefahrenquelle beim Abkommen von der Fahrbahn: feste '
-     'Hindernisse, Bankett, Rückhaltesysteme, Bepflanzung.'),
+     'Der Seitenraum beim Abkommen von der Fahrbahn: Hindernisse, Bankett, '
+     'Rückhaltesysteme.'),
     ('tp-ausruestung', None, 8, 'sign',
      'Ausrüstung',
-     'Signalisation, Markierung und optische Leiteinrichtung. Das Übungsziel ist '
-     'hier nicht das Finden, sondern das Einstufen: viel Bestand, wenig '
-     'Handlungsdruck.'),
+     'Signalisation, Markierung, optische Leiteinrichtung. Hier zählt das '
+     'Einstufen, nicht das Finden.'),
 ]
 
 # «Veloverkehr» besteht bereits und wird nicht angefasst.
@@ -268,4 +267,18 @@ MASSNAHMEN = {
         'Berücksichtigung der Zufahrt zur Tankstelle im Rahmen einer '
         'Umgestaltung, um Konflikte mit dem Knotenpunkt der einmündenden '
         'Nebenstrasse zu vermeiden.',
+}
+
+
+# ── Beschreibungen im Bestand, gekürzt ──────────────────────────────────────
+# Die Themenkarte am Einstieg soll bei allen Themen gleich hoch sein. Ein Text
+# von 183 Zeichen sprengt sie; die übrigen Beschreibungen des Bestands liegen
+# zwischen 26 und 60 Zeichen. Gekürzt wird der Sinn nicht, nur der Satzbau.
+#
+# Schlüssel: Themen-Kennung.
+
+BESTAND_BESCHREIBUNG = {
+    'tp-1781537561454':
+        'Fussgängerstreifen und Querungsstellen auf Schulwegen, mit Blick auf '
+        'den grössten Handlungsbedarf.',
 }

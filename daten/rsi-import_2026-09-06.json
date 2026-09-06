@@ -75,7 +75,7 @@
       "sortOrder": 1,
       "parentTopicId": "fuss",
       "beschreibungI18n": {
-        "de": "Bewertet werden Fussgängerstreifen und weitere Querungsstellen auf Schulwegen, wobei der Fokus auf wesentlichen Sicherheitsdefiziten und Standorten mit erhöhtem Handlungsbedarf liegt.",
+        "de": "Fussgängerstreifen und Querungsstellen auf Schulwegen, mit Blick auf den grössten Handlungsbedarf.",
         "en": "The assessment covers pedestrian crossings and other crossing points on school routes, focusing on major safety deficiencies and locations requiring priority action.",
         "fr": "L'évaluation porte sur les passages pour piétons et les autres points de traversée situés sur les chemins de l'école, en mettant l'accent sur les déficits de sécurité majeurs et les sites nécessitant des mesures prioritaires.",
         "it": "La valutazione riguarda i passaggi pedonali e gli altri punti di attraversamento sui percorsi casa-scuola, con particolare attenzione ai principali deficit di sicurezza e ai siti che richiedono interventi prioritari."
@@ -187,7 +187,7 @@
         "en": ""
       },
       "beschreibungI18n": {
-        "de": "Sichtverhältnisse als eigenes Prüffeld. Das Oberthema trägt selbst keine Szenen; es fasst die beiden Themen darunter zusammen.",
+        "de": "Sichtverhältnisse als eigenes Prüffeld. Fasst die Themen darunter zusammen.",
         "fr": "",
         "it": "",
         "en": ""
@@ -208,7 +208,7 @@
         "en": ""
       },
       "beschreibungI18n": {
-        "de": "Sichtverhältnisse an Einmündungen, Zufahrten und Grundstücksausfahrten. Der Blick geht zur Seite: Was sieht die wartende Person, und ab wann?",
+        "de": "Einmündungen, Zufahrten und Grundstücksausfahrten. Der Blick geht zur Seite.",
         "fr": "",
         "it": "",
         "en": ""
@@ -228,7 +228,7 @@
         "en": ""
       },
       "beschreibungI18n": {
-        "de": "Anhalte-, Kurven- und Überholsichtweite. Der Blick geht nach vorn: Reicht die Sicht, um vor dem Hindernis anzuhalten?",
+        "de": "Anhalte-, Kurven- und Überholsichtweite. Der Blick geht nach vorn.",
         "fr": "",
         "it": "",
         "en": ""
@@ -248,7 +248,7 @@
         "en": ""
       },
       "beschreibungI18n": {
-        "de": "Der Seitenraum als Gefahrenquelle beim Abkommen von der Fahrbahn: feste Hindernisse, Bankett, Rückhaltesysteme, Bepflanzung.",
+        "de": "Der Seitenraum beim Abkommen von der Fahrbahn: Hindernisse, Bankett, Rückhaltesysteme.",
         "fr": "",
         "it": "",
         "en": ""
@@ -269,7 +269,7 @@
         "en": ""
       },
       "beschreibungI18n": {
-        "de": "Signalisation, Markierung und optische Leiteinrichtung. Das Übungsziel ist hier nicht das Finden, sondern das Einstufen: viel Bestand, wenig Handlungsdruck.",
+        "de": "Signalisation, Markierung, optische Leiteinrichtung. Hier zählt das Einstufen, nicht das Finden.",
         "fr": "",
         "it": "",
         "en": ""
