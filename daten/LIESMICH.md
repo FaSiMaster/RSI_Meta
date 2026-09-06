@@ -17,6 +17,7 @@ Was hier liegt, kommt nicht in das ausgelieferte Erzeugnis.
 | `anlegen.py` | Erzeugt die Einfuhrdatei, die Beilage und die Arbeitsliste |
 | `pruefe.py` | Prüft das Erzeugte |
 | `pruefe_die_pruefung.py` | Hält jede Prüfung gegen einen absichtlich eingebauten Fehler |
+| `einlesen.mjs` | Liest die Einfuhrdatei über die Oberfläche ein, gesteuert statt von Hand |
 | `merkmale_2026-09-06.json` | Strassenmerkmale je Standort, aus der Quelle gelesen |
 | `rsi-import_2026-09-06.json` | Einfuhrdatei für den Administrationsbereich |
 | `massnahmen_2026-09-06.json` | Massnahmenart, Massnahmentext und Zuständigkeit je Defizit |
@@ -34,7 +35,21 @@ python daten/pruefe_die_pruefung.py # die Prüfung prüfen
 Schritte laufen ohne beides, weil das Ergebnis als JSON danebenliegt.
 
 Danach im Administrationsbereich unter **Export / Import** die Datei
-`rsi-import_2026-09-06.json` einlesen.
+`rsi-import_2026-09-06.json` einlesen. Wer es nicht von Hand tun will:
+
+```bash
+npm run build
+npm run preview -- --port 4173     # der Port ist nicht beliebig, siehe unten
+RSI_ADMIN_PIN=… node daten/einlesen.mjs
+```
+
+`einlesen.mjs` steuert einen Browser über dieselbe Oberfläche — dieselbe
+Prüfung, dieselbe Landesgrenze, dieselben save-Funktionen. **Der Port muss
+4173 oder 5173 sein**: Die Edge Functions erlauben als Herkunft nur diese
+beiden und die Vercel-Adresse. Auf einem anderen Port scheitert schon die
+Anmeldung, und zwar an CORS, nicht an der PIN — die Meldung sagt das nicht.
+
+Danach das Ergebnis in Supabase nachzählen, nicht der Erfolgsmeldung glauben.
 
 ## Warum die Einfuhr und nicht ein Skript
 
