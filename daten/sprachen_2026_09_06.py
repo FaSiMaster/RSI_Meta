@@ -550,6 +550,16 @@ MERKMAL_LABEL = {
         'it': 'Tranvia',
         'en': 'Tramway',
     },
+    'lastwagenanteil': {
+        'fr': 'Part de poids lourds',
+        'it': 'Quota di autocarri',
+        'en': 'Share of heavy goods vehicles',
+    },
+    'unfallgeschehen': {
+        'fr': 'Accidents dans le périmètre',
+        'it': 'Incidenti nel perimetro',
+        'en': 'Accidents within the perimeter',
+    },
 }
 
 # Wert des Merkmals. Schlüssel ist der deutsche Wert, wie ihn
@@ -672,6 +682,11 @@ MERKMAL_WERT = {
         'fr': 'régulier',
         'it': 'regolare',
         'en': 'regular',
+    },
+    'dokumentiert': {
+        'fr': 'documentés',
+        'it': 'documentati',
+        'en': 'documented',
     },
 }
 

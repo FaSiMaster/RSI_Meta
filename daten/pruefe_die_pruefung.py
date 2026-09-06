@@ -83,6 +83,15 @@ def falsche_bezeichnung(daten):
     szene(daten)['strassenmerkmale'][0]['labelI18n']['de'] = 'Strassenklasse'
 
 
+def erfundene_norm(daten):
+    defizit(daten)['normRefs'].append('VSS 99 999 — Erfundene Norm')
+
+
+def falscher_normtitel(daten):
+    d = defizit(daten, 'SD_01121')
+    d['normRefs'][0] = 'VSS 40 273 — Knoten; Grundlagen'
+
+
 def uebersetzung_fehlt(daten):
     defizit(daten)['beschreibungI18n']['it'] = ''
 
@@ -106,6 +115,9 @@ FAELLE = [
      'ohne Deckung in der Quelle'),
     ('Falsche Bezeichnung eines Merkmals', falsche_bezeichnung,
      'Bezeichnung «Strassenklasse»'),
+    ('Eine erfundene Normnummer', erfundene_norm, 'steht nicht im Katalog'),
+    ('Ein Normtitel, der nicht zur Nummer gehört', falscher_normtitel,
+     'weicht vom Katalog ab'),
     ('Eine Übersetzung fehlt', uebersetzung_fehlt, "nur ['de', 'fr', 'en']"),
     ('Ein Merkmal ohne englische Fassung', merkmal_ohne_uebersetzung,
      "nur ['de', 'fr', 'it']"),

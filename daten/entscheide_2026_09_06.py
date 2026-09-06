@@ -234,7 +234,18 @@ NORMREFS = {
     ('P253-2676600-1237129', '1'): ['VSS 40 273'],
     ('P243-2705336-1242585', '16'): ['VSS 40 090b'],
     ('P243-2705336-1242585', '18'): ['VSS 40 241'],
-    ('P243-2705336-1242585', '15'): ['VSS 40 273a'],
+    # Der Text nennt zwei Normen. «VSS 640 070» mischt zwei Nummernkreise;
+    # gemeint ist SN 640 070 «Fussgängerverkehr; Grundnorm». Belegt über
+    # SN 641 700:2022, Anhang G, Ziff. 16, Tab. 2, S. 12: Dort steht die Norm
+    # unter dem Sicherheitskriterium «Fussgängerlängsführung, Art und
+    # Geometrie», und genau darum geht es im Defizit (Trottoirbreite).
+    #
+    # Vorbehalt zu VSS 40 273a: Der Bericht zitiert sie für eine lichte Höhe
+    # von 3,00 m. Die Norm heisst «Knoten; Sichtverhältnisse in Knoten in
+    # einer Ebene»; das Lichtraumprofil steht nach Tab. 2 in VSS 40 201. Die
+    # Zitation bleibt so, wie der Bericht sie führt — sie zu berichtigen wäre
+    # eine stille Sachänderung. Der Fall gehört dem Auftraggeber vorgelegt.
+    ('P243-2705336-1242585', '15'): ['VSS 40 273a', 'SN 640 070'],
     ('P216-2700023-1254173', '3'): ['VSS 40 201'],
 }
 
@@ -242,14 +253,54 @@ NORMREFS = {
 #
 #   P254-2676390-1246987 / 11 — der Text nennt «VSS, resp. RL Kt. ZH» ohne
 #     Nummer. Eine Nummer hier zu setzen hiesse, sie zu erfinden.
-#   P243-2705336-1242585 / 15 — der Text nennt neben VSS 40 273a auch
-#     «VSS 640 070». Diese Schreibweise mischt zwei Nummernkreise: 640 070
-#     gehört zur SN-Reihe, nicht zur VSS-Reihe. Welche Norm gemeint ist, ist
-#     ohne Rückfrage nicht zu entscheiden; der Fall gehört dem Auftraggeber
-#     vorgelegt.
 #   P216-2700023-1254173 / 2 und P233-2678967-1233024 / 21 — beide nennen die
 #     Velostandards des Kantons Zürich. Das ist eine Grundlage, aber keine
 #     Norm mit Nummer; `normRefs` führt Normbezüge.
+#   P260-2687395-1242447 / 15 und P253-2676600-1237129 / 3 — beide nennen ein
+#     Signal nach Signalisationsverordnung (Nr. 4.11, SSV 2.50). Das ist ein
+#     Erlass, keine Norm.
+#   P233-2678967-1233024 / 18 — «Norm 40 100a» steht im Massnahmentext, nicht
+#     in der Beschreibung des Defizits. `normRefs` beschreibt den Mangel.
+
+
+# ── Normbezug über das Sicherheitskriterium ──────────────────────────────────
+# Zweite Quelle neben dem Berichtstext: SN 641 700:2022 «Strassenverkehrs-
+# sicherheit; Grundnorm», Anhang G, Ziff. 16, Tabelle 2 «Thematische Zuordnung
+# der sicherheitsrelevanten Normen», S. 11–14. Die Norm ordnet dort jedem
+# Sicherheitskriterium Normen zu und sagt selbst, die Liste sei nicht
+# abschliessend.
+#
+# Aufgenommen ist nur, was in Tab. 2 unter einem Kriterium steht, das den
+# Gegenstand des Defizits trifft. Nicht aufgenommen sind Kriterien, deren
+# Zuordnung in Tab. 2 dreizehn Normen umfasst (Knoten) oder wo Tab. 2 gar kein
+# entsprechendes Kriterium führt. Eine Auswahl daraus wäre ein fachliches
+# Urteil, keine Wiedergabe.
+#
+# Ohne Zuordnung bleiben deshalb: knotengeometrie und querschnitt (Liste zu
+# umfangreich), signale_wegweiser (Tab. 2 führt «Signalisation» mit sechs
+# Normen, keine davon trifft den Einzelfall erkennbar), sichtweite_allgemein,
+# bankette, risse, flicke, randabschluesse_randstein und
+# angebot_vertraeglichkeit (Tab. 2 führt kein entsprechendes Kriterium).
+
+NORMREFS_KRITERIUM = {
+    # Tab. 2, S. 12, Thema «Sicht»
+    'anhaltesichtweite':  ['VSS 40 090b', 'VSS 40 110', 'SN 640 660'],
+    'knotensichtweite':   ['VSS 40 273', 'SN 640 660'],
+    # Tab. 2, S. 11, Thema «Verkehrsführung»
+    'visuelle_linienfuehrung': ['VSS 40 140'],
+    # Tab. 2, S. 13, Thema «Strassenraum», Kriterium «Festes Hindernis»
+    'abstand_feste_hindernisse': ['VSS 40 569'],
+    # Tab. 2, S. 12, Thema «Langsamverkehr»
+    'fussgaengerfuehrung_geometrie': ['SN 640 070', 'SN 640 075', 'VSS 40 201'],
+    'velolaengsfuehrung_art': ['SN 640 060', 'SN 640 064', 'VSS 40 201',
+                               'VSS 40 252'],
+    'fussgaengerquerung_ohne_vortritt': ['VSS 40 240', 'VSS 40 241',
+                                         'VSS 40 242', 'VSS 40 246',
+                                         'VSS 40 247'],
+    # Tab. 2, S. 12, Thema «Ausrüstung»
+    'markierung': ['SN 640 850', 'VSS 40 851', 'SN 640 852', 'VSS 40 854',
+                   'VSS 40 862'],
+}
 
 
 # ── Massnahmentexte ohne Ortsbezug ───────────────────────────────────────────

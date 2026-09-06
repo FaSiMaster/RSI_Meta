@@ -300,7 +300,7 @@ geladen. Der Service Worker legt die App-Shell vorab in den Cache und holt
 Die Precache-Grenze steht in `vite.config.ts` auf 3 MiB, weil der Hauptchunk die
 voreingestellten 2 MiB überschreitet.
 
-Gates zum selben Stand: `tsc --noEmit` ohne Fehler, 193 Unit-Prüfungen in 19
+Gates zum selben Stand: `tsc --noEmit` ohne Fehler, 194 Unit-Prüfungen in 19
 Dateien und 47 Prüfungen im Browser in 8 Dateien, alle grün.
 
 ---

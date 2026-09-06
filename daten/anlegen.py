@@ -38,7 +38,7 @@ HIER = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, HIER)
 
 from entscheide_2026_09_06 import (  # noqa: E402
-    THEMEN, SZENEN, BESCHREIBUNGEN, NORMREFS, MASSNAHMEN,
+    THEMEN, SZENEN, BESCHREIBUNGEN, NORMREFS, NORMREFS_KRITERIUM, MASSNAHMEN,
     BESTAND_BESCHREIBUNG,
 )
 import sprachen_2026_09_06 as SPR  # noqa: E402
@@ -58,6 +58,7 @@ KRITERIUM_LABELS_TS = os.path.join(HIER, '..', 'src', 'data',
                                    'kriteriumLabels.ts')
 MERKMALSKATALOG_TS = os.path.join(HIER, '..', 'src', 'data',
                                   'strassenmerkmale.ts')
+REGELWERK_TS = os.path.join(HIER, '..', 'src', 'data', 'regelwerkKatalog.ts')
 
 LAND = 'CH'
 STAND = '2026-09-06'
@@ -143,6 +144,44 @@ def lies_merkmalskatalog():
         aus.append((m.group(1), m.group(2), optionen))
     if not aus:
         raise SystemExit('strassenmerkmale.ts: kein Merkmal gelesen')
+    return aus
+
+
+def lies_regelwerk():
+    """Nummer und Titel der Normen aus src/data/regelwerkKatalog.ts.
+
+    Der Normbezug eines Defizits wird daraus gebildet, nicht daneben
+    geschrieben. Steht eine Nummer nicht im Katalog, bricht die Erzeugung ab:
+    Entweder ist die Nummer falsch, oder der Katalog ist unvollständig — beides
+    gehört gesehen, nicht überschrieben.
+    """
+    text = open(REGELWERK_TS, encoding='utf-8').read()
+    aus = {}
+    for m in re.finditer(r"nummer:\s*'([^']+)',\s*titel:\s*'([^']+)'", text):
+        aus[m.group(1)] = m.group(2)
+    if not aus:
+        raise SystemExit('regelwerkKatalog.ts: kein Eintrag gelesen')
+    return aus
+
+
+def normbezug(regelwerk, sid, nr, kriterium):
+    """Der Normbezug eines Defizits, aus zwei belegten Quellen.
+
+    Erstens, was der Inspektionsbericht im Text des Defizits nennt. Zweitens,
+    was SN 641 700:2022 Tab. 2 dem Sicherheitskriterium zuordnet. Die
+    Reihenfolge ist fest, damit ein zweiter Lauf dieselbe Datei erzeugt.
+    """
+    nummern = list(NORMREFS.get((sid, nr), []))
+    for n in NORMREFS_KRITERIUM.get(kriterium, []):
+        if n not in nummern:
+            nummern.append(n)
+    aus = []
+    for n in nummern:
+        titel = regelwerk.get(n)
+        if titel is None:
+            raise SystemExit(
+                f'{sid}/{nr}: «{n}» steht nicht in regelwerkKatalog.ts')
+        aus.append(f'{n} — {titel}')
     return aus
 
 
@@ -293,6 +332,7 @@ def main():
     vorschlag = lies_bauanleitung()
     labels = lies_kriteriumlabels()
     katalog = lies_merkmalskatalog()
+    regelwerk = lies_regelwerk()
     merkmale = json.load(open(MERKMALE, encoding='utf-8'))['merkmale']
 
     # Die deutschen Bezeichnungen stehen in beiden Dateien: im Quellbaum, wo
@@ -403,7 +443,7 @@ def main():
                     v['kriteriumId'], e['kontext'], v['abweichung'], v['naca']),
                 'isPflicht': nr == pflicht_nr,
                 'isBooster': False,
-                'normRefs': NORMREFS.get((sid, nr), []),
+                'normRefs': normbezug(regelwerk, sid, nr, v['kriteriumId']),
                 'kategorie': v['kategorie'],
                 'erklaerungI18n': erklaerung(
                     massnahmenart, massnahmentext,

@@ -284,6 +284,34 @@ def main():
     fehler += [f'Merkmal ohne Deckung in der Quelle: {k} = {w} ({n}x)'
                for (k, w), n in zuviel.items()]
 
+    # 4b2 — Normbezüge
+    print()
+    print('── Normbezüge ──')
+    # Jede Nummer muss im Regelwerkkatalog stehen. Der Katalog ist die einzige
+    # Stelle, an der Nummer und Titel zusammen belegt sind; ein Normbezug, der
+    # dort fehlt, ist entweder falsch geschrieben oder frei erfunden.
+    regelwerk_text = open(os.path.join(HIER, '..', 'src', 'data',
+                                       'regelwerkKatalog.ts'),
+                          encoding='utf-8').read()
+    regelwerk = {m.group(1): m.group(2) for m in re.finditer(
+        r"nummer:\s*'([^']+)',\s*titel:\s*'([^']+)'", regelwerk_text)}
+    unbelegt, ohne_bezug = [], 0
+    for d in neue(daten, 'deficits'):
+        if not d['normRefs']:
+            ohne_bezug += 1
+        for ref in d['normRefs']:
+            nummer, _, titel = ref.partition(' — ')
+            if nummer not in regelwerk:
+                unbelegt.append(f"{d['id']}: «{nummer}» steht nicht im Katalog")
+            elif regelwerk[nummer] != titel:
+                unbelegt.append(
+                    f"{d['id']}: Titel zu «{nummer}» weicht vom Katalog ab")
+    gesamt = sum(len(d['normRefs']) for d in neue(daten, 'deficits'))
+    print(f'  {gesamt} Bezüge über {len(neue(daten, "deficits")) - ohne_bezug} '
+          f'Defizite, {ohne_bezug} Defizite ohne Bezug')
+    print(f'  nicht im Katalog belegt: {len(unbelegt)}')
+    fehler += unbelegt
+
     # 4c — Sprachen
     print('\n── Sprachen ──')
     # Ein mehrsprachiges Feld trägt entweder alle vier Sprachen oder nur

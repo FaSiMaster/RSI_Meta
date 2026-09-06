@@ -86,11 +86,17 @@ function bestandLesen(): Map<string, Bestandseintrag> | null {
          order by case gueltigkeit when 'aktiv' then 0 else 1 end, jahr desc`,
       )
       .all() as unknown as Bestandseintrag[]
-    // Schlüssel ist die Nummer ohne Leerzeichen; der erste Treffer gewinnt,
-    // und die Sortierung stellt den aktiven Eintrag nach vorn.
+    // Schlüssel ist die Nummer ohne Leerzeichen und in Grossbuchstaben; der
+    // erste Treffer gewinnt, und die Sortierung stellt den aktiven Eintrag
+    // nach vorn.
+    //
+    // Die Grossschreibung fehlte und kostete einen Fehlbefund: Der Bestand
+    // führt die Sichtweitennorm als «40090B», das Projekt schreibt sie
+    // «VSS 40 090b». Der Wächter meldete sie als unauffindbar, obwohl sie
+    // im Bestand liegt — eine Meldung, die stimmt hätte aussehen können.
     const nach = new Map<string, Bestandseintrag>()
     for (const z of zeilen) {
-      const k = String(z.nummer).replace(/\s/g, '')
+      const k = String(z.nummer).replace(/\s/g, '').toUpperCase()
       if (!nach.has(k)) nach.set(k, z)
     }
     return nach
@@ -105,31 +111,70 @@ function bestandLesen(): Map<string, Bestandseintrag> | null {
  * Jede NEUE Meldung lässt den Test anschlagen — das ist sein Zweck.
  */
 const BEKANNT: Record<string, string> = {
-  'VSS40241': 'Von der Fachstelle als zutreffend bestätigt (06.09.2026); Nachfolgeausgabe zu klären',
-  'VSS40050': 'Titel weicht ab, fachlich offen — siehe docs/NORMREFERENZEN_PRUEFUNG.md 2.2',
-  'VSS40202': 'Titel weicht ab, fachlich offen — 2.2',
-  'VSS40212': 'Titel weicht ab, fachlich offen — 2.2',
-  'VSS40263': 'Titel weicht ab, fachlich offen — 2.2',
-  'VSS40281': 'Titel weicht ab, fachlich offen — 2.2',
-  'VSS40360': 'Titel weicht ab, fachlich offen — 2.2',
-  'SN640886': 'Titel weicht ab, ausser Kraft, fachlich offen — 2.2',
-  'SN641723': 'Frühere Nummer der Inspektion; steht nur noch als Fundstelle «SN 641 723:2016 Abb. 2»',
-  'SN641722': 'Frühere Nummer des Audits; steht nur im Kommentar als Vorgängernennung',
-  'SN640852': 'Seed-Daten, im Bestand veraltet (Taktil-visuelle Markierungen) — zu ersetzen',
-  'VSS41002': 'Themenverzeichnis, im Bestand ausser Kraft — im Kopfkommentar des Katalogs als Quelle genannt',
+  // Aus SN 641 700:2022, Anhang G, Ziff. 16, Tab. 2. Die Grundnorm führt
+  // diese Normen als sicherheitsrelevant und nennt sie ohne Ausgabe; der
+  // Korpus hält eine Ausgabe, die er als veraltet führt. Ob eine neuere
+  // Ausgabe besteht, ist am Original zu prüfen — der Katalog behauptet
+  // darüber nichts.
+  'SN640060': 'Tab. 2, Velolängsführung — Ausgabe 2000',
+  'SN640064': 'Tab. 2, Velolängsführung und Ausrüstung — Ausgabe 2009',
+  'SN640070': 'Tab. 2, Fussgängerlängsführung — Ausgabe 2014',
+  'SN640250': 'Tab. 2, Knotengeometrie — Ausgabe 1998',
+  'SN640660': 'Tab. 2, Anhalte- und Knotensichtweite — Ausgabe 2004',
+  'SN640852': 'Tab. 2, Markierung; auch in den Seed-Daten',
+  'VSS40022': 'Tab. 2, Knotengeometrie — Ausgabe 2019',
+  'VSS40050': 'Tab. 2, Knotengeometrie (Grundstückzufahrten) — Ausgabe 2019',
+  'VSS40052': 'Tab. 2, Querprofil — Ausgabe 2019',
+  'VSS40110': 'Tab. 2, vertikale Linienführung und Anhaltesichtweite — 2019',
+  'VSS40120': 'Tab. 2, Querprofil — Ausgabe 2019',
+  'VSS40202': 'Tab. 2, Querprofil — Ausgabe 2021',
+  'VSS40212': 'Tab. 2, Verkehrsfluss und Gestaltungselemente — Ausgabe 2019',
+  'VSS40214': 'Tab. 2, farbliche Gestaltung — Ausgabe 2019',
+  'VSS40215': 'Tab. 2, Gestaltungselemente — Ausgabe 2019',
+  'VSS40240': 'Tab. 2, Fussgängerquerungen — Ausgabe 2019',
+  'VSS40241': 'Tab. 2, Fussgängerquerungen; Ausgabe 2019 gilt, fachlich bestätigt 23.08.2026',
+  'VSS40242': 'Tab. 2, Fussgängerquerungen — Ausgabe 2022',
+  'VSS40252': 'Tab. 2, Knoten und Veloführung — Ausgabe 1994',
+  'VSS40261': 'Tab. 2, Knotengeometrie — Ausgabe 2020',
+  'VSS40262': 'Tab. 2, Knotengeometrie — Ausgabe 2019',
+  'VSS40263': 'Tab. 2, Knotengeometrie (Kreisverkehr) — Ausgabe 2019',
+  'VSS40303': 'Tab. 2, Verkehrsfluss und Gestaltungselemente — Ausgabe 2013',
+  'VSS40350': 'Tab. 2, Entwässerung — Ausgabe 2019',
+  'VSS40356': 'Tab. 2, Entwässerung — Ausgabe 2019',
+  'VSS40512': 'Tab. 2, Anforderungen an die Strassenoberfläche — Ausgabe 2019',
+  'VSS71512': 'Tab. 2, Ausrüstung bei Bahnübergängen — ausser Kraft, Ausgabe 2013',
+  // Stehen nur noch im Kopfkommentar des Katalogs, als Beispiel für die
+  // Titel, die dort früher falsch zugeordnet waren.
+  'VSS40281': 'Nur im Kopfkommentar des Katalogs; früher als «Knoten mit LSA» geführt, richtig ist Parkieren',
+  'VSS40360': 'Nur im Kopfkommentar des Katalogs; früher als «Markierungen» geführt, richtig ist Strassenentwässerung',
+  // SN 641 723 und SN 641 722 standen hier bis zum 6. September 2026. Seit
+  // der Katalog nach SN 641 700:2022 Tab. 2 neu geschrieben ist, kommen sie
+  // in den geprüften Quelldateien nicht mehr vor; die Prüfung «führt nichts
+  // Unbenutztes» hat sie gemeldet. In den Produktivdaten stehen sie weiter:
+  // 29 Defizite tragen SN 641 723 (docs/NORMREFERENZEN_PRUEFUNG.md, Ziff. 1).
+  // Dorthin reicht dieser Wächter nicht — er liest den Quellbaum.
 }
 
-/** Im Bestand nicht auffindbar — der Bestand ist unvollständig, nicht die Norm falsch. */
+/**
+ * Im Bestand nicht auffindbar — der Bestand ist unvollständig, nicht die
+ * Norm falsch. Alle Nummern stehen in SN 641 700:2022, Tab. 2.
+ */
 const BEKANNT_FEHLEND: Record<string, string> = {
   'VSS41722': 'Nachfolger von SN 641 722; im Korpus nicht erfasst, Nachbezug offen',
   'VSS41723': 'Nachfolger von SN 641 723; im Korpus nicht erfasst, Nachbezug offen',
-  'VSS40040': 'im Korpus nicht erfasst — 2.4',
-  'VSS40080': 'im Korpus nicht erfasst — 2.4',
-  'VSS40211': 'im Korpus nicht erfasst — 2.4',
-  'VSS40263a': 'im Korpus nicht erfasst — 2.4',
-  'VSS40290': 'im Korpus nicht erfasst — 2.4',
-  'VSS40390': 'im Korpus nicht erfasst — 2.4',
-  'VSS40869': 'im Korpus nicht erfasst — 2.4',
+  'VSS40023': 'Tab. 2, Knotengeometrie — im Korpus nicht erfasst',
+  'VSS40024': 'Tab. 2, Knotengeometrie — im Korpus nicht erfasst',
+  'VSS40040': 'Tab. 2, Knotengeometrie — im Korpus nicht erfasst',
+  'VSS40080': 'Tab. 2, Geschwindigkeit — im Korpus nicht erfasst',
+  'VSS40090': 'Schreibweise der Tab. 2 ohne Ausgabesuffix; im Korpus liegt VSS 40 090b:2019',
+  'VSS40100': 'Tab. 2, horizontale Linienführung — im Korpus nicht erfasst',
+  'VSS40198': 'Tab. 2, horizontale Linienführung — im Korpus nicht erfasst',
+  'VSS40200': 'Tab. 2, Querprofil — im Korpus nicht erfasst',
+  'VSS40247': 'Tab. 2, Fussgängerquerungen — im Korpus nicht erfasst',
+  'VSS40271': 'Tab. 2, Befahrbarkeit — im Korpus nicht erfasst',
+  'VSS40693': 'Tab. 2, Wildzäune — im Korpus nicht erfasst',
+  'VSS40845': 'Tab. 2, Signalisation — im Korpus nicht erfasst',
+  'VSS40854': 'Tab. 2, Markierung — im Korpus nicht erfasst',
 }
 
 // ── Prüfungen ───────────────────────────────────────────────────────────────
@@ -157,7 +202,7 @@ describe('Normnummern gegen den Normenbestand', () => {
     const befunde: string[] = []
     for (const [nummer, dateien] of verwendeteNummern()) {
       const k = nummer.replace(/\s/g, '')
-      const e = bestand!.get(k.replace(/^(VSS|SN|SNR)/, ''))
+      const e = bestand!.get(k.replace(/^(VSS|SN|SNR)/, '').toUpperCase())
       if (!e) continue
       const g = e.gueltigkeit
       if (g !== 'veraltet' && g !== 'ausser_kraft') continue
@@ -175,7 +220,7 @@ describe('Normnummern gegen den Normenbestand', () => {
     const befunde: string[] = []
     for (const [nummer, dateien] of verwendeteNummern()) {
       const k = nummer.replace(/\s/g, '')
-      if (bestand!.has(k.replace(/^(VSS|SN|SNR)/, ''))) continue
+      if (bestand!.has(k.replace(/^(VSS|SN|SNR)/, '').toUpperCase())) continue
       if (BEKANNT_FEHLEND[k]) continue
       befunde.push(`${nummer} — im Bestand nicht auffindbar, verwendet in ${[...dateien].join(', ')}`)
     }
@@ -189,17 +234,33 @@ describe('Normnummern gegen den Normenbestand', () => {
     expect(e!.gueltigkeit).toBe('veraltet')
   })
 
+  it('die Ausnahmelisten führen nichts Unbenutztes', () => {
+    // Der Kopf der bisherigen Prüfung sagte, eine nicht mehr gebrauchte
+    // Ausnahme verdecke künftige Befunde — geprüft wurde aber nur, ob die
+    // Nummer im Bestand noch veraltet ist, nicht, ob das Projekt sie
+    // überhaupt noch nennt. Diese Prüfung schliesst die Lücke.
+    const verwendet = new Set(
+      [...verwendeteNummern().keys()].map(n => n.replace(/\s/g, '')),
+    )
+    const unbenutzt = [...Object.keys(BEKANNT), ...Object.keys(BEKANNT_FEHLEND)]
+      .filter(k => !verwendet.has(k))
+    expect(
+      unbenutzt,
+      'Ausnahme ohne Fundstelle im Projekt: ' + unbenutzt.join(', '),
+    ).toEqual([])
+  })
+
   it.skipIf(!bestand)('die Ausnahmelisten enthalten nichts Erledigtes', () => {
     // Eine Ausnahme, die nicht mehr gebraucht wird, verdeckt künftige Befunde.
     const ueberfluessig: string[] = []
     for (const k of Object.keys(BEKANNT)) {
-      const e = bestand!.get(k.replace(/^(VSS|SN|SNR)/, ''))
+      const e = bestand!.get(k.replace(/^(VSS|SN|SNR)/, '').toUpperCase())
       if (!e || (e.gueltigkeit !== 'veraltet' && e.gueltigkeit !== 'ausser_kraft')) {
         ueberfluessig.push(`BEKANNT: ${k} ist im Bestand nicht (mehr) veraltet`)
       }
     }
     for (const k of Object.keys(BEKANNT_FEHLEND)) {
-      if (bestand!.has(k.replace(/^(VSS|SN|SNR)/, ''))) {
+      if (bestand!.has(k.replace(/^(VSS|SN|SNR)/, '').toUpperCase())) {
         ueberfluessig.push(`BEKANNT_FEHLEND: ${k} liegt inzwischen im Bestand`)
       }
     }

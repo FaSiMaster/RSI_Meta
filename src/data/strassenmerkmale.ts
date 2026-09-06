@@ -99,6 +99,19 @@ export const STRASSENMERKMALE_KATALOG: MerkmalKategorie[] = [
         label: 'Verkehrsqualität (LOS)',
         optionen: ['LOS A', 'LOS B', 'LOS C', 'LOS D', 'LOS E', 'LOS F'],
       },
+      {
+        // Die Erfassung führt den Anteil in Klassen, nicht als Prozentwert.
+        // Belegt sind bisher zwei Klassen; ein dritter Code kommt in den
+        // Daten vor, hat aber in keinem Export einen Klartext.
+        id: 'lastwagenanteil',
+        label: 'Lastwagenanteil',
+        optionen: ['< 3 %', '3–6 %'],
+      },
+      {
+        id: 'unfallgeschehen',
+        label: 'Unfallgeschehen im Perimeter',
+        optionen: ['dokumentiert'],
+      },
     ],
   },
   {

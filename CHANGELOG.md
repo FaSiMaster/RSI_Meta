@@ -9,6 +9,70 @@ Versionierung nach [Semantic Versioning](https://semver.org/lang/de/).
 
 ## [Unreleased]
 
+### Hinzugefügt – Normbezug aus der Grundnorm, zwei Merkmale mehr (v0.18.0)
+
+**Der Regelwerkkatalog folgt jetzt einer Quelle.** SN 641 700:2022, Anhang G,
+Ziff. 16, Tabelle 2 «Thematische Zuordnung der sicherheitsrelevanten Normen»,
+S. 11–14 ordnet jedem Sicherheitskriterium seine Normen zu. Der Katalog ist
+danach neu geschrieben: 79 Einträge, Titel aus der Tabelle, Ausgabejahr aus dem
+Normenbestand.
+
+Das war nötig, weil elf Einträge einen Titel trugen, der zu einer anderen Norm
+gehört. VSS 40 201 stand als «Fussverkehr — Grundnorm» — die Nummer trägt das
+Geometrische Normalprofil, und die Fussverkehrs-Grundnorm ist SN 640 070.
+VSS 40 281 stand als «Knoten mit Lichtsignalanlagen», die Nummer trägt
+«Parkieren». VSS 40 360 stand als «Markierungen», die Nummer trägt
+«Strassenentwässerung». Eine Referenzliste mit falschen Titeln führt dazu, dass
+eine falsche Norm zitiert wird.
+
+**21 der 36 Defizite tragen einen Normbezug**, zusammen 57 Referenzen; vorher
+waren es fünf. Zwei belegte Quellen: was der Inspektionsbericht im Text nennt,
+und was Tab. 2 dem Sicherheitskriterium zuordnet. **Fünfzehn Defizite bleiben
+ohne Bezug** — bei Knotengeometrie und Querschnitt führt Tab. 2 dreizehn
+beziehungsweise acht Normen, und eine Auswahl daraus wäre ein fachliches
+Urteil; für Bankette, Risse, Flicke, Randabschlüsse, Angebot und
+Verträglichkeit sowie Sichtweite allgemein führt Tab. 2 kein entsprechendes
+Kriterium.
+
+**Zwei weitere Strassenmerkmale**, Lastwagenanteil und Unfallgeschehen — beim
+ersten Durchgang übersehen, weil die Spalte des Lastwagenanteils
+kleingeschrieben heisst und eine nicht gefundene Spalte aussah wie ein nicht
+geführtes Merkmal. Neu **272 Merkmalswerte** statt 251.
+
+### Behoben
+
+- **Der Normnummern-Wächter verglich das Ausgabesuffix gross gegen klein.** Der
+  Bestand führt die Sichtweitennorm als «40090B», das Projekt schreibt sie
+  «VSS 40 090b»; gemeldet wurde sie als im Bestand unauffindbar — eine Meldung,
+  die richtig ausgesehen hätte.
+- **Derselbe Wächter prüfte nicht, was sein Kommentar versprach:** dass eine
+  nicht mehr gebrauchte Ausnahme künftige Befunde verdeckt. Geprüft wurde nur
+  der Bestandsstatus, nicht die Verwendung. Die ergänzte Prüfung meldete beim
+  ersten Lauf zwei tote Ausnahmen.
+- **«VSS 640 070» in einem Defizittext** mischt zwei Nummernkreise. Tab. 2
+  belegt: gemeint ist SN 640 070 «Fussgängerverkehr; Grundnorm». Der Punkt war
+  seit dem Vormittag als «ohne Rückfrage nicht zu entscheiden» offen.
+
+### Nicht geändert, sondern ausgewiesen
+
+- Der Bestand führt **VSS 40 241:2019 als «veraltet»**, obwohl diese Ausgabe
+  gilt. Das Feld ist nur bei 1536 von 3882 Einträgen gesetzt. Der Katalog führt
+  deshalb keine Gültigkeitsangabe, nur das Ausgabejahr.
+- **VSS 40 273a** wird in einem Defizittext für eine lichte Höhe von 3,00 m
+  zitiert; die Norm regelt Sichtverhältnisse in Knoten. Die Zitation bleibt, wie
+  der Bericht sie führt.
+- **VSS 40 105**: Tab. 2 und der Bestand nennen zwei verschiedene Titel.
+- Die **29 Defizite in den Produktivdaten** tragen weiterhin SN 641 723. Der
+  Wächter liest den Quellbaum, nicht Supabase.
+
+### Prüfung
+
+- `daten/pruefe.py` prüft neu jeden Normbezug gegen den Katalog: Nummer und
+  Titel müssen dort stehen und übereinstimmen.
+- `daten/pruefe_die_pruefung.py`: **11 von 11 eingebauten Fehlern gemeldet.**
+- Stand: 194 Unit-Prüfungen, 47 im Browser, tsc ohne Fehler.
+- Vollständige Gegenüberstellung: `docs/NORMREFERENZEN_PRUEFUNG.md`, Ziff. 5.
+
 ### Hinzugefügt – Die Szenen tragen ihre Merkmale, Lernkarte und drei Sprachen (v0.17.0)
 
 Die dreizehn Szenen vom 6. September 2026 waren angelegt, aber halb: Ihnen

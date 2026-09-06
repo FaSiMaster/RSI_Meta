@@ -131,3 +131,91 @@ ist fachlich.
 - Nachbezug von VSS 41 722 und VSS 41 723 in den Korpus (Projekt `vss_Normen`)
 - Bereinigung der zwölf «Platzhalter»-Defizite und des Eintrags `Egal` in den
   Produktivdaten (Admin-Bereich, kein Schreibzugriff von hier)
+
+---
+
+## 5. Nachtrag vom 6. September 2026, abends
+
+Ziffer 3 hielt fest, für die Zuordnung einer Nummer zum gemeinten Gegenstand
+gebe es kein maschinelles Kriterium. Das bleibt richtig. Was fehlte, war nicht
+ein Algorithmus, sondern die Quelle: **SN 641 700:2022, Anhang G, Ziff. 16,
+Tabelle 2 «Thematische Zuordnung der sicherheitsrelevanten Normen», S. 11–14.**
+Die Grundnorm ordnet dort jedem Sicherheitskriterium ihre Normen zu, mit
+Nummer und Titel, und sagt selbst, die Liste sei nicht abschliessend.
+
+### 5.1 Was der Katalog jetzt führt
+
+`src/data/regelwerkKatalog.ts` ist neu geschrieben und folgt dieser Tabelle:
+79 Einträge mit dem dort geschriebenen Titel, dazu das Ausgabejahr aus dem
+Normenbestand. Die zehn Einträge aus Ziffer 2.2 sind damit erledigt — nicht
+durch eine Auswahl unter Kandidaten, sondern weil die Grundnorm die Zuordnung
+selbst vornimmt. Drei Beispiele:
+
+| Katalog früher | Tabelle 2 |
+|---|---|
+| VSS 40 201 «Fussverkehr — Grundnorm» | Geometrisches Normalprofil; Grundabmessungen und Lichtraumprofil der Verkehrsteilnehmer |
+| VSS 40 281 «Knoten mit Lichtsignalanlagen» | steht in Tab. 2 nicht; die Nummer trägt im Bestand «Parkieren» |
+| VSS 40 360 «Verkehrsführung in Knoten — Markierungen» | steht in Tab. 2 nicht; Markierung führt SN 640 850, VSS 40 851, SN 640 852, VSS 40 854, VSS 40 862 |
+
+Die «Fussverkehr — Grundnorm», die früher unter VSS 40 201 stand, ist nach
+Tab. 2 **SN 640 070**. Damit ist auch die Schreibweise «VSS 640 070» aus einem
+Defizittext geklärt: Sie mischt zwei Nummernkreise, gemeint ist SN 640 070.
+
+### 5.2 Was die Defizite jetzt tragen
+
+Von den 36 Defiziten der Auswahl vom 6. September tragen **21 einen
+Normbezug**, zusammen 57 Referenzen; vorher waren es fünf. Zwei Quellen, beide
+belegt:
+
+1. Was der Inspektionsbericht im Text des Defizits nennt.
+2. Was Tab. 2 dem Sicherheitskriterium des Defizits zuordnet.
+
+Aufgenommen ist aus (2) nur, was unter einem Kriterium steht, das den
+Gegenstand trifft und dessen Liste überschaubar ist. **Ohne Bezug bleiben 15
+Defizite** — Knotengeometrie und Querschnitt, weil Tab. 2 dort dreizehn
+beziehungsweise acht Normen führt und eine Auswahl daraus ein fachliches
+Urteil wäre; Bankette, Risse, Flicke, Randabschlüsse, Angebot und
+Verträglichkeit sowie Sichtweite allgemein, weil Tab. 2 kein entsprechendes
+Kriterium führt.
+
+### 5.3 Das Gültigkeitsfeld des Bestands taugt nicht als Massstab
+
+Der Bestand führt VSS 40 241:2019 als «veraltet», obwohl diese Ausgabe gilt.
+Das Feld ist ausserdem nur bei 1536 von 3882 Einträgen gesetzt, Stand
+15. Juni 2026. Der Katalog führt deshalb **keine** Gültigkeitsangabe, nur das
+Ausgabejahr. Wer die geltende Fassung braucht, prüft sie am Original.
+
+Der Wächter `src/test/normnummern.test.ts` meldet weiterhin jede Nummer, die
+der Bestand als veraltet führt. Seine Ausnahmeliste trägt jetzt 29 Nummern aus
+Tabelle 2, jede mit dem Kriterium, unter dem sie dort steht.
+
+### 5.4 Zwei Befunde am Wächter
+
+**Er verglich das Ausgabesuffix gross gegen klein.** Der Bestand führt die
+Sichtweitennorm als «40090B», das Projekt schreibt sie «VSS 40 090b». Der
+Wächter meldete sie als im Bestand unauffindbar — eine Meldung, die richtig
+ausgesehen hätte.
+
+**Er prüfte nicht, was sein eigener Kommentar versprach.** Dort stand, eine
+nicht mehr gebrauchte Ausnahme verdecke künftige Befunde; geprüft wurde aber
+nur, ob die Nummer im Bestand noch veraltet ist, nicht, ob das Projekt sie
+überhaupt noch nennt. Die ergänzte Prüfung meldete beim ersten Lauf zwei tote
+Ausnahmen.
+
+### 5.5 Offen
+
+- **Die 29 Defizite in den Produktivdaten tragen weiterhin SN 641 723.** Der
+  Wächter liest den Quellbaum, nicht Supabase. Die geltende Nummer ist
+  VSS 41 723; sie ist im Normenbestand nicht erfasst, ein Nachbezug steht aus.
+- **VSS 40 273a in einem Defizittext.** Der Bericht zitiert sie für eine lichte
+  Höhe von 3,00 m. Die Norm heisst «Knoten; Sichtverhältnisse in Knoten in
+  einer Ebene»; das Lichtraumprofil führt nach Tab. 2 die VSS 40 201. Die
+  Zitation steht unverändert — sie zu berichtigen wäre eine stille
+  Sachänderung.
+- **Widerspruch bei VSS 40 105.** Tab. 2 führt sie als «Verbreiterung der
+  Fahrbahn in Kurven», der Bestand als «Strassenablauf ausserhalb Fahrbahn»
+  (2012). Beide Belege stehen; welcher gilt, ist am Original zu prüfen.
+- **Sechzehn Nummern aus Tab. 2 fehlen im Bestand**, darunter VSS 40 090,
+  VSS 40 100 und VSS 40 200. Drei davon führt Tab. 2 selbst als «in
+  Vorbereitung».
+- Nachfolgeausgabe zu VSS 40 241:2019 weiterhin offen.

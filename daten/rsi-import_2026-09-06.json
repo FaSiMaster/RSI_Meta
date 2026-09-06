@@ -1127,6 +1127,36 @@
           }
         },
         {
+          "id": "lastwagenanteil",
+          "labelI18n": {
+            "de": "Lastwagenanteil",
+            "fr": "Part de poids lourds",
+            "it": "Quota di autocarri",
+            "en": "Share of heavy goods vehicles"
+          },
+          "wertI18n": {
+            "de": "< 3 %",
+            "fr": "< 3 %",
+            "it": "< 3 %",
+            "en": "< 3%"
+          }
+        },
+        {
+          "id": "unfallgeschehen",
+          "labelI18n": {
+            "de": "Unfallgeschehen im Perimeter",
+            "fr": "Accidents dans le périmètre",
+            "it": "Incidenti nel perimetro",
+            "en": "Accidents within the perimeter"
+          },
+          "wertI18n": {
+            "de": "dokumentiert",
+            "fr": "documentés",
+            "it": "documentati",
+            "en": "documented"
+          }
+        },
+        {
           "id": "trottoir",
           "labelI18n": {
             "de": "Trottoir",
@@ -1442,6 +1472,36 @@
             "fr": "LOS A",
             "it": "LOS A",
             "en": "LOS A"
+          }
+        },
+        {
+          "id": "lastwagenanteil",
+          "labelI18n": {
+            "de": "Lastwagenanteil",
+            "fr": "Part de poids lourds",
+            "it": "Quota di autocarri",
+            "en": "Share of heavy goods vehicles"
+          },
+          "wertI18n": {
+            "de": "3–6 %",
+            "fr": "3–6 %",
+            "it": "3–6 %",
+            "en": "3–6%"
+          }
+        },
+        {
+          "id": "unfallgeschehen",
+          "labelI18n": {
+            "de": "Unfallgeschehen im Perimeter",
+            "fr": "Accidents dans le périmètre",
+            "it": "Incidenti nel perimetro",
+            "en": "Accidents within the perimeter"
+          },
+          "wertI18n": {
+            "de": "dokumentiert",
+            "fr": "documentés",
+            "it": "documentati",
+            "en": "documented"
           }
         },
         {
@@ -1778,6 +1838,36 @@
           }
         },
         {
+          "id": "lastwagenanteil",
+          "labelI18n": {
+            "de": "Lastwagenanteil",
+            "fr": "Part de poids lourds",
+            "it": "Quota di autocarri",
+            "en": "Share of heavy goods vehicles"
+          },
+          "wertI18n": {
+            "de": "3–6 %",
+            "fr": "3–6 %",
+            "it": "3–6 %",
+            "en": "3–6%"
+          }
+        },
+        {
+          "id": "unfallgeschehen",
+          "labelI18n": {
+            "de": "Unfallgeschehen im Perimeter",
+            "fr": "Accidents dans le périmètre",
+            "it": "Incidenti nel perimetro",
+            "en": "Accidents within the perimeter"
+          },
+          "wertI18n": {
+            "de": "dokumentiert",
+            "fr": "documentés",
+            "it": "documentati",
+            "en": "documented"
+          }
+        },
+        {
           "id": "trottoir",
           "labelI18n": {
             "de": "Trottoir",
@@ -2108,6 +2198,36 @@
             "fr": "camion – voiture de tourisme",
             "it": "autocarro – autovettura",
             "en": "lorry – passenger car"
+          }
+        },
+        {
+          "id": "lastwagenanteil",
+          "labelI18n": {
+            "de": "Lastwagenanteil",
+            "fr": "Part de poids lourds",
+            "it": "Quota di autocarri",
+            "en": "Share of heavy goods vehicles"
+          },
+          "wertI18n": {
+            "de": "3–6 %",
+            "fr": "3–6 %",
+            "it": "3–6 %",
+            "en": "3–6%"
+          }
+        },
+        {
+          "id": "unfallgeschehen",
+          "labelI18n": {
+            "de": "Unfallgeschehen im Perimeter",
+            "fr": "Accidents dans le périmètre",
+            "it": "Incidenti nel perimetro",
+            "en": "Accidents within the perimeter"
+          },
+          "wertI18n": {
+            "de": "dokumentiert",
+            "fr": "documentés",
+            "it": "documentati",
+            "en": "documented"
           }
         },
         {
@@ -2456,6 +2576,21 @@
             "fr": "LOS A",
             "it": "LOS A",
             "en": "LOS A"
+          }
+        },
+        {
+          "id": "unfallgeschehen",
+          "labelI18n": {
+            "de": "Unfallgeschehen im Perimeter",
+            "fr": "Accidents dans le périmètre",
+            "it": "Incidenti nel perimetro",
+            "en": "Accidents within the perimeter"
+          },
+          "wertI18n": {
+            "de": "dokumentiert",
+            "fr": "documentés",
+            "it": "documentati",
+            "en": "documented"
           }
         },
         {
@@ -3383,6 +3518,36 @@
           }
         },
         {
+          "id": "lastwagenanteil",
+          "labelI18n": {
+            "de": "Lastwagenanteil",
+            "fr": "Part de poids lourds",
+            "it": "Quota di autocarri",
+            "en": "Share of heavy goods vehicles"
+          },
+          "wertI18n": {
+            "de": "< 3 %",
+            "fr": "< 3 %",
+            "it": "< 3 %",
+            "en": "< 3%"
+          }
+        },
+        {
+          "id": "unfallgeschehen",
+          "labelI18n": {
+            "de": "Unfallgeschehen im Perimeter",
+            "fr": "Accidents dans le périmètre",
+            "it": "Incidenti nel perimetro",
+            "en": "Accidents within the perimeter"
+          },
+          "wertI18n": {
+            "de": "dokumentiert",
+            "fr": "documentés",
+            "it": "documentati",
+            "en": "documented"
+          }
+        },
+        {
           "id": "trottoir",
           "labelI18n": {
             "de": "Trottoir",
@@ -3683,6 +3848,36 @@
             "fr": "camion – voiture de tourisme",
             "it": "autocarro – autovettura",
             "en": "lorry – passenger car"
+          }
+        },
+        {
+          "id": "lastwagenanteil",
+          "labelI18n": {
+            "de": "Lastwagenanteil",
+            "fr": "Part de poids lourds",
+            "it": "Quota di autocarri",
+            "en": "Share of heavy goods vehicles"
+          },
+          "wertI18n": {
+            "de": "3–6 %",
+            "fr": "3–6 %",
+            "it": "3–6 %",
+            "en": "3–6%"
+          }
+        },
+        {
+          "id": "unfallgeschehen",
+          "labelI18n": {
+            "de": "Unfallgeschehen im Perimeter",
+            "fr": "Accidents dans le périmètre",
+            "it": "Incidenti nel perimetro",
+            "en": "Accidents within the perimeter"
+          },
+          "wertI18n": {
+            "de": "dokumentiert",
+            "fr": "documentés",
+            "it": "documentati",
+            "en": "documented"
           }
         },
         {
@@ -4034,6 +4229,36 @@
           }
         },
         {
+          "id": "lastwagenanteil",
+          "labelI18n": {
+            "de": "Lastwagenanteil",
+            "fr": "Part de poids lourds",
+            "it": "Quota di autocarri",
+            "en": "Share of heavy goods vehicles"
+          },
+          "wertI18n": {
+            "de": "3–6 %",
+            "fr": "3–6 %",
+            "it": "3–6 %",
+            "en": "3–6%"
+          }
+        },
+        {
+          "id": "unfallgeschehen",
+          "labelI18n": {
+            "de": "Unfallgeschehen im Perimeter",
+            "fr": "Accidents dans le périmètre",
+            "it": "Incidenti nel perimetro",
+            "en": "Accidents within the perimeter"
+          },
+          "wertI18n": {
+            "de": "dokumentiert",
+            "fr": "documentés",
+            "it": "documentati",
+            "en": "documented"
+          }
+        },
+        {
           "id": "trottoir",
           "labelI18n": {
             "de": "Trottoir",
@@ -4334,6 +4559,36 @@
             "fr": "LOS A",
             "it": "LOS A",
             "en": "LOS A"
+          }
+        },
+        {
+          "id": "lastwagenanteil",
+          "labelI18n": {
+            "de": "Lastwagenanteil",
+            "fr": "Part de poids lourds",
+            "it": "Quota di autocarri",
+            "en": "Share of heavy goods vehicles"
+          },
+          "wertI18n": {
+            "de": "3–6 %",
+            "fr": "3–6 %",
+            "it": "3–6 %",
+            "en": "3–6%"
+          }
+        },
+        {
+          "id": "unfallgeschehen",
+          "labelI18n": {
+            "de": "Unfallgeschehen im Perimeter",
+            "fr": "Accidents dans le périmètre",
+            "it": "Incidenti nel perimetro",
+            "en": "Accidents within the perimeter"
+          },
+          "wertI18n": {
+            "de": "dokumentiert",
+            "fr": "documentés",
+            "it": "documentati",
+            "en": "documented"
           }
         },
         {
@@ -4667,6 +4922,36 @@
             "fr": "camion – voiture de tourisme",
             "it": "autocarro – autovettura",
             "en": "lorry – passenger car"
+          }
+        },
+        {
+          "id": "lastwagenanteil",
+          "labelI18n": {
+            "de": "Lastwagenanteil",
+            "fr": "Part de poids lourds",
+            "it": "Quota di autocarri",
+            "en": "Share of heavy goods vehicles"
+          },
+          "wertI18n": {
+            "de": "< 3 %",
+            "fr": "< 3 %",
+            "it": "< 3 %",
+            "en": "< 3%"
+          }
+        },
+        {
+          "id": "unfallgeschehen",
+          "labelI18n": {
+            "de": "Unfallgeschehen im Perimeter",
+            "fr": "Accidents dans le périmètre",
+            "it": "Incidenti nel perimetro",
+            "en": "Accidents within the perimeter"
+          },
+          "wertI18n": {
+            "de": "dokumentiert",
+            "fr": "documentés",
+            "it": "documentati",
+            "en": "documented"
           }
         },
         {
@@ -5015,6 +5300,36 @@
             "fr": "LOS C",
             "it": "LOS C",
             "en": "LOS C"
+          }
+        },
+        {
+          "id": "lastwagenanteil",
+          "labelI18n": {
+            "de": "Lastwagenanteil",
+            "fr": "Part de poids lourds",
+            "it": "Quota di autocarri",
+            "en": "Share of heavy goods vehicles"
+          },
+          "wertI18n": {
+            "de": "< 3 %",
+            "fr": "< 3 %",
+            "it": "< 3 %",
+            "en": "< 3%"
+          }
+        },
+        {
+          "id": "unfallgeschehen",
+          "labelI18n": {
+            "de": "Unfallgeschehen im Perimeter",
+            "fr": "Accidents dans le périmètre",
+            "it": "Incidenti nel perimetro",
+            "en": "Accidents within the perimeter"
+          },
+          "wertI18n": {
+            "de": "dokumentiert",
+            "fr": "documentés",
+            "it": "documentati",
+            "en": "documented"
           }
         },
         {
@@ -7675,7 +7990,9 @@
       },
       "isPflicht": true,
       "isBooster": false,
-      "normRefs": [],
+      "normRefs": [
+        "VSS 40 140 — Linienführung; Optische Anforderungen"
+      ],
       "kategorie": "verkehrsfuehrung",
       "erklaerungI18n": {
         "de": "Im Inspektionsbericht vorgeschlagen (kurzfristig): Erstellung Fahrzeugrückhaltesystem evtl. sogar mit Unterfahrschutz für Motorradfahrer; mindestens aber Leitpfeile einfach. Kann im Rahmen der Instandsetzung erfolgen.",
@@ -7714,7 +8031,13 @@
       },
       "isPflicht": false,
       "isBooster": false,
-      "normRefs": [],
+      "normRefs": [
+        "SN 640 850 — Markierungen; Ausgestaltung und Anwendungsbereiche",
+        "VSS 40 851 — Besondere Markierungen; Anwendungsbereiche, Formen und Abmessungen",
+        "SN 640 852 — Markierungen; Taktil-visuelle Markierungen für blinde und sehbehinderte Fussgänger",
+        "VSS 40 854 — Markierungen; Anordnung auf Autobahnen und Autostrassen",
+        "VSS 40 862 — Markierungen; Anwendungen auf Haupt- und Nebenstrassen"
+      ],
       "kategorie": "ausruestung",
       "erklaerungI18n": {
         "de": "Im Inspektionsbericht vorgeschlagen (kurzfristig): Im Rahmen der Instandsetzung weisse Randlinie ergänzen; auf der einmündenden Nebenstrasse zusätzlich unterbrochene Mittellinie ergänzen.",
@@ -7753,7 +8076,10 @@
       },
       "isPflicht": true,
       "isBooster": false,
-      "normRefs": [],
+      "normRefs": [
+        "VSS 40 273 — Knoten; Sichtverhältnisse in Knoten in einer Ebene",
+        "SN 640 660 — Grünräume; Grundlagen und Projektierung"
+      ],
       "kategorie": "sicht",
       "erklaerungI18n": {
         "de": "Im Inspektionsbericht vorgeschlagen (Detailprüfung): Verschiebung sowie rechtwinklige Anordnung der landwirtschaftliche Ein-/Ausfahrt prüfen.",
@@ -7831,7 +8157,10 @@
       },
       "isPflicht": true,
       "isBooster": false,
-      "normRefs": [],
+      "normRefs": [
+        "VSS 40 273 — Knoten; Sichtverhältnisse in Knoten in einer Ebene",
+        "SN 640 660 — Grünräume; Grundlagen und Projektierung"
+      ],
       "kategorie": "sicht",
       "erklaerungI18n": {
         "de": "Im Inspektionsbericht vorgeschlagen (Sanierungsprojekt, Sofortmassnahme): Bepflanzung/Vegetation zurückschneiden. Vergrösserung des Abstands zwischen Fahrbahn und Grundstücks-/ Hauszugängen prüfen. Baulichen Schutz der Hauszugänge prüfen (z. B. seitliche Einengung). Trottoir-/Fusswegführung prüfen.",
@@ -7909,7 +8238,12 @@
       },
       "isPflicht": true,
       "isBooster": false,
-      "normRefs": [],
+      "normRefs": [
+        "SN 640 060 — Leichter Zweiradverkehr; Grundlagen",
+        "SN 640 064 — Führung des leichten Zweiradverkehrs auf Strassen mit öffentlichem Verkehr",
+        "VSS 40 201 — Geometrisches Normalprofil; Grundabmessungen und Lichtraumprofil der Verkehrsteilnehmer",
+        "VSS 40 252 — Knoten; Führung des Veloverkehrs"
+      ],
       "kategorie": "verkehrsfuehrung",
       "erklaerungI18n": {
         "de": "Im Inspektionsbericht vorgeschlagen (Sanierungsprojekt, kurzfristig): Prüfung Breite Radstreifen, evtl. Radstreifen 1.50 m markieren. Prüfung Anordnung Radstreifen, mindestens 1.80 m breit Prüfung in Kombination mit Querschnittswahl siehe Defizit-Nr. 3.",
@@ -7949,7 +8283,7 @@
       "isPflicht": false,
       "isBooster": false,
       "normRefs": [
-        "VSS 40 201"
+        "VSS 40 201 — Geometrisches Normalprofil; Grundabmessungen und Lichtraumprofil der Verkehrsteilnehmer"
       ],
       "kategorie": "verkehrsfuehrung",
       "erklaerungI18n": {
@@ -7989,7 +8323,10 @@
       },
       "isPflicht": false,
       "isBooster": false,
-      "normRefs": [],
+      "normRefs": [
+        "VSS 40 273 — Knoten; Sichtverhältnisse in Knoten in einer Ebene",
+        "SN 640 660 — Grünräume; Grundlagen und Projektierung"
+      ],
       "kategorie": "sicht",
       "erklaerungI18n": {
         "de": "Im Inspektionsbericht vorgeschlagen (Sofortmassnahme): Prüfung Sichtweiten Rückschnitt Bepflanzung, damit Sichtweite gewährleistet ist.",
@@ -8029,7 +8366,9 @@
       "isPflicht": true,
       "isBooster": false,
       "normRefs": [
-        "VSS 40 090b"
+        "VSS 40 090b — Projektierung, Grundlagen; Sichtweiten",
+        "VSS 40 110 — Linienführung; Elemente der vertikalen Linienführung",
+        "SN 640 660 — Grünräume; Grundlagen und Projektierung"
       ],
       "kategorie": "sicht",
       "erklaerungI18n": {
@@ -8070,7 +8409,11 @@
       "isPflicht": false,
       "isBooster": false,
       "normRefs": [
-        "VSS 40 241"
+        "VSS 40 241 — Querungen für den Fussgänger- und leichten Zweiradverkehr; Fussgängerstreifen",
+        "VSS 40 240 — Querungen für den Fussgänger- und leichten Zweiradverkehr; Grundlagen",
+        "VSS 40 242 — Querungen für den Langsamverkehr; Trottoirüberfahrten",
+        "VSS 40 246 — Anlagen des Fuss- und Veloverkehrs; Unterführungen",
+        "VSS 40 247 — Querungen für den Fussgänger- und leichten Zweiradverkehr; Überführungen"
       ],
       "kategorie": "verkehrsfuehrung",
       "erklaerungI18n": {
@@ -8111,7 +8454,10 @@
       "isPflicht": false,
       "isBooster": false,
       "normRefs": [
-        "VSS 40 273a"
+        "VSS 40 273a — Knoten; Sichtverhältnisse in Knoten in einer Ebene",
+        "SN 640 070 — Fussgängerverkehr; Grundnorm",
+        "SN 640 075 — Fussgängerverkehr; Hindernisfreier Verkehrsraum",
+        "VSS 40 201 — Geometrisches Normalprofil; Grundabmessungen und Lichtraumprofil der Verkehrsteilnehmer"
       ],
       "kategorie": "verkehrsfuehrung",
       "erklaerungI18n": {
@@ -8151,7 +8497,11 @@
       },
       "isPflicht": true,
       "isBooster": false,
-      "normRefs": [],
+      "normRefs": [
+        "VSS 40 090b — Projektierung, Grundlagen; Sichtweiten",
+        "VSS 40 110 — Linienführung; Elemente der vertikalen Linienführung",
+        "SN 640 660 — Grünräume; Grundlagen und Projektierung"
+      ],
       "kategorie": "sicht",
       "erklaerungI18n": {
         "de": "Im Inspektionsbericht vorgeschlagen (Sofortmassnahme, kurzfristig): Hecken zurückschneiden und Sichtweite erneute nachweisen. falls Anhaltesichtweite nach Rückschnitt nicht eingehalten > Sichtberme erstellen mit allfälliger Anpassung Stützmauern.",
@@ -8229,7 +8579,10 @@
       },
       "isPflicht": false,
       "isBooster": false,
-      "normRefs": [],
+      "normRefs": [
+        "VSS 40 273 — Knoten; Sichtverhältnisse in Knoten in einer Ebene",
+        "SN 640 660 — Grünräume; Grundlagen und Projektierung"
+      ],
       "kategorie": "sicht",
       "erklaerungI18n": {
         "de": "Im Inspektionsbericht vorgeschlagen (Sanierungsprojekt, Sofortmassnahme): Knotenumgestaltung zur Einhaltung der Sichttweiten und Aufhebung von Spiegel. Spiegel beheizen.",
@@ -8268,7 +8621,9 @@
       },
       "isPflicht": true,
       "isBooster": false,
-      "normRefs": [],
+      "normRefs": [
+        "VSS 40 569 — Passive Sicherheit im Strassenraum; Tragkonstruktionen der Strassenausstattung"
+      ],
       "kategorie": "strassenrand",
       "erklaerungI18n": {
         "de": "Im Inspektionsbericht vorgeschlagen (Detailprüfung): Passive Schutzeinrichtung erstellen.",
@@ -8346,7 +8701,11 @@
       },
       "isPflicht": false,
       "isBooster": false,
-      "normRefs": [],
+      "normRefs": [
+        "VSS 40 090b — Projektierung, Grundlagen; Sichtweiten",
+        "VSS 40 110 — Linienführung; Elemente der vertikalen Linienführung",
+        "SN 640 660 — Grünräume; Grundlagen und Projektierung"
+      ],
       "kategorie": "sicht",
       "erklaerungI18n": {
         "de": "Im Inspektionsbericht vorgeschlagen (Detailprüfung, Sanierungsprojekt): Reduktion Geschwindigkeit auf 60 prüfen. Böschungsabtrag (Erstellung Sichtberme).",
@@ -8385,7 +8744,10 @@
       },
       "isPflicht": true,
       "isBooster": false,
-      "normRefs": [],
+      "normRefs": [
+        "VSS 40 273 — Knoten; Sichtverhältnisse in Knoten in einer Ebene",
+        "SN 640 660 — Grünräume; Grundlagen und Projektierung"
+      ],
       "kategorie": "sicht",
       "erklaerungI18n": {
         "de": "Im Inspektionsbericht vorgeschlagen (Sofortmassnahme): Bepflanzung reduzieren.",
@@ -8463,7 +8825,13 @@
       },
       "isPflicht": false,
       "isBooster": false,
-      "normRefs": [],
+      "normRefs": [
+        "SN 640 850 — Markierungen; Ausgestaltung und Anwendungsbereiche",
+        "VSS 40 851 — Besondere Markierungen; Anwendungsbereiche, Formen und Abmessungen",
+        "SN 640 852 — Markierungen; Taktil-visuelle Markierungen für blinde und sehbehinderte Fussgänger",
+        "VSS 40 854 — Markierungen; Anordnung auf Autobahnen und Autostrassen",
+        "VSS 40 862 — Markierungen; Anwendungen auf Haupt- und Nebenstrassen"
+      ],
       "kategorie": "ausruestung",
       "erklaerungI18n": {
         "de": "Im Inspektionsbericht vorgeschlagen (Sofortmassnahme): Durchgezogene Abweislinie markieren.",
@@ -8502,7 +8870,11 @@
       },
       "isPflicht": true,
       "isBooster": false,
-      "normRefs": [],
+      "normRefs": [
+        "VSS 40 090b — Projektierung, Grundlagen; Sichtweiten",
+        "VSS 40 110 — Linienführung; Elemente der vertikalen Linienführung",
+        "SN 640 660 — Grünräume; Grundlagen und Projektierung"
+      ],
       "kategorie": "sicht",
       "erklaerungI18n": {
         "de": "Im Inspektionsbericht vorgeschlagen (Detailprüfung, Sofortmassnahme): Verteilkabine (VK) verschieben: Möglichkeiten kurzfristig prüfen sonst im Zuge Knotenprojekt anpassen. Mit Zurückschneiden Sträucher/Hecke auf Kurveninnenseite Erkennungsdistanz (Sicht auf Signal 4.11 auf Insel) verbessern.",
@@ -8541,7 +8913,10 @@
       },
       "isPflicht": false,
       "isBooster": false,
-      "normRefs": [],
+      "normRefs": [
+        "VSS 40 273 — Knoten; Sichtverhältnisse in Knoten in einer Ebene",
+        "SN 640 660 — Grünräume; Grundlagen und Projektierung"
+      ],
       "kategorie": "sicht",
       "erklaerungI18n": {
         "de": "Im Inspektionsbericht vorgeschlagen (Detailprüfung, Sofortmassnahme): Zurückschneiden der Hecke prüfen, Verkehrsspiegel montieren. Fahrverbot auf dem Verbindungsweg prüfen, um weiteren Verkehr zu vermeiden; die Erschliessung bleibt über den benachbarten Knoten sichergestellt.",
@@ -8619,7 +8994,11 @@
       },
       "isPflicht": true,
       "isBooster": false,
-      "normRefs": [],
+      "normRefs": [
+        "VSS 40 090b — Projektierung, Grundlagen; Sichtweiten",
+        "VSS 40 110 — Linienführung; Elemente der vertikalen Linienführung",
+        "SN 640 660 — Grünräume; Grundlagen und Projektierung"
+      ],
       "kategorie": "sicht",
       "erklaerungI18n": {
         "de": "Im Inspektionsbericht vorgeschlagen (Sanierungsprojekt, Sofortmassnahme): Kurvenradius gemäss Norm 40 100a vergrössern. Während der wachstumsintensiven Vegetationsphasen ist das Gras vom Unterhalt in regelmässigen Intervallen zu mähen. Die Landwirte sind darauf hinzuweisen, dass bei der Anpflanzung von Kulturen der erforderliche Sichtbereich dauerhaft freigehalten werden muss.",
@@ -8736,7 +9115,10 @@
       },
       "isPflicht": true,
       "isBooster": false,
-      "normRefs": [],
+      "normRefs": [
+        "VSS 40 273 — Knoten; Sichtverhältnisse in Knoten in einer Ebene",
+        "SN 640 660 — Grünräume; Grundlagen und Projektierung"
+      ],
       "kategorie": "sicht",
       "erklaerungI18n": {
         "de": "Im Inspektionsbericht vorgeschlagen (Sanierungsprojekt): Beurteilung der Möglichkeiten zur Anpassung des Böschungsbereichs und/oder Anpassung des Betriebs‑ und Gestaltungskonzepts (z.B. 60 km/h).",
@@ -8854,7 +9236,8 @@
       "isPflicht": true,
       "isBooster": false,
       "normRefs": [
-        "VSS 40 273"
+        "VSS 40 273 — Knoten; Sichtverhältnisse in Knoten in einer Ebene",
+        "SN 640 660 — Grünräume; Grundlagen und Projektierung"
       ],
       "kategorie": "sicht",
       "erklaerungI18n": {

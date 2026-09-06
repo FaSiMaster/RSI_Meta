@@ -54,6 +54,11 @@ ZUORDNUNG = [
     ('begegnungsfall',          'mass_begegnungsfall', 'code'),
     ('verkehrsqualitaet',       'los',                 'code'),
     ('dtv',                     'dtv_n',               'zahl'),
+    # Beim ersten Durchgang übersehen: Die Spalte heisst kleingeschrieben,
+    # gesucht wurde nach «LW_Anteildomain_n», und eine nicht gefundene Spalte
+    # sah aus wie ein nicht geführtes Merkmal.
+    ('lastwagenanteil',         'lw_anteildomain_n',   'code'),
+    ('unfallgeschehen',         'unf',                 'code'),
 
     ('trottoir',                'trottoir',            'code'),
     ('veloroute',               'veloroute',           'code'),
