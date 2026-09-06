@@ -1,6 +1,6 @@
 # Datensicherung – RSI VR Tool
 
-> Was liegt wo, und was ist zu tun, wenn etwas verloren geht. Stand v0.11.0.
+> Was liegt wo, und was ist zu tun, wenn etwas verloren geht. Stand v0.16.3.
 
 ---
 
@@ -16,6 +16,7 @@
 | Kurse samt Passwort-Hashes | Supabase `rsi_kurse`, EU | **hoch** |
 | Ergebnisse der Ranglisten | Supabase `rsi_results`, EU | mittel, wiederholbar |
 | Lokale Daten der Teilnehmenden | localStorage im Browser | niedrig, gerätegebunden |
+| **Zuständigkeit je Land** | localStorage `rsi-v3-zustaendigkeiten` | **hoch**, ohne Auszug gerätegebunden und nirgends sonst vorhanden |
 | Admin-Token | sessionStorage, zwei Stunden gültig | niedrig, jederzeit neu erzeugbar |
 | Umgebungsvariablen des Clients | Vercel | **hoch** |
 | Secrets der Edge Functions | Supabase | **hoch** |
@@ -59,9 +60,15 @@ Zu sichern ist er von Hand über das Dashboard oder die CLI, indem der Ordner
 ### 2.4 Export aus der Anwendung
 
 Der Administrationsbereich erzeugt unter Export und Import einen JSON-Auszug mit
-Themen, Szenen, Defiziten, Kursen und einem Stand der Rangliste, gekennzeichnet
-mit `rsi-v3`. Er wird von Hand ausgelöst und enthält **keine Bilddaten**, nur
-deren Pfade. Der Bucket ist daher getrennt zu sichern.
+Themen, Szenen, Defiziten, Kursen, den Zuständigkeiten je Land und einem Stand
+der Rangliste, gekennzeichnet mit `rsi-v3`. Er wird von Hand ausgelöst und
+enthält **keine Bilddaten**, nur deren Pfade. Der Bucket ist daher getrennt zu
+sichern.
+
+Für die Zuständigkeiten ist dieser Auszug die einzige Sicherung überhaupt: Sie
+liegen im localStorage und werden nicht nach Supabase abgeglichen. Wer sie
+einträgt und keinen Auszug erzeugt, verliert sie beim nächsten Gerätewechsel
+oder beim Zurücksetzen der Anwendung.
 
 ---
 
@@ -99,6 +106,10 @@ Vom GitHub-Remote klonen; Vercel baut über die Git-Anbindung von selbst neu.
 
 Über den Support ein Zurückspielen der Momentaufnahme anfordern oder den letzten
 JSON-Auszug im Administrationsbereich importieren.
+
+Beim Import gilt eine Regel: Szenen, deren Land nicht zum Themenbereich passt,
+werden abgewiesen und im Feedback gezählt. Bleiben nach einem Import Szenen aus,
+prüfen Sie zuerst das Land der zugehörigen Oberthemen.
 
 ### 4.3 Gesamtes Supabase-Projekt
 

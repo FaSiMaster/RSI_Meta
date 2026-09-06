@@ -3,7 +3,7 @@
 **Road Safety Inspection – Immersive Training**
 Privates Projekt von Stevan Skeledzic
 
-Stand: v0.12.0 (5. September 2026) · Live: [rsi-meta.vercel.app](https://rsi-meta.vercel.app)
+Stand: v0.16.3 (6. September 2026) · Live: [rsi-meta.vercel.app](https://rsi-meta.vercel.app)
 
 Ein Trainingswerkzeug für die normative 9-Schritte-Methodik der Road Safety
 Inspection. Inspektorinnen und Inspektoren beurteilen Strassenszenen im
@@ -11,6 +11,9 @@ Inspection. Inspektorinnen und Inspektoren beurteilen Strassenszenen im
 Unfallrisiko, im Browser oder in VR auf der Meta Quest 3. Grundlage sind der
 TBA-Fachkurs FK RSI V 16.09.2020, der bfu-Bericht 73 und VSS 41 723
 (frühere Nummer SN 641 723).
+
+Seit v0.16.0 trägt jeder Inhalt ein Land. Beurteilt wird nur dort, wo für dieses
+Land ein Verfahren hinterlegt ist; das ist heute allein die Schweiz.
 
 ---
 
@@ -47,7 +50,7 @@ Headset aus.
 | Styling | Tailwind CSS 4.2 (`@tailwindcss/vite`) + CSS Custom Properties |
 | Animation | Framer Motion (`motion` 12) |
 | Icons | lucide-react |
-| i18n | react-i18next 17 / i18next 26 – de, fr, it, en zu je 600 Schlüsseln |
+| i18n | react-i18next 17 / i18next 26 – de, fr, it, en; 521 Schlüssel im Namensraum `translation`, 104 im Namensraum `verfahren` |
 | State | zustand |
 | 3D / XR | `@react-three/fiber` 8 + `@react-three/xr` 6 + `@react-three/drei` 9 + three 0.169 |
 | PDF | pdfmake 0.3, dynamisch nachgeladen |
@@ -80,6 +83,28 @@ Headset aus.
 | 9 | Automatisch | Unfallrisiko als Gesamtergebnis |
 
 Quelle: TBA-Fachkurs FK RSI V 16.09.2020 und SN 641 723:2016 Abb. 2.
+
+### Land und Verfahren
+
+Themenbereich, Szene, Kurs und Ergebnis tragen ein Land nach ISO 3166-1 alpha-2.
+Geführt wird es am obersten Themenbereich; untergeordnete Themen erben es. Ein
+Datensatz ohne Angabe gilt als schweizerisch, und der Wert wird beim nächsten
+Speichern festgeschrieben – die Daten liegen im localStorage jedes Geräts und in
+Supabase, es gibt keinen Ort, an dem sich der Bestand zentral berichtigen liesse.
+
+Welches Beurteilungsverfahren gilt, entscheidet das Land. Hinterlegt ist eines:
+der Neunschrittpfad für die Schweiz. Für jedes andere Land zeigt der
+Bewertungsfluss einen Hinweis und bricht ab, ohne Ersatzablauf und ohne Punkte.
+
+Ein Kurs gehört zu genau einem Land; es ergibt sich aus dem ersten zugeordneten
+Themenbereich. Am Einstieg gruppiert die Anwendung ab dem zweiten Land nach Land
+und bietet einen Filter an, der ausblendet statt zu sperren; die zuletzt
+getroffene Wahl bleibt auf dem Gerät gemerkt.
+
+Je Land lässt sich eintragen, welche Stelle die Inhalte verantwortet, auf welcher
+Grundlage und mit welchem Stand. Solange nichts eingetragen ist, sagt die
+Anwendung genau das: noch nicht bestimmt, Inhalte vorläufig, keine Freigabe durch
+eine Stelle dieses Landes, nur zu Trainingszwecken.
 
 ### Training
 
@@ -126,6 +151,13 @@ Bild-Upload in den Supabase-Bucket `rsi-textures`, einen Piktogramm-Katalog aus
 die Kursverwaltung mit optionaler Themen-Exklusivität sowie Export und Import der
 gesamten Datenbasis als JSON.
 
+Seit v0.16.2 ist das Land beim obersten Themenbereich ein Pflichtfeld mit Vorgabe
+Schweiz und einer Auswahl über alle 249 Codes. Ein Landfilter in der Seitenleiste
+schränkt Themen und damit den Defizitkatalog ein. Der Import weist Szenen ab,
+deren Land nicht zum Themenbereich passt, und meldet ihre Zahl; das ist der
+einzige Weg, eine Szene über eine Landesgrenze zu bewegen, denn die Oberfläche
+bietet kein Verschieben an. Ein eigener Reiter pflegt die Zuständigkeit je Land.
+
 ### Zugänglichkeit und Gestaltung
 
 Ausrichtung auf WCAG 2.1 AA mit Bedienelementen ab 44 × 44 Pixel, Fokusfalle in
@@ -161,6 +193,9 @@ RSI_Meta/
     ├── types/index.ts
     ├── data/
     │   ├── scoringEngine.ts     # WICHTIGKEIT_TABLE + Matrizen (Sacred File)
+    │   ├── laender.ts           # 249 Codes nach ISO 3166-1 alpha-2
+    │   ├── verfahren.ts         # Zuordnung Land zu Verfahren
+    │   ├── zustaendigkeit.ts    # Trägerschaft je Land
     │   ├── scoreCalc.ts         # Punkte, Teilpunkte, Hinweis-Abzüge
     │   ├── bestandenKriterium.ts
     │   ├── ergebnisModel.ts     # Matrix-Herleitung für Browser und VR
@@ -176,8 +211,9 @@ RSI_Meta/
     │   ├── supabase.ts · supabaseStorage.ts
     │   └── sentry.ts · logger.ts · useFocusTrap.ts · utils.ts
     ├── i18n/                    # index.ts + de/fr/it/en
+    │   └── verfahren.bfu.ts     # Bezeichnungen des Verfahrens (Sacred File)
     └── components/
-        ├── LandingPage.tsx · Navbar.tsx
+        ├── LandingPage.tsx · Navbar.tsx · ZustaendigkeitKarte.tsx
         ├── TopicDashboard.tsx · SceneList.tsx · TrainingEinstieg.tsx
         ├── SceneViewer.tsx      # 360°-Viewer, Klick-Flow, VR-Panels
         ├── ScoringFlow.tsx · LernKarte.tsx · SzenenAbschluss.tsx
@@ -186,6 +222,7 @@ RSI_Meta/
         ├── AdminDashboard.tsx
         └── admin/
             ├── BildEditor.tsx · BildUpload.tsx · AdminRanking.tsx
+            ├── ZustaendigkeitTab.tsx
             ├── modals/          # Thema, Szene, Defizit, Kurs
             └── fields/          # Mehrsprachige Eingabefelder
 ```
@@ -201,6 +238,7 @@ RSI_Meta/
 | SN 641 723:2016, Abb. 2 | Normative Unfallrisiko-Matrix (Ausgabe, aus der die Abbildung stammt) |
 | VSS 41 723 / VSS 41 722 | Geltende Nummern für Inspektion und Audit (früher SN 641 723 / SN 641 722) |
 | bfu-Werkzeugkasten | Weitere Normbezüge in `regelwerkKatalog.ts` |
+| ISO 3166-1 alpha-2 | Ländercodes in `laender.ts`, 249 offiziell zugeteilte, Stand 6. September 2026 |
 
 Die Matrizen `calcRelevanzSD` und `calcUnfallrisiko` wurden gegen die
 Originalfolien des Fachkurses geprüft; der Befund steht im `AUDIT_REPORT.md` vom
@@ -247,13 +285,13 @@ Dienste.
 
 ## Build
 
-Stand vom 1. August 2026, gemessen mit `npm run build`:
+Stand vom 6. September 2026, gemessen mit `npm run build`:
 
 ```
-3'434 Module transformiert
-JS   2'137 kB (gzip 599 kB)
-CSS     18 kB (gzip   5 kB)
-Dauer  ~23 s
+3439 Module transformiert
+JS   2114 kB (gzip 590 kB)
+CSS    17 kB (gzip   4 kB)
+Dauer  ~27 s
 ```
 
 pdfmake bildet einen eigenen Chunk und wird erst beim Klick auf «Bericht»
@@ -262,8 +300,8 @@ geladen. Der Service Worker legt die App-Shell vorab in den Cache und holt
 Die Precache-Grenze steht in `vite.config.ts` auf 3 MiB, weil der Hauptchunk die
 voreingestellten 2 MiB überschreitet.
 
-Gates zum selben Stand: `tsc --noEmit` ohne Fehler, 85 Unit-Tests in 9 Dateien
-grün.
+Gates zum selben Stand: `tsc --noEmit` ohne Fehler, 193 Unit-Prüfungen in 19
+Dateien und 42 Prüfungen im Browser in 7 Dateien, alle grün.
 
 ---
 
@@ -279,6 +317,16 @@ Schlüssel im localStorage tragen das Präfix `rsi-v3-`. Im sessionStorage liege
 Administrationsbereich hilft dabei. Neue Einträge in der WICHTIGKEIT_TABLE sind
 gegen den Fachkurs zu verifizieren – `scoringEngine.ts` ist ein Sacred File und
 durch einen Hook geschützt.
+
+Dasselbe gilt für `src/i18n/verfahren.bfu.ts`: Dort stehen die Bezeichnungen des
+Verfahrens, und ein geänderter Wortlaut braucht eine Verifikation gegen den
+Fachkurs. Der Schutz ist bisher eine Namenskonvention; das Muster «bfu» fehlt in
+der Hook-Konfiguration unter `claude-config/hooks/`.
+
+Die Zuständigkeiten je Land liegen im localStorage unter
+`rsi-v3-zustaendigkeiten` und werden bewusst nicht nach Supabase abgeglichen.
+Sie wandern über Ausfuhr und Einfuhr im Administrationsbereich; ohne einen
+solchen Auszug bleibt ein Eintrag auf dem Gerät, auf dem er gemacht wurde.
 
 Panorama-Bilder liegen produktiv in Supabase Storage, nicht unter
 `public/textures/`. Offene Punkte stehen im `AUDIT_REPORT.md` und im

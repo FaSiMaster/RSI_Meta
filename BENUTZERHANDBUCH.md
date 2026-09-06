@@ -1,6 +1,6 @@
 # Benutzerhandbuch – RSI VR Tool
 
-> Für Inspektorinnen und Inspektoren im Schulungseinsatz. Stand v0.11.0.
+> Für Inspektorinnen und Inspektoren im Schulungseinsatz. Stand v0.16.3.
 > Begleitend zum TBA-Fachkurs FK RSI (V 16.09.2020).
 
 ---
@@ -45,6 +45,16 @@ Die Schritt-für-Schritt-Anleitung in der unteren Hälfte führt durch den Ablau
 Thema wählen, Szene starten, Defizite im 360°-Bild markieren, die
 9-Schritte-Bewertung durchlaufen. Rechts unten lässt sich die RSI-Methodik
 aufklappen; dort stehen die Matrizen und die NACA-Skala als Referenz.
+
+Gibt es Themen aus mehr als einem Land, sind sie nach Land gruppiert, und über
+den Karten steht eine Reihe Schaltflächen zum Filtern. Voreingestellt ist «Alle
+Länder»; Ihre letzte Wahl merkt sich die Anwendung auf diesem Gerät. Der Filter
+blendet aus, er sperrt nichts.
+
+Unter jeder Gruppe steht, wer die Inhalte dieses Landes verantwortet. Ist dort
+noch keine Stelle eingetragen, sagt die Anwendung genau das: Die Inhalte sind
+vorläufig, von keiner Stelle dieses Landes freigegeben und nur zu
+Trainingszwecken bestimmt.
 
 ---
 
@@ -176,7 +186,8 @@ Sie kostet keine Punkte und verrät die Lösung nicht.
 
 Sind alle Pflichtdefizite gefunden oder beenden Sie die Szene selbst, erscheint
 die Auswertung: gefundene Defizite, Zeit, Sterne und der beste bisherige
-Durchgang. Verpasste Defizite werden mit dem Standort aufgeführt, an dem sie zu
+Durchgang. Am Fuss steht dieselbe Angabe zur Zuständigkeit wie am Einstieg –
+sie gehört zum Ergebnis, nicht bloss zur Übersicht. Verpasste Defizite werden mit dem Standort aufgeführt, an dem sie zu
 sehen gewesen wären.
 
 Eine Szene gilt als bestanden, wenn alle Pflichtdefizite gefunden sind und
@@ -249,6 +260,12 @@ gedacht, nicht für den Alltag.
 ---
 
 ## 11. Häufige Fragen
+
+**Warum lässt sich ein Defizit nicht bewerten, obwohl ich es gefunden habe?**
+Die Szene gehört zu einem Land, für das noch kein Beurteilungsverfahren
+hinterlegt ist. Der Neunschrittpfad gilt für die Schweiz; für andere Länder
+erscheint statt der Bewertung ein Hinweis, und es werden keine Punkte vergeben.
+
 
 **Meine Punkte fehlen in der Rangliste.**
 Netzverbindung prüfen. Ohne Verbindung zu Supabase bleiben die Punkte zunächst

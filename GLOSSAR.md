@@ -1,6 +1,6 @@
 # Glossar und Abkürzungsverzeichnis – RSI VR Tool
 
-> Stand v0.11.0.
+> Stand v0.16.3.
 
 Fachbegriffe und Abkürzungen der Strassenverkehrssicherheit in der Bedeutung,
 die sie im RSI VR Tool haben. Verbindlich für Oberfläche, Handbücher und
@@ -41,10 +41,47 @@ Schulungsunterlagen: Wo dieselbe Sache gemeint ist, steht dieselbe Bezeichnung.
 | **SHA-256** | Secure Hash Algorithm 256 Bit | Einwegfunktion zur Pseudonymisierung |
 | **HDRI** | High Dynamic Range Imaging | Panorama-Bildformat mit hoher Dynamik |
 | **UV** | UV-Mapping | Zweidimensionale Texturkoordinaten auf 3D-Oberflächen |
+| **ISO** | Internationale Organisation für Normung | Herausgeberin von ISO 3166-1, dem Verzeichnis der Ländercodes |
 
 ---
 
 ## Fachbegriffe
+
+### Land
+
+Jeder Themenbereich, jede Szene, jeder Kurs und jedes Ergebnis gehört zu einem
+Land, bezeichnet mit dem zweistelligen Code nach ISO 3166-1 alpha-2. Geführt
+wird das Land am obersten Themenbereich; untergeordnete Themen erben es und
+tragen kein eigenes Feld. Ein Datensatz ohne Angabe gilt als schweizerisch.
+
+Die Auswahl umfasst alle 249 offiziell zugeteilten Codes. Nicht enthalten sind
+die ausnahmsweise reservierten (darunter CQ für Sark), die benutzerdefinierten
+und die gelöschten Codes untergegangener Staaten; die Begründung je Ausschluss
+steht im Kopf von `src/data/laender.ts`.
+
+### Verfahren
+
+Der Ablauf, nach dem ein Sicherheitsdefizit beurteilt wird. Welches Verfahren
+gilt, entscheidet das Land. Hinterlegt ist eines: der Neunschrittpfad des
+Fachkurses FK RSI für die Schweiz. Für ein Land ohne Verfahren gibt es keinen
+Ablauf, keinen Ersatz und keine Punkte.
+
+Die Bezeichnungen eines Verfahrens – Schrittnamen, Phasen, Dimensionen,
+Matrixbeschriftungen – stehen getrennt von der Bedienung in einer eigenen Datei.
+Was jedes Verfahren gleich braucht, etwa «Weiter» oder «Punkte erhalten», bleibt
+in den allgemeinen Sprachdateien.
+
+### Zuständigkeit
+
+Je Land die Angabe, welche Stelle die Inhalte verantwortet, auf welcher
+fachlichen Grundlage, mit welchem Stand und mit welchem Hinweis. Gepflegt wird
+sie im Administrationsbereich, angezeigt beim Themenbereich und auf dem
+Rückmeldebildschirm jeder Szene.
+
+Solange für ein Land nichts eingetragen ist, sagt die Anwendung das: noch nicht
+bestimmt, Inhalte vorläufig, keine Freigabe durch eine Stelle dieses Landes, nur
+zu Trainingszwecken. Diese Auskunft gilt für jedes Land, die Schweiz
+eingeschlossen.
 
 ### 9-Schritte-Methodik RSI
 

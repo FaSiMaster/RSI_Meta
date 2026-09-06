@@ -15,7 +15,7 @@
 
 | Schicht | Technologie | Version |
 |---|---|---|
-| Version | **v0.12.0** (2026-09-05) | Rückbau aller Behördenbezüge, privates Projekt |
+| Version | **v0.16.3** (2026-09-06) | Länderweiche: Feld country, Verfahren je Land, Zuständigkeit |
 | Framework | React + Vite + TypeScript | React 18.3, **Vite 7.3**, TS strict |
 | Styling | Tailwind CSS (`@tailwindcss/vite`) | v4.2 |
 | Animation | Framer Motion (motion/react) | v12 |
@@ -26,7 +26,7 @@
 | PDF | pdfmake (dynamisch nachgeladen) | v0.3 |
 | Icons | lucide-react | — |
 | Build | Vite 7 + vite-plugin-pwa | v1.2, Service Worker |
-| Tests | Vitest + Playwright | 85 Unit-Tests, 12 E2E-Specs |
+| Tests | Vitest + Playwright | 193 Unit-Prüfungen in 19 Dateien, 42 im Browser in 7 Dateien |
 | Hosting | Vercel (Primär) | HTTPS-Pflicht für WebXR |
 | Persistenz | localStorage (`rsi-v3-*`) + **Supabase** | Postgres, Storage, 3 Edge Functions |
 
@@ -68,6 +68,9 @@ RSI_Meta/
 │   ├── types/index.ts
 │   ├── data/
 │   │   ├── scoringEngine.ts        # WICHTIGKEIT_TABLE (58), Matrizen (SACRED)
+│   │   ├── laender.ts              # 249 Codes ISO 3166-1 alpha-2
+│   │   ├── verfahren.ts            # Zuordnung Land → Verfahren
+│   │   ├── zustaendigkeit.ts       # Trägerschaft je Land (nur localStorage)
 │   │   ├── scoreCalc.ts            # calcScore, KATEGORIE_TEILPUNKTE, HINT_ABZUG_*
 │   │   ├── bestandenKriterium.ts   # Bestanden-Logik (Pflicht + 60 %)
 │   │   ├── ergebnisModel.ts        # Matrix-Herleitung für Browser + VR
@@ -85,9 +88,10 @@ RSI_Meta/
 │   │   ├── supabase.ts · supabaseStorage.ts
 │   │   └── sentry.ts · logger.ts · useFocusTrap.ts · utils.ts
 │   ├── styles/design-tokens.css
-│   ├── i18n/                       # index.ts + de/fr/it/en (je 600 Blatt-Keys)
+│   ├── i18n/                       # index.ts + de/fr/it/en (521 Blatt-Keys)
+│   │   └── verfahren.bfu.ts        # 104 Verfahrensbezeichnungen (SACRED)
 │   └── components/
-│       ├── LandingPage.tsx · Navbar.tsx
+│       ├── LandingPage.tsx · Navbar.tsx · ZustaendigkeitKarte.tsx
 │       ├── TopicDashboard.tsx · SceneList.tsx · TrainingEinstieg.tsx
 │       ├── SceneViewer.tsx         # 360°-Viewer, Klick-Flow, alle VR-Panels
 │       ├── ScoringFlow.tsx · LernKarte.tsx · SzenenAbschluss.tsx
@@ -96,6 +100,7 @@ RSI_Meta/
 │       ├── AdminDashboard.tsx      # Hülle; Modals ausgelagert (Sprint 3)
 │       └── admin/
 │           ├── BildEditor.tsx · BildUpload.tsx · AdminRanking.tsx
+│           ├── ZustaendigkeitTab.tsx
 │           ├── modals/             # Thema, Szene, Defizit, Kurs
 │           └── fields/             # ML-Inputs, NormRefPicker, Vorschaubild
 └── _Archiv/                        # Lokal, nicht im Git (.gitignore)
@@ -168,6 +173,49 @@ Die RSI-Beurteilung folgt exakt dem TBA-Fachkurs FK RSI (V 16.09.2020):
 
 ---
 
+## Länderweiche (seit v0.16.0)
+
+**Feld `country`** nach ISO 3166-1 alpha-2 an `AppTopic` (nur oberstes Thema),
+`AppScene`, `Kurs`, `RankingEntry` und `SceneResult`. Überall optional.
+
+**Leseregel:** Ein Datensatz ohne Feld – oder mit einem Wert, den ISO 3166-1
+nicht zuteilt – gilt beim Lesen als `CH`; festgeschrieben wird der Wert beim
+nächsten regulären Speichern. Nötig, weil die Daten im localStorage jedes
+Geräts und in Supabase liegen und es keinen Ort gibt, an dem der Bestand
+zentral zu berichtigen wäre. Untergeordnete Themen tragen **kein** eigenes
+Feld; ihr Land liefert `getTopicCountry()`.
+
+**Verfahren:** `VERFAHREN_JE_LAND` in `verfahren.ts` ordnet Land und Verfahren
+zu. Hinterlegt ist eines: `CH` → `bfu-fk-rsi-2020`. Für jedes andere Land zeigt
+`ScoringFlow` einen Hinweis und bricht ab – kein Ersatzablauf, keine Punkte.
+Derselbe Riegel steht im VR-Pfad in `App.tsx`, dort allerdings ohne Anzeige,
+weil ein VR-Panel dafür fehlt.
+
+**Sprachtrennung:** Der i18next-Namensraum `verfahren` trägt die Bezeichnungen
+des Verfahrens (104 Schlüssel), `translation` die Bedienung. Aufruf im Code:
+`t('verfahren:step1Title')`.
+
+**Regeln:** Ein Kurs gehört zu genau einem Land, abgeleitet aus dem ersten
+zugeordneten Thema. Der Import weist Szenen ab, deren Land nicht zum Thema
+passt – die Oberfläche bietet kein Verschieben an. Die Gesamtrangliste fasst
+weiterhin über Länder zusammen, zeigt das Land aber als Spalte und lässt sich
+filtern.
+
+**Zuständigkeit:** Je Land ein Datensatz in `rsi-v3-zustaendigkeiten`, bewusst
+ohne Supabase-Abgleich, verteilt über Ausfuhr und Einfuhr. Die Schweiz ist
+**nicht** im Code vorbelegt: Der Wächter `keine-affiliation.test.ts` hält
+Behördenbezüge aus dem Quellbaum, seit das Werkzeug in v0.12.0 zum privaten
+Projekt wurde. Ohne Eintrag zeigt die Anwendung «noch nicht bestimmt» samt
+Vorläufigkeitshinweis – für jedes Land.
+
+**Offen:** Unter welcher Sprachkennung deutsches Deutsch abgelegt wird, ist
+nicht entschieden. `MultiLang` ist ein festes Gebilde aus `de`, `fr`, `it`,
+`en`, das jeder Inhaltsdatensatz führt; eine fünfte Kennung berührt den ganzen
+Bestand. Diese Frage ist zu klären, **bevor** der erste Datensatz mit
+`country: 'DE'` entsteht.
+
+---
+
 ## Datenmodell (appData.ts)
 
 ### localStorage Keys (v3)
@@ -179,7 +227,9 @@ Die RSI-Beurteilung folgt exakt dem TBA-Fachkurs FK RSI (V 16.09.2020):
 | `rsi-v3-deficits` | AppDeficit[] |
 | `rsi-v3-session` | UserSession |
 | `rsi-v3-ranking` | RankingEntry[] |
-| `rsi-v3-init` | 'true' (verhindert Re-Seed) |
+| `rsi-v3-init-v3` | '1' (verhindert Re-Seed) |
+| `rsi-v3-zustaendigkeiten` | Zustaendigkeit[] – kein Supabase-Abgleich |
+| `rsi-v3-landfilter` | zuletzt gewählter Landfilter am Einstieg |
 
 ### Kerntypen
 
@@ -322,4 +372,4 @@ npm run preview -- --host  # Build lokal testen
 
 ---
 
-*Letzte Aktualisierung: 2026-09-05 (v0.12.0, Rückbau der Behördenbezüge)*
+*Letzte Aktualisierung: 2026-09-06 (v0.16.3, Länderweiche)*

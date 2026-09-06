@@ -1,6 +1,6 @@
 # Admin-Handbuch – RSI VR Tool
 
-> Für die Kursleitung. Stand v0.12.0.
+> Für die Kursleitung. Stand v0.16.3.
 > Voraussetzung: Admin-PIN als Supabase-Secret gesetzt, Edge Functions
 > `admin-auth`, `admin-write` und `kurs-auth` deployt.
 
@@ -175,7 +175,12 @@ Vorschau-Adresse von Vercel muss sie in `admin-auth/index.ts` und
 | **Inhalte** | Themen, Szenen, Defizite anlegen, ändern, löschen |
 | **Kurse** | Kurse, Zugangscodes, Themenzuteilung |
 | **Rangliste** | Einträge nach Benutzer und Kurs verwalten |
+| **Zuständigkeit** | Je Land eintragen, wer die Inhalte verantwortet |
 | **Export / Import** | Vollständiger JSON-Auszug der Datenbasis |
+
+Bei den Inhalten steht links eine Liste der Themen. Sobald es Themen aus mehr
+als einem Land gibt, erscheint darüber ein Landfilter; er schränkt die Liste ein
+und damit auch die Szenen und Defizite, die darunter erreichbar sind.
 
 ---
 
@@ -187,7 +192,23 @@ Ein Oberthema wie «Verkehrsführung» enthält Unterthemen wie «Linienführung
 darunter liegen die Szenen mit der Kennung `SZ_YYYY_NNN` und je Szene die
 Defizite mit der Kennung `SD_NNNN`.
 
-### 4.2 Aktionen
+### 4.2 Land
+
+Beim Anlegen eines Oberthemas ist das Land ein Pflichtfeld. Vorgabe ist die
+Schweiz, zur Auswahl stehen alle 249 offiziell zugeteilten Codes nach
+ISO 3166-1 alpha-2. Ein Unterthema wählt kein Land, sondern erbt es vom
+Oberthema; im Dialog steht, welches das ist.
+
+Das Land entscheidet über zweierlei. Erstens darüber, ob überhaupt beurteilt
+wird: Für ein Land ohne hinterlegtes Verfahren zeigt der Bewertungsfluss einen
+Hinweis und bricht ab, ohne Punkte. Hinterlegt ist bislang der Neunschrittpfad
+für die Schweiz. Zweitens darüber, welche Szenen und Defizite unter dem Thema
+liegen dürfen – sie gehören zum selben Land.
+
+Ein bestehendes Thema lässt sich auf ein anderes Land umstellen. Prüfen Sie
+davor, ob die Szenen darunter noch passen; die Anwendung stellt sie nicht um.
+
+### 4.3 Aktionen
 
 Neue Oberthemen und Gruppen entstehen über den Button rechts oben, die
 Reihenfolge ändern die Pfeile, Umbenennen geschieht direkt in der Liste.
@@ -196,7 +217,7 @@ erscheinen aber im Trainingspfad nicht mehr. Das Löschen eines Oberthemas
 verlangt eine Bestätigung, die den Umfang der Kaskade nennt, also die Zahl der
 betroffenen Gruppen und Szenen samt Defiziten.
 
-### 4.3 Sichtbarkeit je Kurs
+### 4.4 Sichtbarkeit je Kurs
 
 Jedes Thema trägt das Flag «Nur für zugewiesene Kurse sichtbar». Ist es gesetzt,
 sehen das Thema ausschliesslich jene, die sich mit einem Kurscode angemeldet
@@ -207,12 +228,12 @@ unverändert funktionieren.
 Das ist eine Steuerung der Sichtbarkeit im Client, keine Zugriffssicherung. Die
 Inhalte selbst bleiben in Supabase anonym lesbar.
 
-### 4.4 Piktogramme
+### 4.5 Piktogramme
 
 Jedes Oberthema kann ein Piktogramm aus einem Katalog von 23 Icons erhalten. Bei
 der Neuanlage schlägt die App eines aus dem Themennamen vor.
 
-### 4.5 Mehrsprachigkeit
+### 4.6 Mehrsprachigkeit
 
 Titel und Beschreibungen sind mehrsprachige Objekte für Deutsch, Französisch,
 Italienisch und Englisch. Deutsch ist Pflicht; fehlt eine andere Sprache, wird
@@ -336,6 +357,11 @@ Das Kurspasswort wird nicht im Klartext gespeichert. Die Prüfung läuft über d
 Edge Function `kurs-auth` gegen einen mit `KURS_PASSWORT_PEPPER` gepfefferten
 Hash.
 
+Ein Kurs gehört zu genau einem Land. Es ergibt sich aus dem ersten
+Themenbereich, den Sie anhaken, und steht danach fest: Themen anderer Länder
+lassen sich nicht mehr auswählen, und im Dialog steht, warum. Nehmen Sie alle
+Themen wieder weg, ist das Land erneut offen.
+
 ### 9.2 Lebenszyklus
 
 Innerhalb der Gültigkeitsdauer erscheint ein Kurs auf der Startseite.
@@ -429,6 +455,29 @@ einen vollständigen Neuaufbau.
 
 ---
 
+## 13a. Zuständigkeit je Land
+
+Im Register **Zuständigkeit** halten Sie fest, wer die Inhalte eines Landes
+verantwortet: die Stelle, die fachliche Grundlage, den Stand und einen Hinweis.
+Zur Auswahl stehen die Länder, für die es Themenbereiche gibt.
+
+Angezeigt werden die Angaben an zwei Orten: beim Themenbereich am Einstieg und
+auf dem Rückmeldebildschirm jeder Szene. Solange nichts eingetragen ist, steht
+dort «noch nicht bestimmt» und der Hinweis, dass die Inhalte vorläufig sind, von
+keiner Stelle dieses Landes freigegeben und nur zu Trainingszwecken bestimmt.
+Diese Auskunft gilt für jedes Land, die Schweiz eingeschlossen.
+
+Die Felder sind einsprachig. Sie tragen Eigennamen und Fundstellen, und die
+werden nicht übersetzt; wer sie einträgt, wählt die Sprache.
+
+**Die Angaben liegen auf dem Gerät**, im localStorage unter
+`rsi-v3-zustaendigkeiten`, und werden nicht nach Supabase abgeglichen. Auf ein
+zweites Gerät kommen sie über Ausfuhr und Einfuhr im Register **Export /
+Import**. Erzeugen Sie nach dem Eintragen einen Auszug, sonst ist die Angabe
+beim nächsten Gerätewechsel weg.
+
+---
+
 ## 14. Störungsbehebung
 
 **Anmeldung schlägt fehl (401).** PIN prüfen, Logs von `admin-auth` ansehen,
@@ -460,6 +509,17 @@ bestehende Passwörter nicht mehr prüfen; sie sind neu zu setzen.
 **Panorama lädt nicht.** Bucket `rsi-textures` prüfen: Datei vorhanden,
 Leseregel aktiv? Im Browser muss die Content-Security-Policy `img-src` für
 `https://*.supabase.co` zulassen.
+
+**Statt des Bewertungsflusses erscheint ein Hinweis auf ein fehlendes
+Verfahren.** Die Szene gehört zu einem Land, für das kein Verfahren hinterlegt
+ist. Prüfen Sie das Land des Oberthemas; hinterlegt ist bislang allein die
+Schweiz.
+
+**Ein Themenbereich lässt sich im Kurs nicht anhaken.** Der Kurs gehört bereits
+zu einem anderen Land. Die Begründung steht im Dialog neben dem Thema.
+
+**Eingetragene Zuständigkeiten fehlen auf einem anderen Gerät.** Sie liegen im
+localStorage und wandern nur über Ausfuhr und Einfuhr.
 
 ---
 
