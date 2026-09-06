@@ -43,12 +43,39 @@ from entscheide_2026_09_06 import (  # noqa: E402
 from normlogik import beurteilung  # noqa: E402
 
 AUSWAHL = 'C:/ClaudeAI/RSI_Analyse/output/RSI_Aufnahme_Auswahl_2026-09-06.csv'
+BESTAND = os.path.join(HIER, 'bestand')
 BAU = 'C:/ClaudeAI/RSI_Analyse/output/THEMEN_BAUANLEITUNG.html'
 ARBEITSLISTE = ('C:/ClaudeAI/RSI_Analyse/output/'
                 'AUFNAHMELISTE_ARBEIT_2026-09-06.md')
 
 LAND = 'CH'
 STAND = '2026-09-06'
+
+
+def lies_bestand():
+    """Der Themen-, Szenen- und Defizitbestand, wie er in Supabase steht.
+
+    Er kommt in die Einfuhrdatei, obwohl er sich nicht ändert. Grund: Eine
+    Datei, die nur die neuen Datensätze führt, überlässt es dem Zufall, ob der
+    Bestand daneben bestehen bleibt — sie hängt davon ab, dass die Anwendung
+    beim Einlesen ihren vollen Stand kennt. Trägt die Datei den ganzen Stand,
+    stellt jeder Import ihn her, und zwar auch dann, wenn ein Gerät ihn
+    verloren hat. Die Kennungen kollidieren nicht; jeder Datensatz ersetzt
+    genau sich selbst.
+
+    Fehlt der Ordner, läuft das Skript ohne Bestand weiter und sagt es.
+    """
+    if not os.path.isdir(BESTAND):
+        print('  Hinweis: kein Bestand unter daten/bestand/ — die Einfuhrdatei')
+        print('           trägt dann nur die neuen Datensätze.')
+        return [], [], []
+    def lies(name):
+        pfad = os.path.join(BESTAND, name)
+        if not os.path.exists(pfad):
+            return []
+        return [z['data'] for z in json.load(open(pfad, encoding='utf-8'))]
+    return (lies('rsi_topics.json'), lies('rsi_scenes.json'),
+            lies('rsi_deficits.json'))
 
 
 def leer_ml(de=''):
@@ -242,13 +269,27 @@ def main():
             ],
         })
 
+    # Bestand voranstellen. Kollidierende Kennungen gäbe es nicht — geprüft
+    # wird es trotzdem, denn eine Kollision hiesse, dass ein bestehender
+    # Datensatz überschrieben würde.
+    b_themen, b_szenen, b_defizite = lies_bestand()
+    for name, bestand, neue in (('Themen', b_themen, themen_aus),
+                                ('Szenen', b_szenen, szenen_aus),
+                                ('Defizite', b_defizite, defizite_aus)):
+        doppelt = {x['id'] for x in bestand} & {x['id'] for x in neue}
+        if doppelt:
+            raise SystemExit(f'{name}: Kennung doppelt vergeben: {sorted(doppelt)}')
+
     einfuhr = {
         'version': 'rsi-v3',
         'erzeugt': STAND,
         'quelle': 'RSI_Aufnahme_Auswahl_2026-09-06.csv',
-        'topics': themen_aus,
-        'scenes': szenen_aus,
-        'deficits': defizite_aus,
+        'hinweis': 'Trägt den vollständigen Stand: bestehende Datensätze und '
+                   'die neuen aus der Auswahl. Ein Import stellt damit den '
+                   'ganzen Bestand her.',
+        'topics': b_themen + themen_aus,
+        'scenes': b_szenen + szenen_aus,
+        'deficits': b_defizite + defizite_aus,
     }
     schreibe(os.path.join(HIER, f'rsi-import_{STAND}.json'), einfuhr)
     schreibe(os.path.join(HIER, f'massnahmen_{STAND}.json'), {
@@ -259,9 +300,12 @@ def main():
     })
     schreibe_arbeitsliste(arbeitsliste)
 
-    print(f'Themen   {len(themen_aus)}')
-    print(f'Szenen   {len(szenen_aus)}')
-    print(f'Defizite {len(defizite_aus)}, davon Pflicht '
+    print(f'Themen   {len(themen_aus):3} neu  + {len(b_themen):3} bestehend'
+          f'  = {len(einfuhr["topics"])}')
+    print(f'Szenen   {len(szenen_aus):3} neu  + {len(b_szenen):3} bestehend'
+          f'  = {len(einfuhr["scenes"])}')
+    print(f'Defizite {len(defizite_aus):3} neu  + {len(b_defizite):3} bestehend'
+          f'  = {len(einfuhr["deficits"])}, davon Pflicht neu '
           f'{sum(1 for d in defizite_aus if d["isPflicht"])}')
     print(f'Massnahmen {len(massnahmen)}')
     print(f'\nEinfuhrdatei: daten/rsi-import_{STAND}.json')

@@ -45,6 +45,27 @@ Unfallrisiko stehen deshalb fertig in der Datei — gerechnet mit dem, was in
 `scoringEngine.ts` steht, nicht mit einer zweiten Fassung derselben Regeln.
 `pruefe.py` rechnet sie unabhängig nach und vergleicht.
 
+## Die Einfuhrdatei trägt den ganzen Stand
+
+Nicht nur die neuen Datensätze, sondern auch den Bestand: 9 Themen, 2 Szenen
+und 31 Defizite aus Supabase, abgelegt unter `daten/bestand/`. Eine Datei, die
+nur die neuen Sätze führt, überlässt es dem Zufall, ob der Bestand daneben
+bestehen bleibt — sie setzt voraus, dass das einlesende Gerät seinen vollen
+Stand kennt. Trägt die Datei alles, stellt jeder Import den ganzen Stand her,
+auch auf einem Gerät, das ihn verloren hat.
+
+Die Kennungen kollidieren nicht; jeder Datensatz ersetzt genau sich selbst.
+`pruefe.py` hält die Datei gegen `daten/bestand/` und meldet jeden fehlenden
+Satz.
+
+Den Bestand auffrischen, bevor die Datei neu erzeugt wird:
+
+```bash
+curl -s "$VITE_SUPABASE_URL/rest/v1/rsi_topics?select=*"   -H "apikey: $VITE_SUPABASE_ANON_KEY"   -H "authorization: Bearer $VITE_SUPABASE_ANON_KEY" > daten/bestand/rsi_topics.json
+```
+
+Dasselbe für `rsi_scenes` und `rsi_deficits`.
+
 ## Was hier nicht liegt
 
 Die Arbeitsliste für die Bildaufnahme. Sie verbindet den neutralen Szenennamen

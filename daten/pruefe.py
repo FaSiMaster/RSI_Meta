@@ -53,11 +53,30 @@ def verbotene_woerter():
     return sorted(woerter)
 
 
+# Die Einfuhrdatei trägt den ganzen Stand: den Bestand und die neuen
+# Datensätze. Geprüft werden darf nur, was dieser Lauf erzeugt hat — der
+# Bestand stammt von anderswoher und wird nicht umgeschrieben.
+NEUE_THEMEN = {'tp-sicht', 'tp-sicht-knoten', 'tp-sicht-strecke',
+               'tp-strassenrand-ao', 'tp-ausruestung'}
+
+
+def ist_neu(art, eintrag):
+    if art == 'topics':
+        return eintrag['id'] in NEUE_THEMEN
+    if art == 'scenes':
+        return eintrag['id'].startswith('SZ_2026_1')
+    return eintrag['id'].startswith('SD_01')
+
+
+def neue(daten, art):
+    return [e for e in daten.get(art, []) if ist_neu(art, e)]
+
+
 def texte(daten):
-    """Jeder Benutzertext der Einfuhrdatei mit seiner Fundstelle."""
+    """Jeder Benutzertext der neuen Datensätze mit seiner Fundstelle."""
     aus = []
     for art in ('topics', 'scenes', 'deficits'):
-        for e in daten.get(art, []):
+        for e in neue(daten, art):
             for feld, wert in e.items():
                 if isinstance(wert, dict) and 'de' in wert:
                     aus.append((f"{art}/{e['id']}/{feld}", wert['de']))
@@ -77,14 +96,39 @@ def main():
     # 1 — Zahl
     print('── Nachgezählt ──')
     standorte = {z['Standort_ID'] for z in auswahl}
-    print(f'  Themen   {len(daten["topics"]):3}  (5 erwartet: 1 Oberthema, 4 Themen)')
-    print(f'  Szenen   {len(daten["scenes"]):3}  ({len(standorte)} Standorte in der Auswahl)')
-    print(f'  Defizite {len(daten["deficits"]):3}  ({len(auswahl)} Zeilen in der Auswahl)')
+    n_themen, n_szenen, n_defizite = (neue(daten, 'topics'), neue(daten, 'scenes'),
+                                       neue(daten, 'deficits'))
+    print(f'  Themen   {len(n_themen):3} neu von {len(daten["topics"]):3} in der Datei'
+          '  (5 erwartet: 1 Oberthema, 4 Themen)')
+    print(f'  Szenen   {len(n_szenen):3} neu von {len(daten["scenes"]):3} in der Datei'
+          f'  ({len(standorte)} Standorte in der Auswahl)')
+    print(f'  Defizite {len(n_defizite):3} neu von {len(daten["deficits"]):3} in der Datei'
+          f'  ({len(auswahl)} Zeilen in der Auswahl)')
     print(f'  Beilage  {len(beilage["massnahmen"]):3}  Massnahmensätze')
-    if len(daten['scenes']) != len(standorte):
+    if len(n_szenen) != len(standorte):
         fehler.append('Szenenzahl weicht von der Standortzahl ab')
-    if len(daten['deficits']) != len(auswahl):
+    if len(n_defizite) != len(auswahl):
         fehler.append('Defizitzahl weicht von der Zeilenzahl ab')
+    if len(n_themen) != 5:
+        fehler.append(f'{len(n_themen)} neue Themen statt 5')
+
+    # Der Bestand muss vollständig mitgeführt sein, sonst verdrängt ein Import
+    # ihn auf einem Gerät, das ihn verloren hat.
+    print('\n── Bestand mitgeführt ──')
+    import os as _os
+    bestand_ordner = _os.path.join(HIER, 'bestand')
+    if not _os.path.isdir(bestand_ordner):
+        fehler.append('daten/bestand/ fehlt — die Einfuhrdatei trägt den Bestand nicht')
+    else:
+        for art, datei in (('topics', 'rsi_topics.json'), ('scenes', 'rsi_scenes.json'),
+                           ('deficits', 'rsi_deficits.json')):
+            pfad = _os.path.join(bestand_ordner, datei)
+            soll = {z['data']['id'] for z in json.load(open(pfad, encoding='utf-8'))}
+            ist = {e['id'] for e in daten[art]}
+            fehlend = soll - ist
+            print(f'  {art:9} {len(soll):3} bestehend, davon {len(soll - fehlend):3} in der Datei')
+            if fehlend:
+                fehler.append(f'{art}: Bestand fehlt in der Einfuhrdatei: {sorted(fehlend)}')
     if len(beilage['massnahmen']) != len(auswahl):
         fehler.append('Beilage deckt nicht alle Defizite ab')
 
@@ -121,7 +165,7 @@ def main():
     # 3 — je Szene genau ein Pflichtdefizit
     print('\n── Pflichtdefizite ──')
     je_szene = {}
-    for d in daten['deficits']:
+    for d in neue(daten, 'deficits'):
         je_szene.setdefault(d['sceneId'], []).append(d)
     falsch = {s: sum(1 for d in ds if d['isPflicht'])
               for s, ds in je_szene.items()
@@ -132,9 +176,10 @@ def main():
 
     # 4 — keine Szene aktiv, kein Bild, keine Verortung
     print('\n── Szenenzustand ──')
-    aktiv = [s['id'] for s in daten['scenes'] if s['isActive']]
-    mit_bild = [s['id'] for s in daten['scenes'] if s['panoramaBildUrl']]
-    verortet = [d['id'] for d in daten['deficits'] if d['verortung'] or d['verortungen']]
+    aktiv = [s['id'] for s in neue(daten, 'scenes') if s['isActive']]
+    mit_bild = [s['id'] for s in neue(daten, 'scenes') if s['panoramaBildUrl']]
+    verortet = [d['id'] for d in neue(daten, 'deficits')
+                if d.get('verortung') or d.get('verortungen')]
     print(f'  aktiv {len(aktiv)}, mit Bild {len(mit_bild)}, verortet {len(verortet)} '
           '(alle drei müssen 0 sein)')
     fehler += [f'Szene aktiv: {s}' for s in aktiv]
@@ -145,20 +190,20 @@ def main():
     print('\n── Beurteilung ──')
     tabelle = wichtigkeit_tabelle()
     abweichend = []
-    for d in daten['deficits']:
+    for d in neue(daten, 'deficits'):
         soll = beurteilung(d['kriteriumId'], d['kontext'],
                            d['correctAssessment']['abweichung'],
                            d['correctAssessment']['naca'])
         if soll != d['correctAssessment']:
             abweichend.append(f"{d['id']}: {d['correctAssessment']} statt {soll}")
-    print(f'  {len(daten["deficits"])} Defizite gegen scoringEngine.ts gerechnet, '
+    print(f'  {len(neue(daten, "deficits"))} neue Defizite gegen scoringEngine.ts '
           f'{len(abweichend)} Abweichungen')
     fehler += abweichend
 
     # Gegenprobe: die Prüfung misst wirklich
-    probe = dict(daten['deficits'][0]['correctAssessment'])
+    probe = dict(neue(daten, 'deficits')[0]['correctAssessment'])
     probe['unfallrisiko'] = 'gering' if probe['unfallrisiko'] != 'gering' else 'hoch'
-    d0 = daten['deficits'][0]
+    d0 = neue(daten, 'deficits')[0]
     if beurteilung(d0['kriteriumId'], d0['kontext'], probe['abweichung'],
                    probe['naca']) == probe:
         fehler.append('Gegenprobe: ein verfälschter Wert fiel nicht auf')
