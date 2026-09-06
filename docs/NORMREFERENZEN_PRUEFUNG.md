@@ -172,7 +172,7 @@ belegt:
 
 Aufgenommen ist aus (2) nur, was unter einem Kriterium steht, das den
 Gegenstand trifft und dessen Liste überschaubar ist. **Ohne Bezug bleiben 15
-Defizite** — Knotengeometrie und Querschnitt, weil Tab. 2 dort dreizehn
+Defizite** — Knotengeometrie und Querschnitt, weil Tab. 2 dort vierzehn
 beziehungsweise acht Normen führt und eine Auswahl daraus ein fachliches
 Urteil wäre; Bankette, Risse, Flicke, Randabschlüsse, Angebot und
 Verträglichkeit sowie Sichtweite allgemein, weil Tab. 2 kein entsprechendes

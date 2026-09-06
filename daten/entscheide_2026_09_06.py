@@ -272,7 +272,7 @@ NORMREFS = {
 #
 # Aufgenommen ist nur, was in Tab. 2 unter einem Kriterium steht, das den
 # Gegenstand des Defizits trifft. Nicht aufgenommen sind Kriterien, deren
-# Zuordnung in Tab. 2 dreizehn Normen umfasst (Knoten) oder wo Tab. 2 gar kein
+# Zuordnung in Tab. 2 vierzehn Normen umfasst (Knoten) oder wo Tab. 2 gar kein
 # entsprechendes Kriterium führt. Eine Auswahl daraus wäre ein fachliches
 # Urteil, keine Wiedergabe.
 #

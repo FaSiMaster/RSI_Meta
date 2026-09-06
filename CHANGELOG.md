@@ -28,7 +28,7 @@ eine falsche Norm zitiert wird.
 **21 der 36 Defizite tragen einen Normbezug**, zusammen 57 Referenzen; vorher
 waren es fünf. Zwei belegte Quellen: was der Inspektionsbericht im Text nennt,
 und was Tab. 2 dem Sicherheitskriterium zuordnet. **Fünfzehn Defizite bleiben
-ohne Bezug** — bei Knotengeometrie und Querschnitt führt Tab. 2 dreizehn
+ohne Bezug** — bei Knotengeometrie und Querschnitt führt Tab. 2 vierzehn
 beziehungsweise acht Normen, und eine Auswahl daraus wäre ein fachliches
 Urteil; für Bankette, Risse, Flicke, Randabschlüsse, Angebot und
 Verträglichkeit sowie Sichtweite allgemein führt Tab. 2 kein entsprechendes
