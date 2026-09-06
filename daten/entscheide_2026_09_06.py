@@ -303,6 +303,57 @@ NORMREFS_KRITERIUM = {
 }
 
 
+# ── Normbezug für ein einzelnes Defizit ──────────────────────────────────────
+# Dritte Quelle. Bei «knotengeometrie» führt Tab. 2 vierzehn Normen, beim
+# «querschnitt» acht — für das Kriterium als Ganzes ist daraus keine Auswahl zu
+# treffen, für das einzelne Defizit schon: Massgebend ist, welcher Gegenstand
+# im Defizittext vorkommt.
+#
+# **Das ist eine Schlussfolgerung, keine Normvorgabe.** Belegt ist, dass Tab. 2
+# diese Normen unter diesem Kriterium führt (S. 11). Nicht belegt ist, dass
+# gerade diese und keine andere den Einzelfall trifft. Freigegeben von Stevo am
+# 6. September 2026.
+#
+# Bewusst nicht gesetzt, bei allen vier Knotenfällen: VSS 40 022, 40 023 und
+# 40 024 (Leistungsfähigkeit — kein Defizit spricht von Kapazität), VSS 40 261
+# (kreuzungsfreie Knoten), VSS 40 263 (Kreisverkehr), VSS 40 273
+# (Sichtverhältnisse — eigenes Kriterium, hier nicht der Mangel), VSS 40 835
+# (Lichtsignalanlagen), VSS 40 040 (Strassentypen). Bei den beiden
+# Querschnittsfällen: VSS 40 052 (Wendeanlagen), VSS 40 105 (Kurven-
+# verbreiterung, und der Titel dieser Norm ist ohnehin strittig), VSS 40 120
+# (Quergefälle), VSS 40 202 (Erarbeitung — ein Verfahren, kein Mass),
+# VSS 40 880 (Bushaltestellen), VSS 71 253 (Bahn).
+
+NORMREFS_DEFIZIT = {
+    # «Einmündung überbreit. Unklare Vortrittsverhältnisse. Trottoirüberfahrt
+    # nicht nach einschlägigen Vorgaben ausgebildet.» Die Szene sind
+    # Grundstücksausfahrten. VSS 40 242 steht in Tab. 2 unter
+    # «Fussgängerquerungen», nicht unter Knoten — aufgenommen, weil der Text
+    # die Trottoirüberfahrt ausdrücklich nennt.
+    ('P254-2676390-1246987', '11'): ['SN 640 250', 'VSS 40 262', 'VSS 40 251',
+                                     'VSS 40 050', 'VSS 40 242'],
+    # «Ausgestaltung Knotenzufahrt entspricht nicht Norm (unklar ob
+    # Trottoirüberfahrt oder Kein Vortritt Knoten).» Ohne VSS 40 050, weil
+    # keine Grundstückszufahrt im Spiel ist. Das endende Trottoir gehörte zu
+    # SN 640 070; nicht gesetzt, weil das Defizit als Knotengeometrie erfasst
+    # ist und nicht als Fussgängerführung.
+    ('P255-2676349-1235949', '5'): ['SN 640 250', 'VSS 40 262', 'VSS 40 251',
+                                    'VSS 40 242'],
+    # «Grosszügige Ein- und Abbiegeradien.» VSS 40 271 wegen der Schleppkurven
+    # — belegt allerdings am Massnahmentext, nicht an der Beschreibung.
+    ('P260-2687395-1242447', '17'): ['SN 640 250', 'VSS 40 262', 'VSS 40 251',
+                                     'VSS 40 271'],
+    # «Einmündung in spitzem Winkel … Gefährdung des querenden Veloverkehrs.»
+    ('P233-2678967-1233024', '19'): ['SN 640 250', 'VSS 40 262', 'VSS 40 251',
+                                     'VSS 40 252'],
+    # «Fahrbahnbreite knapp 6,0 m. Massgebender Begegnungsfall (LW/PW).»
+    # Der Begegnungsfall ist der Gegenstand der Grundabmessungen.
+    ('P254-2676144-1246650', '3'): ['VSS 40 200', 'VSS 40 201'],
+    # Nennt VSS 40 201 selbst; VSS 40 200 kommt als Rahmen dazu.
+    ('P216-2700023-1254173', '3'): ['VSS 40 200'],
+}
+
+
 # ── Massnahmentexte ohne Ortsbezug ───────────────────────────────────────────
 # Dieselbe Regel wie bei den Beschreibungen. Die Beilage verlässt das
 # Repositorium nicht, aber sie wird weitergereicht, sobald ein eigener Schritt

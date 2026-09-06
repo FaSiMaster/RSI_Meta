@@ -8118,7 +8118,10 @@
       },
       "isPflicht": false,
       "isBooster": false,
-      "normRefs": [],
+      "normRefs": [
+        "VSS 40 200 — Geometrisches Normalprofil; Allgemeine Grundsätze, Begriffe und Elemente",
+        "VSS 40 201 — Geometrisches Normalprofil; Grundabmessungen und Lichtraumprofil der Verkehrsteilnehmer"
+      ],
       "kategorie": "verkehrsfuehrung",
       "erklaerungI18n": {
         "de": "Im Inspektionsbericht vorgeschlagen (Sanierungsprojekt): Verbreiterung Strassenquerschnitt gemäss Vorgaben VSS 40 201.",
@@ -8199,7 +8202,13 @@
       },
       "isPflicht": false,
       "isBooster": false,
-      "normRefs": [],
+      "normRefs": [
+        "SN 640 250 — Knoten; Grundnorm",
+        "VSS 40 262 — Knoten; Knoten in einer Ebene (ohne Kreisverkehr)",
+        "VSS 40 251 — Knoten; Knotenelemente",
+        "VSS 40 050 — Grundstückzufahrten; Anordnung und Gestaltung",
+        "VSS 40 242 — Querungen für den Langsamverkehr; Trottoirüberfahrten"
+      ],
       "kategorie": "verkehrsfuehrung",
       "erklaerungI18n": {
         "de": "Im Inspektionsbericht vorgeschlagen (Sanierungsprojekt, Sofortmassnahme): Sig./Markierung (Kein Vortritt) ergänzen. Redimensionierung prüfen. Trottoirüberfahrt prüfen.",
@@ -8283,7 +8292,8 @@
       "isPflicht": false,
       "isBooster": false,
       "normRefs": [
-        "VSS 40 201 — Geometrisches Normalprofil; Grundabmessungen und Lichtraumprofil der Verkehrsteilnehmer"
+        "VSS 40 201 — Geometrisches Normalprofil; Grundabmessungen und Lichtraumprofil der Verkehrsteilnehmer",
+        "VSS 40 200 — Geometrisches Normalprofil; Allgemeine Grundsätze, Begriffe und Elemente"
       ],
       "kategorie": "verkehrsfuehrung",
       "erklaerungI18n": {
@@ -8786,7 +8796,12 @@
       },
       "isPflicht": false,
       "isBooster": false,
-      "normRefs": [],
+      "normRefs": [
+        "SN 640 250 — Knoten; Grundnorm",
+        "VSS 40 262 — Knoten; Knoten in einer Ebene (ohne Kreisverkehr)",
+        "VSS 40 251 — Knoten; Knotenelemente",
+        "VSS 40 242 — Querungen für den Langsamverkehr; Trottoirüberfahrten"
+      ],
       "kategorie": "verkehrsfuehrung",
       "erklaerungI18n": {
         "de": "Im Inspektionsbericht vorgeschlagen (kurzfristig): Knoten gem. Norm ausbilden.",
@@ -8955,7 +8970,12 @@
       },
       "isPflicht": false,
       "isBooster": false,
-      "normRefs": [],
+      "normRefs": [
+        "SN 640 250 — Knoten; Grundnorm",
+        "VSS 40 262 — Knoten; Knoten in einer Ebene (ohne Kreisverkehr)",
+        "VSS 40 251 — Knoten; Knotenelemente",
+        "VSS 40 271 — Kontrolle der Befahrbarkeit"
+      ],
       "kategorie": "verkehrsfuehrung",
       "erklaerungI18n": {
         "de": "Im Inspektionsbericht vorgeschlagen (Detailprüfung, Sofortmassnahme): Knoten im Zuge eines Sanierungsprojekts redimensionieren (unter Berücksichtigung Schleppkurven), Ein- und Abbiegeradien reduzieren, damit auch FGS an gerade Kante schliesst. Verengung Fahrspuren mittels Markierungen prüfen.",
@@ -9037,7 +9057,12 @@
       },
       "isPflicht": false,
       "isBooster": false,
-      "normRefs": [],
+      "normRefs": [
+        "SN 640 250 — Knoten; Grundnorm",
+        "VSS 40 262 — Knoten; Knoten in einer Ebene (ohne Kreisverkehr)",
+        "VSS 40 251 — Knoten; Knotenelemente",
+        "VSS 40 252 — Knoten; Führung des Veloverkehrs"
+      ],
       "kategorie": "verkehrsfuehrung",
       "erklaerungI18n": {
         "de": "Im Inspektionsbericht vorgeschlagen (Detailprüfung): Es ist zu prüfen, ob eine Anpassung der Knotengeometrie zur Verbesserung der Verkehrsführung/Verkehrssicherheit erforderlich ist.",

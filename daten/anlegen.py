@@ -38,8 +38,8 @@ HIER = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, HIER)
 
 from entscheide_2026_09_06 import (  # noqa: E402
-    THEMEN, SZENEN, BESCHREIBUNGEN, NORMREFS, NORMREFS_KRITERIUM, MASSNAHMEN,
-    BESTAND_BESCHREIBUNG,
+    THEMEN, SZENEN, BESCHREIBUNGEN, NORMREFS, NORMREFS_KRITERIUM,
+    NORMREFS_DEFIZIT, MASSNAHMEN, BESTAND_BESCHREIBUNG,
 )
 import sprachen_2026_09_06 as SPR  # noqa: E402
 from normlogik import beurteilung  # noqa: E402
@@ -165,16 +165,20 @@ def lies_regelwerk():
 
 
 def normbezug(regelwerk, sid, nr, kriterium):
-    """Der Normbezug eines Defizits, aus zwei belegten Quellen.
+    """Der Normbezug eines Defizits, aus drei belegten Quellen.
 
     Erstens, was der Inspektionsbericht im Text des Defizits nennt. Zweitens,
-    was SN 641 700:2022 Tab. 2 dem Sicherheitskriterium zuordnet. Die
-    Reihenfolge ist fest, damit ein zweiter Lauf dieselbe Datei erzeugt.
+    was SN 641 700:2022 Tab. 2 dem Sicherheitskriterium zuordnet. Drittens die
+    Auswahl aus Tab. 2 für dieses eine Defizit, dort wo die Liste des
+    Kriteriums zu umfangreich ist. Die Reihenfolge ist fest, damit ein zweiter
+    Lauf dieselbe Datei erzeugt.
     """
     nummern = list(NORMREFS.get((sid, nr), []))
-    for n in NORMREFS_KRITERIUM.get(kriterium, []):
-        if n not in nummern:
-            nummern.append(n)
+    for quelle in (NORMREFS_KRITERIUM.get(kriterium, []),
+                   NORMREFS_DEFIZIT.get((sid, nr), [])):
+        for n in quelle:
+            if n not in nummern:
+                nummern.append(n)
     aus = []
     for n in nummern:
         titel = regelwerk.get(n)

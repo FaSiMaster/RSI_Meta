@@ -163,20 +163,27 @@ Defizittext geklärt: Sie mischt zwei Nummernkreise, gemeint ist SN 640 070.
 
 ### 5.2 Was die Defizite jetzt tragen
 
-Von den 36 Defiziten der Auswahl vom 6. September tragen **21 einen
-Normbezug**, zusammen 57 Referenzen; vorher waren es fünf. Zwei Quellen, beide
-belegt:
+Von den 36 Defiziten der Auswahl vom 6. September tragen **26 einen
+Normbezug**, zusammen 77 Referenzen; vorher waren es fünf. Drei Quellen:
 
-1. Was der Inspektionsbericht im Text des Defizits nennt.
-2. Was Tab. 2 dem Sicherheitskriterium des Defizits zuordnet.
+1. Was der Inspektionsbericht im Text des Defizits nennt. — Beleg
+2. Was Tab. 2 dem Sicherheitskriterium des Defizits zuordnet. — Beleg
+3. Für sechs Defizite, deren Kriterium in Tab. 2 vierzehn (Knotengeometrie)
+   oder acht Normen (Querschnitt) führt: eine Auswahl je Einzelfall danach,
+   welcher Gegenstand im Defizittext vorkommt. — **Schlussfolgerung**, am
+   6. September 2026 freigegeben.
 
-Aufgenommen ist aus (2) nur, was unter einem Kriterium steht, das den
-Gegenstand trifft und dessen Liste überschaubar ist. **Ohne Bezug bleiben 15
-Defizite** — Knotengeometrie und Querschnitt, weil Tab. 2 dort vierzehn
-beziehungsweise acht Normen führt und eine Auswahl daraus ein fachliches
-Urteil wäre; Bankette, Risse, Flicke, Randabschlüsse, Angebot und
-Verträglichkeit sowie Sichtweite allgemein, weil Tab. 2 kein entsprechendes
-Kriterium führt.
+Die Auswahl unter (3) im Einzelnen, mit dem Grund je Norm, steht in
+`daten/entscheide_2026_09_06.py` unter `NORMREFS_DEFIZIT`. Zwei Zuordnungen
+gehen über die Kriteriumsgrenze und sind dort benannt: VSS 40 242
+(Trottoirüberfahrten, in Tab. 2 unter «Fussgängerquerungen») bei zwei
+Knotendefiziten, und VSS 40 271 (Befahrbarkeit) bei SD_01093, wo der Beleg im
+Massnahmentext steht und nicht in der Beschreibung.
+
+**Ohne Bezug bleiben zehn Defizite**: Bankette, Risse, Flicke,
+Randabschlüsse, Angebot und Verträglichkeit, Sichtweite allgemein sowie
+Signale und Wegweiser. Für keines dieser Kriterien führt Tab. 2 eine
+Entsprechung, die den Gegenstand trifft.
 
 ### 5.3 Das Gültigkeitsfeld des Bestands taugt nicht als Massstab
 

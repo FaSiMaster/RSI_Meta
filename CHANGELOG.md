@@ -25,14 +25,18 @@ VSS 40 281 stand als «Knoten mit Lichtsignalanlagen», die Nummer trägt
 «Strassenentwässerung». Eine Referenzliste mit falschen Titeln führt dazu, dass
 eine falsche Norm zitiert wird.
 
-**21 der 36 Defizite tragen einen Normbezug**, zusammen 57 Referenzen; vorher
-waren es fünf. Zwei belegte Quellen: was der Inspektionsbericht im Text nennt,
-und was Tab. 2 dem Sicherheitskriterium zuordnet. **Fünfzehn Defizite bleiben
-ohne Bezug** — bei Knotengeometrie und Querschnitt führt Tab. 2 vierzehn
-beziehungsweise acht Normen, und eine Auswahl daraus wäre ein fachliches
-Urteil; für Bankette, Risse, Flicke, Randabschlüsse, Angebot und
-Verträglichkeit sowie Sichtweite allgemein führt Tab. 2 kein entsprechendes
-Kriterium.
+**26 der 36 Defizite tragen einen Normbezug**, zusammen 77 Referenzen; vorher
+waren es fünf. Drei belegte Quellen: was der Inspektionsbericht im Text nennt,
+was Tab. 2 dem Sicherheitskriterium zuordnet, und — für sechs Defizite, deren
+Kriterium in Tab. 2 vierzehn beziehungsweise acht Normen führt — eine Auswahl
+je Einzelfall danach, welcher Gegenstand im Defizittext vorkommt. Diese
+Auswahl ist eine Schlussfolgerung und als solche gekennzeichnet; freigegeben
+am 6. September 2026.
+
+**Zehn Defizite bleiben ohne Bezug**: Für Bankette, Risse, Flicke,
+Randabschlüsse, Angebot und Verträglichkeit, Sichtweite allgemein sowie
+Signale und Wegweiser führt Tab. 2 kein Kriterium, das den Gegenstand trifft.
+Dort gibt es nichts zu wählen.
 
 **Zwei weitere Strassenmerkmale**, Lastwagenanteil und Unfallgeschehen — beim
 ersten Durchgang übersehen, weil die Spalte des Lastwagenanteils
