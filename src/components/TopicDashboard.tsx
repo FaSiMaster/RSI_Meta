@@ -62,11 +62,15 @@ export default function TopicDashboard({ username, score, kursId, onSelectTopic 
     setSceneCounts(counts)
   }, [kursId])
 
-  // Oberste Themen nach Land gruppieren. Die Reihenfolge folgt dem
-  // Ländernamen in der Sprache der Oberfläche, nicht dem Code – «Schweiz»
-  // steht im Deutschen an anderer Stelle als «Suisse» im Französischen.
-  const oberste = topics.filter(tp => !tp.parentTopicId)
-  const laender = Array.from(new Set(oberste.map(tp => getTopicCountry(tp.id, topics))))
+  // Themen nach Land gruppieren. Die Reihenfolge folgt dem Ländernamen in der
+  // Sprache der Oberfläche, nicht dem Code – «Schweiz» steht im Deutschen an
+  // anderer Stelle als «Suisse» im Französischen.
+  //
+  // Gruppiert wird über ALLE sichtbaren Themen, oberste wie untergeordnete.
+  // Eine frühere Fassung nahm nur die obersten und liess damit jedes
+  // Unterthema aus der Anzeige verschwinden – darunter jenes mit der einzigen
+  // bespielten Szene. Das Land eines Unterthemas kommt vom obersten.
+  const laender = Array.from(new Set(topics.map(tp => getTopicCountry(tp.id, topics))))
     .sort((a, b) => landName(a, lang).localeCompare(landName(b, lang), lang))
   const mehrereLaender = laender.length > 1
 
@@ -74,7 +78,7 @@ export default function TopicDashboard({ username, score, kursId, onSelectTopic 
   const gruppen = sichtbareLaender.map(code => ({
     code,
     name: landName(code, lang),
-    themen: oberste.filter(tp => getTopicCountry(tp.id, topics) === code),
+    themen: topics.filter(tp => getTopicCountry(tp.id, topics) === code),
   })).filter(g => g.themen.length > 0)
 
   function filterPille(aktiv: boolean): CSSProperties {

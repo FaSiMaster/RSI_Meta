@@ -158,3 +158,48 @@ test('Eingetragene Angaben erscheinen nach dem Speichern am Einstieg', async ({ 
   await expect(karte).toContainText('Prüfstelle E2E')
   await expect(karte).not.toContainText('noch nicht bestimmt')
 })
+
+test('Unterthemen erscheinen am Einstieg, nicht nur die obersten', async ({ page }) => {
+  // Anlass: v0.16.3 gruppierte nach Land und nahm dafuer nur die obersten
+  // Themen. Jedes Unterthema verschwand damit aus der Anzeige – darunter
+  // jenes mit der einzigen bespielten Szene. Keine Prüfung fiel darauf
+  // herein, weil der Seed nur ein Thema ohne Unterthema führt.
+  await page.addInitScript(
+    ({ keys, seed }) => {
+      window.localStorage.setItem(keys.TOPICS, JSON.stringify([
+        { ...seed.topics[0], country: 'CH' },
+        { ...seed.topics[0], id: 'tp-unter', parentTopicId: 'tp-e2e',
+          nameI18n: { de: 'Unterthema-E2E', fr: 'Unterthema-E2E',
+                      it: 'Unterthema-E2E', en: 'Unterthema-E2E' } },
+      ]))
+    },
+    { keys: KEYS, seed: SEED },
+  )
+
+  await zumEinstieg(page)
+
+  await expect(page.getByText('E2E-Thema').first()).toBeVisible()
+  await expect(page.getByText('Unterthema-E2E').first()).toBeVisible()
+})
+
+test('Auch mit zwei Ländern bleibt kein Unterthema aus', async ({ page }) => {
+  await page.addInitScript(
+    ({ keys, seed }) => {
+      window.localStorage.setItem(keys.TOPICS, JSON.stringify([
+        { ...seed.topics[0], country: 'CH' },
+        { ...seed.topics[0], id: 'tp-unter', parentTopicId: 'tp-e2e',
+          nameI18n: { de: 'Unterthema-E2E', fr: 'Unterthema-E2E',
+                      it: 'Unterthema-E2E', en: 'Unterthema-E2E' } },
+        { ...seed.topics[0], id: 'tp-de', country: 'DE',
+          nameI18n: { de: 'DE-Thema', fr: 'DE-Thema', it: 'DE-Thema', en: 'DE-Thema' } },
+      ]))
+    },
+    { keys: KEYS, seed: SEED },
+  )
+
+  await zumEinstieg(page)
+
+  // Das Unterthema gehört in die Gruppe seines obersten Themas.
+  await expect(page.getByText('Unterthema-E2E').first()).toBeVisible()
+  await expect(page.getByText('DE-Thema').first()).toBeVisible()
+})
