@@ -1,0 +1,1728 @@
+{
+  "version": "rsi-v3",
+  "erzeugt": "2026-09-06",
+  "quelle": "RSI_Aufnahme_Auswahl_2026-09-06.csv",
+  "topics": [
+    {
+      "id": "tp-sicht",
+      "nameI18n": {
+        "de": "Sicht",
+        "fr": "",
+        "it": "",
+        "en": ""
+      },
+      "beschreibungI18n": {
+        "de": "Sichtverhältnisse als eigenes Prüffeld. Das Oberthema trägt selbst keine Szenen; es fasst die beiden Themen darunter zusammen.",
+        "fr": "",
+        "it": "",
+        "en": ""
+      },
+      "iconKey": "eye",
+      "sortOrder": 6,
+      "isActive": true,
+      "parentTopicId": null,
+      "kursExklusiv": false,
+      "country": "CH"
+    },
+    {
+      "id": "tp-sicht-knoten",
+      "nameI18n": {
+        "de": "Sicht am Knoten",
+        "fr": "",
+        "it": "",
+        "en": ""
+      },
+      "beschreibungI18n": {
+        "de": "Sichtverhältnisse an Einmündungen, Zufahrten und Grundstücksausfahrten. Der Blick geht zur Seite: Was sieht die wartende Person, und ab wann?",
+        "fr": "",
+        "it": "",
+        "en": ""
+      },
+      "iconKey": "junction",
+      "sortOrder": 1,
+      "isActive": true,
+      "parentTopicId": "tp-sicht",
+      "kursExklusiv": false
+    },
+    {
+      "id": "tp-sicht-strecke",
+      "nameI18n": {
+        "de": "Sicht auf der Strecke",
+        "fr": "",
+        "it": "",
+        "en": ""
+      },
+      "beschreibungI18n": {
+        "de": "Anhalte-, Kurven- und Überholsichtweite. Der Blick geht nach vorn: Reicht die Sicht, um vor dem Hindernis anzuhalten?",
+        "fr": "",
+        "it": "",
+        "en": ""
+      },
+      "iconKey": "road",
+      "sortOrder": 2,
+      "isActive": true,
+      "parentTopicId": "tp-sicht",
+      "kursExklusiv": false
+    },
+    {
+      "id": "tp-strassenrand-ao",
+      "nameI18n": {
+        "de": "Strassenrand ausserorts",
+        "fr": "",
+        "it": "",
+        "en": ""
+      },
+      "beschreibungI18n": {
+        "de": "Der Seitenraum als Gefahrenquelle beim Abkommen von der Fahrbahn: feste Hindernisse, Bankett, Rückhaltesysteme, Bepflanzung.",
+        "fr": "",
+        "it": "",
+        "en": ""
+      },
+      "iconKey": "tree",
+      "sortOrder": 7,
+      "isActive": true,
+      "parentTopicId": null,
+      "kursExklusiv": false,
+      "country": "CH"
+    },
+    {
+      "id": "tp-ausruestung",
+      "nameI18n": {
+        "de": "Ausrüstung",
+        "fr": "",
+        "it": "",
+        "en": ""
+      },
+      "beschreibungI18n": {
+        "de": "Signalisation, Markierung und optische Leiteinrichtung. Das Übungsziel ist hier nicht das Finden, sondern das Einstufen: viel Bestand, wenig Handlungsdruck.",
+        "fr": "",
+        "it": "",
+        "en": ""
+      },
+      "iconKey": "sign",
+      "sortOrder": 8,
+      "isActive": true,
+      "parentTopicId": null,
+      "kursExklusiv": false,
+      "country": "CH"
+    }
+  ],
+  "scenes": [
+    {
+      "id": "SZ_2026_101",
+      "topicId": "tp-ausruestung",
+      "nameI18n": {
+        "de": "Kurve vor Böschung ohne Leiteinrichtung, ausserorts 80 km/h",
+        "fr": "",
+        "it": "",
+        "en": ""
+      },
+      "beschreibungI18n": {
+        "de": "",
+        "fr": "",
+        "it": "",
+        "en": ""
+      },
+      "bemerkungI18n": {
+        "de": "Hier ist das Einstufen die Übung, nicht das Finden: Der Bestand ist gross, der Handlungsdruck klein.",
+        "fr": "",
+        "it": "",
+        "en": ""
+      },
+      "kontext": "ao",
+      "strassenmerkmale": [],
+      "vorschauBilder": [],
+      "vorschauBild1": null,
+      "vorschauBild2": null,
+      "panoramaBildUrl": null,
+      "startblick": null,
+      "isActive": false,
+      "createdAt": 1757116800000,
+      "country": "CH"
+    },
+    {
+      "id": "SZ_2026_102",
+      "topicId": "tp-sicht-knoten",
+      "nameI18n": {
+        "de": "Schiefwinklige landwirtschaftliche Zufahrt, ausserorts 50 km/h",
+        "fr": "",
+        "it": "",
+        "en": ""
+      },
+      "beschreibungI18n": {
+        "de": "",
+        "fr": "",
+        "it": "",
+        "en": ""
+      },
+      "bemerkungI18n": {
+        "de": "Die Zufahrt trifft die Fahrbahn schiefwinklig. Achten Sie darauf, was das für den Blick nach links bedeutet.",
+        "fr": "",
+        "it": "",
+        "en": ""
+      },
+      "kontext": "ao",
+      "strassenmerkmale": [],
+      "vorschauBilder": [],
+      "vorschauBild1": null,
+      "vorschauBild2": null,
+      "panoramaBildUrl": null,
+      "startblick": null,
+      "isActive": false,
+      "createdAt": 1757116800000,
+      "country": "CH"
+    },
+    {
+      "id": "SZ_2026_103",
+      "topicId": "tp-sicht-knoten",
+      "nameI18n": {
+        "de": "Grundstücksausfahrten an Hauptstrasse, innerorts 50 km/h",
+        "fr": "",
+        "it": "",
+        "en": ""
+      },
+      "beschreibungI18n": {
+        "de": "",
+        "fr": "",
+        "it": "",
+        "en": ""
+      },
+      "bemerkungI18n": {
+        "de": "Mehrere Zufahrten auf kurzer Strecke. Achten Sie darauf, aus welcher Position die wartende Person schaut.",
+        "fr": "",
+        "it": "",
+        "en": ""
+      },
+      "kontext": "io",
+      "strassenmerkmale": [],
+      "vorschauBilder": [],
+      "vorschauBild1": null,
+      "vorschauBild2": null,
+      "panoramaBildUrl": null,
+      "startblick": null,
+      "isActive": false,
+      "createdAt": 1757116800000,
+      "country": "CH"
+    },
+    {
+      "id": "SZ_2026_104",
+      "topicId": "velo",
+      "nameI18n": {
+        "de": "Radstreifen an Dorfdurchfahrt, innerorts 50 km/h",
+        "fr": "",
+        "it": "",
+        "en": ""
+      },
+      "beschreibungI18n": {
+        "de": "",
+        "fr": "",
+        "it": "",
+        "en": ""
+      },
+      "bemerkungI18n": {
+        "de": "Die Breite des Radstreifens ist messbar. Die übrigen zwei Defizite sind Einstufung.",
+        "fr": "",
+        "it": "",
+        "en": ""
+      },
+      "kontext": "io",
+      "strassenmerkmale": [],
+      "vorschauBilder": [],
+      "vorschauBild1": null,
+      "vorschauBild2": null,
+      "panoramaBildUrl": null,
+      "startblick": null,
+      "isActive": false,
+      "createdAt": 1757116800000,
+      "country": "CH"
+    },
+    {
+      "id": "SZ_2026_105",
+      "topicId": "tp-sicht-strecke",
+      "nameI18n": {
+        "de": "Kurve mit Mauer und Bepflanzung, innerorts 60 km/h",
+        "fr": "",
+        "it": "",
+        "en": ""
+      },
+      "beschreibungI18n": {
+        "de": "",
+        "fr": "",
+        "it": "",
+        "en": ""
+      },
+      "bemerkungI18n": {
+        "de": "Die Anhaltesichtweite ist an drei Ursachen gebunden. Suchen Sie alle drei.",
+        "fr": "",
+        "it": "",
+        "en": ""
+      },
+      "kontext": "io",
+      "strassenmerkmale": [],
+      "vorschauBilder": [],
+      "vorschauBild1": null,
+      "vorschauBild2": null,
+      "panoramaBildUrl": null,
+      "startblick": null,
+      "isActive": false,
+      "createdAt": 1757116800000,
+      "country": "CH"
+    },
+    {
+      "id": "SZ_2026_106",
+      "topicId": "tp-sicht-strecke",
+      "nameI18n": {
+        "de": "Bushaltestelle an Knoten mit Gefälle, innerorts 50 km/h",
+        "fr": "",
+        "it": "",
+        "en": ""
+      },
+      "beschreibungI18n": {
+        "de": "",
+        "fr": "",
+        "it": "",
+        "en": ""
+      },
+      "bemerkungI18n": {
+        "de": "Der Standort der Haltestelle wirkt auf mehrere Defizite zugleich.",
+        "fr": "",
+        "it": "",
+        "en": ""
+      },
+      "kontext": "io",
+      "strassenmerkmale": [],
+      "vorschauBilder": [],
+      "vorschauBild1": null,
+      "vorschauBild2": null,
+      "panoramaBildUrl": null,
+      "startblick": null,
+      "isActive": false,
+      "createdAt": 1757116800000,
+      "country": "CH"
+    },
+    {
+      "id": "SZ_2026_107",
+      "topicId": "tp-strassenrand-ao",
+      "nameI18n": {
+        "de": "Stützmauer ohne Rückhaltesystem, ausserorts 80 km/h",
+        "fr": "",
+        "it": "",
+        "en": ""
+      },
+      "beschreibungI18n": {
+        "de": "",
+        "fr": "",
+        "it": "",
+        "en": ""
+      },
+      "bemerkungI18n": {
+        "de": "Der Seitenraum ist hier das Thema, nicht die Fahrbahn.",
+        "fr": "",
+        "it": "",
+        "en": ""
+      },
+      "kontext": "ao",
+      "strassenmerkmale": [],
+      "vorschauBilder": [],
+      "vorschauBild1": null,
+      "vorschauBild2": null,
+      "panoramaBildUrl": null,
+      "startblick": null,
+      "isActive": false,
+      "createdAt": 1757116800000,
+      "country": "CH"
+    },
+    {
+      "id": "SZ_2026_108",
+      "topicId": "tp-sicht-knoten",
+      "nameI18n": {
+        "de": "Knotenzufahrt mit Mittelinsel, innerorts 50 km/h",
+        "fr": "",
+        "it": "",
+        "en": ""
+      },
+      "beschreibungI18n": {
+        "de": "",
+        "fr": "",
+        "it": "",
+        "en": ""
+      },
+      "bemerkungI18n": {
+        "de": "Der Zufahrtsweg mündet in eine Hauptstrasse. Prüfen Sie die Sicht nach beiden Seiten.",
+        "fr": "",
+        "it": "",
+        "en": ""
+      },
+      "kontext": "io",
+      "strassenmerkmale": [],
+      "vorschauBilder": [],
+      "vorschauBild1": null,
+      "vorschauBild2": null,
+      "panoramaBildUrl": null,
+      "startblick": null,
+      "isActive": false,
+      "createdAt": 1757116800000,
+      "country": "CH"
+    },
+    {
+      "id": "SZ_2026_109",
+      "topicId": "tp-sicht-strecke",
+      "nameI18n": {
+        "de": "Annäherung an Fussgängerstreifen in Kurve, innerorts 50 km/h",
+        "fr": "",
+        "it": "",
+        "en": ""
+      },
+      "beschreibungI18n": {
+        "de": "",
+        "fr": "",
+        "it": "",
+        "en": ""
+      },
+      "bemerkungI18n": {
+        "de": "Drei Defizite an einer Stelle. Sichtweite und Knotengeometrie hängen hier zusammen.",
+        "fr": "",
+        "it": "",
+        "en": ""
+      },
+      "kontext": "io",
+      "strassenmerkmale": [],
+      "vorschauBilder": [],
+      "vorschauBild1": null,
+      "vorschauBild2": null,
+      "panoramaBildUrl": null,
+      "startblick": null,
+      "isActive": false,
+      "createdAt": 1757116800000,
+      "country": "CH"
+    },
+    {
+      "id": "SZ_2026_110",
+      "topicId": "tp-sicht-strecke",
+      "nameI18n": {
+        "de": "Einmündung in spitzem Winkel mit Bewuchs, ausserorts 80 km/h",
+        "fr": "",
+        "it": "",
+        "en": ""
+      },
+      "beschreibungI18n": {
+        "de": "",
+        "fr": "",
+        "it": "",
+        "en": ""
+      },
+      "bemerkungI18n": {
+        "de": "Die Vegetation ist saisonal. Beurteilen Sie den Zustand in der Vegetationszeit.",
+        "fr": "",
+        "it": "",
+        "en": ""
+      },
+      "kontext": "ao",
+      "strassenmerkmale": [],
+      "vorschauBilder": [],
+      "vorschauBild1": null,
+      "vorschauBild2": null,
+      "panoramaBildUrl": null,
+      "startblick": null,
+      "isActive": false,
+      "createdAt": 1757116800000,
+      "country": "CH"
+    },
+    {
+      "id": "SZ_2026_111",
+      "topicId": "tp-sicht-knoten",
+      "nameI18n": {
+        "de": "Einmündung eines Zufahrtswegs in Kurve mit Böschung, ausserorts",
+        "fr": "",
+        "it": "",
+        "en": ""
+      },
+      "beschreibungI18n": {
+        "de": "",
+        "fr": "",
+        "it": "",
+        "en": ""
+      },
+      "bemerkungI18n": {
+        "de": "Der Weg mündet in einer Kurve. Die Sicht nach links ist die entscheidende Frage.",
+        "fr": "",
+        "it": "",
+        "en": ""
+      },
+      "kontext": "ao",
+      "strassenmerkmale": [],
+      "vorschauBilder": [],
+      "vorschauBild1": null,
+      "vorschauBild2": null,
+      "panoramaBildUrl": null,
+      "startblick": null,
+      "isActive": false,
+      "createdAt": 1757116800000,
+      "country": "CH"
+    },
+    {
+      "id": "SZ_2026_112",
+      "topicId": "tp-sicht-knoten",
+      "nameI18n": {
+        "de": "Grundstücksausfahrt neben Tankstellenzufahrt, innerorts 50 km/h",
+        "fr": "",
+        "it": "",
+        "en": ""
+      },
+      "beschreibungI18n": {
+        "de": "",
+        "fr": "",
+        "it": "",
+        "en": ""
+      },
+      "bemerkungI18n": {
+        "de": "Zwei Zufahrten liegen nahe beieinander. Die Frage ist, wer wen sieht.",
+        "fr": "",
+        "it": "",
+        "en": ""
+      },
+      "kontext": "io",
+      "strassenmerkmale": [],
+      "vorschauBilder": [],
+      "vorschauBild1": null,
+      "vorschauBild2": null,
+      "panoramaBildUrl": null,
+      "startblick": null,
+      "isActive": false,
+      "createdAt": 1757116800000,
+      "country": "CH"
+    },
+    {
+      "id": "SZ_2026_113",
+      "topicId": "tp-sicht-strecke",
+      "nameI18n": {
+        "de": "Senkrechtparkierung am Kreisel, innerorts 50 km/h",
+        "fr": "",
+        "it": "",
+        "en": ""
+      },
+      "beschreibungI18n": {
+        "de": "",
+        "fr": "",
+        "it": "",
+        "en": ""
+      },
+      "bemerkungI18n": {
+        "de": "Die Sicht beim Rückwärtsfahren ist der Kern. Der Rest ist Einstufungsübung.",
+        "fr": "",
+        "it": "",
+        "en": ""
+      },
+      "kontext": "io",
+      "strassenmerkmale": [],
+      "vorschauBilder": [],
+      "vorschauBild1": null,
+      "vorschauBild2": null,
+      "panoramaBildUrl": null,
+      "startblick": null,
+      "isActive": false,
+      "createdAt": 1757116800000,
+      "country": "CH"
+    }
+  ],
+  "deficits": [
+    {
+      "id": "SD_01011",
+      "sceneId": "SZ_2026_101",
+      "topicId": "tp-ausruestung",
+      "nameI18n": {
+        "de": "Visuelle linienfuehrung",
+        "fr": "",
+        "it": "",
+        "en": ""
+      },
+      "beschreibungI18n": {
+        "de": "Ungenügende optische Linienführung und Erkennbarkeit des Kurvenverlaufs direkt vor einer Böschung mit Sitzbank.",
+        "fr": "",
+        "it": "",
+        "en": ""
+      },
+      "kriteriumId": "visuelle_linienfuehrung",
+      "kontext": "ao",
+      "correctAssessment": {
+        "wichtigkeit": "gross",
+        "abweichung": "gross",
+        "relevanzSD": "hoch",
+        "naca": 5,
+        "unfallschwere": "schwer",
+        "unfallrisiko": "hoch"
+      },
+      "isPflicht": true,
+      "isBooster": false,
+      "normRefs": [],
+      "kategorie": "verkehrsfuehrung",
+      "verortung": null,
+      "verortungen": null
+    },
+    {
+      "id": "SD_01012",
+      "sceneId": "SZ_2026_101",
+      "topicId": "tp-ausruestung",
+      "nameI18n": {
+        "de": "Markierung",
+        "fr": "",
+        "it": "",
+        "en": ""
+      },
+      "beschreibungI18n": {
+        "de": "Weisse Randlinie fehlt im ganzen Perimeter; unterbrochene Leit- und Mittellinie fehlt auf der einmündenden Nebenstrasse.",
+        "fr": "",
+        "it": "",
+        "en": ""
+      },
+      "kriteriumId": "markierung",
+      "kontext": "ao",
+      "correctAssessment": {
+        "wichtigkeit": "gross",
+        "abweichung": "klein",
+        "relevanzSD": "gering",
+        "naca": 1,
+        "unfallschwere": "leicht",
+        "unfallrisiko": "gering"
+      },
+      "isPflicht": false,
+      "isBooster": false,
+      "normRefs": [],
+      "kategorie": "ausruestung",
+      "verortung": null,
+      "verortungen": null
+    },
+    {
+      "id": "SD_01021",
+      "sceneId": "SZ_2026_102",
+      "topicId": "tp-sicht-knoten",
+      "nameI18n": {
+        "de": "Knotensichtweite",
+        "fr": "",
+        "it": "",
+        "en": ""
+      },
+      "beschreibungI18n": {
+        "de": "Schiefwinklige landwirtschaftliche Ein-/Ausfahrt. Knotensichtweite nach links auf MIV durch Hochspannungsmasten eingeschränkt.",
+        "fr": "",
+        "it": "",
+        "en": ""
+      },
+      "kriteriumId": "knotensichtweite",
+      "kontext": "ao",
+      "correctAssessment": {
+        "wichtigkeit": "gross",
+        "abweichung": "mittel",
+        "relevanzSD": "mittel",
+        "naca": 5,
+        "unfallschwere": "schwer",
+        "unfallrisiko": "hoch"
+      },
+      "isPflicht": true,
+      "isBooster": false,
+      "normRefs": [],
+      "kategorie": "sicht",
+      "verortung": null,
+      "verortungen": null
+    },
+    {
+      "id": "SD_01022",
+      "sceneId": "SZ_2026_102",
+      "topicId": "tp-sicht-knoten",
+      "nameI18n": {
+        "de": "Querschnitt",
+        "fr": "",
+        "it": "",
+        "en": ""
+      },
+      "beschreibungI18n": {
+        "de": "Fahrbahnbreite knapp 6.0 m. Massgebender Begegnungsfall (LW/PW) nur bei reduzierter Geschwindigkeit möglich.",
+        "fr": "",
+        "it": "",
+        "en": ""
+      },
+      "kriteriumId": "querschnitt",
+      "kontext": "ao",
+      "correctAssessment": {
+        "wichtigkeit": "gross",
+        "abweichung": "mittel",
+        "relevanzSD": "mittel",
+        "naca": 5,
+        "unfallschwere": "schwer",
+        "unfallrisiko": "hoch"
+      },
+      "isPflicht": false,
+      "isBooster": false,
+      "normRefs": [],
+      "kategorie": "verkehrsfuehrung",
+      "verortung": null,
+      "verortungen": null
+    },
+    {
+      "id": "SD_01031",
+      "sceneId": "SZ_2026_103",
+      "topicId": "tp-sicht-knoten",
+      "nameI18n": {
+        "de": "Knotensichtweite",
+        "fr": "",
+        "it": "",
+        "en": ""
+      },
+      "beschreibungI18n": {
+        "de": "Sicht aus Grundstücksausfahrten auf den MIV und Veloverkehr durch Vegetation eingeschränkt. Grundstückzugänge erfolgen direkt über die Fahrbahn. Sichtverhältnisse z. T. stark eingeschränkt. Breite Fussweg < 1.0 m.",
+        "fr": "",
+        "it": "",
+        "en": ""
+      },
+      "kriteriumId": "knotensichtweite",
+      "kontext": "io",
+      "correctAssessment": {
+        "wichtigkeit": "gross",
+        "abweichung": "mittel",
+        "relevanzSD": "mittel",
+        "naca": 5,
+        "unfallschwere": "schwer",
+        "unfallrisiko": "hoch"
+      },
+      "isPflicht": true,
+      "isBooster": false,
+      "normRefs": [],
+      "kategorie": "sicht",
+      "verortung": null,
+      "verortungen": null
+    },
+    {
+      "id": "SD_01032",
+      "sceneId": "SZ_2026_103",
+      "topicId": "tp-sicht-knoten",
+      "nameI18n": {
+        "de": "Knotengeometrie",
+        "fr": "",
+        "it": "",
+        "en": ""
+      },
+      "beschreibungI18n": {
+        "de": "Einmündung überbreit. Unklare Vortrittsverhältnisse (fehlende Sig./Markierung). Trottoirüberfahrt nicht nach einschlägigen Vorgaben (VSS, resp. RL Kt. ZH) ausgebildet.",
+        "fr": "",
+        "it": "",
+        "en": ""
+      },
+      "kriteriumId": "knotengeometrie",
+      "kontext": "io",
+      "correctAssessment": {
+        "wichtigkeit": "gross",
+        "abweichung": "mittel",
+        "relevanzSD": "mittel",
+        "naca": 3,
+        "unfallschwere": "mittel",
+        "unfallrisiko": "mittel"
+      },
+      "isPflicht": false,
+      "isBooster": false,
+      "normRefs": [],
+      "kategorie": "verkehrsfuehrung",
+      "verortung": null,
+      "verortungen": null
+    },
+    {
+      "id": "SD_01041",
+      "sceneId": "SZ_2026_104",
+      "topicId": "velo",
+      "nameI18n": {
+        "de": "Velolaengsfuehrung art",
+        "fr": "",
+        "it": "",
+        "en": ""
+      },
+      "beschreibungI18n": {
+        "de": "Breite Radstreifen gemäss Velostandart Kanton ZH Tab. 4.3-1, 1.80 m bei Velohauptverbindungen gemessen vor Ort ca. 1.25 m",
+        "fr": "",
+        "it": "",
+        "en": ""
+      },
+      "kriteriumId": "velolaengsfuehrung_art",
+      "kontext": "io",
+      "correctAssessment": {
+        "wichtigkeit": "mittel",
+        "abweichung": "gross",
+        "relevanzSD": "hoch",
+        "naca": 3,
+        "unfallschwere": "mittel",
+        "unfallrisiko": "hoch"
+      },
+      "isPflicht": true,
+      "isBooster": false,
+      "normRefs": [],
+      "kategorie": "verkehrsfuehrung",
+      "verortung": null,
+      "verortungen": null
+    },
+    {
+      "id": "SD_01042",
+      "sceneId": "SZ_2026_104",
+      "topicId": "velo",
+      "nameI18n": {
+        "de": "Querschnitt",
+        "fr": "",
+        "it": "",
+        "en": ""
+      },
+      "beschreibungI18n": {
+        "de": "Strassenquerschnitt gemäss VSS Norm 40 201, LW - PW - Velo, 30 km/h, 7.10 m (Geschwindigkeitsreduktion beim Überholen) best. Strassenquerschnitt ca. 7.00 m, DTV ca. 4200 Fz./Tag",
+        "fr": "",
+        "it": "",
+        "en": ""
+      },
+      "kriteriumId": "querschnitt",
+      "kontext": "io",
+      "correctAssessment": {
+        "wichtigkeit": "mittel",
+        "abweichung": "mittel",
+        "relevanzSD": "mittel",
+        "naca": 3,
+        "unfallschwere": "mittel",
+        "unfallrisiko": "mittel"
+      },
+      "isPflicht": false,
+      "isBooster": false,
+      "normRefs": [
+        "VSS 40 201"
+      ],
+      "kategorie": "verkehrsfuehrung",
+      "verortung": null,
+      "verortungen": null
+    },
+    {
+      "id": "SD_01043",
+      "sceneId": "SZ_2026_104",
+      "topicId": "velo",
+      "nameI18n": {
+        "de": "Knotensichtweite",
+        "fr": "",
+        "it": "",
+        "en": ""
+      },
+      "beschreibungI18n": {
+        "de": "Sichtweite Richtung Ortszentrum infolge Hecke eingeschränkt.",
+        "fr": "",
+        "it": "",
+        "en": ""
+      },
+      "kriteriumId": "knotensichtweite",
+      "kontext": "io",
+      "correctAssessment": {
+        "wichtigkeit": "gross",
+        "abweichung": "mittel",
+        "relevanzSD": "mittel",
+        "naca": 3,
+        "unfallschwere": "mittel",
+        "unfallrisiko": "mittel"
+      },
+      "isPflicht": false,
+      "isBooster": false,
+      "normRefs": [],
+      "kategorie": "sicht",
+      "verortung": null,
+      "verortungen": null
+    },
+    {
+      "id": "SD_01051",
+      "sceneId": "SZ_2026_105",
+      "topicId": "tp-sicht-strecke",
+      "nameI18n": {
+        "de": "Anhaltesichtweite",
+        "fr": "",
+        "it": "",
+        "en": ""
+      },
+      "beschreibungI18n": {
+        "de": "Im Kurvenbereich ist die notwendige Anhaltesichtweite nicht gegeben, aufgrund von Mauer, Gebäude und Bepflanzung. Vorhanden ca. 40 m; gemäss Norm VSS 40 090b «Projektierung, Grundlagen – Sichtweiten» wären bei V = 60 km/h 70 m nötig (bei 6 % Gefälle). Aus denselben Gründen ist die notwendige Überholsichtweite nicht gegeben; gemäss Norm wären bei V = 60 km/h 450 m nötig.",
+        "fr": "",
+        "it": "",
+        "en": ""
+      },
+      "kriteriumId": "anhaltesichtweite",
+      "kontext": "io",
+      "correctAssessment": {
+        "wichtigkeit": "gross",
+        "abweichung": "mittel",
+        "relevanzSD": "mittel",
+        "naca": 3,
+        "unfallschwere": "mittel",
+        "unfallrisiko": "mittel"
+      },
+      "isPflicht": true,
+      "isBooster": false,
+      "normRefs": [
+        "VSS 40 090b"
+      ],
+      "kategorie": "sicht",
+      "verortung": null,
+      "verortungen": null
+    },
+    {
+      "id": "SD_01052",
+      "sceneId": "SZ_2026_105",
+      "topicId": "tp-sicht-strecke",
+      "nameI18n": {
+        "de": "Fussgaengerquerung ohne vortritt",
+        "fr": "",
+        "it": "",
+        "en": ""
+      },
+      "beschreibungI18n": {
+        "de": "Beidseitiges Ende des Gehwegs ohne Querungsmöglichkeit für Anschluss auf anderer Fahrbahnseite. Vermeintliche Querungsstelle schlecht einsehbar. Auf der Kurveninnenseite vorhanden beidseitig ca. 50 m, auf der Kurvenausseite beidseitig, ca. 75 m, gemäss Norm VSS 40 241 bei 60 km/h 75 m notwendig.",
+        "fr": "",
+        "it": "",
+        "en": ""
+      },
+      "kriteriumId": "fussgaengerquerung_ohne_vortritt",
+      "kontext": "io",
+      "correctAssessment": {
+        "wichtigkeit": "gross",
+        "abweichung": "mittel",
+        "relevanzSD": "mittel",
+        "naca": 3,
+        "unfallschwere": "mittel",
+        "unfallrisiko": "mittel"
+      },
+      "isPflicht": false,
+      "isBooster": false,
+      "normRefs": [
+        "VSS 40 241"
+      ],
+      "kategorie": "verkehrsfuehrung",
+      "verortung": null,
+      "verortungen": null
+    },
+    {
+      "id": "SD_01053",
+      "sceneId": "SZ_2026_105",
+      "topicId": "tp-sicht-strecke",
+      "nameI18n": {
+        "de": "Fussgaengerfuehrung geometrie",
+        "fr": "",
+        "it": "",
+        "en": ""
+      },
+      "beschreibungI18n": {
+        "de": "Breite des Trottoirs ca. 1.70 m, notwendige Breite gemäss Norm VSS 640 070 notwendig 2 m, punktuell > 1.50 m. Lichte Höhe bei Baum eingeschränkt, vorhanden 1.70 m, notwendig gemäss Norm VSS 40 273a 3.00 m (auch wegen Anhaltesichtweite).",
+        "fr": "",
+        "it": "",
+        "en": ""
+      },
+      "kriteriumId": "fussgaengerfuehrung_geometrie",
+      "kontext": "io",
+      "correctAssessment": {
+        "wichtigkeit": "mittel",
+        "abweichung": "mittel",
+        "relevanzSD": "mittel",
+        "naca": 1,
+        "unfallschwere": "leicht",
+        "unfallrisiko": "gering"
+      },
+      "isPflicht": false,
+      "isBooster": false,
+      "normRefs": [
+        "VSS 40 273a"
+      ],
+      "kategorie": "verkehrsfuehrung",
+      "verortung": null,
+      "verortungen": null
+    },
+    {
+      "id": "SD_01061",
+      "sceneId": "SZ_2026_106",
+      "topicId": "tp-sicht-strecke",
+      "nameI18n": {
+        "de": "Anhaltesichtweite",
+        "fr": "",
+        "it": "",
+        "en": ""
+      },
+      "beschreibungI18n": {
+        "de": "Anhaltesichtweite unterschritten Sa soll = 38 m (v=40 km/h, i = -4 %) Sa vorh. = ca. 29 m",
+        "fr": "",
+        "it": "",
+        "en": ""
+      },
+      "kriteriumId": "anhaltesichtweite",
+      "kontext": "io",
+      "correctAssessment": {
+        "wichtigkeit": "gross",
+        "abweichung": "mittel",
+        "relevanzSD": "mittel",
+        "naca": 5,
+        "unfallschwere": "schwer",
+        "unfallrisiko": "hoch"
+      },
+      "isPflicht": true,
+      "isBooster": false,
+      "normRefs": [],
+      "kategorie": "sicht",
+      "verortung": null,
+      "verortungen": null
+    },
+    {
+      "id": "SD_01062",
+      "sceneId": "SZ_2026_106",
+      "topicId": "tp-sicht-strecke",
+      "nameI18n": {
+        "de": "Angebot vertraeglichkeit",
+        "fr": "",
+        "it": "",
+        "en": ""
+      },
+      "beschreibungI18n": {
+        "de": "Standort Bushaltestelle ungeeignet. Sichtbehindernd, nicht barrierefrei, Einfahrt über Knoten und STOP-Markierung, behindert Querung von Fussgänger.",
+        "fr": "",
+        "it": "",
+        "en": ""
+      },
+      "kriteriumId": "angebot_vertraeglichkeit",
+      "kontext": "io",
+      "correctAssessment": {
+        "wichtigkeit": "gross",
+        "abweichung": "gross",
+        "relevanzSD": "hoch",
+        "naca": 5,
+        "unfallschwere": "schwer",
+        "unfallrisiko": "hoch"
+      },
+      "isPflicht": false,
+      "isBooster": false,
+      "normRefs": [],
+      "kategorie": "verkehrsfuehrung",
+      "verortung": null,
+      "verortungen": null
+    },
+    {
+      "id": "SD_01063",
+      "sceneId": "SZ_2026_106",
+      "topicId": "tp-sicht-strecke",
+      "nameI18n": {
+        "de": "Knotensichtweite",
+        "fr": "",
+        "it": "",
+        "en": ""
+      },
+      "beschreibungI18n": {
+        "de": "Sichtweiten nach rechts ungenügend - Spiegel auf Gegenseite (unbeheizt)",
+        "fr": "",
+        "it": "",
+        "en": ""
+      },
+      "kriteriumId": "knotensichtweite",
+      "kontext": "io",
+      "correctAssessment": {
+        "wichtigkeit": "gross",
+        "abweichung": "mittel",
+        "relevanzSD": "mittel",
+        "naca": 5,
+        "unfallschwere": "schwer",
+        "unfallrisiko": "hoch"
+      },
+      "isPflicht": false,
+      "isBooster": false,
+      "normRefs": [],
+      "kategorie": "sicht",
+      "verortung": null,
+      "verortungen": null
+    },
+    {
+      "id": "SD_01071",
+      "sceneId": "SZ_2026_107",
+      "topicId": "tp-strassenrand-ao",
+      "nameI18n": {
+        "de": "Abstand feste hindernisse",
+        "fr": "",
+        "it": "",
+        "en": ""
+      },
+      "beschreibungI18n": {
+        "de": "Passive Schutzeinrichtung auf Bergseite bei Beginn Stützmauer fehlt.",
+        "fr": "",
+        "it": "",
+        "en": ""
+      },
+      "kriteriumId": "abstand_feste_hindernisse",
+      "kontext": "ao",
+      "correctAssessment": {
+        "wichtigkeit": "gross",
+        "abweichung": "gross",
+        "relevanzSD": "hoch",
+        "naca": 5,
+        "unfallschwere": "schwer",
+        "unfallrisiko": "hoch"
+      },
+      "isPflicht": true,
+      "isBooster": false,
+      "normRefs": [],
+      "kategorie": "strassenrand",
+      "verortung": null,
+      "verortungen": null
+    },
+    {
+      "id": "SD_01072",
+      "sceneId": "SZ_2026_107",
+      "topicId": "tp-strassenrand-ao",
+      "nameI18n": {
+        "de": "Bankette",
+        "fr": "",
+        "it": "",
+        "en": ""
+      },
+      "beschreibungI18n": {
+        "de": "fehlendes Bankett entlang Stützmauer - Stützmauer ragt in LRP",
+        "fr": "",
+        "it": "",
+        "en": ""
+      },
+      "kriteriumId": "bankette",
+      "kontext": "ao",
+      "correctAssessment": {
+        "wichtigkeit": "gross",
+        "abweichung": "gross",
+        "relevanzSD": "hoch",
+        "naca": 3,
+        "unfallschwere": "mittel",
+        "unfallrisiko": "hoch"
+      },
+      "isPflicht": false,
+      "isBooster": false,
+      "normRefs": [],
+      "kategorie": "strassenrand",
+      "verortung": null,
+      "verortungen": null
+    },
+    {
+      "id": "SD_01073",
+      "sceneId": "SZ_2026_107",
+      "topicId": "tp-strassenrand-ao",
+      "nameI18n": {
+        "de": "Anhaltesichtweite",
+        "fr": "",
+        "it": "",
+        "en": ""
+      },
+      "beschreibungI18n": {
+        "de": "Sa ist ca. 50 m ; Sa soll ca. 60 m (Vp 60, 12 % Gefälle)",
+        "fr": "",
+        "it": "",
+        "en": ""
+      },
+      "kriteriumId": "anhaltesichtweite",
+      "kontext": "ao",
+      "correctAssessment": {
+        "wichtigkeit": "gross",
+        "abweichung": "klein",
+        "relevanzSD": "gering",
+        "naca": 5,
+        "unfallschwere": "schwer",
+        "unfallrisiko": "mittel"
+      },
+      "isPflicht": false,
+      "isBooster": false,
+      "normRefs": [],
+      "kategorie": "sicht",
+      "verortung": null,
+      "verortungen": null
+    },
+    {
+      "id": "SD_01081",
+      "sceneId": "SZ_2026_108",
+      "topicId": "tp-sicht-knoten",
+      "nameI18n": {
+        "de": "Knotensichtweite",
+        "fr": "",
+        "it": "",
+        "en": ""
+      },
+      "beschreibungI18n": {
+        "de": "Sicht aus Zufahrtsweg nach Norden durch Bepflanzung eingeschränkt (ca. 40 m)",
+        "fr": "",
+        "it": "",
+        "en": ""
+      },
+      "kriteriumId": "knotensichtweite",
+      "kontext": "io",
+      "correctAssessment": {
+        "wichtigkeit": "gross",
+        "abweichung": "mittel",
+        "relevanzSD": "mittel",
+        "naca": 5,
+        "unfallschwere": "schwer",
+        "unfallrisiko": "hoch"
+      },
+      "isPflicht": true,
+      "isBooster": false,
+      "normRefs": [],
+      "kategorie": "sicht",
+      "verortung": null,
+      "verortungen": null
+    },
+    {
+      "id": "SD_01082",
+      "sceneId": "SZ_2026_108",
+      "topicId": "tp-sicht-knoten",
+      "nameI18n": {
+        "de": "Knotengeometrie",
+        "fr": "",
+        "it": "",
+        "en": ""
+      },
+      "beschreibungI18n": {
+        "de": "Ausgestaltung Knotenzufahrt entspricht nicht Norm (unklar ob Trottoirüberfahrt oder Kein Vortritt Knoten), südseitiges Trottoir endet einfach an Strasse",
+        "fr": "",
+        "it": "",
+        "en": ""
+      },
+      "kriteriumId": "knotengeometrie",
+      "kontext": "io",
+      "correctAssessment": {
+        "wichtigkeit": "gross",
+        "abweichung": "mittel",
+        "relevanzSD": "mittel",
+        "naca": 3,
+        "unfallschwere": "mittel",
+        "unfallrisiko": "mittel"
+      },
+      "isPflicht": false,
+      "isBooster": false,
+      "normRefs": [],
+      "kategorie": "verkehrsfuehrung",
+      "verortung": null,
+      "verortungen": null
+    },
+    {
+      "id": "SD_01083",
+      "sceneId": "SZ_2026_108",
+      "topicId": "tp-sicht-knoten",
+      "nameI18n": {
+        "de": "Markierung",
+        "fr": "",
+        "it": "",
+        "en": ""
+      },
+      "beschreibungI18n": {
+        "de": "Abweislinie vor Mittelinsel unterbrochen",
+        "fr": "",
+        "it": "",
+        "en": ""
+      },
+      "kriteriumId": "markierung",
+      "kontext": "io",
+      "correctAssessment": {
+        "wichtigkeit": "mittel",
+        "abweichung": "mittel",
+        "relevanzSD": "mittel",
+        "naca": 3,
+        "unfallschwere": "mittel",
+        "unfallrisiko": "mittel"
+      },
+      "isPflicht": false,
+      "isBooster": false,
+      "normRefs": [],
+      "kategorie": "ausruestung",
+      "verortung": null,
+      "verortungen": null
+    },
+    {
+      "id": "SD_01091",
+      "sceneId": "SZ_2026_109",
+      "topicId": "tp-sicht-strecke",
+      "nameI18n": {
+        "de": "Anhaltesichtweite",
+        "fr": "",
+        "it": "",
+        "en": ""
+      },
+      "beschreibungI18n": {
+        "de": "Sichtweite auf den südlichen Annäherungsbereich des Fussgängerstreifens unterschreitet den Normwert (Soll: 55 m, Ist: ca. 37 m). Sichtbehinderung durch Verkehrsteilnehmende, keine Abminderung aufgrund der Kurve, da r > 40 m. Erkennungsdistanz auf das Signal Nr. 4.11 von 110 m (Ist: ca. 60 m) nicht eingehalten.",
+        "fr": "",
+        "it": "",
+        "en": ""
+      },
+      "kriteriumId": "anhaltesichtweite",
+      "kontext": "io",
+      "correctAssessment": {
+        "wichtigkeit": "gross",
+        "abweichung": "mittel",
+        "relevanzSD": "mittel",
+        "naca": 5,
+        "unfallschwere": "schwer",
+        "unfallrisiko": "hoch"
+      },
+      "isPflicht": true,
+      "isBooster": false,
+      "normRefs": [],
+      "kategorie": "sicht",
+      "verortung": null,
+      "verortungen": null
+    },
+    {
+      "id": "SD_01092",
+      "sceneId": "SZ_2026_109",
+      "topicId": "tp-sicht-strecke",
+      "nameI18n": {
+        "de": "Knotensichtweite",
+        "fr": "",
+        "it": "",
+        "en": ""
+      },
+      "beschreibungI18n": {
+        "de": "Knotensichtweite nach links auf Fahrbahn unterschreitet Normwert (Soll: zw. 50-70 m, Ist: ca. 15 m), hohe Geschwindigkeit Veloverkehr talwärts entlang Fahrbahnrand",
+        "fr": "",
+        "it": "",
+        "en": ""
+      },
+      "kriteriumId": "knotensichtweite",
+      "kontext": "io",
+      "correctAssessment": {
+        "wichtigkeit": "gross",
+        "abweichung": "gross",
+        "relevanzSD": "hoch",
+        "naca": 5,
+        "unfallschwere": "schwer",
+        "unfallrisiko": "hoch"
+      },
+      "isPflicht": false,
+      "isBooster": false,
+      "normRefs": [],
+      "kategorie": "sicht",
+      "verortung": null,
+      "verortungen": null
+    },
+    {
+      "id": "SD_01093",
+      "sceneId": "SZ_2026_109",
+      "topicId": "tp-sicht-strecke",
+      "nameI18n": {
+        "de": "Knotengeometrie",
+        "fr": "",
+        "it": "",
+        "en": ""
+      },
+      "beschreibungI18n": {
+        "de": "Grosszügige Ein- und Abbiegeradien sowie breite Fahrstreifen in Knotenzu- und wegfahrt begünstigen hohe Knotengeschwindigkeiten",
+        "fr": "",
+        "it": "",
+        "en": ""
+      },
+      "kriteriumId": "knotengeometrie",
+      "kontext": "io",
+      "correctAssessment": {
+        "wichtigkeit": "gross",
+        "abweichung": "mittel",
+        "relevanzSD": "mittel",
+        "naca": 3,
+        "unfallschwere": "mittel",
+        "unfallrisiko": "mittel"
+      },
+      "isPflicht": false,
+      "isBooster": false,
+      "normRefs": [],
+      "kategorie": "verkehrsfuehrung",
+      "verortung": null,
+      "verortungen": null
+    },
+    {
+      "id": "SD_01101",
+      "sceneId": "SZ_2026_110",
+      "topicId": "tp-sicht-strecke",
+      "nameI18n": {
+        "de": "Anhaltesichtweite",
+        "fr": "",
+        "it": "",
+        "en": ""
+      },
+      "beschreibungI18n": {
+        "de": "Die Anhaltesichtweite ist in der Vegetationszeit ungenügend. Bei gefahrener Geschwindigkeit von 80 km/h und einem Gefälle um 4.5 % ist eine Sichtweite von min. 120 m nötig (Ist = ca. 85 m).",
+        "fr": "",
+        "it": "",
+        "en": ""
+      },
+      "kriteriumId": "anhaltesichtweite",
+      "kontext": "ao",
+      "correctAssessment": {
+        "wichtigkeit": "gross",
+        "abweichung": "gross",
+        "relevanzSD": "hoch",
+        "naca": 5,
+        "unfallschwere": "schwer",
+        "unfallrisiko": "hoch"
+      },
+      "isPflicht": true,
+      "isBooster": false,
+      "normRefs": [],
+      "kategorie": "sicht",
+      "verortung": null,
+      "verortungen": null
+    },
+    {
+      "id": "SD_01102",
+      "sceneId": "SZ_2026_110",
+      "topicId": "tp-sicht-strecke",
+      "nameI18n": {
+        "de": "Knotengeometrie",
+        "fr": "",
+        "it": "",
+        "en": ""
+      },
+      "beschreibungI18n": {
+        "de": "Einmündung in spitzem Winkel. Dadurch kaum Abbremsen beim Rechtsabbiegen in die einmündende Nebenstrasse (Gefährdung des querenden Veloverkehrs).",
+        "fr": "",
+        "it": "",
+        "en": ""
+      },
+      "kriteriumId": "knotengeometrie",
+      "kontext": "ao",
+      "correctAssessment": {
+        "wichtigkeit": "gross",
+        "abweichung": "mittel",
+        "relevanzSD": "mittel",
+        "naca": 3,
+        "unfallschwere": "mittel",
+        "unfallrisiko": "mittel"
+      },
+      "isPflicht": false,
+      "isBooster": false,
+      "normRefs": [],
+      "kategorie": "verkehrsfuehrung",
+      "verortung": null,
+      "verortungen": null
+    },
+    {
+      "id": "SD_01103",
+      "sceneId": "SZ_2026_110",
+      "topicId": "tp-sicht-strecke",
+      "nameI18n": {
+        "de": "Signale wegweiser",
+        "fr": "",
+        "it": "",
+        "en": ""
+      },
+      "beschreibungI18n": {
+        "de": "Gemäss Velostandards des Kanton Zürich ist das indirekte Linksabbiegen mit der entsprechenden Signalisation rund 25.00 m bis 30.00 m vor der entsprechenden Stelle anzuzeigen.",
+        "fr": "",
+        "it": "",
+        "en": ""
+      },
+      "kriteriumId": "signale_wegweiser",
+      "kontext": "ao",
+      "correctAssessment": {
+        "wichtigkeit": "mittel",
+        "abweichung": "klein",
+        "relevanzSD": "gering",
+        "naca": 1,
+        "unfallschwere": "leicht",
+        "unfallrisiko": "gering"
+      },
+      "isPflicht": false,
+      "isBooster": false,
+      "normRefs": [],
+      "kategorie": "ausruestung",
+      "verortung": null,
+      "verortungen": null
+    },
+    {
+      "id": "SD_01111",
+      "sceneId": "SZ_2026_111",
+      "topicId": "tp-sicht-knoten",
+      "nameI18n": {
+        "de": "Knotensichtweite",
+        "fr": "",
+        "it": "",
+        "en": ""
+      },
+      "beschreibungI18n": {
+        "de": "Ab dem einmündenden Zufahrtsweg ist die Sichtweite nach links aufgrund des Böschungsbereichs in der Kurve auf rund 70 m reduziert, anstelle der erforderlichen Mindestsichtweite von 120 m unter Berücksichtigung einer Strasse des Typs RVS.",
+        "fr": "",
+        "it": "",
+        "en": ""
+      },
+      "kriteriumId": "knotensichtweite",
+      "kontext": "ao",
+      "correctAssessment": {
+        "wichtigkeit": "gross",
+        "abweichung": "gross",
+        "relevanzSD": "hoch",
+        "naca": 5,
+        "unfallschwere": "schwer",
+        "unfallrisiko": "hoch"
+      },
+      "isPflicht": true,
+      "isBooster": false,
+      "normRefs": [],
+      "kategorie": "sicht",
+      "verortung": null,
+      "verortungen": null
+    },
+    {
+      "id": "SD_01112",
+      "sceneId": "SZ_2026_111",
+      "topicId": "tp-sicht-knoten",
+      "nameI18n": {
+        "de": "Bankette",
+        "fr": "",
+        "it": "",
+        "en": ""
+      },
+      "beschreibungI18n": {
+        "de": "Es fehlt ein Bankett, so dass bei einem leichten Abkommen von der Fahrbahn kein Ausweichraum vorhanden ist (z.B. bei der Begegnung zweier Busse). Zudem besteht ein deutlicher Höhenunterschied zwischen dem Leitpfosten und der Fahrbahn; die Reflektoren befinden sich nahezu auf Fahrbahnhöhe anstatt auf Höhe der Fahrzeugscheinwerfer.",
+        "fr": "",
+        "it": "",
+        "en": ""
+      },
+      "kriteriumId": "bankette",
+      "kontext": "ao",
+      "correctAssessment": {
+        "wichtigkeit": "gross",
+        "abweichung": "mittel",
+        "relevanzSD": "mittel",
+        "naca": 3,
+        "unfallschwere": "mittel",
+        "unfallrisiko": "mittel"
+      },
+      "isPflicht": false,
+      "isBooster": false,
+      "normRefs": [],
+      "kategorie": "strassenrand",
+      "verortung": null,
+      "verortungen": null
+    },
+    {
+      "id": "SD_01113",
+      "sceneId": "SZ_2026_111",
+      "topicId": "tp-sicht-knoten",
+      "nameI18n": {
+        "de": "Risse",
+        "fr": "",
+        "it": "",
+        "en": ""
+      },
+      "beschreibungI18n": {
+        "de": "Auf der Fahrbahn sind stellenweise zahlreiche Risse festzustellen, was auf einen insgesamt schlechten Zustand hinweist.",
+        "fr": "",
+        "it": "",
+        "en": ""
+      },
+      "kriteriumId": "risse",
+      "kontext": "ao",
+      "correctAssessment": {
+        "wichtigkeit": "mittel",
+        "abweichung": "mittel",
+        "relevanzSD": "mittel",
+        "naca": 1,
+        "unfallschwere": "leicht",
+        "unfallrisiko": "gering"
+      },
+      "isPflicht": false,
+      "isBooster": false,
+      "normRefs": [],
+      "kategorie": "zustand",
+      "verortung": null,
+      "verortungen": null
+    },
+    {
+      "id": "SD_01121",
+      "sceneId": "SZ_2026_112",
+      "topicId": "tp-sicht-knoten",
+      "nameI18n": {
+        "de": "Knotensichtweite",
+        "fr": "",
+        "it": "",
+        "en": ""
+      },
+      "beschreibungI18n": {
+        "de": "Die Sichtverhältnisse von der Grundstücksausfahrt auf das Trottoir sind links und rechts unzureichend und liegen bei ca. 8–9 m statt der gemäss Norm VSS 40 273 vorgeschriebenen Mindestsichtweite von 15 m (bei einer Längsneigung von 0 %). Grund: bauliche Situation sowie Parkierung.",
+        "fr": "",
+        "it": "",
+        "en": ""
+      },
+      "kriteriumId": "knotensichtweite",
+      "kontext": "io",
+      "correctAssessment": {
+        "wichtigkeit": "gross",
+        "abweichung": "gross",
+        "relevanzSD": "hoch",
+        "naca": 3,
+        "unfallschwere": "mittel",
+        "unfallrisiko": "hoch"
+      },
+      "isPflicht": true,
+      "isBooster": false,
+      "normRefs": [
+        "VSS 40 273"
+      ],
+      "kategorie": "sicht",
+      "verortung": null,
+      "verortungen": null
+    },
+    {
+      "id": "SD_01122",
+      "sceneId": "SZ_2026_112",
+      "topicId": "tp-sicht-knoten",
+      "nameI18n": {
+        "de": "Angebot vertraeglichkeit",
+        "fr": "",
+        "it": "",
+        "en": ""
+      },
+      "beschreibungI18n": {
+        "de": "Die Zufahrt zur Tankstelle begünstigt das Queren des Knotens über die Wartelinie der einmündenden Nebenstrasse. Dies kann leicht zu Konflikten zwischen Fahrzeugen führen, die aus dieser Strasse ausfahren, und Fahrzeugen, die zur Tankstelle zufahren. Generell ist die Zufahrt zur Tankstelle nicht klar geregelt bzw. nicht eindeutig ausgestaltet.",
+        "fr": "",
+        "it": "",
+        "en": ""
+      },
+      "kriteriumId": "angebot_vertraeglichkeit",
+      "kontext": "io",
+      "correctAssessment": {
+        "wichtigkeit": "gross",
+        "abweichung": "mittel",
+        "relevanzSD": "mittel",
+        "naca": 3,
+        "unfallschwere": "mittel",
+        "unfallrisiko": "mittel"
+      },
+      "isPflicht": false,
+      "isBooster": false,
+      "normRefs": [],
+      "kategorie": "verkehrsfuehrung",
+      "verortung": null,
+      "verortungen": null
+    },
+    {
+      "id": "SD_01123",
+      "sceneId": "SZ_2026_112",
+      "topicId": "tp-sicht-knoten",
+      "nameI18n": {
+        "de": "Signale wegweiser",
+        "fr": "",
+        "it": "",
+        "en": ""
+      },
+      "beschreibungI18n": {
+        "de": "Das Signal SSV2.50 «Parkieren verboten» ist teilweise in schlechtem Zustand; insbesondere ist der Richtungspfeil der Wiederholungstafel kaum mehr wahrnehmbar.",
+        "fr": "",
+        "it": "",
+        "en": ""
+      },
+      "kriteriumId": "signale_wegweiser",
+      "kontext": "io",
+      "correctAssessment": {
+        "wichtigkeit": "mittel",
+        "abweichung": "klein",
+        "relevanzSD": "gering",
+        "naca": 1,
+        "unfallschwere": "leicht",
+        "unfallrisiko": "gering"
+      },
+      "isPflicht": false,
+      "isBooster": false,
+      "normRefs": [],
+      "kategorie": "ausruestung",
+      "verortung": null,
+      "verortungen": null
+    },
+    {
+      "id": "SD_01131",
+      "sceneId": "SZ_2026_113",
+      "topicId": "tp-sicht-strecke",
+      "nameI18n": {
+        "de": "Sichtweite allgemein",
+        "fr": "",
+        "it": "",
+        "en": ""
+      },
+      "beschreibungI18n": {
+        "de": "Private Senkrechtparkierung, stark eingeschränkte Sicht beim rückwarts Wegfahren auf Trottoir und Strasse, immerhin Parkfeld überlang",
+        "fr": "",
+        "it": "",
+        "en": ""
+      },
+      "kriteriumId": "sichtweite_allgemein",
+      "kontext": "io",
+      "correctAssessment": {
+        "wichtigkeit": "gross",
+        "abweichung": "gross",
+        "relevanzSD": "hoch",
+        "naca": 5,
+        "unfallschwere": "schwer",
+        "unfallrisiko": "hoch"
+      },
+      "isPflicht": true,
+      "isBooster": false,
+      "normRefs": [],
+      "kategorie": "sicht",
+      "verortung": null,
+      "verortungen": null
+    },
+    {
+      "id": "SD_01132",
+      "sceneId": "SZ_2026_113",
+      "topicId": "tp-sicht-strecke",
+      "nameI18n": {
+        "de": "Randabschluesse randstein",
+        "fr": "",
+        "it": "",
+        "en": ""
+      },
+      "beschreibungI18n": {
+        "de": "bei allen drei Mittelinseln um Kreisel zu tiefer Anschlag für sehbehinderte Personen",
+        "fr": "",
+        "it": "",
+        "en": ""
+      },
+      "kriteriumId": "randabschluesse_randstein",
+      "kontext": "io",
+      "correctAssessment": {
+        "wichtigkeit": "klein",
+        "abweichung": "mittel",
+        "relevanzSD": "gering",
+        "naca": 5,
+        "unfallschwere": "schwer",
+        "unfallrisiko": "mittel"
+      },
+      "isPflicht": false,
+      "isBooster": false,
+      "normRefs": [],
+      "kategorie": "strassenrand",
+      "verortung": null,
+      "verortungen": null
+    },
+    {
+      "id": "SD_01133",
+      "sceneId": "SZ_2026_113",
+      "topicId": "tp-sicht-strecke",
+      "nameI18n": {
+        "de": "Flicke",
+        "fr": "",
+        "it": "",
+        "en": ""
+      },
+      "beschreibungI18n": {
+        "de": "Diverse Risse, grösstenteils repariert",
+        "fr": "",
+        "it": "",
+        "en": ""
+      },
+      "kriteriumId": "flicke",
+      "kontext": "io",
+      "correctAssessment": {
+        "wichtigkeit": "klein",
+        "abweichung": "mittel",
+        "relevanzSD": "gering",
+        "naca": 1,
+        "unfallschwere": "leicht",
+        "unfallrisiko": "gering"
+      },
+      "isPflicht": false,
+      "isBooster": false,
+      "normRefs": [],
+      "kategorie": "zustand",
+      "verortung": null,
+      "verortungen": null
+    }
+  ]
+}

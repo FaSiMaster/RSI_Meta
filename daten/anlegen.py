@@ -1,0 +1,335 @@
+# -*- coding: utf-8 -*-
+"""Erzeugt aus der RSI-Auswahl die Datensätze für das Werkzeug.
+
+**Weg:** Das Skript schreibt eine Datei im Einfuhrformat des
+Administrationsbereichs (`version: "rsi-v3"`), die dort über Export und Import
+eingelesen wird. Dieser Weg passt zum bestehenden Datenfluss: Die Einfuhr läuft
+durch die vorhandene Prüfung, ruft dieselben save-Funktionen wie die Oberfläche
+und schreibt über die Edge Function nach Supabase. Ein Skript, das unmittelbar
+in den localStorage schreiben wollte, käme von aussen gar nicht an ihn heran.
+
+**Zweiter Lauf:** Alle Kennungen sind aus der Standort-Kennung abgeleitet und
+damit stabil. Die save-Funktionen ersetzen einen Datensatz gleicher Kennung,
+statt einen zweiten anzulegen — ein zweiter Import verdoppelt nichts.
+
+Aufruf:
+    python daten/anlegen.py
+
+Erzeugt:
+    daten/rsi-import_2026-09-06.json      Einfuhrdatei für den Admin
+    daten/massnahmen_2026-09-06.json      Beilage, siehe unten
+    C:/ClaudeAI/RSI_Analyse/output/AUFNAHMELISTE_ARBEIT_2026-09-06.md
+
+Die Massnahmentexte gehören vorläufig nicht ins Werkzeug. Sie liegen als
+Beilage neben der Einfuhrdatei — im Ordner `daten/`, den Vite nicht bündelt,
+also ausserhalb des ausgelieferten Erzeugnisses.
+
+Die Arbeitsliste verbindet den neutralen Szenennamen mit dem realen Ort und
+gehört deshalb nicht in dieses Repositorium.
+"""
+
+import csv
+import json
+import os
+import re
+import sys
+
+HIER = os.path.dirname(os.path.abspath(__file__))
+sys.path.insert(0, HIER)
+
+from entscheide_2026_09_06 import (  # noqa: E402
+    THEMEN, SZENEN, BESCHREIBUNGEN, NORMREFS, MASSNAHMEN,
+)
+from normlogik import beurteilung  # noqa: E402
+
+AUSWAHL = 'C:/ClaudeAI/RSI_Analyse/output/RSI_Aufnahme_Auswahl_2026-09-06.csv'
+BAU = 'C:/ClaudeAI/RSI_Analyse/output/THEMEN_BAUANLEITUNG.html'
+ARBEITSLISTE = ('C:/ClaudeAI/RSI_Analyse/output/'
+                'AUFNAHMELISTE_ARBEIT_2026-09-06.md')
+
+LAND = 'CH'
+STAND = '2026-09-06'
+
+
+def leer_ml(de=''):
+    """Mehrsprachiges Feld. fr, it und en bleiben leer wie im Bestand."""
+    return {'de': de, 'fr': '', 'it': '', 'en': ''}
+
+
+def lies_auswahl():
+    with open(AUSWAHL, encoding='utf-8-sig') as f:
+        return list(csv.DictReader(f, delimiter=';'))
+
+
+def lies_bauanleitung():
+    """kriteriumId, kategorie, Abweichung und NACA je Defizit."""
+    h = open(BAU, encoding='utf-8').read()
+    marken = list(re.finditer(
+        r'Perimeter\s+(\d+)\s*(?:&middot;|·)\s*LV95\s+(\d+)\s*/\s*(\d+)', h))
+    vorschlag = {}
+    for i, m in enumerate(marken):
+        ende = marken[i + 1].start() if i + 1 < len(marken) else len(h)
+        block = h[m.start():ende]
+        standort = f'P{m.group(1)}-{m.group(2)}-{m.group(3)}'
+        for d in re.finditer(r'<li class="dfz pk-(\w)">(.*?)</li>', block, re.S):
+            praed, inner = d.group(1), d.group(2)
+            nr = re.search(r'RSI-Defizit\s*(\d+)', inner)
+            krit = re.search(r'<th>kriteriumId</th><td><code>([^<]+)</code>', inner)
+            kat = re.search(r'<th>kategorie</th><td><code>([^<]+)</code>', inner)
+            abw = re.search(r'<th>Abweichung</th><td><b>(\w+)</b>', inner)
+            naca = re.search(r'<th>NACA</th><td><b>(\d)</b>', inner)
+            if not (nr and krit and abw and naca):
+                raise SystemExit(f'Unvollständiger Block bei {standort}')
+            vorschlag[(standort, nr.group(1))] = {
+                'praedikat': praed,
+                'kriteriumId': krit.group(1),
+                'kategorie': kat.group(1) if kat else None,
+                'abweichung': abw.group(1),
+                'naca': int(naca.group(1)),
+            }
+    return vorschlag
+
+
+def saeubere(text):
+    """Vereinheitlicht Leerzeichen; ersetzt den Geviert- durch den
+    Halbgeviertstrich und setzt vor Prozent und Einheit ein Leerzeichen."""
+    t = re.sub(r'\s+', ' ', text).strip()
+    t = t.replace('—', '–')
+    t = re.sub(r'(\d)\s*%', r'\1 %', t)
+    t = re.sub(r'(\d)m\b', r'\1 m', t)
+    t = re.sub(r'(\d)\s*km/h', r'\1 km/h', t)
+    return t
+
+
+# Kalibrierungsdefizite: Prädikat D und U. Sie tragen wenig Handlungsdruck und
+# sind als Einstufungsübung gedacht, nicht als Suchaufgabe.
+KALIBRIERUNG = {'D', 'U'}
+# Deutlichkeit des stärksten Prädikats einer Szene: A und B sind deutlich.
+DEUTLICH = {'A': 0, 'B': 1, 'C': 2, 'D': 3, 'U': 4}
+
+
+def main():
+    zeilen = lies_auswahl()
+    vorschlag = lies_bauanleitung()
+
+    standorte = {}
+    for z in zeilen:
+        standorte.setdefault(z['Standort_ID'], []).append(z)
+
+    fehlend = [s for s in standorte if s not in SZENEN]
+    if fehlend:
+        raise SystemExit(f'Ohne Entscheid: {fehlend}')
+
+    # ── Reihenfolge der Szenen ──
+    # Rangfolge laut Auftrag: wenige Defizite vor vielen, deutliches Prädikat
+    # vor feinem, Szenen ohne Kalibrierungsdefizit vor solchen mit.
+    def rang(sid):
+        ds = standorte[sid]
+        praedikate = [vorschlag[(sid, d['Defizit_Nr'])]['praedikat'] for d in ds]
+        staerkstes = min(DEUTLICH[p] for p in praedikate)
+        hat_kalibrierung = any(p in KALIBRIERUNG for p in praedikate)
+        return (len(ds), staerkstes, 1 if hat_kalibrierung else 0, sid)
+
+    reihenfolge = sorted(standorte, key=rang)
+
+    themen_aus = []
+    for tid, parent, sort, icon, name, beschr in THEMEN:
+        t = {
+            'id': tid,
+            'nameI18n': leer_ml(name),
+            'beschreibungI18n': leer_ml(saeubere(beschr)),
+            'iconKey': icon,
+            'sortOrder': sort,
+            'isActive': True,
+            'parentTopicId': parent,
+            'kursExklusiv': False,
+        }
+        if parent is None:
+            t['country'] = LAND
+        themen_aus.append(t)
+
+    szenen_aus, defizite_aus, massnahmen, arbeitsliste = [], [], {}, []
+
+    for i, sid in enumerate(reihenfolge, start=1):
+        ds = standorte[sid]
+        e = SZENEN[sid]
+        erste = ds[0]
+        szene_id = f'SZ_2026_1{i:02d}'
+
+        szenen_aus.append({
+            'id': szene_id,
+            'topicId': e['thema'],
+            'nameI18n': leer_ml(e['name']),
+            'beschreibungI18n': leer_ml(''),
+            'bemerkungI18n': leer_ml(saeubere(e['bemerkung'])),
+            'kontext': e['kontext'],
+            'strassenmerkmale': [],
+            'vorschauBilder': [],
+            'vorschauBild1': None,
+            'vorschauBild2': None,
+            'panoramaBildUrl': None,
+            'startblick': None,
+            'isActive': False,          # ohne Panorama nicht im Training
+            'createdAt': 1757116800000,  # 6. September 2026, fest für Idempotenz
+            'country': LAND,
+        })
+
+        # Pflichtdefizit: das mit dem stärksten Prädikat, bei Gleichstand das
+        # erste in der Reihenfolge des Berichts.
+        rangliste = sorted(
+            ds, key=lambda d: (DEUTLICH[vorschlag[(sid, d['Defizit_Nr'])]['praedikat']],
+                               int(d['Defizit_Nr'])))
+        pflicht_nr = rangliste[0]['Defizit_Nr']
+
+        for j, d in enumerate(ds, start=1):
+            nr = d['Defizit_Nr']
+            v = vorschlag[(sid, nr)]
+            defizit_id = f'SD_01{i:02d}{j}'
+            beschreibung = BESCHREIBUNGEN.get((sid, nr)) or saeubere(d['Beschreibung'])
+            defizite_aus.append({
+                'id': defizit_id,
+                'sceneId': szene_id,
+                'topicId': e['thema'],
+                'nameI18n': leer_ml(v['kriteriumId'].replace('_', ' ').capitalize()),
+                'beschreibungI18n': leer_ml(saeubere(beschreibung)),
+                'kriteriumId': v['kriteriumId'],
+                'kontext': e['kontext'],
+                # Die Einfuhr rechnet nichts nach; die Werte müssen fertig
+                # dastehen. Gerechnet wird mit dem, was in scoringEngine.ts
+                # steht — Wichtigkeit aus der Tabelle, Relevanz und Risiko aus
+                # den beiden Matrizen.
+                'correctAssessment': beurteilung(
+                    v['kriteriumId'], e['kontext'], v['abweichung'], v['naca']),
+                'isPflicht': nr == pflicht_nr,
+                'isBooster': False,
+                'normRefs': NORMREFS.get((sid, nr), []),
+                'kategorie': v['kategorie'],
+                'verortung': None,
+                'verortungen': None,
+            })
+
+            massnahmen[defizit_id] = {
+                'massnahmenart': saeubere(d['Massnahmenart']),
+                # Dieselbe Regel wie bei den Beschreibungen: kein Ortsbezug.
+                'massnahmentext': saeubere(
+                    MASSNAHMEN.get((sid, nr)) or d['Massnahmentext']),
+                'zustaendigkeit': saeubere(d['Zustaendigkeit']),
+            }
+
+        arbeitsliste.append({
+            'szene_id': szene_id,
+            'name': e['name'],
+            'thema': e['thema'],
+            'kontext': e['kontext'],
+            'gemeinde': erste['Gemeinde'],
+            'strasse': erste['Strasse'],
+            'strassennummer': erste['Strassennummer'],
+            'perimeter': erste['Perimeter_ID'],
+            'lv95': f"{erste['LV95_E']} / {erste['LV95_N']}",
+            'wgs84': f"{erste['WGS84_Breite']}, {erste['WGS84_Laenge']}",
+            'lage': erste['Lage'],
+            'tempo': erste['Signalisierte_Geschwindigkeit'],
+            'karte': erste['Karte_des_Bundes'],
+            'ansicht': erste['Strassenansicht'],
+            'defizite': [
+                {'id': f'SD_01{i:02d}{j}', 'nr': d['Defizit_Nr'],
+                 'praedikat': vorschlag[(sid, d['Defizit_Nr'])]['praedikat'],
+                 'kriterium': vorschlag[(sid, d['Defizit_Nr'])]['kriteriumId'],
+                 'pflicht': d['Defizit_Nr'] == pflicht_nr,
+                 'text': BESCHREIBUNGEN.get((sid, d['Defizit_Nr']))
+                         or saeubere(d['Beschreibung'])}
+                for j, d in enumerate(ds, start=1)
+            ],
+        })
+
+    einfuhr = {
+        'version': 'rsi-v3',
+        'erzeugt': STAND,
+        'quelle': 'RSI_Aufnahme_Auswahl_2026-09-06.csv',
+        'topics': themen_aus,
+        'scenes': szenen_aus,
+        'deficits': defizite_aus,
+    }
+    schreibe(os.path.join(HIER, f'rsi-import_{STAND}.json'), einfuhr)
+    schreibe(os.path.join(HIER, f'massnahmen_{STAND}.json'), {
+        'stand': STAND,
+        'hinweis': 'Massnahmentexte zur Auswahl vom 6. September 2026. Nicht im '
+                   'Werkzeug erfasst; ein eigener Schritt dafür ist offen.',
+        'massnahmen': massnahmen,
+    })
+    schreibe_arbeitsliste(arbeitsliste)
+
+    print(f'Themen   {len(themen_aus)}')
+    print(f'Szenen   {len(szenen_aus)}')
+    print(f'Defizite {len(defizite_aus)}, davon Pflicht '
+          f'{sum(1 for d in defizite_aus if d["isPflicht"])}')
+    print(f'Massnahmen {len(massnahmen)}')
+    print(f'\nEinfuhrdatei: daten/rsi-import_{STAND}.json')
+    print(f'Beilage:      daten/massnahmen_{STAND}.json')
+    print(f'Arbeitsliste: {ARBEITSLISTE}')
+
+
+def schreibe(pfad, inhalt):
+    os.makedirs(os.path.dirname(pfad), exist_ok=True)
+    with open(pfad, 'w', encoding='utf-8', newline='\n') as f:
+        json.dump(inhalt, f, ensure_ascii=False, indent=2)
+        f.write('\n')
+
+
+def schreibe_arbeitsliste(eintraege):
+    z = ['# Aufnahmeliste 360-Grad-Bilder – Stand 6. September 2026', '',
+         '> Verbindet den neutralen Szenennamen mit dem realen Ort.',
+         '> **Intern, nicht zur Weitergabe und nicht im Repositorium.**', '',
+         f'{len(eintraege)} Szenen, '
+         f'{sum(len(e["defizite"]) for e in eintraege)} Defizite. Die Szenen sind '
+         'im Werkzeug angelegt und auf inaktiv gesetzt; sie erscheinen im '
+         'Training erst, wenn das Bild liegt und Sie sie freischalten.', '']
+
+    for e in eintraege:
+        z += [f'## {e["szene_id"]} – {e["name"]}', '',
+              f'**Ort:** {e["gemeinde"]}, {e["strasse"]} (Strasse '
+              f'{e["strassennummer"]}), Perimeter {e["perimeter"]}  ',
+              f'**Koordinate:** LV95 {e["lv95"]} · WGS 84 {e["wgs84"]}  ',
+              f'**Lage laut Perimeter:** {e["lage"]}, signalisiert {e["tempo"]}  ',
+              f'**Kontext im Werkzeug:** {e["kontext"]}  ',
+              f'**Karte:** {e["karte"]}  ',
+              f'**Strassenansicht:** {e["ansicht"]}', '',
+              '**Blickrichtung für die Aufnahme**', '']
+
+        richtungen = set()
+        for d in e['defizite']:
+            t = d['text'].lower()
+            if 'nach links' in t:
+                richtungen.add('Blick nach links aus der wartenden Position')
+            if 'nach rechts' in t:
+                richtungen.add('Blick nach rechts aus der wartenden Position')
+            if 'nach norden' in t or 'richtung nord' in t:
+                richtungen.add('Blick nach Norden')
+            if 'süd' in t:
+                richtungen.add('Blick nach Süden')
+            if 'kurve' in t:
+                richtungen.add('Blick in den Kurvenverlauf, aus Fahrtrichtung')
+            if 'trottoir' in t or 'fussweg' in t or 'gehweg' in t:
+                richtungen.add('Blick entlang des Trottoirs')
+            if 'bankett' in t or 'stützmauer' in t or 'böschung' in t:
+                richtungen.add('Blick auf den Seitenraum')
+        if not richtungen:
+            richtungen.add('Blick aus Fahrtrichtung auf die Anlage')
+        for r in sorted(richtungen):
+            z.append(f'- {r}')
+        z += ['', '**Zu verortende Defizite**', '',
+              '| Kennung | RSI-Nr | Prädikat | Pflicht | Kriterium | Was zu sehen sein muss |',
+              '|---|---|---|---|---|---|']
+        for d in e['defizite']:
+            kurz = d['text'][:150] + ('…' if len(d['text']) > 150 else '')
+            z.append(f'| {d["id"]} | {d["nr"]} | {d["praedikat"]} | '
+                     f'{"ja" if d["pflicht"] else "nein"} | {d["kriterium"]} | {kurz} |')
+        z += ['', '---', '']
+
+    os.makedirs(os.path.dirname(ARBEITSLISTE), exist_ok=True)
+    with open(ARBEITSLISTE, 'w', encoding='utf-8', newline='\n') as f:
+        f.write('\n'.join(z))
+
+
+if __name__ == '__main__':
+    main()

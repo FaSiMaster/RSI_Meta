@@ -36,3 +36,7 @@ _Archiv/
 
 # Supabase-CLI-Artefakte (lokaler Projekt-Link, kein Code)
 supabase/.temp/
+
+# Python-Zwischenstände der Skripte unter daten/
+__pycache__/
+*.pyc

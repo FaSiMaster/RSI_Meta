@@ -1,0 +1,186 @@
+{
+  "stand": "2026-09-06",
+  "hinweis": "Massnahmentexte zur Auswahl vom 6. September 2026. Nicht im Werkzeug erfasst; ein eigener Schritt dafür ist offen.",
+  "massnahmen": {
+    "SD_01011": {
+      "massnahmenart": "kurzfristig",
+      "massnahmentext": "Erstellung Fahrzeugrückhaltesystem evtl. sogar mit Unterfahrschutz für Motorradfahrer; mindestens aber Leitpfeile einfach. Kann im Rahmen der Instandsetzung erfolgen.",
+      "zustaendigkeit": "PL SI"
+    },
+    "SD_01012": {
+      "massnahmenart": "kurzfristig",
+      "massnahmentext": "Im Rahmen der Instandsetzung weisse Randlinie ergänzen; auf der einmündenden Nebenstrasse zusätzlich unterbrochene Mittellinie ergänzen.",
+      "zustaendigkeit": "PL SI"
+    },
+    "SD_01021": {
+      "massnahmenart": "Detailprüfung",
+      "massnahmentext": "Verschiebung sowie rechtwinklige Anordnung der landwirtschaftliche Ein-/Ausfahrt prüfen.",
+      "zustaendigkeit": "Gemeinde"
+    },
+    "SD_01022": {
+      "massnahmenart": "Sanierungsprojekt",
+      "massnahmentext": "Verbreiterung Strassenquerschnitt gemäss Vorgaben VSS 40 201",
+      "zustaendigkeit": "PL SI"
+    },
+    "SD_01031": {
+      "massnahmenart": "Sanierungsprojekt; Sofortmassnahme",
+      "massnahmentext": "Bepflanzung/Vegetation zurückschneiden | Vergrösserung des Abstands zwischen Fahrbahn und Grundstücks-/ Hauszugängen prüfen. Baulichen Schutz der Hauszugänge prüfen (z. B. seitliche Einengung). Trottoir-/Fusswegführung prüfen.",
+      "zustaendigkeit": "Gemeinde; PL SI"
+    },
+    "SD_01032": {
+      "massnahmenart": "Sanierungsprojekt; Sofortmassnahme",
+      "massnahmentext": "Sig./Markierung (Kein Vortritt) ergänzen. | Redimensionierung prüfen. Trottoirüberfahrt prüfen.",
+      "zustaendigkeit": "BeUh; PL SI"
+    },
+    "SD_01041": {
+      "massnahmenart": "Sanierungsprojekt; kurzfristig",
+      "massnahmentext": "Prüfung Breite Radstreifen, evtl. Radstreifen 1.50 m markieren | Prüfung Anordnung Radstreifen, mindestens 1.80 m breit Prüfung in Kombination mit Querschnittswahl siehe Defizit-Nr. 3",
+      "zustaendigkeit": "12.0; BeUh"
+    },
+    "SD_01042": {
+      "massnahmenart": "Sanierungsprojekt",
+      "massnahmentext": "Prüfen in Zusammenhang mit Defizit 2 Prüfen Fahrbahnbreite (Kernfahrbahn oder Radstreifen 1.80 m)",
+      "zustaendigkeit": "12.0"
+    },
+    "SD_01043": {
+      "massnahmenart": "Sofortmassnahme",
+      "massnahmentext": "Prüfung Sichtweiten Rückschnitt Bepflanzung, damit Sichtweite gewährleistet ist",
+      "zustaendigkeit": "Gemeinde"
+    },
+    "SD_01051": {
+      "massnahmenart": "Detailprüfung; Sofortmassnahme",
+      "massnahmentext": "Durchgezogene Sicherheitslinie anbringen | Herabsetzung signalisierte Höchstgeschwindigkeit prüfen",
+      "zustaendigkeit": "KaPo"
+    },
+    "SD_01052": {
+      "massnahmenart": "Detailprüfung",
+      "massnahmentext": "Bedarf für Fussgängerquerung prüfen.",
+      "zustaendigkeit": "PL SI"
+    },
+    "SD_01053": {
+      "massnahmenart": "Sanierungsprojekt; Sofortmassnahme",
+      "massnahmentext": "Bepflanzung zurückschneiden | Im Rahmen eines Sanierungs- oder Neubauprojekts Verbreiterung Trottoir vorsehen.",
+      "zustaendigkeit": "Gemeinde; PL SI"
+    },
+    "SD_01061": {
+      "massnahmenart": "Sofortmassnahme; kurzfristig",
+      "massnahmentext": "Hecken zurückschneiden und Sichtweite erneute nachweisen. | falls Anhaltesichtweite nach Rückschnitt nicht eingehalten > Sichtberme erstellen mit allfälliger Anpassung Stützmauern.",
+      "zustaendigkeit": "PL SI"
+    },
+    "SD_01062": {
+      "massnahmenart": "kurzfristig",
+      "massnahmentext": "Sanierung inkl. Überprüfung Verlegung Standort, von Bushaltestelle.",
+      "zustaendigkeit": "PL SI"
+    },
+    "SD_01063": {
+      "massnahmenart": "Sanierungsprojekt; Sofortmassnahme",
+      "massnahmentext": "Knotenumgestaltung zur Einhaltung der Sichttweiten und Aufhebung von Spiegel | Spiegel beheizen",
+      "zustaendigkeit": "PL SI"
+    },
+    "SD_01071": {
+      "massnahmenart": "Detailprüfung",
+      "massnahmentext": "Passive Schutzeinrichtung erstellen.",
+      "zustaendigkeit": "PL SI"
+    },
+    "SD_01072": {
+      "massnahmenart": "Sofortmassnahme",
+      "massnahmentext": "Markierung von Randlinie.",
+      "zustaendigkeit": "BeUh"
+    },
+    "SD_01073": {
+      "massnahmenart": "Detailprüfung; Sanierungsprojekt",
+      "massnahmentext": "Reduktion Geschwindigkeit auf 60 prüfen | Böschungsabtrag (Erstellung Sichtberme)",
+      "zustaendigkeit": "KaPo; PL SI"
+    },
+    "SD_01081": {
+      "massnahmenart": "Sofortmassnahme",
+      "massnahmentext": "Bepflanzung reduzieren",
+      "zustaendigkeit": "Gemeinde"
+    },
+    "SD_01082": {
+      "massnahmenart": "kurzfristig",
+      "massnahmentext": "Knoten gem. Norm ausbilden",
+      "zustaendigkeit": "PL SI"
+    },
+    "SD_01083": {
+      "massnahmenart": "Sofortmassnahme",
+      "massnahmentext": "Durchgezogene Abweislinie markieren",
+      "zustaendigkeit": "BeUh"
+    },
+    "SD_01091": {
+      "massnahmenart": "Detailprüfung; Sofortmassnahme",
+      "massnahmentext": "Verteilkabine (VK) verschieben: Möglichkeiten kurzfristig prüfen sonst im Zuge Knotenprojekt anpassen | Mit Zurückschneiden Sträucher/Hecke auf Kurveninnenseite Erkennungsdistanz (Sicht auf Signal 4.11 auf Insel) verbessern",
+      "zustaendigkeit": "12.0; Gemeinde"
+    },
+    "SD_01092": {
+      "massnahmenart": "Detailprüfung; Sofortmassnahme",
+      "massnahmentext": "Zurückschneiden Hecke prüfen, Verkehrsspiegel montieren | Fahrverbot Verbindungsweg prüfen, um weiteren Verkehr zu vermeiden, Erschliessung via Knoten Zumikerstr./ In der Hinterzelg sichergestellt",
+      "zustaendigkeit": "Gemeinde"
+    },
+    "SD_01093": {
+      "massnahmenart": "Detailprüfung; Sofortmassnahme",
+      "massnahmentext": "Knoten im Zuge eines Sanierungsprojekts redimensionieren (unter Berücksichtigung Schleppkurven), Ein- und Abbiegeradien reduzieren, damit auch FGS an gerade Kante schliesst | Verengung Fahrspuren mittels Markierungen prüfen",
+      "zustaendigkeit": "BeUh; Mehrere"
+    },
+    "SD_01101": {
+      "massnahmenart": "Sanierungsprojekt; Sofortmassnahme",
+      "massnahmentext": "Kurvenradius gemäss Norm 40 100a vergrössern. | Während der wachstumsintensiven Vegetationsphasen ist das Gras vom Unterhalt in regelmässigen Intervallen zu mähen. | Die Landwirte sind darauf hinzuweisen, dass bei der Anpflanzung von Kulturen der erforderliche Sichtbereich dauerhaft freigehalten werden muss.",
+      "zustaendigkeit": "BeUh; PL SI"
+    },
+    "SD_01102": {
+      "massnahmenart": "Detailprüfung",
+      "massnahmentext": "Es ist zu prüfen, ob eine Anpassung der Knotengeometrie zur Verbesserung der Verkehrsführung/Verkehrssicherheit erforderlich ist.",
+      "zustaendigkeit": "PL SI"
+    },
+    "SD_01103": {
+      "massnahmenart": "kurzfristig",
+      "massnahmentext": "Ergänzung der Wegweisung mit der entsprechenden Signalisation für indirektes Linksabbiegen.",
+      "zustaendigkeit": "PL SI"
+    },
+    "SD_01111": {
+      "massnahmenart": "Sanierungsprojekt",
+      "massnahmentext": "Beurteilung der Möglichkeiten zur Anpassung des Böschungsbereichs und/oder Anpassung des Betriebs‑ und Gestaltungskonzepts (z.B. 60 km/h).",
+      "zustaendigkeit": "Mehrere"
+    },
+    "SD_01112": {
+      "massnahmenart": "Sanierungsprojekt",
+      "massnahmentext": "Realisierung eines normkonformen Banketts im Zuge einer Umgestaltung.",
+      "zustaendigkeit": "PL SI"
+    },
+    "SD_01113": {
+      "massnahmenart": "Sanierungsprojekt",
+      "massnahmentext": "Sanierung der Fahrbahn.",
+      "zustaendigkeit": "PL SI"
+    },
+    "SD_01121": {
+      "massnahmenart": "Sanierungsprojekt",
+      "massnahmentext": "Berücksichtigung der Gestaltung und der Breite des Trottoirs im Rahmen einer Umgestaltung; Begrenzung der Parkierungsfläche.",
+      "zustaendigkeit": "Mehrere"
+    },
+    "SD_01122": {
+      "massnahmenart": "Sanierungsprojekt",
+      "massnahmentext": "Berücksichtigung der Zufahrt zur Tankstelle im Rahmen einer Umgestaltung, um Konflikte mit dem Knotenpunkt der einmündenden Nebenstrasse zu vermeiden.",
+      "zustaendigkeit": "Gemeinde"
+    },
+    "SD_01123": {
+      "massnahmenart": "kurzfristig",
+      "massnahmentext": "Signal ersetzen, oder den Bedarf im Rahmen einer klaren und eindeutigen Gestaltung der Fahrbahn prüfen.",
+      "zustaendigkeit": "BeUh"
+    },
+    "SD_01131": {
+      "massnahmenart": "kurzfristig",
+      "massnahmentext": "Private Senkrechtparkierung aufheben resp. zumindest als Längsparkierung anordnen. Entweder im Rahmen Neubebauung Parzelle oder bei Sanierung Kantonsstrasse.",
+      "zustaendigkeit": "Gemeinde"
+    },
+    "SD_01132": {
+      "massnahmenart": "kurzfristig",
+      "massnahmentext": "Anschlag gemäss Norm erstellen",
+      "zustaendigkeit": "BeUh"
+    },
+    "SD_01133": {
+      "massnahmenart": "kurzfristig",
+      "massnahmentext": "Belag im Rahmen der Sanierung erneuern",
+      "zustaendigkeit": "PL SI"
+    }
+  }
+}
