@@ -35,7 +35,10 @@ export function emptyDeficit(sceneId: string, topicId: string): AppDeficit {
       unfallschwere: 'mittel', unfallrisiko: 'mittel',
     },
     isPflicht: true, isBooster: false,
-    normRefs: ['VSS 41 723'],
+    // Vorgabe für ein neues Defizit: die Verfahrensnorm der Inspektion.
+    // Nummer nach dem Gesamt-Normenverzeichnis VSS 41 001:2024-10; für
+    // «VSS 41 723» gibt es dort keinen Eintrag.
+    normRefs: ['SN 641 723'],
     verortung: null,
   }
 }

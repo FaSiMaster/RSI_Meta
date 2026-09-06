@@ -211,9 +211,8 @@ Ausnahmen.
 
 ### 5.5 Offen
 
-- **Die 29 Defizite in den Produktivdaten tragen weiterhin SN 641 723.** Der
-  Wächter liest den Quellbaum, nicht Supabase. Die geltende Nummer ist
-  VSS 41 723; sie ist im Normenbestand nicht erfasst, ein Nachbezug steht aus.
+- ~~Die 29 Defizite tragen SN 641 723, geltend sei VSS 41 723.~~ **Erledigt,
+  und zwar anders als gedacht** — siehe Ziff. 6.
 - **VSS 40 273a in einem Defizittext.** Der Bericht zitiert sie für eine lichte
   Höhe von 3,00 m. Die Norm heisst «Knoten; Sichtverhältnisse in Knoten in
   einer Ebene»; das Lichtraumprofil führt nach Tab. 2 die VSS 40 201. Die
@@ -226,3 +225,54 @@ Ausnahmen.
   VSS 40 100 und VSS 40 200. Drei davon führt Tab. 2 selbst als «in
   Vorbereitung».
 - Nachfolgeausgabe zu VSS 40 241:2019 weiterhin offen.
+
+---
+
+## 6. VSS 41 723 gibt es nicht — Nachtrag vom 6. September 2026
+
+Der Befund «29 Defizite tragen eine veraltete Nummer» stützte sich auf zwei
+Annahmen: dass die VSS den Kreis SN 641 xxx auf VSS 41 xxx umnummeriert hat,
+und dass die Inspektion dabei zu VSS 41 723 wurde. Die erste stimmt zur
+Hälfte, die zweite gar nicht.
+
+**Beleg: Gesamt-Normenverzeichnis VSS 41 001, Ausgabe 2024-10, numerisches
+Verzeichnis** (Volltext im Projekt FK_TBAZH_ISSI,
+`Ergebnis/Arbeitsdaten/inv41001.txt`). Es führt beide Nummernkreise
+nebeneinander:
+
+| Instrument | Nummer im Verzeichnis | Ausgabe |
+|---|---|---|
+| Folgeabschätzung (RIA) | **VSS 41 721** | 2023 |
+| Netzeinstufung (NSM) | **VSS 41 725** | 2019 |
+| Audit (RSA) | **SN 641 722** | 2008 |
+| Inspektion (RSI) | **SN 641 723** | 2017 |
+
+Im ganzen Verzeichnis kommt der Kreis 41 7xx viermal vor: 41 711, 41 713,
+41 721 und 41 725. **VSS 41 722 und VSS 41 723 stehen nicht darin.**
+
+Daraus folgt dreierlei:
+
+1. **Die 29 Defizite in den Produktivdaten sind nicht falsch.** SN 641 723 ist
+   die Nummer, unter der das Verzeichnis die Inspektion führt. Sie bleiben
+   unverändert.
+2. **Der Quellbaum trug die unbelegte Nummer an acht Stellen** — sechsmal in
+   den Vorgabedaten von `appData.ts`, einmal als Vorgabe für ein neues Defizit
+   in `adminHelpers.ts`, einmal in den E2E-Testdaten. Alle auf SN 641 723
+   umgestellt.
+3. **Der Katalog führt sie nicht mehr.** Statt VSS 41 722 und VSS 41 723 nun
+   SN 641 722:2008 und SN 641 723:2017.
+
+Dass der Normenbestand SN 641 723 als «veraltet» markiert (Stand 15.06.2026),
+sagt hier nichts über eine Umnummerierung. Dasselbe Feld steht auch bei
+VSS 40 241:2019 auf «veraltet», obwohl diese Ausgabe gilt — siehe Ziff. 5.3.
+
+**Offen:** Ob seit Oktober 2024 eine Umnummerierung nachgezogen wurde, sagt
+weder das Verzeichnis noch der Bestand. Wer es genau wissen will, fragt bei
+der VSS nach.
+
+**Nebenbefund ohne Normbezug:** Dreizehn der 31 Bestandsdefizite heissen
+«Platzhalter» oder «Test 3», und ein Defizit (SD_0002) hängt an der Szene
+SZ_2026_003, die es nicht gibt. Beides liegt in den Produktivdaten und
+erscheint damit im Training und im Bericht. Unverändert gelassen — es sind
+fremde Datensätze, und ob sie noch gebraucht werden, entscheidet nicht der
+Abgleich.

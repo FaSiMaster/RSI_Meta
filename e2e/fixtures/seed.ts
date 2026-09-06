@@ -70,7 +70,7 @@ export const SEED = {
       },
       isPflicht: true,
       isBooster: false,
-      normRefs: ['VSS 41 723'],
+      normRefs: ['SN 641 723'],
       verortung: null,
     },
   ],

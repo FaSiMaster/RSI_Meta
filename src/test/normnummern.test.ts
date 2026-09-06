@@ -147,12 +147,12 @@ const BEKANNT: Record<string, string> = {
   // Titel, die dort früher falsch zugeordnet waren.
   'VSS40281': 'Nur im Kopfkommentar des Katalogs; früher als «Knoten mit LSA» geführt, richtig ist Parkieren',
   'VSS40360': 'Nur im Kopfkommentar des Katalogs; früher als «Markierungen» geführt, richtig ist Strassenentwässerung',
-  // SN 641 723 und SN 641 722 standen hier bis zum 6. September 2026. Seit
-  // der Katalog nach SN 641 700:2022 Tab. 2 neu geschrieben ist, kommen sie
-  // in den geprüften Quelldateien nicht mehr vor; die Prüfung «führt nichts
-  // Unbenutztes» hat sie gemeldet. In den Produktivdaten stehen sie weiter:
-  // 29 Defizite tragen SN 641 723 (docs/NORMREFERENZEN_PRUEFUNG.md, Ziff. 1).
-  // Dorthin reicht dieser Wächter nicht — er liest den Quellbaum.
+  // Die beiden Verfahrensnormen. Das Gesamt-Normenverzeichnis VSS 41 001,
+  // Ausgabe 2024-10, führt sie unter diesen Nummern; für «VSS 41 723» gibt es
+  // keinen Beleg. Der Bestand markiert sie als veraltet, was hier nichts über
+  // eine Umnummerierung sagt.
+  'SN641722': 'VSS 41 001:2024-10 führt das Audit unter dieser Nummer, Ausgabe 2008',
+  'SN641723': 'VSS 41 001:2024-10 führt die Inspektion unter dieser Nummer, Ausgabe 2017',
 }
 
 /**
@@ -160,8 +160,10 @@ const BEKANNT: Record<string, string> = {
  * Norm falsch. Alle Nummern stehen in SN 641 700:2022, Tab. 2.
  */
 const BEKANNT_FEHLEND: Record<string, string> = {
-  'VSS41722': 'Nachfolger von SN 641 722; im Korpus nicht erfasst, Nachbezug offen',
-  'VSS41723': 'Nachfolger von SN 641 723; im Korpus nicht erfasst, Nachbezug offen',
+  // Steht nur noch in zwei Kommentaren, als Schreibweise ohne Beleg: Das
+  // Gesamt-Normenverzeichnis VSS 41 001:2024-10 kennt sie nicht, der
+  // Normenbestand auch nicht.
+  'VSS41723': 'Nur in Kommentaren, als nicht belegte Schreibweise benannt',
   'VSS40023': 'Tab. 2, Knotengeometrie — im Korpus nicht erfasst',
   'VSS40024': 'Tab. 2, Knotengeometrie — im Korpus nicht erfasst',
   'VSS40040': 'Tab. 2, Knotengeometrie — im Korpus nicht erfasst',

@@ -45,6 +45,15 @@ geführtes Merkmal. Neu **272 Merkmalswerte** statt 251.
 
 ### Behoben
 
+- **«VSS 41 723» gibt es nicht.** Das Gesamt-Normenverzeichnis VSS 41 001,
+  Ausgabe 2024-10, führt die Inspektion als **SN 641 723:2017** und das Audit
+  als **SN 641 722:2008**; umgenummert sind nur die Folgeabschätzung
+  (VSS 41 721) und die Netzeinstufung (VSS 41 725). Der Quellbaum trug die
+  unbelegte Nummer an acht Stellen — sechsmal in den Vorgabedaten, einmal als
+  Vorgabe für ein neues Defizit, einmal in den E2E-Daten. Alle umgestellt.
+  **Damit sind die 29 Defizite in den Produktivdaten nicht falsch** und
+  bleiben unverändert; der Befund von heute Vormittag löst sich anders auf als
+  gedacht. Belege in `docs/NORMREFERENZEN_PRUEFUNG.md`, Ziff. 6.
 - **Der Normnummern-Wächter verglich das Ausgabesuffix gross gegen klein.** Der
   Bestand führt die Sichtweitennorm als «40090B», das Projekt schreibt sie
   «VSS 40 090b»; gemeldet wurde sie als im Bestand unauffindbar — eine Meldung,
