@@ -58,7 +58,7 @@ describe('baueTeilnehmerDoc', () => {
     expect(doc.info?.title).toContain('Fussgängerstreifen')
   })
 
-  it('enthaelt Auswertung und Befunde, wenn Defizite vorliegen', () => {
+  it('enthält Auswertung und Befunde, wenn Defizite vorliegen', () => {
     const doc = baueTeilnehmerDoc(bericht(), t, 'de')
     const json = JSON.stringify(doc.content)
     expect(json).toContain('bericht.abschnitt_auswertung')
@@ -77,7 +77,7 @@ describe('baueTeilnehmerDoc', () => {
     expect(JSON.stringify(doc.content)).not.toContain('bericht.thema')
   })
 
-  it('laesst den Status weg, wenn kein Bestanden-Wert vorliegt', () => {
+  it('lässt den Status weg, wenn kein Bestanden-Wert vorliegt', () => {
     const doc = baueTeilnehmerDoc(bericht({ bestanden: null }), t, 'de')
     const json = JSON.stringify(doc.content)
     expect(json).not.toContain('bericht.nicht_bestanden')
@@ -96,7 +96,7 @@ describe('baueKursDoc', () => {
     expect(JSON.stringify(doc.content)).toContain('bericht.anonym_hinweis')
   })
 
-  it('laesst den Hinweis bei Klarnamen weg', () => {
+  it('lässt den Hinweis bei Klarnamen weg', () => {
     const doc = baueKursDoc({ kursName: 'FK-RSI-1', zeilen: [zeile], anonymisiert: false }, t, 'de')
     expect(JSON.stringify(doc.content)).not.toContain('bericht.anonym_hinweis')
   })

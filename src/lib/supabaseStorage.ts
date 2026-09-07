@@ -1,4 +1,4 @@
-// Supabase Storage Helper — Single Source of Truth fuer Panorama-Bilder
+// Supabase Storage Helper — einzige massgebende Stelle für Panorama-Bilder
 // Bucket: rsi-textures
 //
 // Pfad-Konvention (siehe memory/project_architektur_entscheidungen.md):
@@ -8,9 +8,9 @@
 //
 // Erforderliche Bucket-Konfiguration im Supabase-Dashboard:
 //   Storage -> rsi-textures -> public = true
-//   Policies via Dashboard-UI: SELECT/INSERT/DELETE fuer anon
+//   Policies via Dashboard-UI: SELECT/INSERT/DELETE für anon
 //
-// Schreibzugriff im Code ist nur ueber Admin-PIN erreichbar
+// Schreibzugriff im Code ist nur über Admin-PIN erreichbar
 // (sessionStorage-Guard in App.tsx vor Admin-Render).
 
 import { supabase } from './supabase'
@@ -22,17 +22,25 @@ const ROOT_PANORAMAS = 'panoramas'
 
 export type PanoramaRole = 'haupt' | 'perspektive'
 
+// ── Miniaturen ──
+// Der Bildspeicher kann grundsätzlich verkleinerte Fassungen ausliefern
+// (derselbe Pfad unter «render/image» statt «object»). Am 7. September 2026
+// gemessen: Er antwortet mit 403 — der Dienst ist im Tarif nicht enthalten.
+// Zudem liefert er «Cache-Control: no-cache», der Browser behält also nichts.
+// Vorschaubilder werden deshalb im Browser erzeugt und dort behalten, siehe
+// lib/miniaturSpeicher.ts.
+
 export interface StorageImage {
   name: string          // voller Pfad im Bucket, z.B. "panoramas/SZ_2026_001/haupt.webp"
   fileName: string      // nur der Datei-Name, z.B. "haupt.webp"
-  szeneId: string | null  // extrahierte Szene-ID aus dem Pfad, oder null fuer Archiv/Legacy
+  szeneId: string | null  // extrahierte Szene-ID aus dem Pfad, oder null für Archiv/Altbestand
   url: string
   size?: number
   createdAt?: string
   updatedAt?: string
 }
 
-// Erlaubte MIME-Types fuer Panorama-Bilder
+// Erlaubte MIME-Typen für Panorama-Bilder
 const ALLOWED_TYPES = ['image/jpeg', 'image/png', 'image/webp']
 const MAX_SIZE = 25 * 1024 * 1024  // 25 MB
 
@@ -88,7 +96,7 @@ export async function uploadPanorama(
   if (!opts.szeneId) return { ok: false, reason: 'Szene-ID fehlt' }
 
   if (!ALLOWED_TYPES.includes(file.type)) {
-    return { ok: false, reason: `Format nicht unterstuetzt (${file.type}). Erlaubt: JPG, PNG, WEBP.` }
+    return { ok: false, reason: `Format nicht unterstützt (${file.type}). Erlaubt: JPG, PNG, WEBP.` }
   }
   if (file.size > MAX_SIZE) {
     return { ok: false, reason: `Datei zu gross (${(file.size / 1024 / 1024).toFixed(1)} MB). Max: 25 MB.` }

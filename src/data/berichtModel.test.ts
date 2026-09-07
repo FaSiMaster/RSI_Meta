@@ -57,7 +57,7 @@ describe('ketteAus', () => {
     expect(b.unfallrisiko).toBe(a.unfallrisiko)
   })
 
-  it('klein senkt die Relevanz gegenueber mittel', () => {
+  it('klein senkt die Relevanz gegenüber mittel', () => {
     expect(ketteAus('klein', 'mittel', 'schwer').relevanzSD).toBe('gering')
     expect(ketteAus('mittel', 'mittel', 'schwer').relevanzSD).toBe('mittel')
   })
@@ -94,7 +94,7 @@ describe('baueDefizitListe', () => {
     expect(liste[0].soll.unfallrisiko).toBe('hoch')
   })
 
-  it('laesst die Ist-Kette weg, wenn das Resultat aelter als v0.11.0 ist', () => {
+  it('lässt die Ist-Kette weg, wenn das Resultat älter als v0.11.0 ist', () => {
     // Legacy: gefunden, aber ohne gespeicherte Auswahl
     const liste = baueDefizitListe([defizit('A')], [resultat('A')], 'de')
     expect(liste[0].gefunden).toBe(true)
@@ -102,12 +102,12 @@ describe('baueDefizitListe', () => {
     expect(liste[0].punkteFinal).toBe(100)
   })
 
-  it('faellt beim Hinweis-Abzug auf den Legacy-Wert 25 zurueck', () => {
+  it('fällt beim Hinweis-Abzug auf den Altwert 25 zurück', () => {
     const liste = baueDefizitListe([defizit('A')], [resultat('A', { hintPenalty: true })], 'de')
     expect(liste[0].hintAbzug).toBe(25)
   })
 
-  it('uebernimmt den gestuften Abzug, wenn vorhanden', () => {
+  it('übernimmt den gestuften Abzug, wenn vorhanden', () => {
     const liste = baueDefizitListe([defizit('A')], [resultat('A', { hintPenalty: true, hintAbzug: 10 })], 'de')
     expect(liste[0].hintAbzug).toBe(10)
   })
@@ -130,7 +130,7 @@ describe('Formatierung', () => {
     expect(fmtDauer(125)).toBe('2 min 5 s')
   })
 
-  it('gibt einen ungueltigen Zeitstempel unveraendert zurueck', () => {
+  it('gibt einen ungültigen Zeitstempel unverändert zurück', () => {
     expect(fmtDatum('kein-datum', 'de')).toBe('kein-datum')
   })
 })

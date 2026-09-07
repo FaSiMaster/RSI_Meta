@@ -766,7 +766,7 @@ export function getTopicCountry(topicId: string, bestand?: AppTopic[]): LandCode
 export async function hashUsername(name: string): Promise<string> {
   const salt = (import.meta.env.VITE_USERNAME_SALT as string | undefined) ?? ''
   if (!salt && typeof console !== 'undefined') {
-    logger.warn('VITE_USERNAME_SALT nicht gesetzt — Pseudonymisierung ist schwaecher als empfohlen.')
+    logger.warn('VITE_USERNAME_SALT nicht gesetzt — Pseudonymisierung ist schwächer als empfohlen.')
   }
   const encoder = new TextEncoder()
   const data = encoder.encode(salt + ':' + name.toLowerCase().trim())
@@ -787,7 +787,7 @@ export async function pruefeKursPasswort(eingabe: string, kurs: Kurs | null | un
   if (!url || !anonKey) {
     // Dev-Fallback: Ohne Supabase-Config kann der Server das Passwort nicht
     // verifizieren. Wir verweigern den Zugang konservativ.
-    logger.warn('pruefeKursPasswort: VITE_SUPABASE_URL fehlt — Zugang verweigert')
+    logger.warn('Kurspasswort-Prüfung: VITE_SUPABASE_URL fehlt — Zugang verweigert')
     return false
   }
   try {
@@ -804,7 +804,7 @@ export async function pruefeKursPasswort(eingabe: string, kurs: Kurs | null | un
     const json = await res.json() as { ok?: boolean }
     return json.ok === true
   } catch (err) {
-    logger.warn('pruefeKursPasswort: Fetch fehlgeschlagen', err)
+    logger.warn('Kurspasswort-Prüfung: Abfrage fehlgeschlagen', err)
     return false
   }
 }

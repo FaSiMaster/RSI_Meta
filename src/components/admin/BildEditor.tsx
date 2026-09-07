@@ -5,6 +5,7 @@
 import { useEffect, useRef, useState, useCallback } from 'react'
 import { X, Save, Eye, EyeOff, MapPin, ChevronDown, ChevronUp } from 'lucide-react'
 import type { AppScene, AppDeficit } from '../../data/appData'
+import { Miniatur } from './Miniatur'
 import {
   type SphericalPos,
   type DefizitVerortung,
@@ -972,21 +973,8 @@ ${b.url}` : `${b.label} — kein Bild hinterlegt`}
                         textAlign: 'left',
                       }}
                     >
-                      <div style={{
-                        aspectRatio: '2 / 1', width: '100%', borderRadius: '3px',
-                        background: '#111', overflow: 'hidden',
-                        display: 'flex', alignItems: 'center', justifyContent: 'center',
-                      }}>
-                        {hatBild ? (
-                          <img
-                            src={b.url}
-                            alt=""
-                            loading="lazy"
-                            style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-                          />
-                        ) : (
-                          <span style={{ fontSize: '9px', color: 'rgba(255,255,255,0.5)' }}>kein Bild</span>
-                        )}
+                      <div style={{ aspectRatio: '2 / 1', width: '100%', borderRadius: '3px', overflow: 'hidden' }}>
+                        <Miniatur url={hatBild ? b.url : null} breite={320} alt="" />
                       </div>
                       <span style={{
                         fontSize: '10px', fontWeight: 700,

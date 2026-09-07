@@ -426,7 +426,7 @@ export default function AdminRanking() {
       ) : (
         <div style={{ padding: '24px', borderRadius: '10px', border: '1px solid var(--rsi-color-border)', background: 'var(--rsi-color-bg-secondary)', textAlign: 'center' }}>
           <p style={{ fontSize: '14px', color: 'var(--rsi-color-text-muted)', marginBottom: '8px' }}>
-            Supabase nicht erreichbar — nur lokale Daten verfuegbar.
+            Supabase nicht erreichbar — nur lokale Daten verfügbar.
           </p>
           <p style={{ fontSize: '12px', color: 'var(--rsi-color-text-disabled)' }}>
             {localResults.length} lokale Resultate. Löschen ist nur mit Supabase-Verbindung möglich.

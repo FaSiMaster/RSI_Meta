@@ -19,7 +19,7 @@ describe('punktInPolygon', () => {
     expect(punktInPolygon({ theta: 15, phi: 90 }, quadrat)).toBe(false)
   })
 
-  it('gibt false bei Polygonen mit <3 Punkten zurueck', () => {
+  it('gibt false bei Polygonen mit <3 Punkten zurück', () => {
     expect(punktInPolygon({ theta: 15, phi: 75 }, [{ theta: 10, phi: 70 }, { theta: 20, phi: 70 }])).toBe(false)
     expect(punktInPolygon({ theta: 15, phi: 75 }, [])).toBe(false)
   })

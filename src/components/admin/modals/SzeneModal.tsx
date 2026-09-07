@@ -2,11 +2,12 @@
 
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { X, Save, Trash2, ChevronDown, ChevronRight, ImageOff } from 'lucide-react'
+import { X, Save, Trash2, ChevronDown, ChevronRight } from 'lucide-react'
 import type { AppScene, StrassenMerkmal } from '../../../data/appData'
 import { STRASSENMERKMALE_KATALOG } from '../../../data/strassenmerkmale'
 import { useFocusTrap } from '../../../lib/useFocusTrap'
 import BildUpload from '../BildUpload'
+import { Miniatur } from '../Miniatur'
 import { Section } from '../fields/Section'
 import { MLInput } from '../fields/MLInput'
 import { MLTextarea } from '../fields/MLTextarea'
@@ -347,14 +348,8 @@ export default function SzeneModal({ open, initial, isNew, onClose, onSave, onOp
                       fontSize: '12px', fontWeight: 700, color: 'var(--rsi-blau)',
                       minWidth: '18px', flexShrink: 0,
                     }}>{i + 1}</span>
-                    <div style={{
-                      width: '56px', height: '28px', borderRadius: '4px', flexShrink: 0,
-                      background: '#111', overflow: 'hidden',
-                      display: 'flex', alignItems: 'center', justifyContent: 'center',
-                    }}>
-                      {p.bildUrl
-                        ? <img src={p.bildUrl} alt="" loading="lazy" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                        : <ImageOff size={12} color="rgba(255,255,255,0.45)" />}
+                    <div style={{ width: '56px', height: '28px', borderRadius: '4px', flexShrink: 0, overflow: 'hidden' }}>
+                      <Miniatur url={p.bildUrl || null} breite={160} alt="" />
                     </div>
                     <span style={{
                       fontSize: '13px', fontWeight: 600, color: 'var(--rsi-color-text)',

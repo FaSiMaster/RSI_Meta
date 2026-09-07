@@ -9,6 +9,53 @@ Versionierung nach [Semantic Versioning](https://semver.org/lang/de/).
 
 ## [Unreleased]
 
+### Behoben – Vorschaubilder und ASCII-Ersatzschreibungen (v0.19.1)
+
+**Die Bildwahl lud jedes Mal alles neu.** Am Bildspeicher gemessen: Ein
+Panorama ist **9,6 MB** gross. Der Verkleinerungsdienst des Anbieters
+antwortet mit **403** — er ist im Tarif nicht enthalten. Und der Speicher
+liefert **«Cache-Control: no-cache»**, der Browser behält also nichts. Ein
+Ordner mit sechs Standorten waren damit 58 MB bei jedem Öffnen, für Kacheln
+von 200 Bildpunkten; die Kacheln blieben lange schwarz, und schwarz sah
+gleich aus, ob ein Bild lud oder fehlte.
+
+Neu erzeugt die Anwendung ihre Vorschaubilder selbst: Jedes Bild wird einmal
+geladen, im Browser verkleinert und in IndexedDB behalten
+(`src/lib/miniaturSpeicher.ts`). Ab dem zweiten Mal ist die Bibliothek
+sofort da. Geladen wird erst, wenn eine Kachel ins Sichtfeld kommt, und
+höchstens zwei Bilder gleichzeitig. Die Kachel sagt, ob sie lädt oder ob das
+Bild fehlt.
+
+**Das ganze Bild ist zu sehen, nicht der Ausschnitt.** Die Kacheln zeigten
+den bildfüllenden Ausschnitt; bei sechs Standorten derselben Stelle
+entscheidet aber der Rand, nicht die Mitte. Dazu grössere Kacheln (200 statt
+140 Bildpunkte) und ein höheres Fenster (560 statt 420).
+
+**ASCII-Ersatzschreibungen in der Oberfläche.** «Anderes Bild waehlen», «Aus
+Bucket loeschen», «URL pruefen», «Der Kurs ist aktuell NUR auf diesem Geraet
+verfuegbar», «Format nicht unterstuetzt» und ein Dutzend weitere sind auf
+echte Umlaute gesetzt. Gefunden hat sie keine Prüfung, sondern der Benutzer
+am Bildschirm.
+
+**Wächter:** `src/test/keine-ascii-umlaute.test.ts` prüft sichtbare Texte im
+ganzen Quellbaum — Zeichenketten mit Leerzeichen und JSX-Textknoten, ohne
+Bezeichner, CSS-Eigenschaften und i18n-Schlüssel. Er brauchte **drei
+Anläufe**: Die erste Fassung suchte zeilenweise und übersah damit jeden
+Knopftext, der auf einer eigenen Zeile steht — also fast jeden. Die zweite
+suchte über die ganze Datei, scheiterte aber am Zeilenende: Die Dateien
+enden mit CRLF, das Muster erwartete LF. Erst die dritte meldete den
+absichtlich wieder eingesetzten Fehler. Dazu
+`src/test/miniaturSpeicher.test.ts` für die Warteschlange, ebenfalls gegen
+einen eingebauten Fehler gehalten.
+
+**Offen, weil Sacred File:** `src/data/scoringEngine.ts` trägt an vier
+Stellen sichtbaren Text mit ASCII-Ersatz — «Angebot / Vertraeglichkeit»
+(Kriterium), «Abweichung zur Norm ist sachlich begruendet», «Leichte bis
+maessig schwere Verletzung» und «Maessig bis schwere Verletzung, nicht
+lebensbedrohlich» (NACA-Stufen). Die Datei ist normativ und wird nicht ohne
+ausdrückliche Freigabe geändert; der Wächter nimmt sie aus.
+
+
 ### Geändert – Bildwahl bei vielen Standorten je Szene (v0.19.0)
 
 Seit den infra3d-Panoramen führt eine Szene bis zu sechs Standorte. Die

@@ -126,7 +126,7 @@ export async function initSupabaseData(): Promise<void> {
     const { data: kurseRaw, error: kErr } = await supabase
       .from('rsi_kurse').select('id, data')
     if (kErr) {
-      logger.warn('rsi_kurse nicht verfuegbar — Kurse nur localStorage. SQL-Migration siehe supabase/migrations/2026_04_24_rsi_kurse.sql')
+      logger.warn('rsi_kurse nicht verfügbar — Kurse nur localStorage. SQL-Migration siehe supabase/migrations/2026_04_24_rsi_kurse.sql')
     } else {
       kurseRows = kurseRaw ?? []
     }

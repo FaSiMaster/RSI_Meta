@@ -230,7 +230,7 @@ export default function AdminDashboard() {
       ? `\n\nEs werden mitgeloescht:\n- ${children.length} Untergruppe(n)\n- ${scenesAll.length} Szene(n) inkl. aller Defizite`
       : ''
     const name = ml(tp.nameI18n, lang)
-    if (!window.confirm(`Themenbereich "${name}" wirklich loeschen?${kaskade}`)) return
+    if (!window.confirm(`Themenbereich "${name}" wirklich löschen?${kaskade}`)) return
     deleteTopic(id)
     setTopics(getTopics())
     setTopicsTree(getTopicsTree())
@@ -281,7 +281,7 @@ export default function AdminDashboard() {
         '   (Datei: supabase/migrations/2026_04_24_rsi_kurse.sql)\n' +
         '2. Edge Function `admin-write` noch nicht mit v0.6.3-Code redeployt\n' +
         '3. Admin-Token abgelaufen (erneut einloggen)\n\n' +
-        'Der Kurs ist aktuell NUR auf diesem Geraet verfuegbar.'
+        'Der Kurs ist aktuell NUR auf diesem Gerät verfügbar.'
       )
       return
     }

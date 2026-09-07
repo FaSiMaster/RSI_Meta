@@ -27,20 +27,20 @@ describe('istBestanden (Default-Kriterium)', () => {
     expect(istBestanden(100, 7, 7)).toBe(true)
   })
 
-  it('Szene ohne Pflichtdefizite: nur die Prozent-Schwelle zaehlt', () => {
+  it('Szene ohne Pflichtdefizite: nur die Prozent-Schwelle zählt', () => {
     expect(istBestanden(60, 0, 0)).toBe(true)
     expect(istBestanden(59, 0, 0)).toBe(false)
   })
 })
 
 describe('istBestanden (Szenen-Override)', () => {
-  it('minProzent null: nur Pflichtdefizite zaehlen', () => {
+  it('minProzent null: nur Pflichtdefizite zählen', () => {
     const krit = { allePflicht: true, minProzent: null }
     expect(istBestanden(10, 7, 7, krit)).toBe(true)
     expect(istBestanden(100, 6, 7, krit)).toBe(false)
   })
 
-  it('allePflicht false: nur die Prozent-Schwelle zaehlt', () => {
+  it('allePflicht false: nur die Prozent-Schwelle zählt', () => {
     const krit = { allePflicht: false, minProzent: 80 }
     expect(istBestanden(80, 0, 7, krit)).toBe(true)
     expect(istBestanden(79, 7, 7, krit)).toBe(false)
@@ -53,14 +53,14 @@ describe('kriteriumFuerSzene', () => {
     expect(kriteriumFuerSzene({ bestandenKriterium: undefined })).toEqual(BESTANDEN_DEFAULT)
   })
 
-  it('Teil-Override: nur gesetzte Felder ueberschreiben den Default', () => {
+  it('Teil-Override: nur gesetzte Felder überschreiben den Vorgabewert', () => {
     expect(kriteriumFuerSzene({ bestandenKriterium: { minProzent: 80 } }))
       .toEqual({ allePflicht: true, minProzent: 80 })
     expect(kriteriumFuerSzene({ bestandenKriterium: { allePflicht: false } }))
       .toEqual({ allePflicht: false, minProzent: 60 })
   })
 
-  it('minProzent null bleibt null (keine Schwelle), faellt nicht auf 60 zurueck', () => {
+  it('minProzent null bleibt null (keine Schwelle), fällt nicht auf 60 zurück', () => {
     expect(kriteriumFuerSzene({ bestandenKriterium: { minProzent: null } }))
       .toEqual({ allePflicht: true, minProzent: null })
   })

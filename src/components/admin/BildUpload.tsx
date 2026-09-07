@@ -8,6 +8,7 @@
 
 import { useEffect, useRef, useState, useCallback, useMemo } from 'react'
 import { Upload, FolderOpen, Library, Trash2, RefreshCw, ChevronDown, ChevronRight } from 'lucide-react'
+import { Miniatur } from './Miniatur'
 import {
   uploadPanorama,
   listPanoramas,
@@ -26,11 +27,11 @@ interface Props {
   szeneId:           string
   aktuelleUrl?:      string | null
   onBildGeladen:     (bildUrl: string, breite: number, hoehe: number) => void
-  // Standard-Rolle dieser Upload-Instanz: 'haupt' fuer Panorama,
-  // 'perspektive' fuer eine zusaetzliche Perspektive
+  // Standard-Rolle dieser Upload-Instanz: 'haupt' für Panorama,
+  // 'perspektive' für eine zusätzliche Perspektive
   defaultRole?:      PanoramaRole
   perspektivenNr?:   number     // bei defaultRole='perspektive': Index 1, 2, ...
-  perspektivenLabel?: string    // optional: Label-Suffix fuer Datei
+  perspektivenLabel?: string    // optional: Label-Suffix für Datei
 }
 
 type Phase = 'auswahl' | 'laden' | 'vorschau' | 'fehler'
@@ -92,7 +93,7 @@ export default function BildUpload({
       setPhase('vorschau')
     }
     img.onerror = () => {
-      setFehlerText('Bild konnte nicht geladen werden. URL pruefen oder neu hochladen.')
+      setFehlerText('Bild konnte nicht geladen werden. URL prüfen oder neu hochladen.')
       setPhase('fehler')
     }
     img.src = src
@@ -129,10 +130,10 @@ export default function BildUpload({
   }
 
   async function handleBibliothekDelete(img: StorageImage) {
-    if (!window.confirm(`Bild «${img.fileName}» dauerhaft aus dem Bucket loeschen?\n\nPfad: ${img.name}\n\nHinweis: Szenen die auf dieses Bild verweisen werden bilder­los.`)) return
+    if (!window.confirm(`Bild «${img.fileName}» dauerhaft aus dem Bucket löschen?\n\nPfad: ${img.name}\n\nHinweis: Szenen die auf dieses Bild verweisen stehen danach ohne Bild da.`)) return
     const r = await deletePanorama(img.name)
     if (!r.ok) {
-      zeigeError(`Loeschen fehlgeschlagen: ${r.reason ?? 'unbekannt'}`)
+      zeigeError(`Löschen fehlgeschlagen: ${r.reason ?? 'unbekannt'}`)
       return
     }
     await ladeBibliothek()
@@ -225,7 +226,7 @@ export default function BildUpload({
           {fehlerText}
         </div>
         <button onClick={() => { setPhase('auswahl'); setFehlerText(null) }} style={btnSekundaerStyle}>
-          Anderes Bild waehlen
+          Anderes Bild wählen
         </button>
       </div>
     )
@@ -250,7 +251,7 @@ export default function BildUpload({
             </span>
             {vorschauSzene && vorschauSzene !== szeneId && (
               <span style={{ fontSize: '11px', color: 'var(--rsi-orange)' }}>
-                Hinweis: Bild gehoert zu Szene «{vorschauSzene}», nicht zur aktuellen ({szeneId}).
+                Hinweis: Bild gehört zu Szene «{vorschauSzene}», nicht zur aktuellen ({szeneId}).
               </span>
             )}
           </div>
@@ -258,13 +259,13 @@ export default function BildUpload({
 
         {!istStorage && vorschauUrl && (
           <div style={{ padding: '10px 14px', background: 'rgba(184,115,0,0.08)', border: '1px solid rgba(184,115,0,0.3)', borderRadius: '6px', fontSize: '12px', color: 'var(--rsi-orange)', lineHeight: 1.5 }}>
-            Hinweis: Diese URL liegt nicht im Supabase-Bucket. Empfehlung: ueber «Hochladen» in die Bibliothek bringen, damit alle Bilder zentral verwaltet sind.
+            Hinweis: Diese URL liegt nicht im Supabase-Bucket. Empfehlung: über «Hochladen» in die Bibliothek bringen, damit alle Bilder zentral verwaltet sind.
           </div>
         )}
 
         {zeigeVerhältnisWarnung && (
           <div style={{ padding: '10px 14px', background: 'rgba(184,115,0,0.08)', border: '1px solid rgba(184,115,0,0.3)', borderRadius: '6px', fontSize: '12px', color: 'var(--rsi-orange)', lineHeight: 1.5 }}>
-            Hinweis: Panorama-Bilder haben ueblicherweise das Seitenverhaeltnis 2:1. Dieses Bild weicht davon ab.
+            Hinweis: Panorama-Bilder haben üblicherweise das Seitenverhältnis 2:1. Dieses Bild weicht davon ab.
           </div>
         )}
 
@@ -276,7 +277,7 @@ export default function BildUpload({
             onClick={() => { setPhase('auswahl'); setVorschauUrl(null); setVorschauPath(null); setVorschauSzene(null); setVorschauBreite(0); setVorschauHoehe(0) }}
             style={btnSekundaerStyle}
           >
-            Anderes Bild waehlen
+            Anderes Bild wählen
           </button>
         </div>
       </div>
@@ -346,14 +347,14 @@ export default function BildUpload({
           {!bibLaedt && bibliothek.length === 0 && (
             <div style={{ padding: '24px', textAlign: 'center', color: 'var(--rsi-color-text-muted)', fontSize: '13px', border: '1px dashed var(--rsi-color-border)', borderRadius: '8px', lineHeight: 1.6 }}>
               Noch keine Bilder im Bucket.<br />
-              Wechsle zu <strong>Hochladen</strong>, um das erste Panorama fuer
+              Wechsle zu <strong>Hochladen</strong>, um das erste Panorama für
               Szene <code style={{ fontFamily: 'monospace' }}>{szeneId}</code> zu speichern.
             </div>
           )}
 
           {/* Akkordeon nach Szene */}
           {!bibLaedt && grouped.length > 0 && (
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', maxHeight: '420px', overflowY: 'auto' }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', maxHeight: '560px', overflowY: 'auto' }}>
               {grouped.map(({ szene, files }) => {
                 const isOpen = bibFilter.trim().length > 0 || szene === offenerOrdner
                 const isCurrent = szene === szeneId
@@ -384,7 +385,7 @@ export default function BildUpload({
                       </span>
                     </button>
                     {isOpen && (
-                      <div style={{ padding: '8px', display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(140px, 1fr))', gap: '8px', background: 'var(--rsi-color-bg)' }}>
+                      <div style={{ padding: '8px', display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: '10px', background: 'var(--rsi-color-bg)' }}>
                         {files.map(img => (
                           <div
                             key={img.name}
@@ -398,9 +399,10 @@ export default function BildUpload({
                             onMouseLeave={e => { e.currentTarget.style.borderColor = 'var(--rsi-color-border)'; e.currentTarget.style.transform = 'translateY(0)' }}
                             onClick={() => handleBibliothekWahl(img)}
                             title={`${img.name}\n${formatStorageDate(img.createdAt)}\n${formatStorageSize(img.size)}`}
+                            data-testid="bibliothek-kachel"
                           >
-                            <div style={{ aspectRatio: '2 / 1', background: '#111', display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden' }}>
-                              <img src={img.url} alt={img.fileName} loading="lazy" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                            <div style={{ aspectRatio: '2 / 1', width: '100%' }}>
+                              <Miniatur url={img.url} breite={480} alt="" />
                             </div>
                             <div style={{ padding: '6px 8px', display: 'flex', flexDirection: 'column', gap: '2px' }}>
                               <span style={{ fontSize: '11px', fontWeight: 600, color: 'var(--rsi-color-text)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
@@ -412,8 +414,8 @@ export default function BildUpload({
                                 </span>
                                 <button
                                   onClick={e => { e.stopPropagation(); handleBibliothekDelete(img) }}
-                                  title="Aus Bucket loeschen"
-                                  aria-label={`Bild ${img.fileName} loeschen`}
+                                  title="Aus Bucket löschen"
+                                  aria-label={`Bild ${img.fileName} löschen`}
                                   style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--rsi-rot)', padding: '2px', display: 'flex', alignItems: 'center' }}
                                 >
                                   <Trash2 size={11} />
@@ -464,7 +466,7 @@ export default function BildUpload({
               checked={upsert}
               onChange={e => setUpsert(e.target.checked)}
             />
-            Bestehende Datei mit gleichem Namen ueberschreiben
+            Bestehende Datei mit gleichem Namen überschreiben
           </label>
 
           <input
@@ -492,7 +494,7 @@ export default function BildUpload({
           </div>
 
           <button onClick={() => fileInputRef.current?.click()} style={btnSekundaerStyle}>
-            <FolderOpen size={12} style={{ display: 'inline', marginRight: '6px' }} /> Datei auswaehlen
+            <FolderOpen size={12} style={{ display: 'inline', marginRight: '6px' }} /> Datei auswählen
           </button>
         </div>
       )}
@@ -500,5 +502,5 @@ export default function BildUpload({
   )
 }
 
-// re-export fuer Legacy-Importe
+// Erneute Ausfuhr für Altlast-Importe
 export { fileNameFromUrl }
