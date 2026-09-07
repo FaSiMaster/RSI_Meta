@@ -32,6 +32,7 @@ npm-debug.log*
 
 # Archiv (lokale Referenz, nicht deployen)
 _Archiv/
+bilder_test/
 1RSI_Meta/
 
 # Supabase-CLI-Artefakte (lokaler Projekt-Link, kein Code)

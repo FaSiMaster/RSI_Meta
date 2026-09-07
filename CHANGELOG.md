@@ -9,6 +9,39 @@ Versionierung nach [Semantic Versioning](https://semver.org/lang/de/).
 
 ## [Unreleased]
 
+### Behoben – die Ordner der Bildbibliothek waren zusammengequetscht (v0.19.2)
+
+Am Bildschirmfoto gefunden, nicht im Code: Die Bibliothek listet die
+Szenenordner in einem Flex-Kasten mit begrenzter Höhe. Ein Flex-Kind darf
+standardmässig schrumpfen — und tat es. Bei siebzehn Ordnern standen sechzehn
+davon als **graue Streifen von zwölf Bildpunkten** da, unbeschriftet und
+nicht anwählbar, während der geöffnete Ordner den Rest bekam und trotzdem
+nur zwei seiner sechs Bilder zeigte. Der Kasten scrollte nicht, er quetschte.
+
+Damit war die Bildwahl bei mehr als zwei, drei Szenen unbenutzbar — und zwar
+schon vor v0.19.0. Behoben mit `flexShrink: 0` je Ordner; der Kasten scrollt
+jetzt, wie er soll.
+
+**Zweiter Befund aus demselben Bild:** Nicht jedes Bild im Speicher ist
+2:1 — eine Drohnenaufnahme ist es nicht. Die Kachelhöhe kam über
+`aspect-ratio` am Rahmen, und eine Höhe von 100 % greift auf einem Elternteil
+mit `aspect-ratio` nicht durch; die Zeile wurde auseinandergezogen. Neu hat
+die Kachel eine feste Höhe, und das Bild sitzt vollständig darin.
+
+**Wächter:** `e2e/bibliothek.spec.ts` misst die Höhe **jedes** Ordners (unter
+28 Bildpunkten gilt als gequetscht), zählt die Bilder im geöffneten Ordner
+und vergleicht die Kachelhöhen. Gegen beide eingebauten Fehler gehalten: Er
+meldete «Ordner 1 ist auf 12,28 Bildpunkte gequetscht» — genau der Wert vom
+Bildschirmfoto.
+
+Dazu kann der Supabase-Stub der E2E-Prüfungen neu einen Bildspeicher
+nachstellen (`bildspeicher` in `installSupabaseStub`). Dabei zeigte sich eine
+eigene Falle: **Playwright gibt der zuletzt eingetragenen Route den
+Vorrang.** Die genaue Regel für `object/list` stand vor der allgemeinen
+404-Regel und griff deshalb nie — die Bibliothek blieb im Test leer, und die
+Prüfung hätte ohne diesen Fund nichts gemessen.
+
+
 ### Behoben – Vorschaubilder und ASCII-Ersatzschreibungen (v0.19.1)
 
 **Die Bildwahl lud jedes Mal alles neu.** Am Bildspeicher gemessen: Ein

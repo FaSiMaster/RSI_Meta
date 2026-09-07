@@ -360,7 +360,7 @@ export default function BildUpload({
                 const isCurrent = szene === szeneId
                 const label = szene === '_legacy' ? 'Bilder ohne Szenen-Zuordnung' : szene
                 return (
-                  <div key={szene} style={{ border: `1px solid ${isCurrent ? 'var(--rsi-blau)' : 'var(--rsi-color-border)'}`, borderRadius: '8px', overflow: 'hidden' }}>
+                  <div key={szene} data-testid="bibliothek-ordner" style={{ border: `1px solid ${isCurrent ? 'var(--rsi-blau)' : 'var(--rsi-color-border)'}`, borderRadius: '8px', overflow: 'hidden', flexShrink: 0 }}>
                     <button
                       onClick={() => toggleFolder(szene)}
                       style={{
@@ -401,7 +401,7 @@ export default function BildUpload({
                             title={`${img.name}\n${formatStorageDate(img.createdAt)}\n${formatStorageSize(img.size)}`}
                             data-testid="bibliothek-kachel"
                           >
-                            <div style={{ aspectRatio: '2 / 1', width: '100%' }}>
+                            <div style={{ height: '104px', width: '100%', flexShrink: 0 }}>
                               <Miniatur url={img.url} breite={480} alt="" />
                             </div>
                             <div style={{ padding: '6px 8px', display: 'flex', flexDirection: 'column', gap: '2px' }}>

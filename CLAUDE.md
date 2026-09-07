@@ -15,7 +15,7 @@
 
 | Schicht | Technologie | Version |
 |---|---|---|
-| Version | **v0.19.1** (2026-09-07) | Bildstreifen, Perspektiven-Akkordeon, eigener Miniaturspeicher, echte Umlaute |
+| Version | **v0.19.2** (2026-09-07) | Bildwahl: Streifen, Akkordeon, Miniaturspeicher, Ordner nicht mehr gequetscht |
 | Framework | React + Vite + TypeScript | React 18.3, **Vite 7.3**, TS strict |
 | Styling | Tailwind CSS (`@tailwindcss/vite`) | v4.2 |
 | Animation | Framer Motion (motion/react) | v12 |
@@ -26,7 +26,7 @@
 | PDF | pdfmake (dynamisch nachgeladen) | v0.3 |
 | Icons | lucide-react | — |
 | Build | Vite 7 + vite-plugin-pwa | v1.2, Service Worker |
-| Tests | Vitest + Playwright | 200 Unit-Prüfungen in 21 Dateien, 50 im Browser in 9 Dateien |
+| Tests | Vitest + Playwright | 200 Unit-Prüfungen in 21 Dateien, 53 im Browser in 10 Dateien |
 | Hosting | Vercel (Primär) | HTTPS-Pflicht für WebXR |
 | Persistenz | localStorage (`rsi-v3-*`) + **Supabase** | Postgres, Storage, 3 Edge Functions |
 
@@ -412,4 +412,4 @@ npm run preview -- --host  # Build lokal testen
 
 ---
 
-*Letzte Aktualisierung: 2026-09-07 (v0.19.1, Bildwahl und Vorschaubilder)*
+*Letzte Aktualisierung: 2026-09-07 (v0.19.2, Bildwahl und Vorschaubilder)*

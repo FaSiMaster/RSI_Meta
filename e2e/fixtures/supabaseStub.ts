@@ -11,6 +11,12 @@ export interface StubOptions {
   adminPin?: string
   /** Erlaubt dem Test den letzten admin-write-Body zu inspizieren. */
   onAdminWrite?: (body: unknown) => void
+  /**
+   * Inhalt des Bildspeichers: Ordnername je Szene auf die Dateinamen darin.
+   * Ohne diese Angabe antwortet der Speicher wie bisher mit 404 — die
+   * meisten Tests brauchen keine Bilder.
+   */
+  bildspeicher?: Record<string, string[]>
 }
 
 export async function installSupabaseStub(page: Page, opts: StubOptions = {}): Promise<void> {
@@ -72,10 +78,56 @@ export async function installSupabaseStub(page: Page, opts: StubOptions = {}): P
     })
   })
 
-  // Storage (Panorama-Bilder): 404 — Tests brauchen keine echten Bilder
+  // Grundregel am Bildspeicher: 404 — die meisten Tests brauchen keine
+  // Bilder. Sie steht zuerst, weil Playwright der zuletzt eingetragenen
+  // Regel den Vorrang gibt: Die genaueren Regeln unten muessen also
+  // spaeter kommen, sonst greifen sie nie.
   await page.route('**/storage/v1/**', async route => {
     await route.fulfill({ status: 404, headers: corsHeaders(), body: '' })
   })
+
+  // Bildspeicher: auflisten. Der Client fragt zuerst den Wurzelordner
+  // «panoramas» ab (dort stehen die Szenenordner, erkennbar an metadata ===
+  // null) und danach jeden Ordner einzeln.
+  const speicher = opts.bildspeicher
+  if (speicher) {
+    await page.route('**/storage/v1/object/list/**', async route => {
+      let body: { prefix?: string } = {}
+      try { body = route.request().postDataJSON() } catch { /* ignore */ }
+      const prefix = body.prefix ?? ''
+      let daten: unknown[] = []
+      if (prefix === 'panoramas') {
+        daten = Object.keys(speicher).map(name => ({
+          name, id: null, metadata: null,
+          created_at: '2026-09-01T00:00:00Z', updated_at: '2026-09-01T00:00:00Z',
+        }))
+      } else if (prefix.startsWith('panoramas/')) {
+        const ordner = prefix.slice('panoramas/'.length)
+        daten = (speicher[ordner] ?? []).map(name => ({
+          name, id: name, metadata: { size: 4_300_000, mimetype: 'image/webp' },
+          created_at: '2026-09-01T00:00:00Z', updated_at: '2026-09-01T00:00:00Z',
+        }))
+      }
+      await route.fulfill({
+        status: 200,
+        headers: { ...corsHeaders(), 'content-type': 'application/json' },
+        body: JSON.stringify(daten),
+      })
+    })
+
+    // Die Bilder selbst: ein winziges GIF genuegt. Gemessen wird das Gitter,
+    // nicht der Inhalt.
+    await page.route('**/storage/v1/object/public/**', async route => {
+      await route.fulfill({
+        status: 200,
+        headers: { ...corsHeaders(), 'content-type': 'image/gif' },
+        body: Buffer.from(
+          'R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7', 'base64',
+        ),
+      })
+    })
+  }
+
 }
 
 function corsHeaders(): Record<string, string> {

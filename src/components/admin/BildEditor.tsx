@@ -973,7 +973,7 @@ ${b.url}` : `${b.label} — kein Bild hinterlegt`}
                         textAlign: 'left',
                       }}
                     >
-                      <div style={{ aspectRatio: '2 / 1', width: '100%', borderRadius: '3px', overflow: 'hidden' }}>
+                      <div style={{ height: '52px', width: '100%', borderRadius: '3px', overflow: 'hidden', flexShrink: 0 }}>
                         <Miniatur url={hatBild ? b.url : null} breite={320} alt="" />
                       </div>
                       <span style={{
