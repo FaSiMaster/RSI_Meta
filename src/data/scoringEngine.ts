@@ -81,32 +81,32 @@ export const WICHTIGKEIT_TABLE: Record<string, { io: WichtigkeitWert; ao: Wichti
 
 // Lesbare Labels für die Dropdown-Auswahl im Admin
 export const KRITERIUM_LABELS: Record<string, string> = {
-  visuelle_linienfuehrung:           'Visuelle Linienfuehrung',
-  angebot_vertraeglichkeit:          'Angebot / Vertraeglichkeit',
-  miv_oev_lw:                        'MIV / OEV / LW',
-  verkehrsfuehrung_diverse:          'Verkehrsfuehrung (diverse)',
-  mobilitaetseingeschraenkte:        'Mobilitaetseingeschraenkte',
+  visuelle_linienfuehrung:           'Visuelle Linienführung',
+  angebot_vertraeglichkeit:          'Angebot / Verträglichkeit',
+  miv_oev_lw:                        'MIV / ÖV / LW',
+  verkehrsfuehrung_diverse:          'Verkehrsführung (diverse)',
+  mobilitaetseingeschraenkte:        'Mobilitätseingeschränkte',
   kinder_schulweg:                   'Kinder / Schulweg',
   geometrie_verkehrsanlage:          'Geometrie Verkehrsanlage',
   knotengeometrie:                   'Knotengeometrie',
   querschnitt:                       'Querschnitt',
-  fussgaengerstreifen:               'Fussgaengerstreifen',
-  fussgaengerquerung_ohne_vortritt:  'Fussgaengerquerung ohne Vortritt',
-  fussgaengerfuehrung_art:           'Fussgaengerfuehrung (Art)',
-  fussgaengerfuehrung_geometrie:     'Fussgaengerfuehrung (Geometrie)',
+  fussgaengerstreifen:               'Fussgängerstreifen',
+  fussgaengerquerung_ohne_vortritt:  'Fussgängerquerung ohne Vortritt',
+  fussgaengerfuehrung_art:           'Fussgängerführung (Art)',
+  fussgaengerfuehrung_geometrie:     'Fussgängerführung (Geometrie)',
   erkennungsdistanz:                 'Erkennungsdistanz',
   veloquerung_linksabbiegen:         'Veloquerung / Linksabbiegen',
-  velolaengsfuehrung_art:            'Velolaengsfuehrung (Art)',
-  velolaengsfuehrung_geometrie:      'Velolaengsfuehrung (Geometrie)',
+  velolaengsfuehrung_art:            'Velolängsführung (Art)',
+  velolaengsfuehrung_geometrie:      'Velolängsführung (Geometrie)',
   anhaltesichtweite:                 'Anhaltesichtweite',
-  ueberholsichtweite:                'Ueberholsichtweite',
+  ueberholsichtweite:                'Überholsichtweite',
   knotensichtweite:                  'Knotensichtweite',
   sichtweite_allgemein:              'Sichtweite (allgemein)',
-  fahrzeugrueckhaltesystem:          'Fahrzeugrueckhaltesystem',
+  fahrzeugrueckhaltesystem:          'Fahrzeugrückhaltesystem',
   anlagen_ruhender_verkehr:          'Anlagen ruhender Verkehr',
   mittelinsel:                       'Mittelinsel',
-  gelaender:                         'Gelaender',
-  entwaesserung:                     'Entwaesserung',
+  gelaender:                         'Geländer',
+  entwaesserung:                     'Entwässerung',
   beleuchtung:                       'Beleuchtung',
   optische_leiteinrichtung:          'Optische Leiteinrichtung',
   leiteinrichtung:                   'Leiteinrichtung',
@@ -146,7 +146,7 @@ export const KRITERIUM_LABELS: Record<string, string> = {
 // Quelle: TBA-Fachkurs FK RSI, Folie 3
 export const NORMHIERARCHIE = [
   { stufe: 1, label: 'Gesetze und Verordnungen (SVG SR 741.01, SSV SR 741.21)' },
-  { stufe: 2, label: 'Kantonale Richtlinien, Normalien und Merkblaetter TBA' },
+  { stufe: 2, label: 'Kantonale Richtlinien, Normalien und Merkblätter TBA' },
   { stufe: 3, label: 'SN-/VSS-Normen, andere anwendbare Standards' },
   { stufe: 4, label: 'Empfehlungen, Ergebnisse aus Forschungsarbeit' },
   { stufe: 5, label: 'Dokumentiertes Expertenwissen Auditor/-Team' },
@@ -161,7 +161,7 @@ export const ABWEICHUNG_KATEGORIEN: { wert: RSIDimension; label: string; beschre
   {
     wert: 'mittel',
     label: 'Mittel',
-    beschreibung: 'Abweichung zur Norm ist sachlich begruendet',
+    beschreibung: 'Abweichung zur Norm ist sachlich begründet',
     beispiel: 'Durchfahrtsbreite FGSI = 4 m statt 3.75 m, Grund: Vorgaben SI',
   },
   {
@@ -197,14 +197,14 @@ export const NACA_TABLE: {
   konsequenz: string
   rsi: NACADimension
 }[] = [
-  { naca: 0, verletzung: 'Keine Verletzung',                                      konsequenz: '---',                                       rsi: 'leicht' },
-  { naca: 1, verletzung: 'Geringfuegige Verletzung',                              konsequenz: 'ambulante Behandlung',                      rsi: 'leicht' },
-  { naca: 2, verletzung: 'Leichte bis maessig schwere Verletzung',                konsequenz: 'ambulante Behandlung',                      rsi: 'mittel' },
-  { naca: 3, verletzung: 'Maessig bis schwere Verletzung, nicht lebensbedrohlich',konsequenz: 'stationaere Behandlung',                    rsi: 'mittel' },
-  { naca: 4, verletzung: 'Schwere Verletzung',                                    konsequenz: 'akute Lebensgefahr nicht auszuschliessen',  rsi: 'schwer' },
-  { naca: 5, verletzung: 'Akute Lebensgefahr',                                    konsequenz: 'akute Lebensgefahr',                        rsi: 'schwer' },
-  { naca: 6, verletzung: 'Atem- und/oder Kreislaufstillstand',                    konsequenz: 'Reanimation',                               rsi: 'schwer' },
-  { naca: 7, verletzung: 'Toedliche Verletzung',                                  konsequenz: 'Tod',                                       rsi: 'schwer' },
+  { naca: 0, verletzung: 'Keine Verletzung',                                      konsequenz: '---',                                      rsi: 'leicht' },
+  { naca: 1, verletzung: 'Geringfügige Verletzung',                               konsequenz: 'ambulante Behandlung',                     rsi: 'leicht' },
+  { naca: 2, verletzung: 'Leichte bis mässig schwere Verletzung',                 konsequenz: 'ambulante Behandlung',                     rsi: 'mittel' },
+  { naca: 3, verletzung: 'Mässig bis schwere Verletzung, nicht lebensbedrohlich', konsequenz: 'stationäre Behandlung',                    rsi: 'mittel' },
+  { naca: 4, verletzung: 'Schwere Verletzung',                                    konsequenz: 'akute Lebensgefahr nicht auszuschliessen', rsi: 'schwer' },
+  { naca: 5, verletzung: 'Akute Lebensgefahr',                                    konsequenz: 'akute Lebensgefahr',                       rsi: 'schwer' },
+  { naca: 6, verletzung: 'Atem- und/oder Kreislaufstillstand',                    konsequenz: 'Reanimation',                              rsi: 'schwer' },
+  { naca: 7, verletzung: 'Tödliche Verletzung',                                   konsequenz: 'Tod',                                      rsi: 'schwer' },
 ]
 
 export function nacaToSchwere(n: number): NACADimension {

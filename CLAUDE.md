@@ -15,7 +15,7 @@
 
 | Schicht | Technologie | Version |
 |---|---|---|
-| Version | **v0.19.2** (2026-09-07) | Bildwahl: Streifen, Akkordeon, Miniaturspeicher, Ordner nicht mehr gequetscht |
+| Version | **v0.19.3** (2026-09-07) | Bildwahl aufgeräumt, Miniaturspeicher, echte Umlaute im ganzen Quellbaum |
 | Framework | React + Vite + TypeScript | React 18.3, **Vite 7.3**, TS strict |
 | Styling | Tailwind CSS (`@tailwindcss/vite`) | v4.2 |
 | Animation | Framer Motion (motion/react) | v12 |
@@ -412,4 +412,4 @@ npm run preview -- --host  # Build lokal testen
 
 ---
 
-*Letzte Aktualisierung: 2026-09-07 (v0.19.2, Bildwahl und Vorschaubilder)*
+*Letzte Aktualisierung: 2026-09-07 (v0.19.3, Bildwahl, Vorschaubilder, Schreibweise)*

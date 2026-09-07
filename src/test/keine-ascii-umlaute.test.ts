@@ -37,16 +37,17 @@ const STAEMME = [
   'gemaess', 'zaehl', 'erhaelt', 'behaelt', 'anhaeng', 'abhaeng', 'zugehoer',
   'unguelt', 'ungefaehr', 'aehnlich', 'flaeche', 'zustaend', 'vollstaend',
   'bestaend', 'verstaend', 'auftraeg', 'geraet', 'erlaeuter', 'ueberschreib',
-  'ueberpruef', 'maessig',
+  'ueberpruef', 'maessig', 'gaeng', 'laeng', 'laend', 'waesser', 'rueck',
+  'fuehr', 'schraenk', 'geringfueg', 'toedlich', 'stationaer', 'aeltere',
+  'oeffent', 'gefaell', 'aendlich', 'abwaerts', 'vertraeg',
 ]
 const MUSTER = new RegExp(STAEMME.join('|'), 'i')
 
 // Diese Dateien tragen normativen Text und dürfen nur mit ausdrücklicher
-// Freigabe geändert werden (siehe CLAUDE.md, Sacred Files). Vier Stellen in
-// scoringEngine.ts sind bekannt und gemeldet: «Vertraeglichkeit»,
-// «begruendet», zweimal «Maessig».
+// Freigabe geändert werden (siehe CLAUDE.md, Sacred Files).
+// scoringEngine.ts stand hier bis zum 7. September 2026; die Schreibweise
+// ist seither mit Freigabe berichtigt, die Datei wird also mitgeprüft.
 const AUSGENOMMEN = [
-  'data/scoringEngine.ts',
   'i18n/verfahren.bfu.ts',
   // Diese Datei selbst: sie führt die eingebauten Fehler als Probe.
   'test/keine-ascii-umlaute.test.ts',
@@ -107,9 +108,19 @@ export function sichtbareTexte(quelle: string): { text: string; offset: number }
   const zeichenketten = rein.matchAll(/'([^'\\\n]{4,})'|"([^"\n\\]{4,})"|`([^`\\\n]{4,})`/g)
   for (const m of zeichenketten) {
     const wert = m[1] ?? m[2] ?? m[3] ?? ''
-    if (!wert.includes(' ')) continue          // Bezeichner, kein Satz
+    // Ein Satz, oder ein einzelnes Wort in der Form eines Anzeigetextes:
+    // grossgeschrieben, ohne Unterstrich und ohne Binnengrossbuchstaben.
+    // Genau so stehen die Bezeichnungen der Sicherheitskriterien da
+    // («Fussgängerstreifen»), und genau die fielen sonst durch.
+    const einWort = !wert.includes(' ')
+    if (einWort && !/^[A-ZÄÖÜ][a-zäöüß]+$/.test(wert.trim())) continue
     if (wert.trim().startsWith('--')) continue // CSS-Eigenschaft
-    const text = wert.replace(/\$\{[^}]*\}/g, ' ')
+    // Ein durchgehend kleingeschriebener Wert ist ein Schlüssel, kein
+    // Anzeigetext: die Suchmuster in topicIcons («fuehrung», «gefaelle») und
+    // die Themenwörter in regelwerkKatalog («horizontale linienfuehrung»)
+    // müssen ASCII bleiben, sonst greifen sie auf ASCII-Daten nicht mehr.
+    if (!/[A-ZÄÖÜ]/.test(wert)) continue
+    const text = wert.replace(/^\s*\[[^\]]*\]\s*/, '').replace(/\$\{[^}]*\}/g, ' ')
     if (nachCode(text)) continue
     aus.push({ text, offset: m.index ?? 0 })
   }

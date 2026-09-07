@@ -301,7 +301,7 @@ function StepCard({ nr, title, subtitle, isActive, isCompleted, onChange, change
               fontFamily: 'var(--rsi-font)',
             }}
           >
-            {changeLabel ?? 'Aendern'}
+            {changeLabel ?? 'Ändern'}
           </button>
         )}
       </div>

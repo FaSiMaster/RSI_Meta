@@ -9,6 +9,45 @@ Versionierung nach [Semantic Versioning](https://semver.org/lang/de/).
 
 ## [Unreleased]
 
+### Geändert – Schreibweise in scoringEngine.ts und den letzten Anzeigetexten (v0.19.3)
+
+`src/data/scoringEngine.ts` ist ein Sacred File; die Änderung erfolgte auf
+ausdrückliche Freigabe und betrifft **ausschliesslich die Schreibweise**. 21
+Zeichenketten tragen jetzt echte Umlaute: die Bezeichnungen der
+Sicherheitskriterien, «Kantonale Richtlinien, Normalien und Merkblätter TBA»,
+«Abweichung zur Norm ist sachlich begründet» und die NACA-Stufen
+(«Geringfügige Verletzung», «Leichte bis mässig schwere Verletzung», «Mässig
+bis schwere Verletzung», «stationäre Behandlung», «Tödliche Verletzung»).
+
+Kein Schlüssel, keine Zahl, keine Matrix, keine NACA-Zuordnung wurde berührt.
+Das Umsetzungsskript bricht ab, wenn sich mehr als die Schreibweise ändert,
+und der Vergleich beider Fassungen nach Rücknormalisierung der Umlaute zeigt
+genau einen weiteren Unterschied: ein fehlendes Leerzeichen nach einem Komma,
+das beim Neuausrichten der Spalten dazukam.
+
+**Weitere Anzeigetexte, vom geschärften Wächter gefunden:** «Aendern» im
+Bewertungsablauf und sechs Bezeichnungen der Piktogramm-Auswahl im Admin
+(«Oeffentlicher Verkehr», «Verkehrsfuehrung», «Ausserorts / Landlich», «Berg
+/ Gefaelle», «Strassenfuehrung», «Gefaelle abwaerts»). Die Suchmuster
+daneben bleiben ASCII — sie greifen auf ASCII-Daten und dürfen nicht
+mitwandern.
+
+**Der Wächter unterscheidet jetzt Text von Schlüssel:** Ein durchgehend
+kleingeschriebener Wert ist ein Schlüssel («horizontale linienfuehrung» in
+`regelwerkKatalog.ts`, «fuehrung» in `topicIcons.ts`) und wird übergangen;
+ein grossgeschriebenes Einzelwort ist ein Anzeigetext und wird geprüft — vor
+dieser Unterscheidung fiel «Fussgaengerstreifen» durch, weil es kein
+Leerzeichen enthält. `scoringEngine.ts` ist nicht mehr ausgenommen.
+
+**Nebenbefund, nicht behoben:** `KRITERIUM_LABELS` steht zweimal im Projekt —
+in `scoringEngine.ts` und in `kriteriumLabels.ts`, mit identischen 59
+Schlüsseln. Importiert wird ausschliesslich die zweite; die Tabelle im Sacred
+File ist toter Code. Sie zu entfernen wäre eine strukturelle Änderung und
+keine Schreibkorrektur, deshalb blieb sie stehen. Beide führen **59**
+Einträge, während die Dokumentation von 58 Sicherheitskriterien spricht — der
+Zählunterschied ist weiterhin offen.
+
+
 ### Behoben – die Ordner der Bildbibliothek waren zusammengequetscht (v0.19.2)
 
 Am Bildschirmfoto gefunden, nicht im Code: Die Bibliothek listet die

@@ -34,7 +34,7 @@ function bericht(over: Partial<TeilnehmerBericht> = {}): TeilnehmerBericht {
       deficitId: 'SD_0001',
       name: 'Sichtweite',
       beschreibung: 'Text',
-      kriteriumLabel: 'Fussgaengerstreifen',
+      kriteriumLabel: 'Fussgängerstreifen',
       kontext: 'io',
       normRefs: ['VSS 40 241'],
       isPflicht: true,
