@@ -15,7 +15,7 @@
 
 | Schicht | Technologie | Version |
 |---|---|---|
-| Version | **v0.18.0** (2026-09-06) | Strassenmerkmale, Lernkarte, vier Sprachen, Normbezug aus SN 641 700 Tab. 2 |
+| Version | **v0.19.0** (2026-09-07) | Bildstreifen im Verortungs-Editor, Perspektiven-Akkordeon, Bibliotheksfilter |
 | Framework | React + Vite + TypeScript | React 18.3, **Vite 7.3**, TS strict |
 | Styling | Tailwind CSS (`@tailwindcss/vite`) | v4.2 |
 | Animation | Framer Motion (motion/react) | v12 |
@@ -26,7 +26,7 @@
 | PDF | pdfmake (dynamisch nachgeladen) | v0.3 |
 | Icons | lucide-react | — |
 | Build | Vite 7 + vite-plugin-pwa | v1.2, Service Worker |
-| Tests | Vitest + Playwright | 194 Unit-Prüfungen in 19 Dateien, 47 im Browser in 8 Dateien |
+| Tests | Vitest + Playwright | 194 Unit-Prüfungen in 19 Dateien, 50 im Browser in 9 Dateien |
 | Hosting | Vercel (Primär) | HTTPS-Pflicht für WebXR |
 | Persistenz | localStorage (`rsi-v3-*`) + **Supabase** | Postgres, Storage, 3 Edge Functions |
 
@@ -412,4 +412,4 @@ npm run preview -- --host  # Build lokal testen
 
 ---
 
-*Letzte Aktualisierung: 2026-09-06 (v0.16.3, Länderweiche)*
+*Letzte Aktualisierung: 2026-09-07 (v0.19.0, Bildwahl bei vielen Standorten)*

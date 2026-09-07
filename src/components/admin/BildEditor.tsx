@@ -3,7 +3,7 @@
 // Unterstützt Perspektiven: pro Standort separate Verortungen
 
 import { useEffect, useRef, useState, useCallback } from 'react'
-import { X, Save, Eye, EyeOff, MapPin } from 'lucide-react'
+import { X, Save, Eye, EyeOff, MapPin, ChevronDown, ChevronUp } from 'lucide-react'
 import type { AppScene, AppDeficit } from '../../data/appData'
 import {
   type SphericalPos,
@@ -109,6 +109,9 @@ export default function BildEditor({ scene, deficits, onSave, onClose, initialDe
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const imgRef    = useRef<HTMLImageElement>(null)
   const containerRef = useRef<HTMLDivElement>(null)
+
+  // ── Bildstreifen (Standortwahl) ──
+  const [streifenOffen, setStreifenOffen] = useState<boolean>(true)
 
   // ── Zoom & Pan ──
   const [zoom, setZoom] = useState(1)
@@ -698,6 +701,15 @@ export default function BildEditor({ scene, deficits, onSave, onClose, initialDe
     })
   }
 
+  // ── In wie vielen Bildern der Szene ist dieses Defizit verortet? ──
+  function verortetInBildern(d: AppDeficit): number {
+    let n = (d.verortung || d.position) ? 1 : 0
+    for (const p of (localScene.perspektiven ?? [])) {
+      if (d.verortungen?.[p.id]) n++
+    }
+    return n
+  }
+
   // ── Verortungstyp-Label ──
   function verortungLabel(d: AppDeficit): string {
     const v = getAktiveVerortung(d)
@@ -724,6 +736,27 @@ export default function BildEditor({ scene, deficits, onSave, onClose, initialDe
     }
   }
 
+  // ── Alle Bilder dieser Szene: Haupt-Panorama + Perspektiven ──
+  // Der Zaehler sagt, wie viele Defizite in diesem Bild bereits verortet sind.
+  const bildListe = (() => {
+    const eintraege: { id: string | null; label: string; url: string; verortet: number }[] = []
+    eintraege.push({
+      id: null,
+      label: 'Haupt-Panorama',
+      url: localScene.panoramaBildUrl ?? '',
+      verortet: localDeficits.filter(d => d.verortung || d.position).length,
+    })
+    ;(localScene.perspektiven ?? []).forEach((p, i) => {
+      eintraege.push({
+        id: p.id,
+        label: p.label || `Standort ${i + 1}`,
+        url: p.bildUrl ?? '',
+        verortet: localDeficits.filter(d => d.verortungen?.[p.id]).length,
+      })
+    })
+    return eintraege
+  })()
+
   const polygonPunkte = polygonInProgress.length
 
   return (
@@ -734,8 +767,8 @@ export default function BildEditor({ scene, deficits, onSave, onClose, initialDe
       backdropFilter: 'blur(4px)',
     }}>
       <div style={{
-        width: '960px', maxWidth: '98vw',
-        height: '700px', maxHeight: '94vh',
+        width: '1280px', maxWidth: '98vw',
+        height: '840px', maxHeight: '95vh',
         borderRadius: 'var(--rsi-radius-card)',
         border: '1px solid var(--rsi-color-border)',
         background: 'var(--rsi-color-surface)',
@@ -863,70 +896,115 @@ export default function BildEditor({ scene, deficits, onSave, onClose, initialDe
           </button>
         </div>
 
-        {/* ── TOOLBAR ZEILE 2: Perspektiven-Standortwahl (nur wenn vorhanden) ── */}
+        {/* ── TOOLBAR ZEILE 2: Bildstreifen aller Standorte dieser Szene ── */}
         {hatPerspektiven && (
           <div style={{
-            padding: '5px 12px',
-            display: 'flex', alignItems: 'center', gap: '6px',
             borderBottom: '1px solid var(--rsi-color-border)',
             background: aktivePerspektiveId ? 'rgba(0,118,189,0.04)' : 'var(--rsi-color-bg-secondary)',
             flexShrink: 0,
           }}>
-            <MapPin size={14} style={{ color: 'var(--rsi-blau)', flexShrink: 0 }} />
-            <span style={{ fontSize: '10px', fontWeight: 700, color: 'var(--rsi-color-text-muted)', textTransform: 'uppercase', letterSpacing: '0.06em', marginRight: '4px' }}>
-              Standort:
-            </span>
-
-            {/* Haupt-Panorama */}
-            <button
-              onClick={() => setAktivePerspektiveId(null)}
-              style={{
-                padding: '4px 10px', borderRadius: '6px',
-                border: !aktivePerspektiveId ? '2px solid var(--rsi-blau)' : '1px solid var(--rsi-color-border)',
-                background: !aktivePerspektiveId ? 'rgba(0,118,189,0.15)' : 'var(--rsi-color-surface)',
-                color: !aktivePerspektiveId ? 'var(--rsi-blau)' : 'var(--rsi-color-text-muted)',
-                fontSize: '11px', fontWeight: 700,
-                cursor: !aktivePerspektiveId ? 'default' : 'pointer',
-                fontFamily: 'var(--rsi-font)',
-              }}
-            >
-              Haupt-Panorama
-            </button>
-
-            {/* Perspektiven-Buttons */}
-            {perspektiven.map((p, i) => {
-              const isActive = p.id === aktivePerspektiveId
-              const hatBild = !!p.bildUrl
-              return (
-                <button
-                  key={p.id}
-                  onClick={() => {
-                    if (!hatBild) return
-                    setAktivePerspektiveId(p.id)
-                  }}
-                  title={hatBild ? (p.bildUrl || `Perspektive ${i + 1}`) : 'Kein Bild hinterlegt'}
-                  style={{
-                    padding: '4px 10px', borderRadius: '6px',
-                    border: isActive ? '2px solid var(--rsi-blau)' : '1px solid var(--rsi-color-border)',
-                    background: isActive ? 'rgba(0,118,189,0.15)' : 'var(--rsi-color-surface)',
-                    color: isActive ? 'var(--rsi-blau)' : hatBild ? 'var(--rsi-color-text-muted)' : 'var(--rsi-color-text-disabled)',
-                    fontSize: '11px', fontWeight: 700,
-                    cursor: hatBild ? (isActive ? 'default' : 'pointer') : 'not-allowed',
-                    fontFamily: 'var(--rsi-font)',
-                    display: 'flex', alignItems: 'center', gap: '4px',
-                    opacity: hatBild ? 1 : 0.5,
-                  }}
-                >
-                  <MapPin size={11} />
-                  {p.label || `Standort ${i + 1}`}
-                </button>
-              )
-            })}
-
-            {aktivePerspektiveId && (
-              <span style={{ fontSize: '10px', color: 'var(--rsi-blau)', fontWeight: 600, marginLeft: '8px' }}>
-                Verortungen werden für diese Perspektive gespeichert
+            {/* Kopfzeile des Streifens */}
+            <div style={{
+              display: 'flex', alignItems: 'center', gap: '8px',
+              padding: '5px 12px',
+            }}>
+              <MapPin size={14} style={{ color: 'var(--rsi-blau)', flexShrink: 0 }} />
+              <span style={{
+                fontSize: '10px', fontWeight: 700, color: 'var(--rsi-color-text-muted)',
+                textTransform: 'uppercase', letterSpacing: '0.06em',
+              }}>
+                Standort — {bildListe.length} {bildListe.length === 1 ? 'Bild' : 'Bilder'} in dieser Szene
               </span>
+              <span style={{ fontSize: '11px', color: 'var(--rsi-color-text)', fontWeight: 600 }}>
+                {aktivePerspektive?.label ?? 'Haupt-Panorama'}
+              </span>
+              {aktivePerspektiveId && (
+                <span style={{ fontSize: '10px', color: 'var(--rsi-blau)', fontWeight: 600 }}>
+                  Verortungen werden für diesen Standort gespeichert
+                </span>
+              )}
+              <button
+                type="button"
+                onClick={() => setStreifenOffen(o => !o)}
+                aria-expanded={streifenOffen}
+                title={streifenOffen ? 'Bildstreifen einklappen' : 'Bildstreifen ausklappen'}
+                style={{
+                  marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: '4px',
+                  background: 'none', border: '1px solid var(--rsi-color-border)',
+                  borderRadius: '6px', padding: '3px 8px', cursor: 'pointer',
+                  color: 'var(--rsi-color-text-muted)', fontSize: '10px', fontWeight: 700,
+                  fontFamily: 'var(--rsi-font)', flexShrink: 0,
+                }}
+              >
+                {streifenOffen ? <ChevronUp size={12} /> : <ChevronDown size={12} />}
+                {streifenOffen ? 'Einklappen' : 'Ausklappen'}
+              </button>
+            </div>
+
+            {/* Miniaturen — waagrecht scrollbar, deshalb ohne Zahlengrenze */}
+            {streifenOffen && (
+              <div data-testid="standort-streifen" style={{
+                display: 'flex', gap: '6px',
+                padding: '0 12px 8px 12px',
+                overflowX: 'auto', overflowY: 'hidden',
+              }}>
+                {bildListe.map((b, i) => {
+                  const isActive = b.id === aktivePerspektiveId
+                  const hatBild = !!b.url
+                  return (
+                    <button
+                      key={b.id ?? 'haupt'}
+                      type="button"
+                      data-testid="standort-kachel"
+                      onClick={() => { if (hatBild) setAktivePerspektiveId(b.id) }}
+                      title={hatBild ? `${b.label}
+${b.url}` : `${b.label} — kein Bild hinterlegt`}
+                      aria-current={isActive ? 'true' : undefined}
+                      style={{
+                        flexShrink: 0, width: '104px',
+                        padding: '3px', borderRadius: '6px',
+                        border: isActive ? '2px solid var(--rsi-blau)' : '1px solid var(--rsi-color-border)',
+                        background: isActive ? 'rgba(0,118,189,0.12)' : 'var(--rsi-color-surface)',
+                        cursor: hatBild ? (isActive ? 'default' : 'pointer') : 'not-allowed',
+                        opacity: hatBild ? 1 : 0.45,
+                        fontFamily: 'var(--rsi-font)',
+                        display: 'flex', flexDirection: 'column', gap: '3px',
+                        textAlign: 'left',
+                      }}
+                    >
+                      <div style={{
+                        aspectRatio: '2 / 1', width: '100%', borderRadius: '3px',
+                        background: '#111', overflow: 'hidden',
+                        display: 'flex', alignItems: 'center', justifyContent: 'center',
+                      }}>
+                        {hatBild ? (
+                          <img
+                            src={b.url}
+                            alt=""
+                            loading="lazy"
+                            style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                          />
+                        ) : (
+                          <span style={{ fontSize: '9px', color: 'rgba(255,255,255,0.5)' }}>kein Bild</span>
+                        )}
+                      </div>
+                      <span style={{
+                        fontSize: '10px', fontWeight: 700,
+                        color: isActive ? 'var(--rsi-blau)' : 'var(--rsi-color-text)',
+                        overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
+                      }}>
+                        {i === 0 ? b.label : `${i}. ${b.label}`}
+                      </span>
+                      <span style={{
+                        fontSize: '9px', fontWeight: 700,
+                        color: b.verortet > 0 ? 'var(--rsi-gruen, #1A7F1F)' : 'var(--rsi-color-text-disabled)',
+                      }}>
+                        {b.verortet} von {localDeficits.length} verortet
+                      </span>
+                    </button>
+                  )
+                })}
+              </div>
             )}
           </div>
         )}
@@ -1046,7 +1124,7 @@ export default function BildEditor({ scene, deficits, onSave, onClose, initialDe
 
           {/* ── SEITENLEISTE ── */}
           <div style={{
-            width: '240px', minWidth: '240px',
+            width: '268px', minWidth: '268px',
             borderLeft: '1px solid var(--rsi-color-border)',
             display: 'flex', flexDirection: 'column',
             overflow: 'hidden',
@@ -1067,6 +1145,8 @@ export default function BildEditor({ scene, deficits, onSave, onClose, initialDe
                 const isVisible = sichtbarIds.has(d.id)
                 const vLabel = verortungLabel(d)
                 const showCheckbox = modus === 'gruppe'
+                const verortetAnzahl = verortetInBildern(d)
+                const anzahlBilder = bildListe.length
 
                 return (
                   <div
@@ -1113,6 +1193,28 @@ export default function BildEditor({ scene, deficits, onSave, onClose, initialDe
                         <span style={{ fontSize: '10px', color: 'var(--rsi-color-text-muted)' }}>
                           {vLabel}
                         </span>
+                        {hatPerspektiven && (
+                          <span
+                            title="In wie vielen Bildern dieser Szene das Defizit verortet ist"
+                            style={{
+                              fontSize: '9px', fontWeight: 700,
+                              padding: '1px 5px', borderRadius: '4px',
+                              background: anzahlBilder > 0 && verortetAnzahl === anzahlBilder
+                                ? 'rgba(26,127,31,0.15)'
+                                : verortetAnzahl > 0
+                                  ? 'rgba(184,115,0,0.15)'
+                                  : 'var(--rsi-color-bg-tertiary)',
+                              color: anzahlBilder > 0 && verortetAnzahl === anzahlBilder
+                                ? '#1A7F1F'
+                                : verortetAnzahl > 0
+                                  ? '#B87300'
+                                  : 'var(--rsi-color-text-disabled)',
+                              marginLeft: 'auto', flexShrink: 0,
+                            }}
+                          >
+                            {verortetAnzahl}/{anzahlBilder}
+                          </span>
+                        )}
                       </div>
                     </div>
                     <button

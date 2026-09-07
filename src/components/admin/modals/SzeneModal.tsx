@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { X, Save, Trash2 } from 'lucide-react'
+import { X, Save, Trash2, ChevronDown, ChevronRight, ImageOff } from 'lucide-react'
 import type { AppScene, StrassenMerkmal } from '../../../data/appData'
 import { STRASSENMERKMALE_KATALOG } from '../../../data/strassenmerkmale'
 import { useFocusTrap } from '../../../lib/useFocusTrap'
@@ -52,6 +52,9 @@ export default function SzeneModal({ open, initial, isNew, onClose, onSave, onOp
   const [panoramaVorschau, setPanoramaVorschau] = useState<{ url: string; breite: number; hoehe: number } | null>(null)
   const [vorschau1Modus, setVorschau1Modus] = useState<VorschauModus>('kein')
   const [vorschau2Modus, setVorschau2Modus] = useState<VorschauModus>('kein')
+  // Genau eine Perspektive ist offen — sonst laedt jede Perspektive ihre
+  // eigene Bibliothek und das Formular wird unbedienbar lang.
+  const [offenePerspektiveId, setOffenePerspektiveId] = useState<string | null>(null)
 
   useFocusTrap(modalRef, open)
 
@@ -62,6 +65,7 @@ export default function SzeneModal({ open, initial, isNew, onClose, onSave, onOp
     setPanoramaVorschau(null)
     setVorschau1Modus(getVorschauModus(initial?.vorschauBild1))
     setVorschau2Modus(getVorschauModus(initial?.vorschauBild2))
+    setOffenePerspektiveId(null)
   }, [open, initial])
 
   useEffect(() => {
@@ -308,66 +312,136 @@ export default function SzeneModal({ open, initial, isNew, onClose, onSave, onOp
         </Section>
 
         {/* Perspektiven (mehrere Panorama-Bilder pro Szene) */}
-        <Section label="Perspektiven (Standortwechsel)">
+        <Section label={`Perspektiven (Standortwechsel) — ${perspektiven.length}`}>
           <p style={{ fontSize: '11px', color: 'var(--rsi-color-text-muted)', marginBottom: '10px' }}>
-            Mehrere Panoramabilder für dieselbe Szene. Defizite können pro Perspektive neu verortet werden.
+            Mehrere Panoramabilder für dieselbe Szene. Defizite können pro Perspektive neu
+            verortet werden. Es ist immer nur eine Perspektive geöffnet; die Bildwahl lädt
+            erst beim Aufklappen.
           </p>
-          {perspektiven.map((p, i) => (
-            <div key={p.id} style={{
-              padding: '10px 12px', borderRadius: '8px',
-              border: '1px solid var(--rsi-color-border)',
-              background: 'var(--rsi-color-bg-secondary)',
-              marginBottom: '8px',
-            }}>
-              <div style={{ display: 'flex', gap: '8px', alignItems: 'center', marginBottom: '8px' }}>
-                <span style={{ fontSize: '12px', fontWeight: 700, color: 'var(--rsi-blau)', minWidth: '20px' }}>{i + 1}</span>
-                <input
-                  value={p.label}
-                  onChange={e => {
-                    const updated = [...perspektiven]
-                    updated[i] = { ...updated[i], label: e.target.value }
-                    setDraft(prev => prev ? { ...prev, perspektiven: updated } : prev)
-                  }}
-                  placeholder="Label (z.B. Standort A)"
-                  style={{
-                    flex: 1, padding: '5px 8px', borderRadius: '4px',
-                    border: '1px solid var(--rsi-color-border)', background: 'var(--rsi-color-surface)',
-                    color: 'var(--rsi-color-text)', fontSize: '12px', fontFamily: 'var(--rsi-font)',
-                  }}
-                />
-                <button
-                  onClick={() => {
-                    const updated = perspektiven.filter((_, j) => j !== i)
-                    setDraft(prev => prev ? { ...prev, perspektiven: updated } : prev)
-                  }}
-                  style={{
-                    background: 'none', border: 'none', cursor: 'pointer',
-                    color: 'var(--rsi-rot)', padding: '2px', flexShrink: 0,
-                  }}
-                >
-                  <Trash2 size={14} />
-                </button>
+          {perspektiven.map((p, i) => {
+            const isOpen = p.id === offenePerspektiveId
+            return (
+              <div key={p.id} style={{
+                borderRadius: '8px',
+                border: `1px solid ${isOpen ? 'var(--rsi-blau)' : 'var(--rsi-color-border)'}`,
+                background: 'var(--rsi-color-bg-secondary)',
+                marginBottom: '8px',
+                overflow: 'hidden',
+              }}>
+                {/* Kopfzeile — immer sichtbar */}
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '8px 10px' }}>
+                  <button
+                    type="button"
+                    data-testid="perspektive-kopf"
+                    onClick={() => setOffenePerspektiveId(isOpen ? null : p.id)}
+                    aria-expanded={isOpen}
+                    style={{
+                      flex: 1, display: 'flex', alignItems: 'center', gap: '8px',
+                      background: 'none', border: 'none', cursor: 'pointer',
+                      padding: 0, textAlign: 'left', fontFamily: 'var(--rsi-font)',
+                      minWidth: 0,
+                    }}
+                  >
+                    {isOpen ? <ChevronDown size={14} style={{ flexShrink: 0 }} /> : <ChevronRight size={14} style={{ flexShrink: 0 }} />}
+                    <span style={{
+                      fontSize: '12px', fontWeight: 700, color: 'var(--rsi-blau)',
+                      minWidth: '18px', flexShrink: 0,
+                    }}>{i + 1}</span>
+                    <div style={{
+                      width: '56px', height: '28px', borderRadius: '4px', flexShrink: 0,
+                      background: '#111', overflow: 'hidden',
+                      display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    }}>
+                      {p.bildUrl
+                        ? <img src={p.bildUrl} alt="" loading="lazy" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                        : <ImageOff size={12} color="rgba(255,255,255,0.45)" />}
+                    </div>
+                    <span style={{
+                      fontSize: '13px', fontWeight: 600, color: 'var(--rsi-color-text)',
+                      overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
+                    }}>
+                      {p.label || `Standort ${i + 1}`}
+                    </span>
+                    <span style={{
+                      fontSize: '10px', fontWeight: 700, flexShrink: 0,
+                      padding: '2px 6px', borderRadius: '4px',
+                      background: p.bildUrl ? 'rgba(26,127,31,0.12)' : 'rgba(184,115,0,0.12)',
+                      color: p.bildUrl ? '#1A7F1F' : '#B87300',
+                    }}>
+                      {p.bildUrl ? 'Bild hinterlegt' : 'kein Bild'}
+                    </span>
+                  </button>
+                  <button
+                    onClick={() => {
+                      const updated = perspektiven.filter((_, j) => j !== i)
+                      setDraft(prev => prev ? { ...prev, perspektiven: updated } : prev)
+                      if (isOpen) setOffenePerspektiveId(null)
+                    }}
+                    title="Perspektive entfernen"
+                    aria-label={`Perspektive ${p.label || i + 1} entfernen`}
+                    style={{
+                      background: 'none', border: 'none', cursor: 'pointer',
+                      color: 'var(--rsi-rot)', padding: '2px', flexShrink: 0,
+                    }}
+                  >
+                    <Trash2 size={14} />
+                  </button>
+                </div>
+
+                {/* Inhalt — nur wenn aufgeklappt */}
+                {isOpen && (
+                  <div data-testid="perspektive-inhalt" style={{
+                    padding: '0 10px 10px 10px',
+                    borderTop: '1px solid var(--rsi-color-border)',
+                  }}>
+                    <div style={{ display: 'flex', gap: '8px', alignItems: 'center', margin: '10px 0 8px 0' }}>
+                      <label style={{
+                        fontSize: '10px', fontWeight: 700, textTransform: 'uppercase',
+                        letterSpacing: '0.08em', color: 'var(--rsi-color-text-disabled)',
+                        flexShrink: 0,
+                      }}>
+                        Label
+                      </label>
+                      <input
+                        value={p.label}
+                        onChange={e => {
+                          const updated = [...perspektiven]
+                          updated[i] = { ...updated[i], label: e.target.value }
+                          setDraft(prev => prev ? { ...prev, perspektiven: updated } : prev)
+                        }}
+                        placeholder="Label (z.B. Standort A)"
+                        style={{
+                          flex: 1, padding: '5px 8px', borderRadius: '4px',
+                          border: '1px solid var(--rsi-color-border)', background: 'var(--rsi-color-surface)',
+                          color: 'var(--rsi-color-text)', fontSize: '12px', fontFamily: 'var(--rsi-font)',
+                        }}
+                      />
+                    </div>
+                    <BildUpload
+                      szeneId={draft.id}
+                      aktuelleUrl={p.bildUrl || null}
+                      defaultRole="perspektive"
+                      perspektivenNr={i + 1}
+                      perspektivenLabel={p.label}
+                      onBildGeladen={(url) => {
+                        const updated = [...perspektiven]
+                        updated[i] = { ...updated[i], bildUrl: url }
+                        setDraft(prev => prev ? { ...prev, perspektiven: updated } : prev)
+                      }}
+                    />
+                    {p.bildUrl && (
+                      <p style={{
+                        fontSize: '10px', color: 'var(--rsi-color-text-disabled)',
+                        marginTop: '4px', wordBreak: 'break-all',
+                      }}>
+                        {p.bildUrl}
+                      </p>
+                    )}
+                  </div>
+                )}
               </div>
-              {/* Panoramabild für Perspektive */}
-              <BildUpload
-                szeneId={draft.id}
-                aktuelleUrl={p.bildUrl || null}
-                defaultRole="perspektive"
-                perspektivenNr={i + 1}
-                perspektivenLabel={p.label}
-                onBildGeladen={(url) => {
-                  const updated = [...perspektiven]
-                  updated[i] = { ...updated[i], bildUrl: url }
-                  setDraft(prev => prev ? { ...prev, perspektiven: updated } : prev)
-                }}
-              />
-              {p.bildUrl && (
-                <p style={{ fontSize: '10px', color: 'var(--rsi-color-text-disabled)', marginTop: '4px' }}>
-                  {p.bildUrl}
-                </p>
-              )}
-            </div>
-          ))}
+            )
+          })}
           <button
             onClick={() => {
               const newP = {
@@ -379,6 +453,7 @@ export default function SzeneModal({ open, initial, isNew, onClose, onSave, onOp
                 ...prev,
                 perspektiven: [...(prev.perspektiven ?? []), newP],
               } : prev)
+              setOffenePerspektiveId(newP.id)
             }}
             style={{
               padding: '7px 14px', borderRadius: '6px',

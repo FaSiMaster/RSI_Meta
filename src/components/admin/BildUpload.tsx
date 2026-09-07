@@ -58,7 +58,9 @@ export default function BildUpload({
   const [statusText, setStatusText]         = useState<string | null>(null)
   const [labelInput, setLabelInput]         = useState<string>(perspektivenLabel ?? '')
   const [upsert, setUpsert]                 = useState<boolean>(false)
-  const [openFolders, setOpenFolders]       = useState<Set<string>>(new Set([szeneId]))
+  // Genau ein Szenen-Ordner ist offen — bei vielen Szenen wird die Liste sonst unlesbar.
+  const [offenerOrdner, setOffenerOrdner]   = useState<string | null>(szeneId)
+  const [bibFilter, setBibFilter]           = useState<string>('')
 
   const fileInputRef = useRef<HTMLInputElement>(null)
 
@@ -137,18 +139,15 @@ export default function BildUpload({
   }
 
   function toggleFolder(key: string) {
-    setOpenFolders(prev => {
-      const next = new Set(prev)
-      if (next.has(key)) next.delete(key)
-      else next.add(key)
-      return next
-    })
+    setOffenerOrdner(prev => (prev === key ? null : key))
   }
 
   // Bibliothek nach Szene gruppieren — aktuelle Szene zuerst
   const grouped = useMemo(() => {
+    const suche = bibFilter.trim().toLowerCase()
     const map = new Map<string, StorageImage[]>()
     for (const img of bibliothek) {
+      if (suche && !`${img.szeneId ?? ''} ${img.fileName}`.toLowerCase().includes(suche)) continue
       const key = img.szeneId ?? '_legacy'
       const arr = map.get(key) ?? []
       arr.push(img)
@@ -163,7 +162,7 @@ export default function BildUpload({
       return a.localeCompare(b)
     })
     return keys.map(k => ({ szene: k, files: map.get(k)! }))
-  }, [bibliothek, szeneId])
+  }, [bibliothek, szeneId, bibFilter])
 
   // Seitenverhältnis-Warnung
   const seitenverhältnis = vorschauBreite > 0 && vorschauHoehe > 0
@@ -316,9 +315,31 @@ export default function BildUpload({
             </button>
           </div>
 
+          {!bibLaedt && bibliothek.length > 12 && (
+            <input
+              value={bibFilter}
+              onChange={e => setBibFilter(e.target.value)}
+              placeholder="Filter: Szene oder Dateiname, z.B. SZ_2026_004 oder gegenrichtung"
+              aria-label="Bibliothek filtern"
+              style={{
+                padding: '6px 10px', borderRadius: '6px',
+                border: '1px solid var(--rsi-color-border)',
+                background: 'var(--rsi-color-surface)',
+                color: 'var(--rsi-color-text)',
+                fontSize: '12px', fontFamily: 'var(--rsi-font)',
+              }}
+            />
+          )}
+
           {bibLaedt && (
             <div style={{ padding: '24px', textAlign: 'center', color: 'var(--rsi-color-text-disabled)', fontSize: '13px', border: '1px dashed var(--rsi-color-border)', borderRadius: '8px' }}>
               Bibliothek wird geladen...
+            </div>
+          )}
+
+          {!bibLaedt && bibliothek.length > 0 && grouped.length === 0 && (
+            <div style={{ padding: '18px', textAlign: 'center', color: 'var(--rsi-color-text-muted)', fontSize: '12px', border: '1px dashed var(--rsi-color-border)', borderRadius: '8px' }}>
+              Kein Bild passt zum Filter «{bibFilter}».
             </div>
           )}
 
@@ -334,7 +355,7 @@ export default function BildUpload({
           {!bibLaedt && grouped.length > 0 && (
             <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', maxHeight: '420px', overflowY: 'auto' }}>
               {grouped.map(({ szene, files }) => {
-                const isOpen = openFolders.has(szene)
+                const isOpen = bibFilter.trim().length > 0 || szene === offenerOrdner
                 const isCurrent = szene === szeneId
                 const label = szene === '_legacy' ? 'Bilder ohne Szenen-Zuordnung' : szene
                 return (

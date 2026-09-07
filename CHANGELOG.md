@@ -9,6 +9,44 @@ Versionierung nach [Semantic Versioning](https://semver.org/lang/de/).
 
 ## [Unreleased]
 
+### Geändert – Bildwahl bei vielen Standorten je Szene (v0.19.0)
+
+Seit den infra3d-Panoramen führt eine Szene bis zu sechs Standorte. Die
+Standortleiste im Verortungs-Editor war eine einzeilige Leiste ohne Umbruch und
+ohne Überlauf: Was nicht mehr in die Modalbreite passte, lag ausserhalb und war
+nicht anklickbar. Bei sechs Standorten mit sprechenden Bezeichnungen und einem
+Modal von 960 Pixeln traf das die hinteren Standorte.
+
+**Der Bildstreifen ersetzt die Buttonzeile.** Alle Bilder der Szene stehen als
+Miniaturen nebeneinander — Haupt-Panorama zuerst, danach die Standorte in ihrer
+Reihenfolge —, waagrecht scrollbar und deshalb ohne Zahlengrenze. Jede Kachel
+nennt ihren Standort und wie viele Defizite in diesem Bild bereits verortet
+sind. Der Streifen lässt sich einklappen, wenn die Bildfläche gebraucht wird.
+
+**Der Editor ist grösser:** 1280 × 840 statt 960 × 700 Pixel, Seitenleiste 268
+statt 240. In der Defizitliste steht neu je Defizit, in wie vielen Bildern der
+Szene es verortet ist — grün, sobald es in allen steht.
+
+**Im SzeneModal ist immer nur eine Perspektive geöffnet.** Vorher stand je
+Perspektive eine vollständig ausgeklappte Bildwahl untereinander; bei sechs
+Perspektiven war das Formular unbedienbar lang, und jede Instanz fragte den
+Bildspeicher einzeln ab. Die Kopfzeile zeigt Miniatur, Bezeichnung und ob ein
+Bild hinterlegt ist; die Bildwahl lädt erst beim Aufklappen.
+
+**Die Bildbibliothek zeigt einen Szenenordner auf einmal** statt beliebig
+vieler, und ab dreizehn Bildern im Speicher gibt es ein Filterfeld über
+Szenenkennung und Dateiname. Bei 78 Panoramen in dreizehn Ordnern ist das der
+Unterschied zwischen Suchen und Finden.
+
+**Wächter:** `e2e/verortung-bilder.spec.ts`, drei Prüfungen auf einem Fenster
+von 1024 Pixeln mit zwölf Standorten. Die Prüfung wurde gegen drei eingebaute
+Fehler gehalten: Sie meldete `overflow: visible` (die alte Fehlerform) und
+`overflow: hidden` (von Hand nicht scrollbar) und das Akkordeon ohne
+Schliessen. Ihre erste Fassung meldete keinen davon — acht Standorte passen in
+ein Fenster von 1280 Pixeln, und damit prüfte sie den bequemen Fall statt der
+Sache.
+
+
 ### Hinzugefügt – Normbezug aus der Grundnorm, zwei Merkmale mehr (v0.18.0)
 
 **Der Regelwerkkatalog folgt jetzt einer Quelle.** SN 641 700:2022, Anhang G,
