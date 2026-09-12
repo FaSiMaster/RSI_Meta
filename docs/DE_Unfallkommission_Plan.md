@@ -634,9 +634,40 @@ genügt ein Bruchteil der Kameraauflösung von 4032 mal 2268 Bildpunkten.
 |---|---|
 | A | Abgeschlossen und freigegeben. Commit `a4d2f6f` |
 | B1 | **Abgeschlossen.** Commit `b5cbbfb`, gepusht |
-| B2 | Freigegeben über F-003, nicht begonnen |
+| B2 | **Abgeschlossen.** Commits `cfbfc93` und `ce87c3b`, gepusht |
 | B3 | Nicht begonnen |
-| B4 | Wartet auf B-4, siehe unten |
+| B4 | Wartet auf B-5, siehe unten |
+
+### B2, abgeschlossen am 12. September 2026
+
+| Teil | Ergebnis |
+|---|---|
+| Registry | `verfahren.ts` erweitert, kein zweiter Ort. `VerfahrensId` ist eine Union, `DE` trägt `de-uko-2`. Neu `namensraumFuer()`, `istNeunschritt()`, `istUkoLand()` |
+| Punkte | Neu `src/data/punkteUko.ts`. Schritt 1 trägt 60, Schritt 2 trägt 40, eine falsche Art kostet 60, ein Gestaltungsbefund zählt 60 gegen 100. Schritt 2 zählt nur, wenn Schritt 1 stimmt |
+| Ablauf | Neu `src/components/ScoringFlowUko.tsx`. Zwei Schritte, die beiden Teilscores stehen im Ergebnis nebeneinander und werden nie addiert |
+| Sprache | Neu `src/i18n/verfahren.uko.ts`, eigener Namensraum `verfahrenUko`, 34 Schlüssel in vier Sprachen. Der Begriff für einen Befund ohne Sicherheitsrelevanz steht nur dort |
+| Weichen | `App.tsx` rendert den Ablauf je Bewertung und speichert die Teilpunkte getrennt. Das Szenenmaximum kommt aus `szenenMaxPunkte()` und hängt am Datensatz statt an der Anzahl |
+| Nicht geändert | `bestandenKriterium.ts`. Es rechnet auf Prozent, und die Schwelle ist je Szene überschreibbar — genau der Weg, den B-5 braucht |
+
+**Abweichung vom Auftrag.** Die Punktedatei heisst `punkteUko.ts`, nicht
+`scoringEngineDE.ts`. Der Norm-Compliance-Hook blockiert das Pfadmuster
+`src/data/scoringEngine` per Präfixtreffer, und der Name wäre fachlich falsch:
+hier stehen Punkte einer Vereinbarung, nicht Matrizen einer Norm. Begründet im
+Kopfkommentar der Datei.
+
+**Prüfstand:** tsc 0, Build grün, 252 Tests in 24 Dateien. Elf eingebaute
+Fehler wurden gemeldet, sieben in der Punktelogik und der Weiche, vier im
+Rendertest.
+
+**Ein eigener Test war wertlos und ist ersetzt.** Die Prüfung «belohnt den
+Folgefehler nicht» war grün und prüfte nichts: sie setzte eine Musterlösung mit
+der Art «gestaltung» ein, und dort bleibt Schritt 2 auch ohne die Sperre bei
+null. Der Fall, auf den es ankommt, ist umgekehrt. Gefunden hat das der
+Nachweis mit eingebautem Fehler, nicht das Auge.
+
+**Vier bestehende Wächter haben die Erweiterung gemeldet** und sind nachgezogen:
+die Zahl der Bedienschlüssel, die Behauptung «genau ein Land», «Deutschland hat
+keines», und der Test für ein Land ohne Verfahren, der jetzt Österreich nimmt.
 
 ### B1, abgeschlossen am 12. September 2026
 
@@ -666,7 +697,9 @@ Arbeitskopie geparst und verglichen, null Unterschiede. Der Diff auf
 
 | Punkt | Lage |
 |---|---|
-| **B-4** | Das Nullmodell besteht die Szene weiterhin, mit 62,6 % gegen eine Schwelle von 60 %. F-001 und F-002 heben sich teilweise auf: die Rechnung zu F-002 unterstellte vier Sicherheitsdefizite, mit F-001 sind es sieben. Rechnung im Entscheidjournal. Blockiert B4 |
-| Schritt 2 je Befund | Die Einstufung gross, mittel oder klein ist für keinen der neun Befunde festgelegt. Blockiert B4 |
-| Siebtes Bild | Abbildung 10 des Auditberichts, die Nachtrassierung, ist für Defizit 13 zu gewinnen. Blockiert B4 |
-| B2, B3 | Freigegeben, noch nicht begonnen |
+| **B-5** | Eine Strategie besteht die Szene weiterhin. Der Entscheid F-006 wirkt: blosses Raten fällt von 62,6 auf 48,0 %. Wer aber in Schritt 1 immer «Sicherheitsdefizit» und in Schritt 2 immer «gross» antwortet, erreicht 61,0 % und liegt um acht Punkte über der Schwelle. Ursache ist die Verteilung der Einstufungen: fünfmal gross, zweimal mittel, keinmal klein. Rechnung und Wege im Entscheidjournal, festgehalten als Wächter in `punkteUko.test.ts`. Blockiert B4 |
+| B-4 | Erledigt durch F-006. Die frühere Lage, 62,6 % beim Raten, ist behoben |
+| Schritt 2 je Befund | Erledigt. Sieben Einstufungen aus F-009 bis F-015, die beiden Designprobleme haben keine |
+| Siebtes Bild | Entschieden über F-008: Abbildung 10 des Auditberichts. Zu klären bleibt die Nutzung des Luftbilds, weil Geobasisdaten Sachsen nicht ohne weiteres frei sind. Blockiert B4 |
+| B3 | Freigegeben, noch nicht begonnen. Nächster Schritt |
+| Kategoriepunkte bei der Konvention | Offen, in B2 bewusst weggelassen. Für den Schweizer Ablauf tragen sie 25 Punkte; für die Konvention ist kein Gegenstück vereinbart. Wenn eines gewünscht ist, braucht es einen Entscheid |
