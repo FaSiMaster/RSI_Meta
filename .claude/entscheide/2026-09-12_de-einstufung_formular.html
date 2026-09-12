@@ -1,0 +1,632 @@
+<!DOCTYPE html>
+<html lang="de-CH">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Entscheidformular</title>
+<style>
+:root{
+  --bg:#f4f4f2; --card:#fff; --ink:#1a1a18; --mute:#6b6b66; --line:#dcdcd6;
+  --akz:#1f4e79; --krit:#a4262c; --hoch:#c2591a; --mittel:#8a6d1f; --gering:#5b6b5b;
+  --ok:#2d6a4f;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);
+  font:16px/1.55 "Segoe UI",-apple-system,system-ui,Arial,sans-serif}
+header{position:sticky;top:0;z-index:10;background:var(--card);
+  border-bottom:1px solid var(--line);padding:14px 20px}
+.wrap{max-width:980px;margin:0 auto}
+h1{font-size:20px;margin:0 0 2px}
+.meta{color:var(--mute);font-size:13px}
+.bar{height:6px;background:var(--line);border-radius:3px;margin:10px 0 8px;overflow:hidden}
+.bar>i{display:block;height:100%;background:var(--ok);width:0;transition:width .2s}
+.tools{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:8px}
+button{font:inherit;font-size:13px;padding:7px 12px;border:1px solid var(--line);
+  background:#fbfbfa;border-radius:5px;cursor:pointer}
+button:hover{background:#f0f0ec}
+button.primary{background:var(--akz);color:#fff;border-color:var(--akz)}
+button.primary:hover{filter:brightness(1.12)}
+select{font:inherit;font-size:13px;padding:6px;border:1px solid var(--line);border-radius:5px;background:#fff}
+main{max-width:980px;margin:20px auto 120px;padding:0 20px}
+.vor{background:#eef2f6;border:1px solid #d5e0ea;border-radius:6px;padding:12px 16px;margin-bottom:20px}
+.vor h2{font-size:14px;margin:0 0 6px;text-transform:uppercase;letter-spacing:.04em;color:var(--akz)}
+.vor ul{margin:0;padding-left:18px}
+.q{background:var(--card);border:1px solid var(--line);border-left:4px solid var(--line);
+  border-radius:6px;padding:16px 18px;margin-bottom:14px}
+.q.offen{border-left-color:var(--krit)}
+.q.fertig{border-left-color:var(--ok)}
+.qh{display:flex;flex-wrap:wrap;gap:8px;align-items:baseline}
+.id{font-family:ui-monospace,Consolas,monospace;font-size:12px;color:var(--mute)}
+.qt{font-weight:600;flex:1;min-width:200px}
+.tag{font-size:11px;padding:2px 7px;border-radius:10px;border:1px solid currentColor;white-space:nowrap}
+.t-kritisch{color:var(--krit)}.t-hoch{color:var(--hoch)}
+.t-mittel{color:var(--mittel)}.t-gering{color:var(--gering)}
+.t-blocker{color:#fff;background:var(--krit);border-color:var(--krit)}
+.t-auf{color:var(--mute)}
+.ctx{margin:8px 0;color:#3a3a36;font-size:14.5px}
+details{margin:8px 0;font-size:13.5px}
+summary{cursor:pointer;color:var(--akz)}
+.beleg{background:#fafaf8;border:1px solid var(--line);border-radius:5px;padding:8px 12px;margin-top:6px}
+.beleg div{font-family:ui-monospace,Consolas,monospace;font-size:12.5px;padding:2px 0}
+.opts{margin:10px 0 0}
+label.opt{display:flex;gap:9px;align-items:flex-start;padding:6px 8px;border-radius:5px;cursor:pointer}
+label.opt:hover{background:#f6f6f3}
+label.opt.emp{background:#f0f5ef;border:1px solid #cfe0cd}
+.emp-tag{font-size:11px;color:var(--ok);border:1px solid var(--ok);border-radius:10px;padding:1px 6px;margin-left:6px}
+.begr{font-size:13px;color:var(--mute);margin:2px 0 10px 30px}
+textarea,input[type=text],input[type=date]{width:100%;font:inherit;font-size:14px;padding:7px 9px;
+  border:1px solid var(--line);border-radius:5px;background:#fff;margin-top:6px}
+textarea{min-height:58px;resize:vertical}
+.felder{margin-top:10px;border-top:1px dashed var(--line);padding-top:10px}
+.flabel{font-size:12.5px;color:var(--mute);text-transform:uppercase;letter-spacing:.03em}
+.row{display:flex;gap:10px;flex-wrap:wrap}
+.row>div{flex:1;min-width:170px}
+.hidden{display:none}
+footer{position:fixed;bottom:0;left:0;right:0;background:var(--card);
+  border-top:1px solid var(--line);padding:10px 20px}
+.fw{max-width:980px;margin:0 auto;display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.status{font-size:13px;color:var(--mute);margin-left:auto}
+.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:74px;background:var(--ink);
+  color:#fff;padding:9px 16px;border-radius:5px;font-size:14px;opacity:0;transition:opacity .25s;
+  pointer-events:none;z-index:20}
+.toast.on{opacity:1}
+@media print{header,footer,.tools{position:static}button{display:none}}
+</style>
+</head>
+<body>
+
+<script>
+/* DATEN-ANFANG — nur dieser Block wird beim Erzeugen ersetzt */
+const DATEN = {
+  meta: {
+    id: "2026-09-12_de-einstufung",
+    titel: "Niederfrauendorf, Einstufung und Nullmodell",
+    projekt: "RSI VR Tool, Verfahren der Unfallkommission Deutschland",
+    datum: "2026-09-12",
+    kontext: "B1 ist gebaut und live. Was noch fehlt, bevor die Szene angelegt werden kann: eine Antwort auf das Nullmodell, ein Kriterium für Schritt 2, und die Einstufung der sieben Sicherheitsdefizite. Die beiden Designprobleme haben keinen Schritt 2.",
+    vorentscheide: [
+      "Befundliste steht: neun Befunde. Sicherheitsdefizite 4, 9, 10, 12, 14, 15, 17; Designprobleme 8 und 13. Defizit 7 bleibt aussen (F-005).",
+      "Punkteverteilung steht: Schritt 1 trägt 60, Schritt 2 trägt 40; ein Designproblem zählt in der Szenensumme 60 gegen 100 (E-7a, E-7b).",
+      "Die Konvention hat keine Normquelle. Jedes Kriterium für Schritt 2 ist deshalb eine Setzung, keine Ableitung aus einer Richtlinie. Die Vorschläge unten stützen sich auf die Sprache und die Unfallzuordnung des Auditberichts, und das ist im Datensatz als Schlussfolgerung zu kennzeichnen.",
+      "B1 ist committet, gepusht und auf rsi-meta.vercel.app ausgeliefert. Am Bundle geprüft: live und lokal tragen dieselbe Kennung index-nvfs78jJ.js. Sichtbar ändert sich nichts, B1 ist reines Datenmodell."
+    ]
+  },
+  fragen: [
+    {
+      id: "F-006",
+      titel: "Das Nullmodell besteht die Szene weiterhin. Was gilt?",
+      kontext: "F-001 und F-002 heben sich teilweise auf. Die Rechnung zu F-002 unterstellte vier Sicherheitsdefizite und zwei Designprobleme; mit F-001 sind es sieben zu zwei. Wer in Schritt 1 immer «Sicherheitsdefizit» antwortet und Schritt 2 rät, erreicht 513,3 von 820 Punkten, also 62,6 %, gegen eine Schwelle von 60 %. Bei jeder Option unten steht die gerechnete Wirkung.",
+      schweregrad: "kritisch",
+      aufwand: "mittel",
+      blocker: true,
+      belege: [
+        ".claude/entscheide/JOURNAL.md, Abschnitt «Restposten und neuer Befund», vollständige Rechnung",
+        "src/data/bestandenKriterium.ts, BESTANDEN_DEFAULT, Schwelle 60 %",
+        "Auditbericht, Defizit 6, Mindestaussendurchmesser, S. 12 — reiner Massbefund wie Defizit 8"
+      ],
+      optionen: [
+        { id: "a", label: "Eine falsche Einstufung in Schritt 1 kostet Punkte, statt null zu geben",
+          empfehlung: true,
+          begruendung: "Trifft genau den Fehler, den die Konvention verhindern will: alles für ein Sicherheitsdefizit zu halten. Wer ein Designproblem falsch einstuft, verliert die 60 Punkte von Schritt 1 statt sie nur nicht zu bekommen. Nullmodell dann 393,3 von 820, also 48,0 %. Wer Schritt 1 beherrscht und Schritt 2 rät, liegt bei 77,2 % und besteht. Kein weiteres Bild nötig.",
+          konfidenz: "mittel" },
+        { id: "b", label: "Defizit 6 als drittes Designproblem aufnehmen",
+          begruendung: "Behebt das Verhältnis an der Ursache: Defizit 6 nennt wie Defizit 8 nur eine Massunterschreitung, die Sicherheitsfolge führt der Bericht als Defizit 10. Nullmodell dann 513,3 von 880, also 58,3 %. Preis: ein achtes Bild, denn der Aussendurchmesser ist nur am Luftbild erkennbar." },
+        { id: "c", label: "Schwelle für DE-Szenen auf 70 % heben",
+          begruendung: "Billigste Lösung, der Szenen-Override in bestandenKriterium.ts trägt sie ohne Codeänderung. Nullmodell 62,6 % fällt durch. Behandelt aber das Symptom, nicht die Ursache." },
+        { id: "d", label: "So lassen",
+          begruendung: "Vertretbar, wenn die Szene als Einstieg und nicht als Prüfung gedacht ist. Dann sollte im Datensatz stehen, dass sie kein Bestehen misst." }
+      ],
+      folgeaktion: false,
+      bedingung: null
+    },
+    {
+      id: "F-007",
+      titel: "Welches Kriterium trägt Schritt 2?",
+      kontext: "Die Einstufung gross, mittel oder klein braucht einen Massstab, sonst sind die sieben Einzelwerte darunter willkürlich. Die Konvention nennt keinen. Ohne diese Antwort sind die Vorschläge in F-008 bis F-014 nicht überprüfbar.",
+      schweregrad: "hoch",
+      aufwand: "klein",
+      blocker: true,
+      belege: [
+        "Auftrag: «eine mit Fachexperten vereinbarte Konvention ohne Normquelle»",
+        "Auditbericht, Unfallanalyse S. 5 und Defizit 12 und 17 — die einzigen mit ausdrücklicher Unfallzuordnung",
+        "Auditbericht, Empfehlungen S. 23 — Zuordnung zu kurz-, mittel- und langfristigen Massnahmen"
+      ],
+      optionen: [
+        { id: "a", label: "Unfallzuordnung im Bericht",
+          empfehlung: true,
+          begruendung: "Gross, wenn der Bericht dem Befund Unfälle unmittelbar zuordnet; mittel bei einem Regelverstoss mit benannter Sicherheitsfolge ohne Unfallzuordnung; klein bei einem Regelverstoss ohne benannte Folge. Am Bericht belegbar und für Lernende nachvollziehbar.",
+          konfidenz: "mittel" },
+        { id: "b", label: "Intensität der Normsprache",
+          begruendung: "Gross bei «zwingend» und «ist zu», mittel bei «soll», klein bei «sollte». Im Bericht wörtlich nachlesbar, sagt aber nichts über die Wirkung an dieser Stelle." },
+        { id: "c", label: "Massnahmenhorizont des Berichts",
+          begruendung: "Gross, wenn der Befund in den kurzfristigen Massnahmen steht. Wenig trennscharf: die provisorische Lichtsignalanlage deckt zehn der achtzehn Defizite ab." },
+        { id: "d", label: "Fachurteil ohne festes Kriterium",
+          begruendung: "Ehrlich gegenüber der Konvention, die keinen Massstab nennt. Dann ist die Musterlösung nicht begründbar, wenn eine Teilnehmerin fragt, warum ein Befund mittel und nicht gross ist." }
+      ],
+      folgeaktion: false,
+      bedingung: null
+    },
+    {
+      id: "F-008",
+      titel: "Das siebte Bild für Defizit 13",
+      kontext: "Defizit 13, die ungenügenden Radien der Eckausrundungen, ist eines der beiden Designprobleme und auf keinem der sechs Fotos erkennbar. Der Bericht zeigt es als Abbildung 10, eine Nachtrassierung auf dem Luftbild mit Quellenangabe Geobasisdaten Sachsen.",
+      schweregrad: "hoch",
+      aufwand: "klein",
+      blocker: true,
+      belege: [
+        "Auditbericht, Abbildung 10, S. 15 — Nachtrassierung mit D = 13 m und Eckausrundungen von 8 m",
+        "Auditbericht, Quellenangabe der Abbildung: Geobasisdaten Sachsen",
+        "E-6: der Ordner kommt nicht ins Repo; Bilder gehen in den Supabase-Speicher"
+      ],
+      optionen: [
+        { id: "a", label: "Abbildung 10 aus dem Bericht übernehmen",
+          empfehlung: true,
+          begruendung: "Zeigt genau, was der Befund meint, und stammt aus der Quelle selbst. Zu klären ist die Nutzung des Luftbilds: Geobasisdaten Sachsen sind nicht ohne weiteres frei, und die Abbildung ist eine Bearbeitung durch das Landesamt.",
+          konfidenz: "mittel" },
+        { id: "b", label: "Defizit 13 doch weglassen",
+          begruendung: "Dann bleibt ein Designproblem, und F-006 wird umso wichtiger. Die Übung verliert den Fall, in dem ein Mass nicht eingehalten ist, ohne dass daraus unmittelbar eine Gefahr folgt." },
+        { id: "c", label: "Eigenes Luftbild erzeugen",
+          begruendung: "Aus einer freien Quelle mit eigener Nachtrassierung. Aufwand, und die Masse müssten nachgezeichnet werden, was eine eigene fachliche Aussage wäre." }
+      ],
+      folgeaktion: true,
+      bedingung: null
+    },
+    {
+      id: "F-009",
+      titel: "Einstufung Defizit 17, Engstelle in der Knotenpunktzufahrt",
+      kontext: "Der Bericht nennt 4,70 m Breite bei 4,75 m Begegnungsbedarf nach RASt Kap. 4.3, beidseitig Mauer und Schutzplanke, ungenügende Sichtbeziehungen, nicht vernachlässigbaren Schwerverkehr mit Linienbus, und eine Prognose, die den Verkehr auf diesem Abschnitt verdreifacht.",
+      schweregrad: "mittel",
+      aufwand: "klein",
+      blocker: false,
+      belege: [
+        "Auditbericht, Defizit 17, S. 18",
+        "Auditbericht, Unfallanalyse S. 5: fünf der zehn Unfälle haben ihre Ursache in der Befahrbarkeit dieses Bereichs, darunter alle drei Längsverkehrsunfälle"
+      ],
+      optionen: [
+        { id: "gross", label: "gross", empfehlung: true,
+          begruendung: "Der einzige Befund mit unmittelbarer Unfallzuordnung, und zwar für die Hälfte des Unfallgeschehens. Nach dem Kriterium aus F-007 Option a eindeutig.",
+          konfidenz: "hoch" },
+        { id: "mittel", label: "mittel" },
+        { id: "klein", label: "klein" }
+      ],
+      folgeaktion: false,
+      bedingung: null
+    },
+    {
+      id: "F-010",
+      titel: "Einstufung Defizit 12, ungenügende Fahrstreifenbreiten",
+      kontext: "Gefordert sind nach dem Merkblatt 3,25 bis 3,75 m in der Zufahrt und 3,50 bis 4,00 m in der Ausfahrt. Gemessen wurden Werte ab 2,20 m, im Arm S 183 Nordost eine Engstelle mit 2,50 m Zufahrt und 2,20 m Ausfahrt.",
+      schweregrad: "mittel",
+      aufwand: "klein",
+      blocker: false,
+      belege: [
+        "Auditbericht, Defizit 12, S. 14, Tabelle der fünf Arme",
+        "Auditbericht, Defizit 12: «Die beengten Verhältnisse in den Zu- und Ausfahrten spiegeln sich deutlich im aktuellen Unfallgeschehen wieder»"
+      ],
+      optionen: [
+        { id: "gross", label: "gross", empfehlung: true,
+          begruendung: "Der Bericht stellt den Bezug zum Unfallgeschehen ausdrücklich her und nennt denselben Knotenpunktarm wie bei Defizit 17. Nach dem Kriterium aus F-007 Option a gross.",
+          konfidenz: "hoch" },
+        { id: "mittel", label: "mittel" },
+        { id: "klein", label: "klein" }
+      ],
+      folgeaktion: false,
+      bedingung: null
+    },
+    {
+      id: "F-011",
+      titel: "Einstufung Defizit 9, Kreisinsel ohne Bordeinfassung",
+      kontext: "Das Merkblatt verlangt einen 4 bis 5 cm hohen Bord. Er fehlt, der Übergang ist höhengleich, und die Insel wird nach Feststellung des Berichts regelmässig und ohne Komforteinbussen von Personenwagen überfahren.",
+      schweregrad: "mittel",
+      aufwand: "klein",
+      blocker: false,
+      belege: [
+        "Auditbericht, Defizit 9, S. 13",
+        "Auditbericht, Defizit 9: «Damit ist der Bord, zusammen mit einer wirksamen Kreisinsel, das zentrale Element zur Gewährleistung der Verkehrssicherheit des Kreisverkehrs»"
+      ],
+      optionen: [
+        { id: "gross", label: "gross", empfehlung: true,
+          begruendung: "Der Bericht nennt den Bord das zentrale Element der Verkehrssicherheit und belegt die Folge durch Beobachtung. Keine eigene Unfallzuordnung, aber die Wirkung ist am Ort festgestellt, nicht abgeleitet.",
+          konfidenz: "mittel" },
+        { id: "mittel", label: "mittel" },
+        { id: "klein", label: "klein" }
+      ],
+      folgeaktion: false,
+      bedingung: null
+    },
+    {
+      id: "F-012",
+      titel: "Einstufung Defizit 10, fehlende Ablenkung der Geradeausströme",
+      kontext: "Die Kreisinsel misst 3 m statt mindestens 4 m und hat keinen Bord. Der Bericht stellt vor Ort fest, dass Fahrzeuge den Knotenpunkt nahezu geradlinig überfahren und auch Linksabbieger den direkten Weg nehmen; die geschwindigkeitsreduzierende Wirkung des Kreisverkehrs ist gering.",
+      schweregrad: "mittel",
+      aufwand: "klein",
+      blocker: false,
+      belege: [
+        "Auditbericht, Defizit 10, S. 14",
+        "Auditbericht, Abbildung 11: «Überfahren der Kreisinsel, überwiegend beobachtetes Fahrverhalten am Knotenpunkt»"
+      ],
+      optionen: [
+        { id: "gross", label: "gross", empfehlung: true,
+          begruendung: "Die Ablenkung ist der Wirkmechanismus eines Kreisverkehrs. Fällt sie aus, entfällt die Geschwindigkeitsdämpfung, und das ist am Ort beobachtet. Ohne eigene Unfallzuordnung, deshalb nicht zweifelsfrei gross.",
+          konfidenz: "mittel" },
+        { id: "mittel", label: "mittel" },
+        { id: "klein", label: "klein" }
+      ],
+      folgeaktion: false,
+      bedingung: null
+    },
+    {
+      id: "F-013",
+      titel: "Einstufung Defizit 4, fehlende Anlagen für den Fussverkehr am Knoten",
+      kontext: "Am Knotenpunkt fehlt jede Anlage für den Fussverkehr. Weil die Kreisfahrbahn bis an die Bebauung, die Einfriedung oder die Schutzplanke reicht, müssen Zufussgehende nach Feststellung des Berichts ungeschützt auf der Fahrbahn laufen. Betroffen sind auch Wege von und zur Bushaltestelle.",
+      schweregrad: "mittel",
+      aufwand: "klein",
+      blocker: false,
+      belege: [
+        "Auditbericht, Defizit 4, S. 11",
+        "Merkblatt für die Anlage von Kreisverkehren, Kap. 1.4.1, wie im Bericht zitiert: sichere Führung des Fussverkehrs von besonderer Bedeutung",
+        "Auditbericht, Defizit 1, S. 9: besonders nachteilig für Kinder, Schüler und mobilitätseingeschränkte Menschen"
+      ],
+      optionen: [
+        { id: "gross", label: "gross", empfehlung: true,
+          begruendung: "Ungeschützte Zufussgehende auf der Fahrbahn eines Knotenpunkts mit Schwerverkehr und drei Buslinien. Im Unfallgeschehen der letzten Jahre nicht abgebildet, was bei kleinen Zahlen und wenigen Zufussgehenden kein Gegenbeweis ist.",
+          konfidenz: "mittel" },
+        { id: "mittel", label: "mittel" },
+        { id: "klein", label: "klein" }
+      ],
+      folgeaktion: false,
+      bedingung: null
+    },
+    {
+      id: "F-014",
+      titel: "Einstufung Defizit 14, fehlende Begreifbarkeit und Akzeptanz",
+      kontext: "Sammelbefund über die baulichen Gestaltungsdefizite 6 bis 13. Der Bericht stellt fest, dass sich kaum das Fahrverhalten eines Kreisverkehrs einstellt, das Zeichen 295 regelmässig überfahren und die Kreisfahrbahn kaum als solche genutzt wird, woraus Unsicherheiten bei den Vorfahrtregelungen entstehen.",
+      schweregrad: "mittel",
+      aufwand: "klein",
+      blocker: false,
+      belege: [
+        "Auditbericht, Defizit 14, S. 16",
+        "Auditbericht, Veranlassung S. 8: «trotz permanent festgestellten Fehlverhalten der Verkehrsteilnehmer beim Durchfahren des Minikreisverkehrs (ohne aktuelle Unfallfolgen)»"
+      ],
+      optionen: [
+        { id: "mittel", label: "mittel", empfehlung: true,
+          begruendung: "Der Bericht selbst hält in der Veranlassung fest, dass das Fehlverhalten ohne aktuelle Unfallfolgen bleibt. Dazu ist es ein Sammelbefund, dessen Ursachen einzeln schon in der Liste stehen; gross würde dieselbe Sache doppelt gewichten.",
+          konfidenz: "mittel" },
+        { id: "gross", label: "gross" },
+        { id: "klein", label: "klein" }
+      ],
+      folgeaktion: false,
+      bedingung: null
+    },
+    {
+      id: "F-015",
+      titel: "Einstufung Defizit 15, Erkennbarkeit nicht gegeben",
+      kontext: "Das Merkblatt sagt, ein Minikreisverkehr solle nicht angelegt werden, wenn er bei der Annäherung nicht rechtzeitig als solcher erkennbar ist, und der Eindruck einer durchlaufenden Strasse sei zwingend zu vermeiden. Am Knotenpunkt sind Zufahrten, Kreisfahrbahn, Kreisinsel und Beschilderung nach Feststellung des Berichts nicht ausreichend gestaltet.",
+      schweregrad: "mittel",
+      aufwand: "klein",
+      blocker: false,
+      belege: [
+        "Auditbericht, Defizit 15, S. 16",
+        "Merkblatt für die Anlage von Kreisverkehren, Kap. 2.2, wie im Bericht zitiert: «zwingend der Eindruck einer ununterbrochenen, durchlaufenden Strasse zu vermeiden»"
+      ],
+      optionen: [
+        { id: "mittel", label: "mittel", empfehlung: true,
+          begruendung: "Regelbezug klar, Folge als Unsicherheit beschrieben, keine eigene Unfallzuordnung. Gegen diesen Vorschlag spricht das Wort «zwingend» in der Richtlinie; wer der Normsprache folgt statt der Unfallzuordnung, landet bei gross.",
+          konfidenz: "gering" },
+        { id: "gross", label: "gross" },
+        { id: "klein", label: "klein" }
+      ],
+      folgeaktion: false,
+      bedingung: null
+    }
+  ]
+};
+/* DATEN-ENDE */
+</script>
+
+<header><div class="wrap">
+  <h1 id="h-titel"></h1>
+  <div class="meta" id="h-meta"></div>
+  <div class="bar"><i id="h-bar"></i></div>
+  <div class="tools">
+    <button id="b-emp">Alles auf Empfehlung</button>
+    <select id="f-filter">
+      <option value="alle">Alle Fragen</option>
+      <option value="offen">Nur unbeantwortete</option>
+      <option value="blocker">Nur Blocker</option>
+      <option value="abw">Nur Abweichungen von der Empfehlung</option>
+    </select>
+    <button id="b-reset">Zurücksetzen</button>
+  </div>
+</div></header>
+
+<main>
+  <div class="vor hidden" id="vorentscheide">
+    <h2>Vorentscheide – nicht zur Abstimmung</h2>
+    <ul id="vor-liste"></ul>
+  </div>
+  <div id="liste"></div>
+</main>
+
+<footer><div class="fw">
+  <button class="primary" id="b-json">JSON herunterladen</button>
+  <button id="b-md">Markdown kopieren</button>
+  <button id="b-csv">CSV herunterladen</button>
+  <span class="status" id="s-status"></span>
+</div></footer>
+<div class="toast" id="toast"></div>
+
+<script>
+(function(){
+"use strict";
+
+const STD = [
+  { id:"__zurueck",  label:"Zurückstellen – später entscheiden", std:true },
+  { id:"__na",       label:"Nicht zutreffend – Frage entfällt", std:true },
+  { id:"__unklar",   label:"Unklar – bitte Varianten vertiefen", std:true },
+  { id:"__frei",     label:"Andere Antwort (Freitext)", std:true, freitext:true }
+];
+const RANG = { kritisch:0, hoch:1, mittel:2, gering:3 };
+const AUFW = { klein:0, mittel:1, gross:2 };
+const KEY  = "entscheid:" + DATEN.meta.id;
+
+const fragen = DATEN.fragen.map(f => {
+  const opts = (f.optionen||[]).slice();
+  STD.forEach(s => { if(!opts.some(o=>o.id===s.id)) opts.push(Object.assign({},s)); });
+  return Object.assign({}, f, { optionen: opts });
+});
+
+fragen.sort((a,b) =>
+  (b.blocker?1:0)-(a.blocker?1:0) ||
+  (RANG[a.schweregrad]??9)-(RANG[b.schweregrad]??9) ||
+  (AUFW[a.aufwand]??9)-(AUFW[b.aufwand]??9) ||
+  String(a.id).localeCompare(String(b.id))
+);
+
+let state = {};
+try { const r = localStorage.getItem(KEY); if(r) state = JSON.parse(r); } catch(e){}
+
+function emp(f){ const o = f.optionen.find(x=>x.empfehlung); return o ? o.id : null; }
+fragen.forEach(f => {
+  if(!state[f.id]) state[f.id] = { wahl: emp(f), freitext:"", bemerkung:"", wer:"", bis:"" };
+});
+
+function speichern(){
+  try { localStorage.setItem(KEY, JSON.stringify(state)); } catch(e){}
+  zeichnenStatus();
+}
+
+function sichtbar(f){
+  if(!f.bedingung) return true;
+  const b = f.bedingung, s = state[b.frage];
+  if(!s) return false;
+  const werte = Array.isArray(b.wert) ? b.wert : [b.wert];
+  return werte.indexOf(s.wahl) !== -1;
+}
+function beantwortet(f){
+  const s = state[f.id];
+  if(!s || !s.wahl) return false;
+  if(s.wahl === "__zurueck" || s.wahl === "__unklar") return false;
+  if(s.wahl === "__frei" && !s.freitext.trim()) return false;
+  return true;
+}
+function esc(t){ return String(t==null?"":t).replace(/[&<>"']/g,
+  c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c])); }
+
+function bauen(){
+  const m = DATEN.meta;
+  document.title = m.titel;
+  document.getElementById("h-titel").textContent = m.titel;
+  document.getElementById("h-meta").textContent =
+    [m.projekt, m.datum, m.kontext].filter(Boolean).join(" · ");
+
+  if(m.vorentscheide && m.vorentscheide.length){
+    document.getElementById("vorentscheide").classList.remove("hidden");
+    document.getElementById("vor-liste").innerHTML =
+      m.vorentscheide.map(v=>"<li>"+esc(v)+"</li>").join("");
+  }
+
+  const liste = document.getElementById("liste");
+  liste.innerHTML = fragen.map(f => {
+    const s = state[f.id];
+    const tags = [];
+    if(f.blocker) tags.push('<span class="tag t-blocker">Blocker</span>');
+    if(f.schweregrad) tags.push('<span class="tag t-'+esc(f.schweregrad)+'">'+esc(f.schweregrad)+'</span>');
+    if(f.aufwand) tags.push('<span class="tag t-auf">Aufwand '+esc(f.aufwand)+'</span>');
+
+    if(!emp(f)) tags.push('<span class="tag t-hoch">keine Empfehlung hinterlegt</span>');
+
+    const belege = (f.belege&&f.belege.length)
+      ? '<details><summary>Fundstellen ('+f.belege.length+')</summary><div class="beleg">'
+        + f.belege.map(b=>"<div>"+esc(b)+"</div>").join("") + '</div></details>'
+      : '<div class="begr">Fundstelle: nicht belegbar</div>';
+
+    const opts = f.optionen.map(o => {
+      const sel = s.wahl===o.id ? " checked" : "";
+      const cls = o.empfehlung ? " emp" : "";
+      const tag = o.empfehlung
+        ? '<span class="emp-tag">Empfehlung'+(o.konfidenz?" · Konfidenz "+esc(o.konfidenz):"")+'</span>' : "";
+      const begr = o.begruendung ? '<div class="begr">'+esc(o.begruendung)+'</div>' : "";
+      return '<label class="opt'+cls+'"><input type="radio" name="'+esc(f.id)+'" value="'+esc(o.id)+'"'+sel+'>'
+        + '<span>'+esc(o.label)+tag+'</span></label>'+begr;
+    }).join("");
+
+    const freiCls = s.wahl==="__frei" ? "" : " hidden";
+    const folge = f.folgeaktion
+      ? '<div class="row"><div><div class="flabel">Verantwortlich</div>'
+        + '<input type="text" data-feld="wer" data-id="'+esc(f.id)+'" value="'+esc(s.wer)+'"></div>'
+        + '<div><div class="flabel">Termin</div>'
+        + '<input type="date" data-feld="bis" data-id="'+esc(f.id)+'" value="'+esc(s.bis)+'"></div></div>'
+      : "";
+
+    return '<section class="q" id="q-'+esc(f.id)+'" data-id="'+esc(f.id)+'">'
+      + '<div class="qh"><span class="id">'+esc(f.id)+'</span>'
+      + '<span class="qt">'+esc(f.titel)+'</span>'+tags.join("")+'</div>'
+      + (f.kontext ? '<div class="ctx">'+esc(f.kontext)+'</div>' : "")
+      + belege
+      + '<div class="opts">'+opts+'</div>'
+      + '<div class="felder">'
+      + '<div class="frei'+freiCls+'" data-frei="'+esc(f.id)+'"><div class="flabel">Freitextantwort</div>'
+      + '<textarea data-feld="freitext" data-id="'+esc(f.id)+'">'+esc(s.freitext)+'</textarea></div>'
+      + '<div class="flabel">Bemerkung</div>'
+      + '<textarea data-feld="bemerkung" data-id="'+esc(f.id)+'" placeholder="Optional">'+esc(s.bemerkung)+'</textarea>'
+      + folge + '</div></section>';
+  }).join("");
+
+  liste.addEventListener("change", ev => {
+    const t = ev.target;
+    if(t.type==="radio"){ state[t.name].wahl = t.value; speichern(); aktualisieren(); }
+    else if(t.dataset && t.dataset.feld){ state[t.dataset.id][t.dataset.feld] = t.value; speichern(); aktualisieren(); }
+  });
+  liste.addEventListener("input", ev => {
+    const t = ev.target;
+    if(t.dataset && t.dataset.feld){ state[t.dataset.id][t.dataset.feld] = t.value; speichern(); }
+  });
+  aktualisieren();
+}
+
+function aktualisieren(){
+  const filter = document.getElementById("f-filter").value;
+  fragen.forEach(f => {
+    const el = document.getElementById("q-"+f.id);
+    if(!el) return;
+    const sicht = sichtbar(f), fertig = beantwortet(f), s = state[f.id];
+    el.classList.toggle("fertig", fertig);
+    el.classList.toggle("offen", !fertig);
+    const fr = el.querySelector('[data-frei]');
+    if(fr) fr.classList.toggle("hidden", s.wahl!=="__frei");
+    let zeig = sicht;
+    if(zeig && filter==="offen") zeig = !fertig;
+    if(zeig && filter==="blocker") zeig = !!f.blocker;
+    if(zeig && filter==="abw") zeig = s.wahl !== emp(f);
+    el.classList.toggle("hidden", !zeig);
+  });
+  zeichnenStatus();
+}
+
+function zeichnenStatus(){
+  const rel = fragen.filter(sichtbar);
+  const done = rel.filter(beantwortet).length;
+  const blk = rel.filter(f=>f.blocker && !beantwortet(f)).length;
+  document.getElementById("h-bar").style.width = rel.length ? (done/rel.length*100)+"%" : "0";
+  document.getElementById("s-status").textContent =
+    done+" von "+rel.length+" beantwortet" + (blk ? " · "+blk+" Blocker offen" : "") + " · lokal gespeichert";
+}
+
+function ergebnis(){
+  const rel = fragen.filter(sichtbar);
+  return {
+    formular: DATEN.meta.id,
+    titel: DATEN.meta.titel,
+    projekt: DATEN.meta.projekt || "",
+    erzeugt: new Date().toISOString(),
+    offen: rel.filter(f=>!beantwortet(f)).map(f=>f.id),
+    uebersprungen: fragen.filter(f=>!sichtbar(f)).map(f=>f.id),
+    antworten: rel.map(f => {
+      const s = state[f.id];
+      const o = f.optionen.find(x=>x.id===s.wahl) || {};
+      return {
+        id: f.id,
+        frage: f.titel,
+        blocker: !!f.blocker,
+        schweregrad: f.schweregrad || "",
+        gewaehlt_id: s.wahl || "",
+        gewaehlt: o.label || "",
+        status: beantwortet(f) ? "beantwortet"
+              : (s.wahl==="__zurueck" ? "zurueckgestellt"
+              : (s.wahl==="__unklar" ? "unklar" : "offen")),
+        abweichung_von_empfehlung: s.wahl !== emp(f),
+        freitext: s.freitext.trim(),
+        bemerkung: s.bemerkung.trim(),
+        verantwortlich: s.wer.trim(),
+        termin: s.bis
+      };
+    })
+  };
+}
+
+function markdown(){
+  const e = ergebnis();
+  const z = ["# Entscheide "+e.formular, "", "Stand: "+e.erzeugt, ""];
+  e.antworten.forEach(a => {
+    let l = "- **"+a.id+"** → "+(a.gewaehlt||"offen");
+    if(a.abweichung_von_empfehlung && a.status==="beantwortet") l += " (Abweichung von der Empfehlung)";
+    if(a.freitext) l += " | Freitext: "+a.freitext.replace(/\n/g," ");
+    if(a.bemerkung) l += " | Bemerkung: "+a.bemerkung.replace(/\n/g," ");
+    if(a.verantwortlich || a.termin) l += " | Pendenz: "+[a.verantwortlich,a.termin].filter(Boolean).join(", ");
+    z.push(l);
+  });
+  if(e.offen.length){ z.push("", "Offen geblieben: "+e.offen.join(", ")); }
+  return z.join("\n");
+}
+
+function csv(){
+  const sp = ["id","frage","status","gewaehlt","abweichung_von_empfehlung",
+              "freitext","bemerkung","verantwortlich","termin"];
+  const q = v => '"'+String(v==null?"":v).replace(/"/g,'""')+'"';
+  const e = ergebnis();
+  return "\uFEFF" + [sp.join(";")].concat(
+    e.antworten.map(a => sp.map(k=>q(a[k])).join(";"))).join("\r\n");
+}
+
+function laden(text, name, typ){
+  const b = new Blob([text], {type:typ+";charset=utf-8"});
+  const u = URL.createObjectURL(b), a = document.createElement("a");
+  a.href = u; a.download = name; document.body.appendChild(a); a.click();
+  document.body.removeChild(a); setTimeout(()=>URL.revokeObjectURL(u), 1500);
+}
+function toast(t){
+  const el = document.getElementById("toast");
+  el.textContent = t; el.classList.add("on");
+  setTimeout(()=>el.classList.remove("on"), 2200);
+}
+function warnung(){
+  const e = ergebnis();
+  if(!e.offen.length) return true;
+  return confirm(e.offen.length+" Frage(n) sind noch offen: "+e.offen.join(", ")
+    + "\n\nTrotzdem ausgeben? Offene Punkte werden nicht umgesetzt, sondern erneut vorgelegt.");
+}
+
+document.getElementById("b-json").onclick = () => {
+  if(!warnung()) return;
+  laden(JSON.stringify(ergebnis(), null, 2), DATEN.meta.id+"_antworten.json", "application/json");
+  toast("JSON heruntergeladen – Datei nach .claude/entscheide/ legen");
+};
+document.getElementById("b-csv").onclick = () => {
+  laden(csv(), DATEN.meta.id+"_antworten.csv", "text/csv");
+  toast("CSV heruntergeladen");
+};
+document.getElementById("b-md").onclick = () => {
+  if(!warnung()) return;
+  const t = markdown();
+  const fertig = () => toast("Markdown in der Zwischenablage");
+  if(navigator.clipboard && navigator.clipboard.writeText){
+    navigator.clipboard.writeText(t).then(fertig, ()=>fallback(t));
+  } else fallback(t);
+  function fallback(txt){
+    const ta = document.createElement("textarea");
+    ta.value = txt; ta.style.position="fixed"; ta.style.opacity="0";
+    document.body.appendChild(ta); ta.select();
+    try { document.execCommand("copy"); fertig(); }
+    catch(e){ prompt("Kopieren mit Strg+C:", txt); }
+    document.body.removeChild(ta);
+  }
+};
+document.getElementById("b-emp").onclick = () => {
+  fragen.forEach(f => { const e = emp(f); if(e) state[f.id].wahl = e; });
+  speichern(); bauen(); toast("Alle Fragen auf Empfehlung gesetzt");
+};
+document.getElementById("b-reset").onclick = () => {
+  if(!confirm("Alle Eingaben verwerfen?")) return;
+  try { localStorage.removeItem(KEY); } catch(e){}
+  state = {};
+  fragen.forEach(f => state[f.id] = { wahl: emp(f), freitext:"", bemerkung:"", wer:"", bis:"" });
+  speichern(); bauen(); toast("Zurückgesetzt");
+};
+document.getElementById("f-filter").onchange = aktualisieren;
+
+bauen();
+})();
+</script>
+</body>
+</html>
