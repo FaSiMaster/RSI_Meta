@@ -9,9 +9,11 @@ import {
   getSession, saveSession, getDeficits, getAllScenes, saveRankingEntry,
   saveSceneResult, getVersuchAnzahl, getGesamtScore, ml,
 } from './data/appData'
-import { MAX_PUNKTE_PRO_DEFIZIT, calcScoreFromChoices, KATEGORIE_TEILPUNKTE } from './data/scoreCalc'
+import { MAX_PUNKTE_PRO_DEFIZIT, calcScoreFromChoices, KATEGORIE_TEILPUNKTE, szenenMaxPunkte } from './data/scoreCalc'
 import { hatVerfahren } from './data/verfahren'
-import { alsBfu } from './data/bewertung'
+import { alsBfu, istUko } from './data/bewertung'
+import type { UkoAntwort, UkoErgebnis } from './data/punkteUko'
+import ScoringFlowUko from './components/ScoringFlowUko'
 import { logger } from './lib/logger'
 import { KATEGORIE_PUNKTE } from './data/scoringEngine'
 import { istBestanden, kriteriumFuerSzene } from './data/bestandenKriterium'
@@ -346,6 +348,57 @@ export default function App() {
     setView('viewer')
   }
 
+  // ── Abschluss nach der Konvention der Unfallkommission (v0.20.0) ──────────
+  //
+  // Eigener Weg, nicht ein Zweig im Schweizer Abschluss: die beiden Verfahren
+  // speichern verschiedene Felder, und eine Funktion, die beides tut, muesste
+  // an jeder Zeile fragen, welches Verfahren gilt.
+  //
+  // Der Hinweisabzug gilt auch hier, weil er das Auffinden im Bild betrifft und
+  // nicht die Bewertung. Kategoriepunkte gibt es nicht: fuer die Konvention ist
+  // kein Gegenstueck zu den 25 Punkten des Schweizer Ablaufs vereinbart.
+  function handleScoringCompleteUko(ergebnis: UkoErgebnis, antwort: UkoAntwort) {
+    if (!scoringDeficit) return
+
+    const rohPts = ergebnis.summe
+    const finalPts = Math.max(0, rohPts - pendingHintAbzug)
+
+    const entry: FoundDeficit = {
+      deficitId:        scoringDeficit.id,
+      kategorieRichtig: pendingKatRichtig,
+      pointsEarned:     finalPts,
+      hintPenalty:      pendingHintPenalty,
+      hintAbzug:        pendingHintAbzug,
+    }
+
+    const defResult: DefizitResult = {
+      deficitId:        scoringDeficit.id,
+      kategorieRichtig: pendingKatRichtig,
+      hintPenalty:      pendingHintPenalty,
+      hintAbzug:        pendingHintAbzug,
+      punkteRoh:        rohPts,
+      punkteFinal:      finalPts,
+      dauerSekunden:    Math.round((Date.now() - deficitStartTime.current) / 1000),
+      // Die drei Felder des Neunschrittpfades bleiben leer — dieses Defizit hat
+      // keine Wichtigkeit, keine Abweichung und keine Unfallschwere.
+      wichtigkeitKorrekt: false,
+      abweichungKorrekt:  false,
+      nacaKorrekt:        false,
+      ukoSchritt1Korrekt: ergebnis.schritt1Korrekt,
+      ukoSchritt2Korrekt: ergebnis.schritt2Korrekt,
+      ukoSchritt1Punkte:  ergebnis.schritt1Punkte,
+      ukoSchritt2Punkte:  ergebnis.schritt2Punkte,
+      userUkoSchritt1:    antwort.schritt1,
+      userUkoSchritt2:    antwort.schritt2,
+    }
+
+    setFoundDeficits(prev => [...prev, entry])
+    setSceneScore(prev => prev + finalPts)
+    setDefizitResults(prev => [...prev, defResult])
+    setScoringDeficit(null)
+    setView('viewer')
+  }
+
   // ── Szene beenden (manuell oder alle gefunden) ─────────────────────────────
   function handleBeenden() {
     if (!currentScene || !currentTopic) return
@@ -358,8 +411,10 @@ export default function App() {
     setVrScoringFeedback(null)
 
     const dauerSekunden = Math.round((Date.now() - sceneStartTime) / 1000)
-    const maxPunkte = sceneDeficits.length * MAX_PUNKTE_PRO_DEFIZIT
-    const prozent = maxPunkte > 0 ? Math.round((sceneScore / maxPunkte) * 100) : 0
+    // Das Maximum haengt am Datensatz, nicht an der Anzahl: ein
+    // Gestaltungsbefund der Konvention traegt 60 statt 100 Punkte.
+    const maxPunkte = szenenMaxPunkte(sceneDeficits.map(d => d.correctAssessment))
+    const prozent = maxPunkte > 0 ? Math.round((Math.max(0, sceneScore) / maxPunkte) * 100) : 0
     const versuch = getVersuchAnzahl(username, currentScene.id) + 1
 
     // Bestanden-Kriterium (v0.9.7): alle Pflichtdefizite + Prozent-Schwelle
@@ -545,19 +600,29 @@ export default function App() {
                   overflowY: 'auto',
                   display: 'flex', flexDirection: 'column',
                 }}>
-                  <ScoringFlow
-                    deficit={scoringDeficit}
-                    scene={currentScene}
-                    username={username}
-                    kategorieRichtig={pendingKatRichtig}
-                    hintPenalty={pendingHintPenalty}
-                    hintAbzug={pendingHintAbzug}
-                    onComplete={handleScoringComplete}
-                    onBack={() => setView('viewer')}
-                    prefillWichtigkeit={pendingWichtigkeit ?? undefined}
-                    prefillAbweichung={pendingAbweichung ?? undefined}
-                    prefillNacaSchwere={pendingNacaSchwere ?? undefined}
-                  />
+                  {istUko(scoringDeficit.correctAssessment) ? (
+                    <ScoringFlowUko
+                      deficit={scoringDeficit}
+                      scene={currentScene}
+                      hintAbzug={pendingHintAbzug}
+                      onComplete={handleScoringCompleteUko}
+                      onBack={() => setView('viewer')}
+                    />
+                  ) : (
+                    <ScoringFlow
+                      deficit={scoringDeficit}
+                      scene={currentScene}
+                      username={username}
+                      kategorieRichtig={pendingKatRichtig}
+                      hintPenalty={pendingHintPenalty}
+                      hintAbzug={pendingHintAbzug}
+                      onComplete={handleScoringComplete}
+                      onBack={() => setView('viewer')}
+                      prefillWichtigkeit={pendingWichtigkeit ?? undefined}
+                      prefillAbweichung={pendingAbweichung ?? undefined}
+                      prefillNacaSchwere={pendingNacaSchwere ?? undefined}
+                    />
+                  )}
                 </div>
               )}
             </motion.div>

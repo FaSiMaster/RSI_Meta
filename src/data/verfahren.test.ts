@@ -1,15 +1,23 @@
 // Wächter über die Verfahrensweiche
 //
-// Die Weiche entscheidet, ob eine Szene überhaupt beurteilt werden kann. Sie
-// muss in beide Richtungen stimmen: die Schweiz hat ein Verfahren, und jedes
-// andere Land hat keines – auch dann nicht, wenn der Code irgendwo einen
-// stillen Rückfall auf die Schweiz einbaut. Genau dieser Rückfall wäre der
-// gefährliche Fehler: Er sähe aus wie Nachsicht und wäre eine falsche
-// Beurteilung nach fremdem Massstab.
+// Die Weiche entscheidet, ob eine Szene überhaupt beurteilt werden kann, und
+// nach welchem Verfahren. Sie muss in beide Richtungen stimmen: die beiden
+// eingetragenen Länder tragen je ihr Verfahren, und jedes andere trägt keines –
+// auch dann nicht, wenn der Code irgendwo einen stillen Rückfall einbaut.
+// Genau dieser Rückfall wäre der gefährliche Fehler: Er sähe aus wie Nachsicht
+// und wäre eine falsche Beurteilung nach fremdem Massstab.
+//
+// Seit v0.20.0 kommt ein zweiter Fehler dazu, der ebenso still wäre: dass ein
+// Land das Verfahren des anderen bekommt. Deshalb prüft jeder Test nicht nur,
+// DASS ein Verfahren da ist, sondern WELCHES.
 
 import { describe, it, expect } from 'vitest'
-import { hatVerfahren, verfahrenFuerLand, laenderMitVerfahren, VERFAHREN_JE_LAND } from './verfahren'
+import {
+  hatVerfahren, verfahrenFuerLand, laenderMitVerfahren, VERFAHREN_JE_LAND,
+  namensraumFuer, istNeunschritt, istUkoLand,
+} from './verfahren'
 import { VERFAHREN_BFU_ID } from '../i18n/verfahren.bfu'
+import { VERFAHREN_UKO_ID } from './bewertung'
 import { ISO_3166_1_ALPHA_2 } from './laender'
 
 describe('Verfahren je Land', () => {
@@ -18,19 +26,39 @@ describe('Verfahren je Land', () => {
     expect(hatVerfahren('CH')).toBe(true)
   })
 
-  it('heute trägt genau ein Land ein Verfahren', () => {
-    expect(laenderMitVerfahren()).toEqual(['CH'])
-    expect(Object.keys(VERFAHREN_JE_LAND)).toHaveLength(1)
+  it('Deutschland trägt die Konvention der Unfallkommission', () => {
+    expect(verfahrenFuerLand('DE')).toBe(VERFAHREN_UKO_ID)
+    expect(hatVerfahren('DE')).toBe(true)
   })
 
-  it('kein anderes Land hat eines – geprüft an allen 249 Codes', () => {
-    const mitVerfahren = ISO_3166_1_ALPHA_2.filter(code => code !== 'CH' && hatVerfahren(code))
-    expect(mitVerfahren).toEqual([])
+  it('die beiden Verfahren werden nicht verwechselt', () => {
+    expect(verfahrenFuerLand('CH')).not.toBe(verfahrenFuerLand('DE'))
+    expect(istNeunschritt('CH')).toBe(true)
+    expect(istNeunschritt('DE')).toBe(false)
+    expect(istUkoLand('DE')).toBe(true)
+    expect(istUkoLand('CH')).toBe(false)
   })
 
-  it('Deutschland hat keines', () => {
-    expect(hatVerfahren('DE')).toBe(false)
-    expect(verfahrenFuerLand('DE')).toBeNull()
+  it('jedes Verfahren trägt seinen eigenen Namensraum', () => {
+    expect(namensraumFuer(VERFAHREN_BFU_ID)).toBe('verfahren')
+    expect(namensraumFuer(VERFAHREN_UKO_ID)).toBe('verfahrenUko')
+  })
+
+  it('heute tragen genau zwei Länder ein Verfahren', () => {
+    expect(laenderMitVerfahren().sort()).toEqual(['CH', 'DE'])
+    expect(Object.keys(VERFAHREN_JE_LAND)).toHaveLength(2)
+  })
+
+  it('kein weiteres Land hat eines – geprüft an allen 249 Codes', () => {
+    const weitere = ISO_3166_1_ALPHA_2.filter(
+      code => code !== 'CH' && code !== 'DE' && hatVerfahren(code),
+    )
+    expect(weitere).toEqual([])
+  })
+
+  it('Österreich hat keines – das Nachbarland erbt nichts', () => {
+    expect(hatVerfahren('AT')).toBe(false)
+    expect(verfahrenFuerLand('AT')).toBeNull()
   })
 
   it('ein unbekannter Code hat keines', () => {

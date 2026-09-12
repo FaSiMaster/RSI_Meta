@@ -2,6 +2,8 @@
 // Ausgelagert aus ScoringFlow.tsx, nutzt STEP_WEIGHTS aus scoringEngine.ts
 
 import { STEP_WEIGHTS, STEP_WEIGHT_UNIT, KATEGORIE_PUNKTE } from './scoringEngine'
+import { alsUko, type Bewertung } from './bewertung'
+import { ukoMaxPunkte } from './punkteUko'
 import type { RSIDimension, NACADimension, ResultDimension } from '../types'
 import { calcRelevanzSD, calcUnfallrisiko } from './scoringEngine'
 
@@ -62,3 +64,22 @@ export const KATEGORIE_TEILPUNKTE = 15
 // «Signale / Wegweiser» (SSV/VSS), deshalb umbenannt.
 export const HINT_ABZUG_STANDORT  = 10
 export const HINT_ABZUG_HOTSPOTS  = 25
+
+// ── Verfahrensuebergreifend (v0.20.0) ───────────────────────────────────────
+//
+// Das Maximum einer Szene war bis hierhin `anzahl * MAX_PUNKTE_PRO_DEFIZIT`.
+// Das gilt nur, solange jedes Defizit denselben Weg durchlaeuft. Ein Befund
+// nach der Konvention der Unfallkommission traegt 100 Punkte als
+// Sicherheitsdefizit und 60 als Gestaltungsbefund, weil er dann nur Schritt 1
+// durchlaeuft. Die Zahl haengt also am Datensatz, nicht an der Anzahl.
+
+/** Erreichbare Punkte eines Defizits, je nach Verfahren seiner Bewertung. */
+export function maxPunkteFuerDefizit(bewertung: Bewertung): number {
+  const uko = alsUko(bewertung)
+  return uko ? ukoMaxPunkte(uko.schritt1) : MAX_PUNKTE_PRO_DEFIZIT
+}
+
+/** Erreichbare Punkte einer ganzen Szene. */
+export function szenenMaxPunkte(bewertungen: Bewertung[]): number {
+  return bewertungen.reduce((s, b) => s + maxPunkteFuerDefizit(b), 0)
+}

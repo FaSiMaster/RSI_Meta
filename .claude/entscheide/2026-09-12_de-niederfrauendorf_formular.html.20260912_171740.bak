@@ -7,24 +7,8 @@
 <style>
 :root{
   --bg:#f4f4f2; --card:#fff; --ink:#1a1a18; --mute:#6b6b66; --line:#dcdcd6;
-  --akz:#1f4e79; --krit:#a4262c; --hoch:#a8490e; --mittel:#786018; --gering:#5b6b5b;
+  --akz:#1f4e79; --krit:#a4262c; --hoch:#c2591a; --mittel:#8a6d1f; --gering:#5b6b5b;
   --ok:#2d6a4f;
-  --vor-bg:#eef2f6; --vor-line:#d5e0ea; --knopf:#fbfbfa; --knopf-hover:#f0f0ec;
-  --opt-hover:#f6f6f3; --emp-bg:#f0f5ef; --emp-line:#cfe0cd; --beleg:#fafaf8;
-  --ctx:#3a3a36;
-}
-/* Dunkle Fassung: Werte gegen die helle gemessen, jeder Text ueber 6:1. */
-@media (prefers-color-scheme: dark){
-  :root{
-    --bg:#16171a; --card:#1e2024; --ink:#e8e8e4; --mute:#a0a09a; --line:#343740;
-    --akz:#7fb3e0; --krit:#ef8a8a; --hoch:#eda06a; --mittel:#d9c07a; --gering:#a8bda8;
-    --ok:#7fc9a4;
-    --vor-bg:#1b2430; --vor-line:#2c3a4a; --knopf:#262a30; --knopf-hover:#31363e;
-    --opt-hover:#262a30; --emp-bg:#1d2a22; --emp-line:#31503c; --beleg:#191b1f;
-    --ctx:#cfcfc9;
-  }
-  button.primary{color:#10151a}
-  .t-blocker{color:#16171a}
 }
 *{box-sizing:border-box}
 body{margin:0;background:var(--bg);color:var(--ink);
@@ -38,13 +22,13 @@ h1{font-size:20px;margin:0 0 2px}
 .bar>i{display:block;height:100%;background:var(--ok);width:0;transition:width .2s}
 .tools{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:8px}
 button{font:inherit;font-size:13px;padding:7px 12px;border:1px solid var(--line);
-  background:var(--knopf);color:inherit;border-radius:5px;cursor:pointer}
-button:hover{background:var(--knopf-hover)}
+  background:#fbfbfa;border-radius:5px;cursor:pointer}
+button:hover{background:#f0f0ec}
 button.primary{background:var(--akz);color:#fff;border-color:var(--akz)}
 button.primary:hover{filter:brightness(1.12)}
-select{font:inherit;font-size:13px;padding:6px;border:1px solid var(--line);border-radius:5px;background:var(--card);color:inherit}
+select{font:inherit;font-size:13px;padding:6px;border:1px solid var(--line);border-radius:5px;background:#fff}
 main{max-width:980px;margin:20px auto 120px;padding:0 20px}
-.vor{background:var(--vor-bg);border:1px solid var(--vor-line);border-radius:6px;padding:12px 16px;margin-bottom:20px}
+.vor{background:#eef2f6;border:1px solid #d5e0ea;border-radius:6px;padding:12px 16px;margin-bottom:20px}
 .vor h2{font-size:14px;margin:0 0 6px;text-transform:uppercase;letter-spacing:.04em;color:var(--akz)}
 .vor ul{margin:0;padding-left:18px}
 .q{background:var(--card);border:1px solid var(--line);border-left:4px solid var(--line);
@@ -59,27 +43,25 @@ main{max-width:980px;margin:20px auto 120px;padding:0 20px}
 .t-mittel{color:var(--mittel)}.t-gering{color:var(--gering)}
 .t-blocker{color:#fff;background:var(--krit);border-color:var(--krit)}
 .t-auf{color:var(--mute)}
-.ctx{margin:8px 0;color:var(--ctx);font-size:14.5px}
+.ctx{margin:8px 0;color:#3a3a36;font-size:14.5px}
 details{margin:8px 0;font-size:13.5px}
 summary{cursor:pointer;color:var(--akz)}
-.beleg{background:var(--beleg);border:1px solid var(--line);border-radius:5px;padding:8px 12px;margin-top:6px}
+.beleg{background:#fafaf8;border:1px solid var(--line);border-radius:5px;padding:8px 12px;margin-top:6px}
 .beleg div{font-family:ui-monospace,Consolas,monospace;font-size:12.5px;padding:2px 0}
 .opts{margin:10px 0 0}
 label.opt{display:flex;gap:9px;align-items:flex-start;padding:6px 8px;border-radius:5px;cursor:pointer}
-label.opt:hover{background:var(--opt-hover)}
-label.opt.emp{background:var(--emp-bg);border:1px solid var(--emp-line)}
+label.opt:hover{background:#f6f6f3}
+label.opt.emp{background:#f0f5ef;border:1px solid #cfe0cd}
 .emp-tag{font-size:11px;color:var(--ok);border:1px solid var(--ok);border-radius:10px;padding:1px 6px;margin-left:6px}
 .begr{font-size:13px;color:var(--mute);margin:2px 0 10px 30px}
 textarea,input[type=text],input[type=date]{width:100%;font:inherit;font-size:14px;padding:7px 9px;
-  border:1px solid var(--line);border-radius:5px;background:var(--card);color:inherit;margin-top:6px}
+  border:1px solid var(--line);border-radius:5px;background:#fff;margin-top:6px}
 textarea{min-height:58px;resize:vertical}
 .felder{margin-top:10px;border-top:1px dashed var(--line);padding-top:10px}
 .flabel{font-size:12.5px;color:var(--mute);text-transform:uppercase;letter-spacing:.03em}
 .row{display:flex;gap:10px;flex-wrap:wrap}
 .row>div{flex:1;min-width:170px}
 .hidden{display:none}
-:focus-visible{outline:2px solid var(--akz);outline-offset:2px}
-label.opt:focus-within{background:var(--opt-hover);outline:2px solid var(--akz);outline-offset:1px}
 footer{position:fixed;bottom:0;left:0;right:0;background:var(--card);
   border-top:1px solid var(--line);padding:10px 20px}
 .fw{max-width:980px;margin:0 auto;display:flex;flex-wrap:wrap;gap:8px;align-items:center}
@@ -88,17 +70,7 @@ footer{position:fixed;bottom:0;left:0;right:0;background:var(--card);
   color:#fff;padding:9px 16px;border-radius:5px;font-size:14px;opacity:0;transition:opacity .25s;
   pointer-events:none;z-index:20}
 .toast.on{opacity:1}
-@media (max-width:700px){
-  /* Gemessen bei 390 px: Kopf 319 bis 379 px, Fuss 129 px, zusammen 53 bis 60 %
-     der Sichthoehe. Beide laufen deshalb mit, statt stehen zu bleiben. */
-  header{position:static}
-  footer{position:static;margin-top:16px;border-top:1px solid var(--line)}
-  main{margin-bottom:20px}
-  .meta{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
-  .toast{bottom:16px}
-}
-@media print{header,footer,.tools{position:static}button{display:none}
-  .q{break-inside:avoid}details{display:block}details>summary{display:none}}
+@media print{header,footer,.tools{position:static}button{display:none}}
 </style>
 </head>
 <body>
@@ -263,7 +235,7 @@ const DATEN = {
 <header><div class="wrap">
   <h1 id="h-titel"></h1>
   <div class="meta" id="h-meta"></div>
-  <div class="bar" role="progressbar" aria-labelledby="h-titel"><i id="h-bar"></i></div>
+  <div class="bar"><i id="h-bar"></i></div>
   <div class="tools">
     <button id="b-emp">Alles auf Empfehlung</button>
     <select id="f-filter">
@@ -288,7 +260,7 @@ const DATEN = {
   <button class="primary" id="b-json">JSON herunterladen</button>
   <button id="b-md">Markdown kopieren</button>
   <button id="b-csv">CSV herunterladen</button>
-  <span class="status" id="s-status" role="status" aria-live="polite"></span>
+  <span class="status" id="s-status"></span>
 </div></footer>
 <div class="toast" id="toast"></div>
 
@@ -323,15 +295,8 @@ let state = {};
 try { const r = localStorage.getItem(KEY); if(r) state = JSON.parse(r); } catch(e){}
 
 function emp(f){ const o = f.optionen.find(x=>x.empfehlung); return o ? o.id : null; }
-
-// Ein Zwischenstand aus einer aelteren Fassung kann Felder vermissen lassen.
-// Fehlende werden ergaenzt, vorhandene nie ueberschrieben.
 fragen.forEach(f => {
-  const leer = { wahl: emp(f), freitext:"", bemerkung:"", wer:"", bis:"" };
-  state[f.id] = Object.assign(leer, state[f.id] || {});
-  ["freitext","bemerkung","wer","bis"].forEach(k => {
-    if(typeof state[f.id][k] !== "string") state[f.id][k] = "";
-  });
+  if(!state[f.id]) state[f.id] = { wahl: emp(f), freitext:"", bemerkung:"", wer:"", bis:"" };
 });
 
 function speichern(){
@@ -390,11 +355,8 @@ function bauen(){
       const tag = o.empfehlung
         ? '<span class="emp-tag">Empfehlung'+(o.konfidenz?" · Konfidenz "+esc(o.konfidenz):"")+'</span>' : "";
       const begr = o.begruendung ? '<div class="begr">'+esc(o.begruendung)+'</div>' : "";
-      const bid = "b-"+f.id+"-"+o.id;
-      return '<label class="opt'+cls+'"><input type="radio" name="'+esc(f.id)+'" value="'+esc(o.id)+'"'+sel
-        + (o.begruendung ? ' aria-describedby="'+esc(bid)+'"' : '') + '>'
-        + '<span>'+esc(o.label)+tag+'</span></label>'
-        + (o.begruendung ? begr.replace('<div class="begr">', '<div class="begr" id="'+esc(bid)+'">') : begr);
+      return '<label class="opt'+cls+'"><input type="radio" name="'+esc(f.id)+'" value="'+esc(o.id)+'"'+sel+'>'
+        + '<span>'+esc(o.label)+tag+'</span></label>'+begr;
     }).join("");
 
     const freiCls = s.wahl==="__frei" ? "" : " hidden";
@@ -407,10 +369,10 @@ function bauen(){
 
     return '<section class="q" id="q-'+esc(f.id)+'" data-id="'+esc(f.id)+'">'
       + '<div class="qh"><span class="id">'+esc(f.id)+'</span>'
-      + '<span class="qt" id="t-'+esc(f.id)+'">'+esc(f.titel)+'</span>'+tags.join("")+'</div>'
+      + '<span class="qt">'+esc(f.titel)+'</span>'+tags.join("")+'</div>'
       + (f.kontext ? '<div class="ctx">'+esc(f.kontext)+'</div>' : "")
       + belege
-      + '<div class="opts" role="radiogroup" aria-labelledby="t-'+esc(f.id)+'">'+opts+'</div>'
+      + '<div class="opts">'+opts+'</div>'
       + '<div class="felder">'
       + '<div class="frei'+freiCls+'" data-frei="'+esc(f.id)+'"><div class="flabel">Freitextantwort</div>'
       + '<textarea data-feld="freitext" data-id="'+esc(f.id)+'">'+esc(s.freitext)+'</textarea></div>'
@@ -419,18 +381,15 @@ function bauen(){
       + folge + '</div></section>';
   }).join("");
 
-  if(!liste.dataset.gebunden){
-    liste.dataset.gebunden = "1";
-    liste.addEventListener("change", ev => {
-      const t = ev.target;
-      if(t.type==="radio"){ state[t.name].wahl = t.value; speichern(); aktualisieren(); }
-      else if(t.dataset && t.dataset.feld){ state[t.dataset.id][t.dataset.feld] = t.value; speichern(); aktualisieren(); }
-    });
-    liste.addEventListener("input", ev => {
-      const t = ev.target;
-      if(t.dataset && t.dataset.feld){ state[t.dataset.id][t.dataset.feld] = t.value; speichern(); }
-    });
-  }
+  liste.addEventListener("change", ev => {
+    const t = ev.target;
+    if(t.type==="radio"){ state[t.name].wahl = t.value; speichern(); aktualisieren(); }
+    else if(t.dataset && t.dataset.feld){ state[t.dataset.id][t.dataset.feld] = t.value; speichern(); aktualisieren(); }
+  });
+  liste.addEventListener("input", ev => {
+    const t = ev.target;
+    if(t.dataset && t.dataset.feld){ state[t.dataset.id][t.dataset.feld] = t.value; speichern(); }
+  });
   aktualisieren();
 }
 

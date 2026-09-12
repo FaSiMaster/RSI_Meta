@@ -59,3 +59,72 @@ Entscheid F-002 hat die Lage verbessert, aber nicht behoben. Zu klären vor B4.
 
 **Ebenfalls offen vor B4:** die Einstufung aller neun Befunde nach Schritt 2,
 und das siebte Bild, das aus Abbildung 10 des Auditberichts zu gewinnen ist.
+
+---
+
+## 2026-09-12 — Einstufung und Nullmodell
+
+Formular `2026-09-12_de-einstufung_formular.html`, zehn Fragen, drei Blocker.
+Antwort als Markdown-Block am 12. September 2026, 14:59 UTC.
+Alle zehn beantwortet, **keine Abweichung von der Empfehlung.**
+
+| ID | Frage in einem Satz | Gewählt |
+|---|---|---|
+| F-006 | Was gilt gegen das Nullmodell? | Eine falsche Einstufung in Schritt 1 kostet Punkte, statt null zu geben |
+| F-007 | Welches Kriterium trägt Schritt 2? | Unfallzuordnung im Bericht |
+| F-008 | Woher kommt das siebte Bild für Defizit 13? | Abbildung 10 aus dem Bericht übernehmen |
+| F-009 | Einstufung Defizit 17, Engstelle | gross |
+| F-010 | Einstufung Defizit 12, Fahrstreifenbreiten | gross |
+| F-011 | Einstufung Defizit 9, Kreisinsel ohne Bord | gross |
+| F-012 | Einstufung Defizit 10, fehlende Ablenkung | gross |
+| F-013 | Einstufung Defizit 4, Fussverkehr am Knoten | gross |
+| F-014 | Einstufung Defizit 14, Begreifbarkeit | mittel |
+| F-015 | Einstufung Defizit 15, Erkennbarkeit | mittel |
+
+### Das Punktemodell DE ist damit vollständig
+
+| Grösse | Wert |
+|---|---|
+| Schritt 1 richtig | 60 |
+| Schritt 1 falsch | −60 (Entscheid F-006) |
+| Schritt 2 richtig | 40, nur beim Sicherheitsdefizit |
+| Gewicht eines Designproblems in der Szenensumme | 60 |
+| Szenenmaximum bei neun Befunden | 7 × 100 + 2 × 60 = 820 |
+
+### Musterlösung der Szene
+
+| Defizit | Schritt 1 | Schritt 2 |
+|---|---|---|
+| 4 Fussverkehr am Knoten | Sicherheitsdefizit | gross |
+| 9 Kreisinsel ohne Bord | Sicherheitsdefizit | gross |
+| 10 Fehlende Ablenkung | Sicherheitsdefizit | gross |
+| 12 Fahrstreifenbreiten | Sicherheitsdefizit | gross |
+| 17 Engstelle | Sicherheitsdefizit | gross |
+| 14 Begreifbarkeit | Sicherheitsdefizit | mittel |
+| 15 Erkennbarkeit | Sicherheitsdefizit | mittel |
+| 8 Kreisinseldurchmesser | Gestaltung | entfällt |
+| 13 Eckausrundungen | Gestaltung | entfällt |
+
+### Neuer Befund B-5
+
+F-006 wirkt: Wer in Schritt 1 immer «Sicherheitsdefizit» antwortet und
+Schritt 2 rät, fällt von 62,6 auf **48,0 %** und besteht nicht mehr. Die Kurve
+ist im Übrigen gesund.
+
+Es bleibt aber eine Strategie, die durchkommt. Schritt 2 trägt in dieser Szene
+nur zwei verschiedene Werte, fünfmal gross und zweimal mittel, keinmal klein.
+Wer immer «gross» wählt, trifft fünf von sieben.
+
+| Verhalten | Punkte | Anteil | Bestanden bei 60 % |
+|---|---|---|---|
+| Immer Sicherheitsdefizit, Schritt 2 geraten | 393,3 | 48,0 % | nein |
+| **Immer Sicherheitsdefizit, immer gross** | **500,0** | **61,0 %** | **ja, um 8 Punkte** |
+| Immer Sicherheitsdefizit, Schritt 2 richtig | 580,0 | 70,7 % | ja |
+| Schritt 1 richtig, Schritt 2 geraten | 633,3 | 77,2 % | ja |
+| Schritt 1 richtig, immer gross | 740,0 | 90,2 % | ja |
+| Alles richtig | 820,0 | 100,0 % | ja |
+
+Zwei Wege stehen offen, beide erst bei B4: ein Befund mit der Einstufung
+«klein» in die Szene aufnehmen, oder die Schwelle für diese Szene über den
+vorhandenen Override heben. B2 und B3 sind davon nicht betroffen, weil die
+Schwelle je Szene einstellbar bleibt.

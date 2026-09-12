@@ -124,9 +124,12 @@ describe('Trennung von der Bedienung', () => {
     }
   })
 
-  it('die Bedienung bleibt: 23 Schlüssel unter scoring, in jeder Sprache', () => {
+  // 24 seit v0.20.0: `auswerten` kam mit dem Ablauf der Konvention dazu. Die
+  // Zahl steht hier fest, damit ein versehentlich zugefuegter Bedienschluessel
+  // auffaellt — sie ist ein Waechter, keine Buchhaltung.
+  it('die Bedienung bleibt: 24 Schlüssel unter scoring, in jeder Sprache', () => {
     for (const sprache of SPRACHEN) {
-      expect(Object.keys(ALLGEMEIN[sprache].scoring), `Sprache ${sprache}`).toHaveLength(23)
+      expect(Object.keys(ALLGEMEIN[sprache].scoring), `Sprache ${sprache}`).toHaveLength(24)
     }
   })
 })

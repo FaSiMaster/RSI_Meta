@@ -3,7 +3,7 @@
 
 import type { RSIDimension, NACADimension } from '../types'
 import type { DefizitVerortung } from '../utils/sphereCoords'
-import { type Bewertung, mitVerfahren } from './bewertung'
+import { type Bewertung, type UkoBefundart, mitVerfahren } from './bewertung'
 import { LAND_VORGABE, istLandCode, type LandCode } from './laender'
 import { logger } from '../lib/logger'
 import {
@@ -216,6 +216,21 @@ export interface DefizitResult {
   userWichtigkeit?:    RSIDimension
   userAbweichung?:     RSIDimension
   userUnfallschwere?:  NACADimension
+  // ── Konvention der Unfallkommission (v0.20.0) ─────────────────────────────
+  // Ein Befund nach diesem Verfahren hat keine der drei Felder oben. Seine
+  // beiden Schritte stehen hier, und die drei CH-Felder bleiben leer. Welches
+  // Verfahren gilt, sagt die Bewertung des Defizits, nicht dieses Resultat.
+  //
+  // Die beiden Teilpunkte werden getrennt gespeichert, nicht nur ihre Summe:
+  // ohne sie liesse sich später nicht mehr sagen, ob jemand am Erkennen oder
+  // am Einstufen gescheitert ist.
+  ukoSchritt1Korrekt?:  boolean
+  /** Null, wenn Schritt 2 nicht anstand. */
+  ukoSchritt2Korrekt?:  boolean | null
+  ukoSchritt1Punkte?:   number
+  ukoSchritt2Punkte?:   number
+  userUkoSchritt1?:     UkoBefundart
+  userUkoSchritt2?:     RSIDimension | null
 }
 
 // Gesamtergebnis eines Szenen-Durchlaufs

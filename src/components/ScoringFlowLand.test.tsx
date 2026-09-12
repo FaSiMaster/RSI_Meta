@@ -5,6 +5,13 @@
 // Ergebnis beantworten. Gerendert wird über react-dom/server: kein neues
 // Paket, kein Browser, und trotzdem echtes React statt einer Behauptung über
 // den Quelltext.
+// Hinweis zur Wahl des Landes (v0.20.0):
+// Dieser Waechter braucht ein Land OHNE Verfahren. Bis v0.19.3 war das
+// Deutschland; seit die Konvention der Unfallkommission eingetragen ist,
+// zeigt DE einen Ablauf und nicht den Hinweis. Geprueft wird deshalb mit
+// Oesterreich. Faellt dieser Test mit einem Land, das inzwischen ein
+// Verfahren hat, ist nicht der Test falsch, sondern die Wahl des Landes.
+
 
 import { describe, it, expect, beforeAll } from 'vitest'
 import { createElement } from 'react'
@@ -51,18 +58,18 @@ beforeAll(async () => {
 
 describe('Land ohne Verfahren', () => {
   it('zeigt den Hinweis statt des Bewertungsflusses', () => {
-    const html = rendern(szene('DE'))
+    const html = rendern(szene('AT'))
     expect(html).toContain('Für dieses Land ist noch kein Verfahren hinterlegt')
-    expect(html).toContain('Deutschland')
+    expect(html).toContain('Österreich')
   })
 
   it('sagt ausdrücklich, dass es keine Punkte gibt', () => {
-    const html = rendern(szene('DE'))
+    const html = rendern(szene('AT'))
     expect(html).toContain('Es werden keine Punkte vergeben')
   })
 
   it('zeigt keinen einzigen Bewertungsschritt', () => {
-    const html = rendern(szene('DE'))
+    const html = rendern(szene('AT'))
     // Nichts vom Ablauf darf erscheinen: keine Eingabe, kein Tabellenwert,
     // keine Auswahl.
     expect(html).not.toContain('Gemäss Tabelle')
@@ -71,11 +78,11 @@ describe('Land ohne Verfahren', () => {
   })
 
   it('bietet nur den Rückweg an', () => {
-    const html = rendern(szene('DE'))
+    const html = rendern(szene('AT'))
     expect(html).toContain('Zurück zur Szene')
   })
 
-  it('gilt für jedes Land ohne Verfahren, nicht nur für Deutschland', () => {
+  it('gilt für jedes Land ohne Verfahren, nicht nur für eines', () => {
     for (const land of ['AT', 'FR', 'IT', 'US', 'JP']) {
       expect(rendern(szene(land)), land).toContain('kein Verfahren hinterlegt')
     }
@@ -111,25 +118,25 @@ describe('Die Schweiz', () => {
 describe('Der Hinweis spricht die Sprache der Oberfläche', () => {
   it('französisch', async () => {
     await i18n.changeLanguage('fr')
-    const html = rendern(szene('DE'))
+    const html = rendern(szene('AT'))
     expect(html).toContain('Aucune méthode')
-    expect(html).toContain('Allemagne')
+    expect(html).toContain('Autriche')
     await i18n.changeLanguage('de')
   })
 
   it('italienisch', async () => {
     await i18n.changeLanguage('it')
-    const html = rendern(szene('DE'))
+    const html = rendern(szene('AT'))
     expect(html).toContain('non è ancora definito alcun metodo')
-    expect(html).toContain('Germania')
+    expect(html).toContain('Austria')
     await i18n.changeLanguage('de')
   })
 
   it('englisch', async () => {
     await i18n.changeLanguage('en')
-    const html = rendern(szene('DE'))
+    const html = rendern(szene('AT'))
     expect(html).toContain('No procedure is defined')
-    expect(html).toContain('Germany')
+    expect(html).toContain('Austria')
     await i18n.changeLanguage('de')
   })
 })
