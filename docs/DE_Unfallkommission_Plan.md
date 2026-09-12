@@ -632,11 +632,41 @@ genügt ein Bruchteil der Kameraauflösung von 4032 mal 2268 Bildpunkten.
 
 | Phase | Stand |
 |---|---|
-| A | Abgeschlossen mit dieser Fassung. Wartet auf Freigabe |
-| B1 | Nicht begonnen |
-| B2 | Nicht begonnen |
+| A | Abgeschlossen und freigegeben. Commit `a4d2f6f` |
+| B1 | **Abgeschlossen.** Commit `b5cbbfb`, gepusht |
+| B2 | Freigegeben über F-003, nicht begonnen |
 | B3 | Nicht begonnen |
-| B4 | Nicht begonnen |
+| B4 | Wartet auf B-4, siehe unten |
 
-Offen vor der Umsetzung: E-5 bis E-8. E-5 und E-7 blockieren B4, E-7 blockiert
-auch B2.
+### B1, abgeschlossen am 12. September 2026
+
+Commit `b5cbbfb`. Datenmodell für zwei Verfahren, keine Weiche und kein Ablauf.
+
+| Teil | Ergebnis |
+|---|---|
+| Bewertung als Union | Neu `src/data/bewertung.ts`. `BewertungBfu` mit den sechs Feldern, `BewertungUko` mit Schritt 1 und 2. Verengt wird über `istUko` und `istBfu`, nie über einen Feldvergleich |
+| Leseregel | `mitVerfahren()` setzt den Diskriminator beim Lesen, wie `mitLand()` beim Land. Bestandsdaten bleiben unangetastet |
+| Begriff «Designproblem» | Kommt im Code nicht vor. Datenschlüssel ist `gestaltung`, die Anzeige läuft über i18n |
+| Szenentyp | `AppScene.szenentyp` mit `panorama` als Vorgabe ohne Feld, dazu `BildPhase` mit Zeitangabe und dem Merkmal `bewertet` |
+| Verortung im Bild | Vierter Fall `{ typ: 'bild', x, y, r }` in `sphereCoords.ts`, dazu `trefferImBild()`. Das Seitenverhältnis ist Pflichtparameter, sonst wird der Trefferradius auf einem breiten Bild zum Oval |
+| Neun Konsumenten | Je eine Weiche. Wo der Neunschrittpfad nicht gilt, wird nichts gerechnet: der Riegel in `ScoringFlow` deckt neu beide Gründe, `App.tsx` steigt mit Log aus, die Lernkarte zeigt keine Zeilen, `soll` im Bericht ist nullable |
+| Nebenbefund behoben | `risikoFarbe` färbte jeden unbekannten Wert grün und täuschte damit eine Aussage vor. Neu nimmt sie `null` und färbt neutral |
+
+**Prüfstand:** tsc 0, Build grün, 215 Tests in 22 Dateien, davon 15 neu in
+`bewertung.test.ts`. Alle fünf absichtlich eingebauten Fehler wurden gemeldet:
+ein geänderter Wert in der Leseregel, das ignorierte Seitenverhältnis, ein
+immer falscher Typwächter, eine Kugelverortung im Bildraum und ein erfundenes
+Unfallrisiko.
+
+**Bewertungsfelder bestehender Szenen:** sechs Blöcke aus `HEAD` gegen die
+Arbeitskopie geparst und verglichen, null Unterschiede. Der Diff auf
+`appData.ts` betrifft die Typdeklaration, nicht die Daten.
+
+### Offen
+
+| Punkt | Lage |
+|---|---|
+| **B-4** | Das Nullmodell besteht die Szene weiterhin, mit 62,6 % gegen eine Schwelle von 60 %. F-001 und F-002 heben sich teilweise auf: die Rechnung zu F-002 unterstellte vier Sicherheitsdefizite, mit F-001 sind es sieben. Rechnung im Entscheidjournal. Blockiert B4 |
+| Schritt 2 je Befund | Die Einstufung gross, mittel oder klein ist für keinen der neun Befunde festgelegt. Blockiert B4 |
+| Siebtes Bild | Abbildung 10 des Auditberichts, die Nachtrassierung, ist für Defizit 13 zu gewinnen. Blockiert B4 |
+| B2, B3 | Freigegeben, noch nicht begonnen |
