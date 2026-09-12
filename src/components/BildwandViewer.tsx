@@ -18,7 +18,7 @@
 // rechnen. Das ist bekannt und ausgewiesen, nicht übersehen.
 
 import { useMemo, useRef, useState } from 'react'
-import { Canvas, useLoader, type ThreeEvent } from '@react-three/fiber'
+import { Canvas, useLoader, useThree, type ThreeEvent } from '@react-three/fiber'
 import { XR } from '@react-three/xr'
 import * as THREE from 'three'
 import { useTranslation } from 'react-i18next'
@@ -40,10 +40,10 @@ interface Props {
   onBeenden:          () => void
 }
 
-/** Breite der Wand in Metern. Die Höhe folgt dem Seitenverhältnis des Bildes. */
-const WAND_BREITE = 3.2
-/** Abstand der Wand vor der Betrachterin. */
+/** Abstand der Wand vor der Betrachterin, in Metern. */
 const WAND_ABSTAND = 2.6
+/** Anteil des Sichtfelds, den das eingepasste Bild einnimmt. */
+const RANDANTEIL = 0.94
 
 export default function BildwandViewer({
   scene, deficits, foundDeficits, hintStufe, onDeficitConfirmed, onBeenden,
@@ -115,7 +115,18 @@ export default function BildwandViewer({
 
   return (
     <div style={{ flex: 1, position: 'relative', display: 'flex', flexDirection: 'column', background: '#0B0E11' }}>
-      <Canvas camera={{ position: [0, 0, 0.01], fov: 70 }} style={{ flex: 1 }}>
+      {/* Der Canvas wird absolut gelegt, nicht als Flex-Kind.
+          Mit `flex: 1` in einem Kasten ohne eigene Hoehe faellt React Three
+          Fiber auf 150 Bildpunkte zurueck, und zwar stumm: das Bild sass als
+          Streifen am oberen Rand, und nichts meldete einen Fehler. Gemessen
+          wurde es erst, als die Canvas-Groesse selbst abgefragt wurde —
+          1440 mal 150, unabhaengig vom Fenster. Derselbe Weg wie im
+          Panorama-Viewer. */}
+      <Canvas
+        camera={{ position: [0, 0, 0.01], fov: 70 }}
+        style={{ position: 'absolute', inset: 0 }}
+        gl={{ antialias: true }}
+      >
         <XR store={xrStore}>
           <ambientLight intensity={1} />
           <Bildwand
@@ -254,6 +265,7 @@ function Bildwand({
 }) {
   const textur = useLoader(THREE.TextureLoader, url)
   const gruppe = useRef<THREE.Group>(null)
+  const { camera, size } = useThree()
 
   // Das Seitenverhältnis kommt aus dem Bild, nicht aus einer Annahme. Genau
   // dieses Verhältnis braucht die Trefferprüfung, damit ihr Radius ein Kreis
@@ -264,8 +276,27 @@ function Bildwand({
     return h > 0 ? b / h : 1.5
   }, [textur])
 
-  const breite = WAND_BREITE * zoom
-  const hoehe = breite / seitenverhaeltnis
+  // ── Die Wand wird aus dem Sichtfeld gerechnet, nicht angenommen ──────────
+  //
+  // Die erste Fassung gab der Wand eine feste Breite von 3,2 m. Am Bildschirm
+  // stand das Bild dann als Briefmarke da: wie viel 3,2 m einnehmen, hängt am
+  // Blickwinkel der Kamera und am Seitenverhältnis des Fensters, und beides
+  // ist keine Konstante. Gemessen wird es jetzt bei jedem Bild neu — dieselbe
+  // Lehre wie beim Bündelversatz der Netzplaene: Was mit dem Zoom skaliert,
+  // darf nicht fest im Blatt stehen.
+  //
+  // Eingepasst wird «contain»: Das Bild bleibt vollständig sichtbar, und der
+  // Rand bleibt frei, damit die Bedienleisten nicht darüber liegen.
+  const { breite, hoehe } = useMemo(() => {
+    const fov = (camera as THREE.PerspectiveCamera).fov ?? 70
+    const aspekt = size.height > 0 ? size.width / size.height : 1.6
+    const sichtHoehe = 2 * WAND_ABSTAND * Math.tan((fov * Math.PI) / 360) * RANDANTEIL
+    const sichtBreite = sichtHoehe * aspekt
+    // Das Bild ist breiter als das Sichtfeld, wenn sein Verhältnis grösser ist.
+    const passtAufBreite = seitenverhaeltnis > sichtBreite / sichtHoehe
+    const b = passtAufBreite ? sichtBreite : sichtHoehe * seitenverhaeltnis
+    return { breite: b * zoom, hoehe: (b / seitenverhaeltnis) * zoom }
+  }, [camera, size.width, size.height, seitenverhaeltnis, zoom])
 
   function handleClick(e: ThreeEvent<MouseEvent>) {
     e.stopPropagation()

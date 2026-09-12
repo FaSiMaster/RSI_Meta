@@ -89,6 +89,35 @@ die Adresse auf Vercel sowie die beiden lokalen Ports 5173 und 4173. Auf einem
 anderen Port scheitert schon die Anmeldung, und zwar an der Herkunftsprüfung,
 nicht an der PIN. Die Oberfläche meldet dann irreführend eine falsche PIN.
 
+## Stand: eingelesen am 12. September 2026
+
+Beide Schritte sind erledigt. Acht Bilder liegen unter
+`panoramas/SZ_2026_115/`, alle acht Adressen antworten mit 200. Die Einfuhr
+meldete elf Datensätze; in der Datenbank nachgezählt sind es ein Thema, eine
+Szene und neun Defizite, alle mit Verortung, und die Bewertungen weichen an
+keiner Stelle von der Einfuhrdatei ab.
+
+Am Bildschirm geprüft: Thema und Szene erscheinen, die Szenenkarte zählt neun
+Defizite, die Bildwand lädt das erste Bild formatfüllend, und die Phasenleiste
+nennt beide Zeitangaben samt der Marke «Nur Vergleich» an der Phase von 2017.
+
+**Ein Fehler kam dabei heraus und ist behoben.** Der Canvas der Bildwand war
+150 Bildpunkte hoch, unabhängig von der Fenstergrösse: `flex: 1` in einem
+Kasten ohne eigene Höhe lässt React Three Fiber auf diesen Rückfallwert gehen,
+und zwar stumm. Das Bild sass als Streifen am oberen Rand. Gefunden wurde es
+am Bildschirmfoto, bestätigt durch Abfragen der Canvas-Grösse selbst. Der
+Canvas liegt jetzt absolut, wie im Panorama-Viewer.
+
+**Nicht geprüft:** ob ein Klick auf eine verortete Stelle den Ablauf startet.
+Die Klickprobe im gesteuerten Browser scheiterte daran, dass der Landfilter
+dort nicht zu bedienen war; von Hand ist sie in einer Minute erledigt. Ein
+Wächter über die Canvas-Höhe fehlt deshalb auch — der Fehler war stumm, und
+genau dafür wäre er da.
+
+**Zum Landfilter:** Eine neue deutsche Szene ist unsichtbar, solange der Filter
+auf der Schweiz steht. Das ist die Länderweiche und so gewollt, führt beim
+ersten Blick aber in die Irre.
+
 ## Danach prüfen
 
 1. **Die Szene erscheint** unter dem Thema «Knotenpunkte Deutschland», und der
