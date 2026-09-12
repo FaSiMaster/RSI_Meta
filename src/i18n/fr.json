@@ -244,6 +244,7 @@
     "nicht_bestanden": "Non réussi",
     "bestanden_grund_pflicht": "{{fehlt}} déficit(s) obligatoire(s) non trouvé(s)",
     "bestanden_grund_prozent": "{{prozent}} % atteints – au moins {{min}} % requis",
+    "bestanden_grund_gestaltung": "{{fehlt}} constat(s) de conception non reconnu(s) comme tel(s)",
     "zu_themen": "Thèmes"
   },
   "scoring": {

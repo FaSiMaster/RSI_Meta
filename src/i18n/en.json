@@ -244,6 +244,7 @@
     "nicht_bestanden": "Not passed",
     "bestanden_grund_pflicht": "{{fehlt}} mandatory deficit(s) not found",
     "bestanden_grund_prozent": "{{prozent}} % achieved – at least {{min}} % required",
+    "bestanden_grund_gestaltung": "{{fehlt}} design finding(s) not recognised as such",
     "zu_themen": "Topics"
   },
   "scoring": {

@@ -6,7 +6,7 @@ import { Trophy, CheckCircle2, XCircle, ArrowLeft, ChevronRight, BarChart3, Cloc
 import ZustaendigkeitKarte from './ZustaendigkeitKarte'
 import { useTranslation } from 'react-i18next'
 import { ml, getBestResult, getVersuchAnzahl, berechneSterne, type AppScene, type AppDeficit, type FoundDeficit, type SceneResult } from '../data/appData'
-import { istBestanden, kriteriumFuerSzene } from '../data/bestandenKriterium'
+import { istBestanden, kriteriumFuerSzene, gestaltungStand } from '../data/bestandenKriterium'
 import { SterneAnzeige } from './SceneList'
 
 interface Props {
@@ -71,7 +71,15 @@ export default function SzenenAbschluss({
   const pflichtTotal = deficits.filter(d => d.isPflicht).length
   const pflichtGefunden = deficits.filter(d => d.isPflicht && foundMap.has(d.id)).length
   const prozentAktuell = sceneResult?.prozent ?? 0
-  const bestanden = istBestanden(prozentAktuell, pflichtGefunden, pflichtTotal, kriterium)
+  // Dritte Bedingung (v0.20.0, Befund B-5): jeder Gestaltungsbefund muss in
+  // Schritt 1 erkannt sein. Der Stand kommt aus den Einzelresultaten des
+  // Versuchs; ohne gespeichertes Resultat ist er leer, und die Bedingung ist
+  // dann erfuellt — dieselbe Nachsicht wie bei den Pflichtdefiziten oben.
+  // Ohne sie zeigte diese Ansicht «bestanden», wo das gespeicherte Resultat
+  // das Gegenteil sagt.
+  const gestaltung = gestaltungStand(deficits, sceneResult?.defizitResults ?? [])
+  const bestanden = istBestanden(prozentAktuell, pflichtGefunden, pflichtTotal, kriterium, gestaltung)
+  const gestaltungFehlt = kriterium.gestaltungErkannt ? gestaltung.total - gestaltung.erkannt : 0
   const pflichtFehlt = kriterium.allePflicht ? pflichtTotal - pflichtGefunden : 0
 
   // Review R-15: Standort-Vermerk für verpasste Defizite – wo wäre es
@@ -154,6 +162,8 @@ export default function SzenenAbschluss({
                 {pflichtFehlt > 0 && kriterium.minProzent != null && prozentAktuell < kriterium.minProzent && ' · '}
                 {kriterium.minProzent != null && prozentAktuell < kriterium.minProzent &&
                   t('completion.bestanden_grund_prozent', { prozent: prozentAktuell, min: kriterium.minProzent })}
+                {gestaltungFehlt > 0 && (pflichtFehlt > 0 || (kriterium.minProzent != null && prozentAktuell < kriterium.minProzent)) && ' · '}
+                {gestaltungFehlt > 0 && t('completion.bestanden_grund_gestaltung', { fehlt: gestaltungFehlt })}
               </p>
             )}
           </div>

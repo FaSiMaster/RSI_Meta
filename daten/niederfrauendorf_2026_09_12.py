@@ -39,7 +39,7 @@ import sys
 # ── Kennungen und Pfade ─────────────────────────────────────────────────────
 
 THEMA_ID = "de-knoten-2026"
-SZENE_ID = "SZ_2026_101"
+SZENE_ID = "SZ_2026_115"
 
 # Pfadkonvention des Bildspeichers, siehe src/components/admin/BildUpload.tsx:
 # panoramas/{szeneId}/{name}.{ext}. Der Ordnername ist fuer eine Bildserie
@@ -472,10 +472,68 @@ def baue() -> dict:
     }
 
 
+def pruefe_kennungen() -> list[str]:
+    """Fragt die belegten Kennungen ab, bevor die Datei geschrieben wird.
+
+    Anlass: Die erste Fassung dieses Skripts waehlte SZ_2026_101, und diese
+    Kennung gehoerte schon einer Szene aus dem Projekt infra3d. Aufgefallen ist
+    es erst beim Messen des Bildspeichers, wo der Ordner mit sechs Dateien
+    dastand. Eine Einfuhr haette die bestehende Szene ueberschrieben.
+
+    Ohne Netz oder ohne .env.local wird die Pruefung uebersprungen, aber
+    sichtbar: eine stille Nachsicht waere hier schlimmer als keine Pruefung.
+    """
+    import json as _json
+    import urllib.request
+    import urllib.error
+
+    env_datei = pathlib.Path(__file__).resolve().parents[1] / ".env.local"
+    if not env_datei.exists():
+        print("Hinweis: .env.local fehlt, Kennungen nicht gegen die Datenbank geprueft.")
+        return []
+
+    env: dict[str, str] = {}
+    for zeile in env_datei.read_text(encoding="utf-8").splitlines():
+        if "=" in zeile and not zeile.strip().startswith("#"):
+            k, _, v = zeile.partition("=")
+            env[k.strip()] = v.strip().strip('"').strip("'")
+    adresse = env.get("VITE_SUPABASE_URL", "").rstrip("/")
+    schluessel = env.get("VITE_SUPABASE_ANON_KEY", "")
+    if not adresse or not schluessel:
+        print("Hinweis: Zugangsdaten unvollstaendig, Kennungen nicht geprueft.")
+        return []
+
+    def hol(pfad: str):
+        anfrage = urllib.request.Request(
+            adresse + pfad,
+            headers={"apikey": schluessel, "Authorization": f"Bearer {schluessel}"},
+        )
+        with urllib.request.urlopen(anfrage, timeout=20) as antwort:
+            return _json.loads(antwort.read())
+
+    try:
+        szenen = {str(x["id"]) for x in hol("/rest/v1/rsi_scenes?select=id")}
+        defizite = {str(x["id"]) for x in hol("/rest/v1/rsi_deficits?select=id")}
+    except (urllib.error.URLError, urllib.error.HTTPError, OSError) as fehler:
+        print(f"Hinweis: Datenbank nicht erreichbar ({fehler}), Kennungen nicht geprueft.")
+        return []
+
+    meldungen = []
+    if SZENE_ID in szenen:
+        meldungen.append(f"Szenenkennung {SZENE_ID} ist belegt")
+    for b in BEFUNDE:
+        if b["id"] in defizite:
+            meldungen.append(f"Defizitkennung {b['id']} ist belegt")
+    if not meldungen:
+        print(f"Kennungen geprueft: {SZENE_ID} und {len(BEFUNDE)} Defizite sind frei "
+              f"({len(szenen)} Szenen und {len(defizite)} Defizite im Bestand).")
+    return meldungen
+
+
 def main() -> None:
-    meldungen = pruefe_abstaende()
+    meldungen = pruefe_kennungen() + pruefe_abstaende()
     if meldungen:
-        print("Verortungen nicht brauchbar:")
+        print("Nicht brauchbar:")
         for m in meldungen:
             print("  -", m)
         sys.exit(1)

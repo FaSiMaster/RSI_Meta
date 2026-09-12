@@ -26,7 +26,7 @@
  ],
  "scenes": [
   {
-   "id": "SZ_2026_101",
+   "id": "SZ_2026_115",
    "topicId": "de-knoten-2026",
    "nameI18n": {
     "de": "Niederfrauendorf, Knotenpunkt S 183 und S 190",
@@ -50,8 +50,8 @@
    "isActive": true,
    "country": "DE",
    "szenentyp": "bildserie",
-   "vorschauBild1": "https://gtweaesunpvwjlttyaab.supabase.co/storage/v1/object/public/rsi-textures/panoramas/SZ_2026_101/nfd_2022_02.jpg",
-   "vorschauBild2": "https://gtweaesunpvwjlttyaab.supabase.co/storage/v1/object/public/rsi-textures/panoramas/SZ_2026_101/nfd_2022_04.jpg",
+   "vorschauBild1": "https://gtweaesunpvwjlttyaab.supabase.co/storage/v1/object/public/rsi-textures/panoramas/SZ_2026_115/nfd_2022_02.jpg",
+   "vorschauBild2": "https://gtweaesunpvwjlttyaab.supabase.co/storage/v1/object/public/rsi-textures/panoramas/SZ_2026_115/nfd_2022_04.jpg",
    "phasen": [
     {
      "id": "ph-2022-minikreisverkehr",
@@ -68,12 +68,12 @@
       "en": "12 May 2022"
      },
      "bilder": [
-      "https://gtweaesunpvwjlttyaab.supabase.co/storage/v1/object/public/rsi-textures/panoramas/SZ_2026_101/nfd_2022_01.jpg",
-      "https://gtweaesunpvwjlttyaab.supabase.co/storage/v1/object/public/rsi-textures/panoramas/SZ_2026_101/nfd_2022_02.jpg",
-      "https://gtweaesunpvwjlttyaab.supabase.co/storage/v1/object/public/rsi-textures/panoramas/SZ_2026_101/nfd_2022_03.jpg",
-      "https://gtweaesunpvwjlttyaab.supabase.co/storage/v1/object/public/rsi-textures/panoramas/SZ_2026_101/nfd_2022_04.jpg",
-      "https://gtweaesunpvwjlttyaab.supabase.co/storage/v1/object/public/rsi-textures/panoramas/SZ_2026_101/nfd_2022_05.jpg",
-      "https://gtweaesunpvwjlttyaab.supabase.co/storage/v1/object/public/rsi-textures/panoramas/SZ_2026_101/nfd_2022_06.jpg"
+      "https://gtweaesunpvwjlttyaab.supabase.co/storage/v1/object/public/rsi-textures/panoramas/SZ_2026_115/nfd_2022_01.jpg",
+      "https://gtweaesunpvwjlttyaab.supabase.co/storage/v1/object/public/rsi-textures/panoramas/SZ_2026_115/nfd_2022_02.jpg",
+      "https://gtweaesunpvwjlttyaab.supabase.co/storage/v1/object/public/rsi-textures/panoramas/SZ_2026_115/nfd_2022_03.jpg",
+      "https://gtweaesunpvwjlttyaab.supabase.co/storage/v1/object/public/rsi-textures/panoramas/SZ_2026_115/nfd_2022_04.jpg",
+      "https://gtweaesunpvwjlttyaab.supabase.co/storage/v1/object/public/rsi-textures/panoramas/SZ_2026_115/nfd_2022_05.jpg",
+      "https://gtweaesunpvwjlttyaab.supabase.co/storage/v1/object/public/rsi-textures/panoramas/SZ_2026_115/nfd_2022_06.jpg"
      ],
      "bewertet": true
     },
@@ -92,8 +92,8 @@
       "en": "13 September 2017"
      },
      "bilder": [
-      "https://gtweaesunpvwjlttyaab.supabase.co/storage/v1/object/public/rsi-textures/panoramas/SZ_2026_101/nfd_2017_01.jpg",
-      "https://gtweaesunpvwjlttyaab.supabase.co/storage/v1/object/public/rsi-textures/panoramas/SZ_2026_101/nfd_2017_02.jpg"
+      "https://gtweaesunpvwjlttyaab.supabase.co/storage/v1/object/public/rsi-textures/panoramas/SZ_2026_115/nfd_2017_01.jpg",
+      "https://gtweaesunpvwjlttyaab.supabase.co/storage/v1/object/public/rsi-textures/panoramas/SZ_2026_115/nfd_2017_02.jpg"
      ],
      "bewertet": false
     }
@@ -103,7 +103,7 @@
  "deficits": [
   {
    "id": "SD_0101",
-   "sceneId": "SZ_2026_101",
+   "sceneId": "SZ_2026_115",
    "topicId": "de-knoten-2026",
    "nameI18n": {
     "de": "Minikreisverkehr in der Annäherung nicht erkennbar",
@@ -135,7 +135,7 @@
    "normRefs": [],
    "verortung": null,
    "verortungen": {
-    "https://gtweaesunpvwjlttyaab.supabase.co/storage/v1/object/public/rsi-textures/panoramas/SZ_2026_101/nfd_2022_01.jpg": {
+    "https://gtweaesunpvwjlttyaab.supabase.co/storage/v1/object/public/rsi-textures/panoramas/SZ_2026_115/nfd_2022_01.jpg": {
      "typ": "bild",
      "x": 0.52,
      "y": 0.52,
@@ -145,7 +145,7 @@
   },
   {
    "id": "SD_0102",
-   "sceneId": "SZ_2026_101",
+   "sceneId": "SZ_2026_115",
    "topicId": "de-knoten-2026",
    "nameI18n": {
     "de": "Keine Anlagen für den Fussverkehr am Knotenpunkt",
@@ -177,7 +177,7 @@
    "normRefs": [],
    "verortung": null,
    "verortungen": {
-    "https://gtweaesunpvwjlttyaab.supabase.co/storage/v1/object/public/rsi-textures/panoramas/SZ_2026_101/nfd_2022_02.jpg": {
+    "https://gtweaesunpvwjlttyaab.supabase.co/storage/v1/object/public/rsi-textures/panoramas/SZ_2026_115/nfd_2022_02.jpg": {
      "typ": "bild",
      "x": 0.13,
      "y": 0.57,
@@ -187,7 +187,7 @@
   },
   {
    "id": "SD_0103",
-   "sceneId": "SZ_2026_101",
+   "sceneId": "SZ_2026_115",
    "topicId": "de-knoten-2026",
    "nameI18n": {
     "de": "Kreisinsel ohne Bordeinfassung",
@@ -219,7 +219,7 @@
    "normRefs": [],
    "verortung": null,
    "verortungen": {
-    "https://gtweaesunpvwjlttyaab.supabase.co/storage/v1/object/public/rsi-textures/panoramas/SZ_2026_101/nfd_2022_02.jpg": {
+    "https://gtweaesunpvwjlttyaab.supabase.co/storage/v1/object/public/rsi-textures/panoramas/SZ_2026_115/nfd_2022_02.jpg": {
      "typ": "bild",
      "x": 0.24,
      "y": 0.7,
@@ -229,7 +229,7 @@
   },
   {
    "id": "SD_0104",
-   "sceneId": "SZ_2026_101",
+   "sceneId": "SZ_2026_115",
    "topicId": "de-knoten-2026",
    "nameI18n": {
     "de": "Kreisinseldurchmesser unter dem Mindestmass",
@@ -261,7 +261,7 @@
    "normRefs": [],
    "verortung": null,
    "verortungen": {
-    "https://gtweaesunpvwjlttyaab.supabase.co/storage/v1/object/public/rsi-textures/panoramas/SZ_2026_101/nfd_2022_02.jpg": {
+    "https://gtweaesunpvwjlttyaab.supabase.co/storage/v1/object/public/rsi-textures/panoramas/SZ_2026_115/nfd_2022_02.jpg": {
      "typ": "bild",
      "x": 0.4,
      "y": 0.72,
@@ -271,7 +271,7 @@
   },
   {
    "id": "SD_0105",
-   "sceneId": "SZ_2026_101",
+   "sceneId": "SZ_2026_115",
    "topicId": "de-knoten-2026",
    "nameI18n": {
     "de": "Eckausrundungen mit unzureichenden Radien",
@@ -303,7 +303,7 @@
    "normRefs": [],
    "verortung": null,
    "verortungen": {
-    "https://gtweaesunpvwjlttyaab.supabase.co/storage/v1/object/public/rsi-textures/panoramas/SZ_2026_101/nfd_2022_02.jpg": {
+    "https://gtweaesunpvwjlttyaab.supabase.co/storage/v1/object/public/rsi-textures/panoramas/SZ_2026_115/nfd_2022_02.jpg": {
      "typ": "bild",
      "x": 0.72,
      "y": 0.58,
@@ -313,7 +313,7 @@
   },
   {
    "id": "SD_0106",
-   "sceneId": "SZ_2026_101",
+   "sceneId": "SZ_2026_115",
    "topicId": "de-knoten-2026",
    "nameI18n": {
     "de": "Geradeausfahrende werden nicht abgelenkt",
@@ -345,7 +345,7 @@
    "normRefs": [],
    "verortung": null,
    "verortungen": {
-    "https://gtweaesunpvwjlttyaab.supabase.co/storage/v1/object/public/rsi-textures/panoramas/SZ_2026_101/nfd_2022_03.jpg": {
+    "https://gtweaesunpvwjlttyaab.supabase.co/storage/v1/object/public/rsi-textures/panoramas/SZ_2026_115/nfd_2022_03.jpg": {
      "typ": "bild",
      "x": 0.47,
      "y": 0.55,
@@ -355,7 +355,7 @@
   },
   {
    "id": "SD_0107",
-   "sceneId": "SZ_2026_101",
+   "sceneId": "SZ_2026_115",
    "topicId": "de-knoten-2026",
    "nameI18n": {
     "de": "Engstelle in der Knotenpunktzufahrt",
@@ -387,7 +387,7 @@
    "normRefs": [],
    "verortung": null,
    "verortungen": {
-    "https://gtweaesunpvwjlttyaab.supabase.co/storage/v1/object/public/rsi-textures/panoramas/SZ_2026_101/nfd_2022_04.jpg": {
+    "https://gtweaesunpvwjlttyaab.supabase.co/storage/v1/object/public/rsi-textures/panoramas/SZ_2026_115/nfd_2022_04.jpg": {
      "typ": "bild",
      "x": 0.66,
      "y": 0.55,
@@ -397,7 +397,7 @@
   },
   {
    "id": "SD_0108",
-   "sceneId": "SZ_2026_101",
+   "sceneId": "SZ_2026_115",
    "topicId": "de-knoten-2026",
    "nameI18n": {
     "de": "Fahrstreifenbreiten in Zu- und Ausfahrten zu gering",
@@ -429,7 +429,7 @@
    "normRefs": [],
    "verortung": null,
    "verortungen": {
-    "https://gtweaesunpvwjlttyaab.supabase.co/storage/v1/object/public/rsi-textures/panoramas/SZ_2026_101/nfd_2022_05.jpg": {
+    "https://gtweaesunpvwjlttyaab.supabase.co/storage/v1/object/public/rsi-textures/panoramas/SZ_2026_115/nfd_2022_05.jpg": {
      "typ": "bild",
      "x": 0.6,
      "y": 0.48,
@@ -439,7 +439,7 @@
   },
   {
    "id": "SD_0109",
-   "sceneId": "SZ_2026_101",
+   "sceneId": "SZ_2026_115",
    "topicId": "de-knoten-2026",
    "nameI18n": {
     "de": "Kreisverkehr wird nicht als solcher begriffen",
@@ -471,7 +471,7 @@
    "normRefs": [],
    "verortung": null,
    "verortungen": {
-    "https://gtweaesunpvwjlttyaab.supabase.co/storage/v1/object/public/rsi-textures/panoramas/SZ_2026_101/nfd_2022_06.jpg": {
+    "https://gtweaesunpvwjlttyaab.supabase.co/storage/v1/object/public/rsi-textures/panoramas/SZ_2026_115/nfd_2022_06.jpg": {
      "typ": "bild",
      "x": 0.54,
      "y": 0.55,

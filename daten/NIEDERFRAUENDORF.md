@@ -10,7 +10,7 @@ aus dem Repositorium heraus erledigen.
 |---|---|
 | `daten/niederfrauendorf_2026_09_12.py` | Erzeugt die Einfuhrdatei aus den freigegebenen Werten und prüft die Verortungsabstände |
 | `daten/rsi-import_niederfrauendorf_2026-09-12.json` | Die Einfuhrdatei: ein Thema, eine Szene, neun Defizite |
-| `src/test/szene-niederfrauendorf.test.ts` | 27 Prüfungen, die jeden Wert gegen den Entscheid halten, aus dem er stammt |
+| `src/test/szene-niederfrauendorf.test.ts` | 30 Prüfungen, die jeden Wert gegen den Entscheid halten, aus dem er stammt |
 
 Die acht verkleinerten Bilder liegen **nicht** im Repositorium. Sie stehen im
 Arbeitsordner dieser Sitzung; wo genau, sagt der Abschnitt «Bilder» unten.
@@ -19,7 +19,14 @@ Repositorium.
 
 ## Die Szene
 
-**Thema** «Knotenpunkte Deutschland», Land DE. **Szene** `SZ_2026_101`,
+Die Kennung `SZ_2026_115` ist nicht beliebig gewählt. Die erste Fassung dieses
+Skripts nahm `SZ_2026_101`, und die gehört einer Szene aus dem Projekt
+`infra3d`. Aufgefallen ist es erst beim Messen des Bildspeichers, wo ihr Ordner
+mit sechs Dateien dastand; eine Einfuhr hätte die bestehende Szene
+überschrieben. Das Skript fragt die belegten Kennungen seither vor dem
+Schreiben ab und bricht bei einer Kollision ab.
+
+**Thema** «Knotenpunkte Deutschland», Land DE. **Szene** `SZ_2026_115`,
 Szenentyp Bildserie, zwei Phasen:
 
 | Phase | Zeitangabe | Bilder | Bewertet |
@@ -49,8 +56,8 @@ Die acht Bilder gehören in den Bildspeicher unter dem Pfad, den die
 Einfuhrdatei erwartet:
 
 ```
-rsi-textures/panoramas/SZ_2026_101/nfd_2022_01.jpg   bis   nfd_2022_06.jpg
-rsi-textures/panoramas/SZ_2026_101/nfd_2017_01.jpg   und   nfd_2017_02.jpg
+rsi-textures/panoramas/SZ_2026_115/nfd_2022_01.jpg   bis   nfd_2022_06.jpg
+rsi-textures/panoramas/SZ_2026_115/nfd_2017_01.jpg   und   nfd_2017_02.jpg
 ```
 
 Der Ordnername `panoramas` ist für eine Bildserie irreführend. Er ist die
@@ -60,8 +67,14 @@ zweiter Pfad wäre eine Änderung am Upload und gehört nicht in diesen Schritt.
 Die Dateinamen müssen genau stimmen, sonst findet der Viewer die Verortungen
 nicht: der Schlüssel jeder Verortung ist die vollständige Bildadresse.
 
-Masse der verkleinerten Bilder: 2048 Bildpunkte Breite, zusammen 5,1 MB. Zum
-Vergleich belegt ein einzelnes Panorama 9,6 MB.
+Masse der verkleinerten Bilder: 2048 Bildpunkte Breite, zusammen 5,1 MB.
+
+**Platz im Bildspeicher**, gemessen am 12. September 2026: Der Eimer
+`rsi-textures` führt 97 Dateien mit zusammen 313,4 MB, verteilt auf 16
+Szenenordner. Mittel 3,2 MB je Datei, Median 2,8 MB, grösste Datei 10,8 MB. Im
+Tarif Free mit 1 GB sind das 30,6 % und 687 MB frei; die 5,1 MB dieser Szene
+fallen nicht auf. Die Datenbank ist unkritisch: 143 Zeilen über fünf Tabellen,
+0,34 MB Nutzlast.
 
 ## Schritt 2: Einfuhrdatei einlesen
 
@@ -93,12 +106,13 @@ nicht an der PIN. Die Oberfläche meldet dann irreführend eine falsche PIN.
 
 ## Was offen bleibt
 
-**Befund B-5.** Wer in Schritt 1 immer «Sicherheitsdefizit» und in Schritt 2
-immer «gross» antwortet, erreicht 61,0 % und besteht um acht Punkte. Ursache
-ist die Verteilung: fünfmal gross, zweimal mittel, keinmal klein. Zwei Wege,
-beide ohne Codeänderung: ein Befund mit der Einstufung klein aufnehmen, oder
-die Schwelle für diese Szene über `scene.bestandenKriterium` heben. Der Wächter
-hält den Befund fest, damit er nicht in Vergessenheit gerät.
+**Befund B-5 ist behoben.** Wer in Schritt 1 immer «Sicherheitsdefizit» und in
+Schritt 2 immer «gross» antwortet, erreicht weiterhin 61,0 % — behoben wurde
+nicht die Rechnung, sondern das Bestehen. Das Bestanden-Kriterium hat seit
+v0.20.0 eine dritte Bedingung: jeder Gestaltungsbefund muss in Schritt 1 als
+solcher erkannt sein. Diese Strategie verkennt beide und besteht damit nicht.
+Wer Schritt 1 beherrscht, erfüllt die Bedingung von selbst und liegt bei
+90,2 %. Abschaltbar je Szene über `bestandenKriterium.gestaltungErkannt`.
 
 **Das Luftbild zu Defizit 13.** Der Auditbericht belegt die Eckausrundungen mit
 einer Nachtrassierung auf einem Luftbild, seiner Abbildung 10. Dieses Bild ist

@@ -726,7 +726,7 @@ Commit `d5c6a9d`. Die Szene liegt als Einfuhrdatei vor, nicht in der Datenbank.
 | Teil | Ergebnis |
 |---|---|
 | Erzeugung | `daten/niederfrauendorf_2026_09_12.py`. Jeder Bewertungswert trägt im Skript den Entscheid, aus dem er stammt |
-| Umfang | Ein Thema (Land DE), Szene `SZ_2026_101` als Bildserie mit zwei Phasen, neun Defizite, Szenenmaximum 820, fünf Pflichtbefunde |
+| Umfang | Ein Thema (Land DE), Szene `SZ_2026_115` als Bildserie mit zwei Phasen, neun Defizite, Szenenmaximum 820, fünf Pflichtbefunde |
 | Sprachen | Alle Texte in vier Sprachen, Deutsch in Schweizer Orthografie nach E-2 |
 | Verortungen | Am Gitternetz in Zehnteln vom Bild abgelesen, ausdrücklich Vorschlag. Das Skript prüft maschinell, dass zwei Befunde im selben Bild nicht übereinanderliegen |
 | `normRefs` | Bleibt leer. Das Feld wird gegen den Schweizer Normenbestand geprüft; die Fundstellen des Auditberichts stehen mit Seitenzahl in der Erklärung |
@@ -735,7 +735,7 @@ Commit `d5c6a9d`. Die Szene liegt als Einfuhrdatei vor, nicht in der Datenbank.
 | Anleitung | `daten/NIEDERFRAUENDORF.md` |
 
 **Was noch aussteht, und warum ich es nicht kann:** Die acht Bilder müssen
-unter `panoramas/SZ_2026_101/` in den Bildspeicher, und die Einfuhrdatei muss
+unter `panoramas/SZ_2026_115/` in den Bildspeicher, und die Einfuhrdatei muss
 eingelesen werden. Beides braucht die Admin-PIN.
 
 **Zu bedenken vor dem Einlesen:** Die Beschreibungen und Erklärungen der neun

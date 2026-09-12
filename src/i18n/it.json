@@ -244,6 +244,7 @@
     "nicht_bestanden": "Non superata",
     "bestanden_grund_pflicht": "{{fehlt}} deficit obbligatori non trovati",
     "bestanden_grund_prozent": "{{prozent}} % raggiunto – almeno {{min}} % necessario",
+    "bestanden_grund_gestaltung": "{{fehlt}} rilievo/i di progettazione non riconosciuto/i come tale/i",
     "zu_themen": "Temi"
   },
   "scoring": {

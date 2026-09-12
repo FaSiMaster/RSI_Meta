@@ -17,6 +17,7 @@ import {
   type UkoErgebnis,
 } from '../data/punkteUko'
 import { VERFAHREN_UKO_ID, type BewertungUko } from '../data/bewertung'
+import { istBestanden, BESTANDEN_DEFAULT } from '../data/bestandenKriterium'
 import type { RSIDimension } from '../types'
 
 const DATEI = join(process.cwd(), 'daten', 'rsi-import_niederfrauendorf_2026-09-12.json')
@@ -226,17 +227,65 @@ describe.skipIf(!vorhanden)('Folgen der Musterlösung', () => {
     expect(ukoProzent(e)).toBe(100)
   })
 
-  it('BEFUND B-5: die Strategie «immer Sicherheitsdefizit, immer gross» besteht mit 61,0 Prozent', () => {
-    // Fünf der sieben Sicherheitsdefizite sind gross, also trifft die Strategie
-    // fünf Einstufungen. Der Wächter hält den Befund fest; behoben ist er
-    // nicht. Wege: ein Befund mit der Einstufung klein, oder eine höhere
-    // Schwelle für diese Szene über scene.bestandenKriterium.
+  it('B-5: die Strategie «immer Sicherheitsdefizit, immer gross» erreicht weiterhin 61,0 Prozent', () => {
+    // Die Punktzahl ist unverändert, und das ist Absicht: behoben wurde nicht
+    // die Rechnung, sondern das Bestehen. Fünf der sieben Sicherheitsdefizite
+    // sind gross, also trifft die Strategie fünf Einstufungen.
     const e: UkoErgebnis[] = FREIGEGEBEN.map(f =>
       bewerteUko(bewertung(f), { schritt1: 'sicherheitsdefizit', schritt2: 'gross' }),
     )
-    const anteil = ukoProzent(e)
-    expect(anteil).toBeCloseTo(61.0, 1)
-    expect(anteil, 'Wenn das hier unter 60 fällt, ist B-5 behoben und der Test anzupassen').toBeGreaterThan(60)
+    expect(ukoProzent(e)).toBeCloseTo(61.0, 1)
+  })
+
+  it('B-5 behoben: diese Strategie besteht die Szene nicht mehr', () => {
+    // Sie verkennt beide Gestaltungsbefunde, und die dritte Bedingung des
+    // Bestanden-Kriteriums verlangt, dass jeder erkannt ist. Das trifft die
+    // Ursache: Schritt 1 ist der wichtigere Schritt, und wer ihn nicht
+    // beherrscht, soll die Szene nicht bestehen — unabhängig von der
+    // Punktzahl.
+    const e = FREIGEGEBEN.map(f =>
+      bewerteUko(bewertung(f), { schritt1: 'sicherheitsdefizit', schritt2: 'gross' }),
+    )
+    const prozent = ukoProzent(e)
+    const gestaltung = {
+      total: FREIGEGEBEN.filter(f => f.art === 'gestaltung').length,
+      erkannt: FREIGEGEBEN.filter((f, i) => f.art === 'gestaltung' && e[i].schritt1Korrekt).length,
+    }
+    expect(gestaltung).toEqual({ total: 2, erkannt: 0 })
+    expect(prozent).toBeGreaterThan(60)
+    expect(istBestanden(prozent, 5, 5, BESTANDEN_DEFAULT, gestaltung)).toBe(false)
+  })
+
+  it('lässt jemanden bestehen, der Schritt 1 beherrscht und Schritt 2 nicht', () => {
+    // Er erkennt beide Gestaltungsbefunde und erfüllt die dritte Bedingung von
+    // selbst. Bei «immer gross» in Schritt 2 bleiben 740 von 820 Punkten.
+    const e = FREIGEGEBEN.map(f =>
+      bewerteUko(bewertung(f), { schritt1: f.art, schritt2: 'gross' }),
+    )
+    const prozent = ukoProzent(e)
+    const gestaltung = {
+      total: 2,
+      erkannt: FREIGEGEBEN.filter((f, i) => f.art === 'gestaltung' && e[i].schritt1Korrekt).length,
+    }
+    expect(gestaltung).toEqual({ total: 2, erkannt: 2 })
+    expect(prozent).toBeCloseTo(740 / 820 * 100, 1)
+    expect(istBestanden(prozent, 5, 5, BESTANDEN_DEFAULT, gestaltung)).toBe(true)
+  })
+
+  it('hält auch den zurück, der nur einen der beiden verkennt', () => {
+    const e = FREIGEGEBEN.map(f =>
+      bewerteUko(bewertung(f), {
+        // Defizit 8 richtig als Gestaltung, Defizit 13 verkannt.
+        schritt1: f.nr === 13 ? 'sicherheitsdefizit' : f.art,
+        schritt2: f.stufe ?? 'gross',
+      }),
+    )
+    const gestaltung = {
+      total: 2,
+      erkannt: FREIGEGEBEN.filter((f, i) => f.art === 'gestaltung' && e[i].schritt1Korrekt).length,
+    }
+    expect(gestaltung).toEqual({ total: 2, erkannt: 1 })
+    expect(istBestanden(ukoProzent(e), 5, 5, BESTANDEN_DEFAULT, gestaltung)).toBe(false)
   })
 
   it('lässt blosses Raten in Schritt 2 durchfallen', () => {

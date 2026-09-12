@@ -94,7 +94,7 @@ export interface AppScene {
   // Optionaler Szenen-Override des app-weiten Bestanden-Kriteriums (v0.9.7).
   // minProzent: null = keine Prozent-Schwelle. Fehlt das Feld, gilt der
   // Default aus bestandenKriterium.ts (alle Pflicht + 60 %).
-  bestandenKriterium?: { allePflicht?: boolean; minProzent?: number | null } | null
+  bestandenKriterium?: { allePflicht?: boolean; minProzent?: number | null; gestaltungErkannt?: boolean } | null
   // Land nach ISO 3166-1 alpha-2 (v0.16.0). Optional; die Leseregel setzt es.
   country?: LandCode
   // Szenentyp (v0.20.0). Fehlt das Feld, ist die Szene ein Panorama — so war

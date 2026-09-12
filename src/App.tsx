@@ -18,7 +18,7 @@ import ScoringFlowUko from './components/ScoringFlowUko'
 import BildwandViewer from './components/BildwandViewer'
 import { logger } from './lib/logger'
 import { KATEGORIE_PUNKTE } from './data/scoringEngine'
-import { istBestanden, kriteriumFuerSzene } from './data/bestandenKriterium'
+import { istBestanden, kriteriumFuerSzene, gestaltungStand } from './data/bestandenKriterium'
 import type { AppTopic, AppScene, AppDeficit, FoundDeficit, DefizitResult, SceneResult } from './data/appData'
 
 import { initSupabaseData, resetCache as resetSupabaseCache } from './data/supabaseSync'
@@ -437,7 +437,12 @@ export default function App() {
     const foundIdSet = new Set(foundDeficits.map(f => f.deficitId))
     const pflichtTotal = sceneDeficits.filter(d => d.isPflicht).length
     const pflichtGefunden = sceneDeficits.filter(d => d.isPflicht && foundIdSet.has(d.id)).length
-    const bestanden = istBestanden(prozent, pflichtGefunden, pflichtTotal, kriteriumFuerSzene(currentScene))
+    // Dritte Bedingung (v0.20.0, Befund B-5): jeder Gestaltungsbefund muss in
+    // Schritt 1 erkannt sein. Fuer Szenen des Neunschrittpfades ohne Wirkung.
+    const gestaltung = gestaltungStand(sceneDeficits, defizitResults)
+    const bestanden = istBestanden(
+      prozent, pflichtGefunden, pflichtTotal, kriteriumFuerSzene(currentScene), gestaltung,
+    )
 
     // SceneResult speichern
     const result: SceneResult = {

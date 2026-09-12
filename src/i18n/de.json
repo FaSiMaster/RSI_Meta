@@ -244,6 +244,7 @@
     "nicht_bestanden": "Nicht bestanden",
     "bestanden_grund_pflicht": "{{fehlt}} Pflichtdefizit(e) nicht gefunden",
     "bestanden_grund_prozent": "{{prozent}} % erreicht – mindestens {{min}} % nötig",
+    "bestanden_grund_gestaltung": "{{fehlt}} Gestaltungsbefund(e) nicht als solche(r) erkannt",
     "zu_themen": "Themen"
   },
   "scoring": {
