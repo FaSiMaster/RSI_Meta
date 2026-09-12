@@ -636,7 +636,7 @@ genügt ein Bruchteil der Kameraauflösung von 4032 mal 2268 Bildpunkten.
 | B1 | **Abgeschlossen.** Commit `b5cbbfb`, gepusht |
 | B2 | **Abgeschlossen.** Commits `cfbfc93` und `ce87c3b`, gepusht |
 | B3 | **Abgeschlossen.** Commit `c3d22ff`, gepusht |
-| B4 | Wartet auf B-5, siehe unten |
+| B4 | **Gebaut.** Commit `d5c6a9d`. Noch nicht in der Datenbank: Bildupload und Einlesen brauchen die Admin-PIN |
 
 ### B2, abgeschlossen am 12. September 2026
 
@@ -719,6 +719,32 @@ falsch. Der Wächter prüft deshalb ausdrücklich aussermittig; in der Bildmitte
 stimmt beides.
 
 
+### B4, gebaut am 12. September 2026
+
+Commit `d5c6a9d`. Die Szene liegt als Einfuhrdatei vor, nicht in der Datenbank.
+
+| Teil | Ergebnis |
+|---|---|
+| Erzeugung | `daten/niederfrauendorf_2026_09_12.py`. Jeder Bewertungswert trägt im Skript den Entscheid, aus dem er stammt |
+| Umfang | Ein Thema (Land DE), Szene `SZ_2026_101` als Bildserie mit zwei Phasen, neun Defizite, Szenenmaximum 820, fünf Pflichtbefunde |
+| Sprachen | Alle Texte in vier Sprachen, Deutsch in Schweizer Orthografie nach E-2 |
+| Verortungen | Am Gitternetz in Zehnteln vom Bild abgelesen, ausdrücklich Vorschlag. Das Skript prüft maschinell, dass zwei Befunde im selben Bild nicht übereinanderliegen |
+| `normRefs` | Bleibt leer. Das Feld wird gegen den Schweizer Normenbestand geprüft; die Fundstellen des Auditberichts stehen mit Seitenzahl in der Erklärung |
+| Einfuhrprüfung | Erweitert: Bildserie ohne Phase, ohne bewertete Phase, unbekannter Szenentyp und Verortung ausserhalb von 0 bis 1 werden abgewiesen. Alle vier gingen bisher durch |
+| Wächter | `src/test/szene-niederfrauendorf.test.ts`, 27 Prüfungen. Alle neun eingebauten Fehler gemeldet |
+| Anleitung | `daten/NIEDERFRAUENDORF.md` |
+
+**Was noch aussteht, und warum ich es nicht kann:** Die acht Bilder müssen
+unter `panoramas/SZ_2026_101/` in den Bildspeicher, und die Einfuhrdatei muss
+eingelesen werden. Beides braucht die Admin-PIN.
+
+**Zu bedenken vor dem Einlesen:** Die Beschreibungen und Erklärungen der neun
+Befunde sind aus dem Auditbericht des Landesamts paraphrasiert, mit Seitenangabe.
+Mit dem Einlesen erscheinen sie in der öffentlich erreichbaren Anwendung. Ob
+das so gewollt ist, ist eine Frage an den Verfasser des Berichts, nicht an das
+Werkzeug.
+
+### Offen
 ### Offen
 
 | Punkt | Lage |
