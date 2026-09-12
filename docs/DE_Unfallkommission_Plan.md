@@ -635,7 +635,7 @@ genügt ein Bruchteil der Kameraauflösung von 4032 mal 2268 Bildpunkten.
 | A | Abgeschlossen und freigegeben. Commit `a4d2f6f` |
 | B1 | **Abgeschlossen.** Commit `b5cbbfb`, gepusht |
 | B2 | **Abgeschlossen.** Commits `cfbfc93` und `ce87c3b`, gepusht |
-| B3 | Nicht begonnen |
+| B3 | **Abgeschlossen.** Commit `c3d22ff`, gepusht |
 | B4 | Wartet auf B-5, siehe unten |
 
 ### B2, abgeschlossen am 12. September 2026
@@ -692,6 +692,32 @@ Unfallrisiko.
 **Bewertungsfelder bestehender Szenen:** sechs Blöcke aus `HEAD` gegen die
 Arbeitskopie geparst und verglichen, null Unterschiede. Der Diff auf
 `appData.ts` betrifft die Typdeklaration, nicht die Daten.
+
+### B3, abgeschlossen am 12. September 2026
+
+Commit `c3d22ff`. Neu `src/components/BildwandViewer.tsx`.
+
+| Teil | Ergebnis |
+|---|---|
+| Rendering | Das Bild hängt als Fläche im Raum, im Seitenverhältnis der Datei. Keine Kugel, keine Panorama-Annahme. Dieselbe Szene trägt im Browser und in der Brille |
+| Phasen | Leiste mit Bezeichnung und Zeitangabe je Phase, mehrsprachig. Eine unbewertete Vergleichsphase ist gekennzeichnet, und dort ist nichts zu finden |
+| Bildwahl | Innerhalb der Phase, dazu Zoom und Einpassen |
+| Fund | Klick auf die Fläche wird über die Texturkoordinaten in Bildkoordinaten umgerechnet und gegen `trefferImBild` geprüft. Das Seitenverhältnis kommt aus dem geladenen Bild, nicht aus einer Konstante |
+| Zuordnung | Verortungen hängen an der Bild-URL, dasselbe Muster wie bei den Perspektiven eines Panoramas |
+| Fund-Vertrag | Die drei Felder des Neunschrittpfades sind in `DeficitConfirmedPayload` optional. Der Panorama-Viewer bewertet selbst, die Bildwand nicht |
+
+**Ausgewiesen, nicht übersehen:** In der Brille fehlt der Bewertungsablauf für
+die Konvention. Die Bildwand ist dort sichtbar, bewertet wird im Browser. Der
+VR-Pfad bricht mit Protokolleintrag ab, statt mit fehlenden Werten zu rechnen.
+
+**Prüfstand:** tsc 0, Build grün, 263 Tests in 25 Dateien.
+
+**Der Fehler, auf den es ankommt:** Texturkoordinaten laufen von unten, Bilder
+von oben. Ein vergessenes «1 minus» spiegelt jedes Defizit an der Bildmitte,
+der Treffer liegt meistens noch im Bild, und die Anwendung ist unauffällig
+falsch. Der Wächter prüft deshalb ausdrücklich aussermittig; in der Bildmitte
+stimmt beides.
+
 
 ### Offen
 
