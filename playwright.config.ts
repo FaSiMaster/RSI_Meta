@@ -30,7 +30,29 @@ export default defineConfig({
   },
 
   projects: [
-    { name: 'chromium', use: { ...devices['Desktop Chrome'] } },
+    // Die Regelpruefungen brauchen kein WebGL und laufen im Standardbrowser.
+    {
+      name: 'chromium',
+      testIgnore: /bildwand\.spec\.ts/,
+      use: { ...devices['Desktop Chrome'] },
+    },
+    // Eigenes Projekt fuer alles, was wirklich rendern muss.
+    //
+    // Das kopflose Chromium von Playwright hat ohne Grafikkarte kein WebGL,
+    // und dann entsteht gar kein Canvas — eine Pruefung auf seine Groesse
+    // waere still gruen, weil das Element fehlt. SwiftShader rendert in
+    // Software. Es ist langsam, deshalb steht es nicht im Hauptprojekt,
+    // sondern nur hier.
+    {
+      name: 'chromium-webgl',
+      testMatch: /bildwand\.spec\.ts/,
+      use: {
+        ...devices['Desktop Chrome'],
+        launchOptions: {
+          args: ['--use-gl=angle', '--use-angle=swiftshader', '--enable-unsafe-swiftshader'],
+        },
+      },
+    },
   ],
 
   webServer: {
