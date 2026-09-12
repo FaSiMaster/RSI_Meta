@@ -41,3 +41,6 @@ supabase/.temp/
 # Python-Zwischenstände der Skripte unter daten/
 __pycache__/
 *.pyc
+
+# Sicherungen der Entscheidformulare (entstehen beim Bearbeiten)
+.claude/entscheide/*.bak
