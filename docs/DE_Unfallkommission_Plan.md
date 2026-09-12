@@ -745,14 +745,36 @@ das so gewollt ist, ist eine Frage an den Verfasser des Berichts, nicht an das
 Werkzeug.
 
 ### Offen
-### Offen
+
+Alle vier Bauschritte sind erledigt, B-4 und B-5 behoben. Was bleibt, ist
+Feldarbeit und sind zwei Rechtsfragen.
+
+### Erledigt
 
 | Punkt | Lage |
 |---|---|
-| **B-5** | Eine Strategie besteht die Szene weiterhin. Der Entscheid F-006 wirkt: blosses Raten fällt von 62,6 auf 48,0 %. Wer aber in Schritt 1 immer «Sicherheitsdefizit» und in Schritt 2 immer «gross» antwortet, erreicht 61,0 % und liegt um acht Punkte über der Schwelle. Ursache ist die Verteilung der Einstufungen: fünfmal gross, zweimal mittel, keinmal klein. Rechnung und Wege im Entscheidjournal, festgehalten als Wächter in `punkteUko.test.ts`. Blockiert B4 |
-| B-4 | Erledigt durch F-006. Die frühere Lage, 62,6 % beim Raten, ist behoben |
-| Schritt 2 je Befund | Erledigt. Sieben Einstufungen aus F-009 bis F-015, die beiden Designprobleme haben keine |
-| Siebtes Bild | Entschieden über F-008: Abbildung 10 des Auditberichts. Zu klären bleibt die Nutzung des Luftbilds, weil Geobasisdaten Sachsen nicht ohne weiteres frei sind. Blockiert B4 |
-| B3 | Erledigt, Commit `c3d22ff` |
-| **B4, was mir fehlt** | Drei Dinge, und zwei davon kann ich nicht selbst: die Bilder müssen mit der Admin-PIN in den Bildspeicher, und die Nutzung des Luftbilds aus Abbildung 10 ist zu klären. Dazu die Antwort auf B-5 |
-| Kategoriepunkte bei der Konvention | Offen, in B2 bewusst weggelassen. Für den Schweizer Ablauf tragen sie 25 Punkte; für die Konvention ist kein Gegenstück vereinbart. Wenn eines gewünscht ist, braucht es einen Entscheid |
+| B1 bis B4 | Commits `b5cbbfb`, `cfbfc93`, `ce87c3b`, `c3d22ff`, `d5c6a9d` |
+| B-4 | Behoben durch F-006. Blosses Raten fällt von 62,6 auf 48,0 % |
+| **B-5** | Behoben durch die dritte Bedingung im Bestanden-Kriterium, Commit `d7ab99c`. Die Strategie «immer Sicherheitsdefizit, immer gross» erreicht weiterhin 61,0 %, besteht aber nicht mehr, weil sie beide Gestaltungsbefunde verkennt |
+| Schritt 2 je Befund | Sieben Einstufungen aus F-009 bis F-015 |
+| Kennungskollision | `SZ_2026_101` war belegt, neu `SZ_2026_115`. Das Erzeugungsskript prüft die belegten Kennungen seither vorher |
+
+### Nächster Schritt: die Szene in die Datenbank
+
+Das ist der einzige Schritt, der die Arbeit sichtbar macht, und er braucht die
+Admin-PIN. Acht Bilder in den Speicher, dann die Einfuhrdatei einlesen.
+Anleitung in `daten/NIEDERFRAUENDORF.md`.
+
+Danach am Bildschirm zu prüfen: ob die neun Verortungen sitzen. Sie sind am
+Gitternetz abgelesen und ausdrücklich Vorschlag; drei liegen auf Bild 2 eng
+beieinander.
+
+### Danach, in dieser Reihenfolge
+
+| Punkt | Warum in dieser Reihenfolge |
+|---|---|
+| **Rechtefrage an den Verfasser** | Die Befundtexte sind aus dem Auditbericht paraphrasiert und erscheinen mit dem Einlesen in der öffentlichen Anwendung. Dieselbe Frage betrifft das Luftbild aus Abbildung 10 zu Defizit 13, dessen Nutzung ungeklärt ist. Beides eine Anfrage, nicht zwei |
+| **Verortungseditor für Bildserien** | Ohne ihn wird jede Korrektur einer Verortung über die Einfuhrdatei gemacht. Das ist der erste Punkt, der bei der Arbeit an der Szene weh tut |
+| **Bewertungsablauf in der Brille** | Die Bildwand ist dort sichtbar, bewertet wird im Browser. Für eine Übung im Sitzen genügt das; für den Kurs auf dem Gerät nicht |
+| Kategoriepunkte bei der Konvention | In B2 bewusst weggelassen, weil kein Gegenstück zu den 25 Punkten des Schweizer Ablaufs vereinbart ist. Braucht einen Entscheid, wenn es eines geben soll |
+| Eine dritte Einstufung in der Szene | Keine Dringlichkeit mehr, seit B-5 behoben ist. Fachlich bliebe die Frage, ob eine Szene ohne einen einzigen Befund der Stufe «klein» die Einstufung gut übt |
