@@ -11,7 +11,7 @@
   --ok:#2d6a4f;
   --vor-bg:#eef2f6; --vor-line:#d5e0ea; --knopf:#fbfbfa; --knopf-hover:#f0f0ec;
   --opt-hover:#f6f6f3; --emp-bg:#f0f5ef; --emp-line:#cfe0cd; --beleg:#fafaf8;
-  --ctx:#3a3a36; --auf-akz:#ffffff; --auf-krit:#ffffff;
+  --ctx:#3a3a36;
 }
 /* Dunkle Fassung: Werte gegen die helle gemessen, jeder Text ueber 6:1. */
 @media (prefers-color-scheme: dark){
@@ -21,8 +21,10 @@
     --ok:#7fc9a4;
     --vor-bg:#1b2430; --vor-line:#2c3a4a; --knopf:#262a30; --knopf-hover:#31363e;
     --opt-hover:#262a30; --emp-bg:#1d2a22; --emp-line:#31503c; --beleg:#191b1f;
-    --ctx:#cfcfc9; --auf-akz:#10151a; --auf-krit:#16171a;
+    --ctx:#cfcfc9;
   }
+  button.primary{color:#10151a}
+  .t-blocker{color:#16171a}
 }
 *{box-sizing:border-box}
 body{margin:0;background:var(--bg);color:var(--ink);
@@ -38,7 +40,7 @@ h1{font-size:20px;margin:0 0 2px}
 button{font:inherit;font-size:13px;padding:7px 12px;border:1px solid var(--line);
   background:var(--knopf);color:inherit;border-radius:5px;cursor:pointer}
 button:hover{background:var(--knopf-hover)}
-button.primary{background:var(--akz);color:var(--auf-akz);border-color:var(--akz)}
+button.primary{background:var(--akz);color:#fff;border-color:var(--akz)}
 button.primary:hover{filter:brightness(1.12)}
 select{font:inherit;font-size:13px;padding:6px;border:1px solid var(--line);border-radius:5px;background:var(--card);color:inherit}
 main{max-width:980px;margin:20px auto 120px;padding:0 20px}
@@ -55,7 +57,7 @@ main{max-width:980px;margin:20px auto 120px;padding:0 20px}
 .tag{font-size:11px;padding:2px 7px;border-radius:10px;border:1px solid currentColor;white-space:nowrap}
 .t-kritisch{color:var(--krit)}.t-hoch{color:var(--hoch)}
 .t-mittel{color:var(--mittel)}.t-gering{color:var(--gering)}
-.t-blocker{color:var(--auf-krit);background:var(--krit);border-color:var(--krit)}
+.t-blocker{color:#fff;background:var(--krit);border-color:var(--krit)}
 .t-auf{color:var(--mute)}
 .ctx{margin:8px 0;color:var(--ctx);font-size:14.5px}
 details{margin:8px 0;font-size:13.5px}
@@ -83,7 +85,7 @@ footer{position:fixed;bottom:0;left:0;right:0;background:var(--card);
 .fw{max-width:980px;margin:0 auto;display:flex;flex-wrap:wrap;gap:8px;align-items:center}
 .status{font-size:13px;color:var(--mute);margin-left:auto}
 .toast{position:fixed;left:50%;transform:translateX(-50%);bottom:74px;background:var(--ink);
-  color:var(--bg);padding:9px 16px;border-radius:5px;font-size:14px;opacity:0;transition:opacity .25s;
+  color:#fff;padding:9px 16px;border-radius:5px;font-size:14px;opacity:0;transition:opacity .25s;
   pointer-events:none;z-index:20}
 .toast.on{opacity:1}
 @media (max-width:700px){

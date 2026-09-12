@@ -11,7 +11,7 @@
   --ok:#2d6a4f;
   --vor-bg:#eef2f6; --vor-line:#d5e0ea; --knopf:#fbfbfa; --knopf-hover:#f0f0ec;
   --opt-hover:#f6f6f3; --emp-bg:#f0f5ef; --emp-line:#cfe0cd; --beleg:#fafaf8;
-  --ctx:#3a3a36; --auf-akz:#ffffff; --auf-krit:#ffffff;
+  --ctx:#3a3a36;
 }
 /* Dunkle Fassung: Werte gegen die helle gemessen, jeder Text ueber 6:1. */
 @media (prefers-color-scheme: dark){
@@ -21,8 +21,10 @@
     --ok:#7fc9a4;
     --vor-bg:#1b2430; --vor-line:#2c3a4a; --knopf:#262a30; --knopf-hover:#31363e;
     --opt-hover:#262a30; --emp-bg:#1d2a22; --emp-line:#31503c; --beleg:#191b1f;
-    --ctx:#cfcfc9; --auf-akz:#10151a; --auf-krit:#16171a;
+    --ctx:#cfcfc9;
   }
+  button.primary{color:#10151a}
+  .t-blocker{color:#16171a}
 }
 *{box-sizing:border-box}
 body{margin:0;background:var(--bg);color:var(--ink);
@@ -38,7 +40,7 @@ h1{font-size:20px;margin:0 0 2px}
 button{font:inherit;font-size:13px;padding:7px 12px;border:1px solid var(--line);
   background:var(--knopf);color:inherit;border-radius:5px;cursor:pointer}
 button:hover{background:var(--knopf-hover)}
-button.primary{background:var(--akz);color:var(--auf-akz);border-color:var(--akz)}
+button.primary{background:var(--akz);color:#fff;border-color:var(--akz)}
 button.primary:hover{filter:brightness(1.12)}
 select{font:inherit;font-size:13px;padding:6px;border:1px solid var(--line);border-radius:5px;background:var(--card);color:inherit}
 main{max-width:980px;margin:20px auto 120px;padding:0 20px}
@@ -55,7 +57,7 @@ main{max-width:980px;margin:20px auto 120px;padding:0 20px}
 .tag{font-size:11px;padding:2px 7px;border-radius:10px;border:1px solid currentColor;white-space:nowrap}
 .t-kritisch{color:var(--krit)}.t-hoch{color:var(--hoch)}
 .t-mittel{color:var(--mittel)}.t-gering{color:var(--gering)}
-.t-blocker{color:var(--auf-krit);background:var(--krit);border-color:var(--krit)}
+.t-blocker{color:#fff;background:var(--krit);border-color:var(--krit)}
 .t-auf{color:var(--mute)}
 .ctx{margin:8px 0;color:var(--ctx);font-size:14.5px}
 details{margin:8px 0;font-size:13.5px}
@@ -83,7 +85,7 @@ footer{position:fixed;bottom:0;left:0;right:0;background:var(--card);
 .fw{max-width:980px;margin:0 auto;display:flex;flex-wrap:wrap;gap:8px;align-items:center}
 .status{font-size:13px;color:var(--mute);margin-left:auto}
 .toast{position:fixed;left:50%;transform:translateX(-50%);bottom:74px;background:var(--ink);
-  color:var(--bg);padding:9px 16px;border-radius:5px;font-size:14px;opacity:0;transition:opacity .25s;
+  color:#fff;padding:9px 16px;border-radius:5px;font-size:14px;opacity:0;transition:opacity .25s;
   pointer-events:none;z-index:20}
 .toast.on{opacity:1}
 @media (max-width:700px){
@@ -105,245 +107,153 @@ footer{position:fixed;bottom:0;left:0;right:0;background:var(--card);
 /* DATEN-ANFANG — nur dieser Block wird beim Erzeugen ersetzt */
 const DATEN = {
   meta: {
-    id: "2026-09-12_de-einstufung",
-    titel: "Niederfrauendorf, Einstufung und Nullmodell",
+    id: "2026-09-12_de-niederfrauendorf",
+    titel: "Niederfrauendorf, Befunde aus den Entscheiden",
     projekt: "RSI VR Tool, Verfahren der Unfallkommission Deutschland",
     datum: "2026-09-12",
-    kontext: "B1 ist gebaut und live. Was noch fehlt, bevor die Szene angelegt werden kann: eine Antwort auf das Nullmodell, ein Kriterium für Schritt 2, und die Einstufung der sieben Sicherheitsdefizite. Die beiden Designprobleme haben keinen Schritt 2.",
+    kontext: "Die Entscheide E-1 bis E-12 sind gefallen. Erst dadurch sind drei Befunde entstanden, dazu kommt die Frage nach dem Baubeginn. B1 und B2 hängen an keinem dieser Punkte, B4 an den ersten zwei.",
     vorentscheide: [
-      "Befundliste steht: neun Befunde. Sicherheitsdefizite 4, 9, 10, 12, 14, 15, 17; Designprobleme 8 und 13. Defizit 7 bleibt aussen (F-005).",
-      "Punkteverteilung steht: Schritt 1 trägt 60, Schritt 2 trägt 40; ein Designproblem zählt in der Szenensumme 60 gegen 100 (E-7a, E-7b).",
-      "Die Konvention hat keine Normquelle. Jedes Kriterium für Schritt 2 ist deshalb eine Setzung, keine Ableitung aus einer Richtlinie. Die Vorschläge unten stützen sich auf die Sprache und die Unfallzuordnung des Auditberichts, und das ist im Datensatz als Schlussfolgerung zu kennzeichnen.",
-      "B1 ist committet, gepusht und auf rsi-meta.vercel.app ausgeliefert. Am Bundle geprüft: live und lokal tragen dieselbe Kennung index-nvfs78jJ.js. Sichtbar ändert sich nichts, B1 ist reines Datenmodell."
+      "Knotenpunkt liegt bei 50.877375, 13.723016. Aus OpenStreetMap als einziger Geometriepunkt bestimmt, den die Wege mit ref S 183 und S 190 teilen. Die Ortssuche nach der Glashütter Strasse allein liegt 160 m daneben.",
+      "Chronologie nach E-12: ohne Regelung bis 2015, mobile Lichtsignalanlage Anfang 2016 bis 21. Februar 2020, Minikreisverkehr ab 21. Februar 2020. Der Ausgangsprompt hatte die letzten zwei vertauscht.",
+      "Die Ordnernamen der Bilder, 2016-2022 und 2022-2025, sind irreführend und werden nicht übernommen. Gemessen tragen sie je einen Aufnahmetag: 13. September 2017 und 12. Mai 2022.",
+      "Ein Street-View-Panorama wird nicht heruntergeladen und eingebaut. Das ist keine Abwägung, sondern eine Grenze, weil die Anwendung öffentlich ausgeliefert wird. Was stattdessen möglich ist, steht in F-004.",
+      "Defizit 10 und 14 sind entgegen meiner ersten Einschätzung belegbar. Der Bericht stützt sie auf Verhaltensbeobachtung, die Bilder 3 und 6 zeigen dieses Verhalten unmittelbar."
     ]
   },
   fragen: [
     {
-      id: "F-006",
-      titel: "Das Nullmodell besteht die Szene weiterhin. Was gilt?",
-      kontext: "F-001 und F-002 heben sich teilweise auf. Die Rechnung zu F-002 unterstellte vier Sicherheitsdefizite und zwei Designprobleme; mit F-001 sind es sieben zu zwei. Wer in Schritt 1 immer «Sicherheitsdefizit» antwortet und Schritt 2 rät, erreicht 513,3 von 820 Punkten, also 62,6 %, gegen eine Schwelle von 60 %. Bei jeder Option unten steht die gerechnete Wirkung.",
+      id: "F-002",
+      titel: "Das Nullmodell besteht die Szene. Was wird dagegen getan?",
+      kontext: "Von den sechs gewählten Befunden ist genau einer ein Designproblem, weil Defizit 13 abgewählt wurde. Wer in Schritt 1 immer «Sicherheitsdefizit» antwortet und Schritt 2 rät, erreicht im Erwartungswert 366,7 von 560 Punkten, also 65,5 %, und liegt damit über der Schwelle von 60 %. Die Pflichtbefund-Regel greift dagegen nicht, weil sie das Auffinden im Bild prüft und nicht die Bewertung. Ursache ist das Verhältnis fünf zu eins.",
       schweregrad: "kritisch",
       aufwand: "mittel",
       blocker: true,
       belege: [
-        ".claude/entscheide/JOURNAL.md, Abschnitt «Restposten und neuer Befund», vollständige Rechnung",
+        "docs/DE_Unfallkommission_Plan.md, Abschnitt B-2, vollständige Rechnung",
         "src/data/bestandenKriterium.ts, BESTANDEN_DEFAULT, Schwelle 60 %",
-        "Auditbericht, Defizit 6, Mindestaussendurchmesser, S. 12 — reiner Massbefund wie Defizit 8"
+        "Protokoll 12.09.2026, E-7a 60 zu 40 und E-7b Gewicht 60 gegen 100",
+        "Auditbericht S 183/S 190, Kapitel Auditergebnis, Defizit 8 und 13"
       ],
       optionen: [
-        { id: "a", label: "Eine falsche Einstufung in Schritt 1 kostet Punkte, statt null zu geben",
+        { id: "a", label: "Defizit 13 als zweites Designproblem aufnehmen, mit Abbildung 10 als siebtes Bild",
           empfehlung: true,
-          begruendung: "Trifft genau den Fehler, den die Konvention verhindern will: alles für ein Sicherheitsdefizit zu halten. Wer ein Designproblem falsch einstuft, verliert die 60 Punkte von Schritt 1 statt sie nur nicht zu bekommen. Nullmodell dann 393,3 von 820, also 48,0 %. Wer Schritt 1 beherrscht und Schritt 2 rät, liegt bei 77,2 % und besteht. Kein weiteres Bild nötig.",
-          konfidenz: "mittel" },
-        { id: "b", label: "Defizit 6 als drittes Designproblem aufnehmen",
-          begruendung: "Behebt das Verhältnis an der Ursache: Defizit 6 nennt wie Defizit 8 nur eine Massunterschreitung, die Sicherheitsfolge führt der Bericht als Defizit 10. Nullmodell dann 513,3 von 880, also 58,3 %. Preis: ein achtes Bild, denn der Aussendurchmesser ist nur am Luftbild erkennbar." },
+          begruendung: "Behebt die Ursache statt das Symptom. Bei vier Sicherheitsdefiziten und zwei Designproblemen sinkt der Erwartungswert auf 293,3 von 520, also 56,4 %, und das Nullmodell fällt durch. Preis ist ein siebtes Bild, die Nachtrassierung aus dem Bericht.",
+          konfidenz: "hoch" },
+        { id: "b", label: "Eigene Designproblem-Befunde der Fachexperten einholen",
+          begruendung: "Belastbarer als die Ableitung aus der Berichtsstruktur, blockiert B4 aber bis zur Zuarbeit." },
         { id: "c", label: "Schwelle für DE-Szenen auf 70 % heben",
-          begruendung: "Billigste Lösung, der Szenen-Override in bestandenKriterium.ts trägt sie ohne Codeänderung. Nullmodell 62,6 % fällt durch. Behandelt aber das Symptom, nicht die Ursache." },
-        { id: "d", label: "So lassen",
-          begruendung: "Vertretbar, wenn die Szene als Einstieg und nicht als Prüfung gedacht ist. Dann sollte im Datensatz stehen, dass sie kein Bestehen misst." }
+          begruendung: "Technisch billig über den Szenen-Override in bestandenKriterium.ts, aber willkürlich und behandelt nur das Symptom." },
+        { id: "d", label: "So lassen, das Nullmodell wird in Kauf genommen",
+          begruendung: "Vertretbar, wenn die Szene als Einstieg und nicht als Prüfung gedacht ist. Dann sollte das im Datensatz stehen." }
       ],
       folgeaktion: false,
       bedingung: null
     },
     {
-      id: "F-007",
-      titel: "Welches Kriterium trägt Schritt 2?",
-      kontext: "Die Einstufung gross, mittel oder klein braucht einen Massstab, sonst sind die sieben Einzelwerte darunter willkürlich. Die Konvention nennt keinen. Ohne diese Antwort sind die Vorschläge in F-008 bis F-014 nicht überprüfbar.",
+      id: "F-001",
+      titel: "Bild 4 und Bild 5 tragen nach E-9 keinen Befund mehr. Wie weiter?",
+      kontext: "E-9 wählt Defizit 17, 16 und 12 ab, E-8 behält alle sechs Bilder. Bild 4 war allein für Defizit 17 vorgesehen, Bild 5 für 12 und 7, wobei 7 nie zur Wahl stand. Zur Sachlage gehört, dass Defizit 17 der einzige Befund des Berichts ist, dem die Unfallanalyse das laufende Geschehen unmittelbar zuordnet: fünf der zehn Unfälle, darunter alle drei Längsverkehrsunfälle.",
       schweregrad: "hoch",
       aufwand: "klein",
       blocker: true,
       belege: [
-        "Auftrag: «eine mit Fachexperten vereinbarte Konvention ohne Normquelle»",
-        "Auditbericht, Unfallanalyse S. 5 und Defizit 12 und 17 — die einzigen mit ausdrücklicher Unfallzuordnung",
-        "Auditbericht, Empfehlungen S. 23 — Zuordnung zu kurz-, mittel- und langfristigen Massnahmen"
+        "Protokoll 12.09.2026, E-8 gegen E-9",
+        "Auditbericht, Unfallanalyse, Unfallanzahl und Charakteristik, S. 5",
+        "Auditbericht, Defizit 17, Engstelle in Knotenpunktzufahrt, S. 18",
+        "docs/DE_Unfallkommission_Plan.md, Abschnitt B-1, Tabelle"
       ],
       optionen: [
-        { id: "a", label: "Unfallzuordnung im Bericht",
+        { id: "a", label: "Defizit 17 und 12 doch aufnehmen, beide Bilder bleiben",
           empfehlung: true,
-          begruendung: "Gross, wenn der Bericht dem Befund Unfälle unmittelbar zuordnet; mittel bei einem Regelverstoss mit benannter Sicherheitsfolge ohne Unfallzuordnung; klein bei einem Regelverstoss ohne benannte Folge. Am Bericht belegbar und für Lernende nachvollziehbar.",
-          konfidenz: "mittel" },
-        { id: "b", label: "Intensität der Normsprache",
-          begruendung: "Gross bei «zwingend» und «ist zu», mittel bei «soll», klein bei «sollte». Im Bericht wörtlich nachlesbar, sagt aber nichts über die Wirkung an dieser Stelle." },
-        { id: "c", label: "Massnahmenhorizont des Berichts",
-          begruendung: "Gross, wenn der Befund in den kurzfristigen Massnahmen steht. Wenig trennscharf: die provisorische Lichtsignalanlage deckt zehn der achtzehn Defizite ab." },
-        { id: "d", label: "Fachurteil ohne festes Kriterium",
-          begruendung: "Ehrlich gegenüber der Konvention, die keinen Massstab nennt. Dann ist die Musterlösung nicht begründbar, wenn eine Teilnehmerin fragt, warum ein Befund mittel und nicht gross ist." }
+          begruendung: "Defizit 17 ist der einzige Befund mit unmittelbarer Unfallzuordnung und damit fachlich der stärkste der Auswahl. Die Bilder stehen bereits, der Aufwand ist die Beurteilung zweier weiterer Befunde.",
+          konfidenz: "hoch" },
+        { id: "b", label: "Nur Defizit 17 aufnehmen, Bild 5 weglassen",
+          begruendung: "Nimmt den stärksten Befund mit und lässt die Fahrstreifenbreiten weg, die ohne Messwerte am Bild schwer zu beurteilen sind." },
+        { id: "c", label: "Beide Bilder als Kontext ohne Befund behalten",
+          begruendung: "Zeigt die Engstelle und den Schwerverkehr, ohne dass dort etwas zu finden ist. Lernende suchen erfahrungsgemäss trotzdem." },
+        { id: "d", label: "Bild 4 und 5 weglassen, Übung auf vier Bilder",
+          begruendung: "Konsequent zu E-9. Die Übung verliert dann die Engstelle und den Schwerverkehr vollständig." }
       ],
       folgeaktion: false,
       bedingung: null
     },
     {
-      id: "F-008",
-      titel: "Das siebte Bild für Defizit 13",
-      kontext: "Defizit 13, die ungenügenden Radien der Eckausrundungen, ist eines der beiden Designprobleme und auf keinem der sechs Fotos erkennbar. Der Bericht zeigt es als Abbildung 10, eine Nachtrassierung auf dem Luftbild mit Quellenangabe Geobasisdaten Sachsen.",
+      id: "F-003",
+      titel: "Beginne ich mit B1 und B2, bevor diese Punkte entschieden sind?",
+      kontext: "B1 baut das Datenmodell um, B2 die Verfahrensweiche und die Bewertung. Beide hängen an keinem der Punkte oben: die Punkteverteilung steht mit E-7a und E-7b fest, und welche Befunde in die Szene kommen, berührt erst B4. Der Umbau von correctAssessment zu einer diskriminierten Union betrifft 31 Zugriffe in 13 Dateien.",
       schweregrad: "hoch",
-      aufwand: "klein",
+      aufwand: "gross",
       blocker: true,
       belege: [
-        "Auditbericht, Abbildung 10, S. 15 — Nachtrassierung mit D = 13 m und Eckausrundungen von 8 m",
-        "Auditbericht, Quellenangabe der Abbildung: Geobasisdaten Sachsen",
-        "E-6: der Ordner kommt nicht ins Repo; Bilder gehen in den Supabase-Speicher"
+        "docs/DE_Unfallkommission_Plan.md, Abschnitt f, Änderungsplan",
+        "src/data/appData.ts:102, AppDeficit.correctAssessment mit sechs Pflichtfeldern",
+        "Messung im Repo: 31 Zugriffe auf correctAssessment in 13 Dateien",
+        "src/utils/sphereCoords.ts:16, DefizitVerortung ist bereits eine Union über das Feld typ"
       ],
       optionen: [
-        { id: "a", label: "Abbildung 10 aus dem Bericht übernehmen",
+        { id: "a", label: "Ja, B1 und B2 jetzt, B4 nach diesen Entscheiden",
           empfehlung: true,
-          begruendung: "Zeigt genau, was der Befund meint, und stammt aus der Quelle selbst. Zu klären ist die Nutzung des Luftbilds: Geobasisdaten Sachsen sind nicht ohne weiteres frei, und die Abbildung ist eine Bearbeitung durch das Landesamt.",
-          konfidenz: "mittel" },
-        { id: "b", label: "Defizit 13 doch weglassen",
-          begruendung: "Dann bleibt ein Designproblem, und F-006 wird umso wichtiger. Die Übung verliert den Fall, in dem ein Mass nicht eingehalten ist, ohne dass daraus unmittelbar eine Gefahr folgt." },
-        { id: "c", label: "Eigenes Luftbild erzeugen",
-          begruendung: "Aus einer freien Quelle mit eigener Nachtrassierung. Aufwand, und die Masse müssten nachgezeichnet werden, was eine eigene fachliche Aussage wäre." }
+          begruendung: "Nutzt die Zeit für den Teil, der unabhängig ist, und hält die Commit-Reihenfolge des Auftrags ein. B4 wartet ohnehin auf F-001 und F-002.",
+          konfidenz: "hoch" },
+        { id: "b", label: "Nur B1, das Datenmodell",
+          begruendung: "Kleinster sinnvoller Schritt. B2 käme dann mit der Bewertung zusammen, was den Zusammenhang von Weiche und Punkten sichtbar hält." },
+        { id: "c", label: "Warten, bis alle Punkte entschieden sind",
+          begruendung: "Vermeidet jede Nacharbeit, kostet aber Zeit für einen Umbau, den die offenen Punkte nicht berühren." }
+      ],
+      folgeaktion: false,
+      bedingung: null
+    },
+    {
+      id: "F-004",
+      titel: "Welche Bildquelle gilt, nachdem die Panoramaprüfung negativ ausgefallen ist?",
+      kontext: "Geprüft am 12. September 2026 am echten Knotenpunkt. KartaView führt 23 Bilder im Umkreis von 120 m, drei davon 5 m vom Knoten, alle vom 30. Juli 2021 und damit aus der Zeit des Minikreisverkehrs; die Projektion ist durchgehend PLANE, es sind also keine Panoramen. Mapillary antwortet ohne Zugangsschlüssel nicht. Panoramax hat keine Abdeckung. Keine offene Quelle liefert ein Panorama dieses Knotenpunkts.",
+      schweregrad: "hoch",
+      aufwand: "mittel",
+      blocker: false,
+      belege: [
+        "api.kartaview.org, nearby-photos, 50.877375 / 13.723016, Radius 120 m, 23 Treffer",
+        "graph.mapillary.com, Antwort «Invalid OAuth 2.0 Access Token»",
+        "api.panoramax.xyz, Suche über die Umgebung, null Treffer",
+        "OpenStreetMap-Wiki zu KartaView: Bilder unter CC BY-SA 4.0. Die Angabe der Plattform selbst ist nicht gegengelesen, weil die Seite eine Javascript-Anwendung ist",
+        "docs/DE_Unfallkommission_Plan.md, Abschnitt B-3"
+      ],
+      optionen: [
+        { id: "a", label: "Nur die Bildwand aus B3, keine fremde Quelle",
+          empfehlung: true,
+          begruendung: "Die eigenen Bilder sind zahlreicher, neuer und näher am Befund als alles Verfügbare. Ein Panorama löst hier kein Problem, das die Bildwand offen lässt.",
+          konfidenz: "hoch" },
+        { id: "b", label: "Die 23 KartaView-Bilder als lizenzkonforme Ergänzung beschaffen",
+          begruendung: "Aus der richtigen Phase, CC BY-SA 4.0 mit Namensnennung und Weitergabe unter gleichen Bedingungen. Die Weitergabebedingung ist vor dem Einbau zu prüfen, weil sie auf abgeleitete Werke durchschlägt." },
+        { id: "c", label: "Mapillary erst prüfen, Zugangsschlüssel anlegen",
+          begruendung: "Kostenlos und in Minuten erledigt. Ob dort ein Panorama liegt, ist offen; die Abdeckung im ländlichen Sachsen ist typischerweise dünn." },
+        { id: "d", label: "Street View lizenzkonform einbetten, nur im Browserteil",
+          begruendung: "Über die Maps-Javascript-Schnittstelle mit Googles Attribution zulässig. Trägt nicht in die Brille, weil ein eingebetteter Rahmen in der Szene nicht darstellbar ist, und bringt eine Netzabhängigkeit in eine Anwendung, die offline laufen soll." }
       ],
       folgeaktion: true,
       bedingung: null
     },
     {
-      id: "F-009",
-      titel: "Einstufung Defizit 17, Engstelle in der Knotenpunktzufahrt",
-      kontext: "Der Bericht nennt 4,70 m Breite bei 4,75 m Begegnungsbedarf nach RASt Kap. 4.3, beidseitig Mauer und Schutzplanke, ungenügende Sichtbeziehungen, nicht vernachlässigbaren Schwerverkehr mit Linienbus, und eine Prognose, die den Verkehr auf diesem Abschnitt verdreifacht.",
+      id: "F-005",
+      titel: "Wird Defizit 7, die ungenügend breite Kreisfahrbahn, aufgenommen?",
+      kontext: "Defizit 7 liegt auf Bild 5, stand aber in E-9 nie zur Wahl, weil es in meiner Optionsliste fehlte. Der Bericht nennt gemessene Kreisfahrbahnbreiten zwischen 3,9 m und 6,0 m gegen 6,0 m erforderlich und verlangt eine kreisrunde Anlage.",
       schweregrad: "mittel",
       aufwand: "klein",
       blocker: false,
       belege: [
-        "Auditbericht, Defizit 17, S. 18",
-        "Auditbericht, Unfallanalyse S. 5: fünf der zehn Unfälle haben ihre Ursache in der Befahrbarkeit dieses Bereichs, darunter alle drei Längsverkehrsunfälle"
+        "Auditbericht, Defizit 7, Ungenügend breite Kreisfahrbahn, S. 13",
+        "Merkblatt für die Anlage von Kreisverkehren, Kap. 3.3 und Tab. 2, wie im Bericht zitiert",
+        "Protokoll 12.09.2026, E-9: Defizit 7 fehlt in der Optionsliste"
       ],
       optionen: [
-        { id: "gross", label: "gross", empfehlung: true,
-          begruendung: "Der einzige Befund mit unmittelbarer Unfallzuordnung, und zwar für die Hälfte des Unfallgeschehens. Nach dem Kriterium aus F-007 Option a eindeutig.",
-          konfidenz: "hoch" },
-        { id: "mittel", label: "mittel" },
-        { id: "klein", label: "klein" }
-      ],
-      folgeaktion: false,
-      bedingung: null
-    },
-    {
-      id: "F-010",
-      titel: "Einstufung Defizit 12, ungenügende Fahrstreifenbreiten",
-      kontext: "Gefordert sind nach dem Merkblatt 3,25 bis 3,75 m in der Zufahrt und 3,50 bis 4,00 m in der Ausfahrt. Gemessen wurden Werte ab 2,20 m, im Arm S 183 Nordost eine Engstelle mit 2,50 m Zufahrt und 2,20 m Ausfahrt.",
-      schweregrad: "mittel",
-      aufwand: "klein",
-      blocker: false,
-      belege: [
-        "Auditbericht, Defizit 12, S. 14, Tabelle der fünf Arme",
-        "Auditbericht, Defizit 12: «Die beengten Verhältnisse in den Zu- und Ausfahrten spiegeln sich deutlich im aktuellen Unfallgeschehen wieder»"
-      ],
-      optionen: [
-        { id: "gross", label: "gross", empfehlung: true,
-          begruendung: "Der Bericht stellt den Bezug zum Unfallgeschehen ausdrücklich her und nennt denselben Knotenpunktarm wie bei Defizit 17. Nach dem Kriterium aus F-007 Option a gross.",
-          konfidenz: "hoch" },
-        { id: "mittel", label: "mittel" },
-        { id: "klein", label: "klein" }
-      ],
-      folgeaktion: false,
-      bedingung: null
-    },
-    {
-      id: "F-011",
-      titel: "Einstufung Defizit 9, Kreisinsel ohne Bordeinfassung",
-      kontext: "Das Merkblatt verlangt einen 4 bis 5 cm hohen Bord. Er fehlt, der Übergang ist höhengleich, und die Insel wird nach Feststellung des Berichts regelmässig und ohne Komforteinbussen von Personenwagen überfahren.",
-      schweregrad: "mittel",
-      aufwand: "klein",
-      blocker: false,
-      belege: [
-        "Auditbericht, Defizit 9, S. 13",
-        "Auditbericht, Defizit 9: «Damit ist der Bord, zusammen mit einer wirksamen Kreisinsel, das zentrale Element zur Gewährleistung der Verkehrssicherheit des Kreisverkehrs»"
-      ],
-      optionen: [
-        { id: "gross", label: "gross", empfehlung: true,
-          begruendung: "Der Bericht nennt den Bord das zentrale Element der Verkehrssicherheit und belegt die Folge durch Beobachtung. Keine eigene Unfallzuordnung, aber die Wirkung ist am Ort festgestellt, nicht abgeleitet.",
+        { id: "a", label: "Ja, als Sicherheitsdefizit aufnehmen",
+          empfehlung: true,
+          begruendung: "Gehört sachlich zur selben Gruppe wie 6 und 8 und ist auf Bild 5 an der Spurführung der begegnenden Fahrzeuge erkennbar. Die Einstufung nach Schritt 2 legst du fest, nicht ich.",
           konfidenz: "mittel" },
-        { id: "mittel", label: "mittel" },
-        { id: "klein", label: "klein" }
+        { id: "b", label: "Nein, nicht aufnehmen",
+          begruendung: "Ohne Messwerte am Bild schwer zu beurteilen, und die Übung hat mit 6 und 8 schon zwei Befunde zur Geometrie des Kreises." }
       ],
       folgeaktion: false,
-      bedingung: null
-    },
-    {
-      id: "F-012",
-      titel: "Einstufung Defizit 10, fehlende Ablenkung der Geradeausströme",
-      kontext: "Die Kreisinsel misst 3 m statt mindestens 4 m und hat keinen Bord. Der Bericht stellt vor Ort fest, dass Fahrzeuge den Knotenpunkt nahezu geradlinig überfahren und auch Linksabbieger den direkten Weg nehmen; die geschwindigkeitsreduzierende Wirkung des Kreisverkehrs ist gering.",
-      schweregrad: "mittel",
-      aufwand: "klein",
-      blocker: false,
-      belege: [
-        "Auditbericht, Defizit 10, S. 14",
-        "Auditbericht, Abbildung 11: «Überfahren der Kreisinsel, überwiegend beobachtetes Fahrverhalten am Knotenpunkt»"
-      ],
-      optionen: [
-        { id: "gross", label: "gross", empfehlung: true,
-          begruendung: "Die Ablenkung ist der Wirkmechanismus eines Kreisverkehrs. Fällt sie aus, entfällt die Geschwindigkeitsdämpfung, und das ist am Ort beobachtet. Ohne eigene Unfallzuordnung, deshalb nicht zweifelsfrei gross.",
-          konfidenz: "mittel" },
-        { id: "mittel", label: "mittel" },
-        { id: "klein", label: "klein" }
-      ],
-      folgeaktion: false,
-      bedingung: null
-    },
-    {
-      id: "F-013",
-      titel: "Einstufung Defizit 4, fehlende Anlagen für den Fussverkehr am Knoten",
-      kontext: "Am Knotenpunkt fehlt jede Anlage für den Fussverkehr. Weil die Kreisfahrbahn bis an die Bebauung, die Einfriedung oder die Schutzplanke reicht, müssen Zufussgehende nach Feststellung des Berichts ungeschützt auf der Fahrbahn laufen. Betroffen sind auch Wege von und zur Bushaltestelle.",
-      schweregrad: "mittel",
-      aufwand: "klein",
-      blocker: false,
-      belege: [
-        "Auditbericht, Defizit 4, S. 11",
-        "Merkblatt für die Anlage von Kreisverkehren, Kap. 1.4.1, wie im Bericht zitiert: sichere Führung des Fussverkehrs von besonderer Bedeutung",
-        "Auditbericht, Defizit 1, S. 9: besonders nachteilig für Kinder, Schüler und mobilitätseingeschränkte Menschen"
-      ],
-      optionen: [
-        { id: "gross", label: "gross", empfehlung: true,
-          begruendung: "Ungeschützte Zufussgehende auf der Fahrbahn eines Knotenpunkts mit Schwerverkehr und drei Buslinien. Im Unfallgeschehen der letzten Jahre nicht abgebildet, was bei kleinen Zahlen und wenigen Zufussgehenden kein Gegenbeweis ist.",
-          konfidenz: "mittel" },
-        { id: "mittel", label: "mittel" },
-        { id: "klein", label: "klein" }
-      ],
-      folgeaktion: false,
-      bedingung: null
-    },
-    {
-      id: "F-014",
-      titel: "Einstufung Defizit 14, fehlende Begreifbarkeit und Akzeptanz",
-      kontext: "Sammelbefund über die baulichen Gestaltungsdefizite 6 bis 13. Der Bericht stellt fest, dass sich kaum das Fahrverhalten eines Kreisverkehrs einstellt, das Zeichen 295 regelmässig überfahren und die Kreisfahrbahn kaum als solche genutzt wird, woraus Unsicherheiten bei den Vorfahrtregelungen entstehen.",
-      schweregrad: "mittel",
-      aufwand: "klein",
-      blocker: false,
-      belege: [
-        "Auditbericht, Defizit 14, S. 16",
-        "Auditbericht, Veranlassung S. 8: «trotz permanent festgestellten Fehlverhalten der Verkehrsteilnehmer beim Durchfahren des Minikreisverkehrs (ohne aktuelle Unfallfolgen)»"
-      ],
-      optionen: [
-        { id: "mittel", label: "mittel", empfehlung: true,
-          begruendung: "Der Bericht selbst hält in der Veranlassung fest, dass das Fehlverhalten ohne aktuelle Unfallfolgen bleibt. Dazu ist es ein Sammelbefund, dessen Ursachen einzeln schon in der Liste stehen; gross würde dieselbe Sache doppelt gewichten.",
-          konfidenz: "mittel" },
-        { id: "gross", label: "gross" },
-        { id: "klein", label: "klein" }
-      ],
-      folgeaktion: false,
-      bedingung: null
-    },
-    {
-      id: "F-015",
-      titel: "Einstufung Defizit 15, Erkennbarkeit nicht gegeben",
-      kontext: "Das Merkblatt sagt, ein Minikreisverkehr solle nicht angelegt werden, wenn er bei der Annäherung nicht rechtzeitig als solcher erkennbar ist, und der Eindruck einer durchlaufenden Strasse sei zwingend zu vermeiden. Am Knotenpunkt sind Zufahrten, Kreisfahrbahn, Kreisinsel und Beschilderung nach Feststellung des Berichts nicht ausreichend gestaltet.",
-      schweregrad: "mittel",
-      aufwand: "klein",
-      blocker: false,
-      belege: [
-        "Auditbericht, Defizit 15, S. 16",
-        "Merkblatt für die Anlage von Kreisverkehren, Kap. 2.2, wie im Bericht zitiert: «zwingend der Eindruck einer ununterbrochenen, durchlaufenden Strasse zu vermeiden»"
-      ],
-      optionen: [
-        { id: "mittel", label: "mittel", empfehlung: true,
-          begruendung: "Regelbezug klar, Folge als Unsicherheit beschrieben, keine eigene Unfallzuordnung. Gegen diesen Vorschlag spricht das Wort «zwingend» in der Richtlinie; wer der Normsprache folgt statt der Unfallzuordnung, landet bei gross.",
-          konfidenz: "gering" },
-        { id: "gross", label: "gross" },
-        { id: "klein", label: "klein" }
-      ],
-      folgeaktion: false,
-      bedingung: null
+      bedingung: { frage: "F-001", wert: ["a", "b", "c"] }
     }
   ]
 };
