@@ -16,7 +16,7 @@
 //   5. Die Hinweise kosten, was sie kosten sollen, und der Zaehler je Bild
 //      erscheint erst mit der ersten Stufe.
 //
-// Seit v0.20.1 fuehrt ein Klick nicht mehr unmittelbar in die Bewertung. Drei
+// Seit v0.20.0 fuehrt ein Klick nicht mehr unmittelbar in die Bewertung. Drei
 // Pruefungen dieser Datei sind deshalb nachgezogen; sie waren gruen und haetten
 // den neuen Ablauf nicht bemerkt.
 //
@@ -261,7 +261,7 @@ test('in der Vergleichsphase ist nichts zu finden', async ({ page }) => {
   await expect(page.getByText('Art des Befundes')).toHaveCount(0)
 })
 
-// ── Hinweise und Zaehler (v0.20.1) ────────────────────────────────────────
+// ── Hinweise und Zaehler (v0.20.0) ────────────────────────────────────────
 
 test('ohne Hinweis steht keine Zahl am Bildwahlknopf', async ({ page }) => {
   await bisZurBildwand(page)

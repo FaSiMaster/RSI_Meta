@@ -9,6 +9,100 @@ Versionierung nach [Semantic Versioning](https://semver.org/lang/de/).
 
 ## [Unreleased]
 
+## [0.20.0] – 2026-09-12
+
+Ein zweites Beurteilungsverfahren, ein neuer Szenentyp und die erste deutsche
+Szene. Der Schweizer Neunschrittpfad bleibt unberührt: die Bewertungsfelder der
+bestehenden Szenen sind über alle Commits hinweg unverändert, jedes Mal geparst
+und verglichen.
+
+### Neu – Verfahren der Unfallkommission (Deutschland)
+
+Zwei Schritte statt neun: die Art des Befundes, und nur bei einem
+Sicherheitsdefizit seine Einstufung. Eine Vereinbarung mit Fachexperten, keine
+Norm; ein Norm- oder Richtlinienbezug wird ihr nicht zugeschrieben.
+
+- **Datenmodell** (`src/data/bewertung.ts`): `correctAssessment` ist eine
+  diskriminierte Union. Der Diskriminator ist bei der Schweizer Form optional,
+  weil die Bestandsdaten im localStorage jedes Geräts und in Supabase liegen
+  und nicht angefasst werden dürfen; die Leseregel setzt ihn beim Lesen.
+- **Registry** (`src/data/verfahren.ts`): zweiter Eintrag, `DE` trägt
+  `de-uko-2`. Keine zweite Registry, kein Eingriff in `scoringEngine.ts`.
+- **Punkte** (`src/data/punkteUko.ts`): Schritt 1 trägt 60, Schritt 2 trägt 40,
+  eine falsche Art kostet 60, ein Gestaltungsbefund zählt 60 gegen 100. Jeder
+  Wert stammt aus einem Entscheid, die Fundstellen stehen im Kopfkommentar.
+  Schritt 2 zählt nur, wenn Schritt 1 stimmt.
+- **Ablauf** (`src/components/ScoringFlowUko.tsx`): die beiden Teilscores
+  stehen im Ergebnis nebeneinander und werden nie addiert.
+- **Sprache** (`src/i18n/verfahren.uko.ts`): eigener Namensraum
+  `verfahrenUko`, vier Sprachen. Der Begriff für einen Befund ohne
+  Sicherheitsrelevanz steht nur dort; der Datenschlüssel heisst `gestaltung`,
+  damit eine Umbenennung keine Datenwanderung auslöst.
+
+### Neu – Szenentyp Bildserie
+
+Einzelbilder als flache Wand im Raum, statt einer Kugel. Ein Foto einer
+Spiegelreflexkamera hat ein Bildfeld von wenigen Dutzend Grad; es auf eine Kugel
+zu legen würde eine Rundumsicht behaupten, die nicht aufgenommen wurde.
+
+- Phasenleiste mit Bezeichnung und Zeitangabe je Phase, mehrsprachig. Eine
+  unbewertete Vergleichsphase ist gekennzeichnet, und dort ist nichts zu finden.
+- Vierter Verortungstyp in `sphereCoords.ts`: normalisierte Bildkoordinaten mit
+  `trefferImBild()`. Das Seitenverhältnis ist Pflichtparameter, sonst wird der
+  Trefferradius auf einem breiten Bild zum Oval, ohne dass man es sieht.
+- Ein Klick setzt erst eine Marke; erst «Bestätigen» prüft die Stelle. Zwei
+  Hinweisstufen mit demselben Abzug wie im Panorama-Viewer, 10 und 25 Punkte.
+  Der Bildwahlknopf zeigt ab Stufe 1, wie viele Befunde je Bild offen sind.
+- Die Wand wird aus dem Sichtfeld der Kamera gerechnet, nicht angenommen.
+
+### Neu – Beispielszene Niederfrauendorf
+
+Knotenpunkt S 183/S 190, Minikreisverkehr als Verkehrsversuch. Grundlage ist
+das Sicherheitsaudit im Bestand vom 15. August 2022. Eine Szene mit zwei
+Phasen, neun Befunden und einem Szenenmaximum von 820 Punkten; die
+Einfuhrdatei entsteht aus `daten/niederfrauendorf_2026_09_12.py`, und jeder
+Bewertungswert trägt dort den Entscheid, aus dem er stammt.
+
+### Geändert – Bestanden verlangt, dass Gestaltungsbefunde erkannt werden
+
+Dritte Bedingung im Bestanden-Kriterium. Ohne sie war die Szene zu bestehen,
+ohne Schritt 1 zu beherrschen: wer immer «Sicherheitsdefizit» und immer «gross»
+antwortet, erreicht 61,0 % und lag über der Schwelle. Für Szenen des Schweizer
+Neunschrittpfades ändert sie nichts, weil es dort keine Gestaltungsbefunde
+gibt. Je Szene abschaltbar.
+
+### Behoben
+
+- **Der Canvas der Bildwand war 150 Bildpunkte hoch**, unabhängig von der
+  Fenstergrösse: `flex: 1` in einem Kasten ohne eigene Höhe lässt React Three
+  Fiber auf diesen Rückfallwert gehen, und zwar stumm. Das Bild sass als
+  Streifen am oberen Rand.
+- **Der Hinweis in der Bildwand war gratis.** `hintAbzug` stand hart auf null.
+- **Die Szenenkennung `SZ_2026_101` war belegt** und gehörte einer Szene aus
+  dem Projekt `infra3d`. Eine Einfuhr hätte sie überschrieben. Das
+  Erzeugungsskript fragt die belegten Kennungen seither vorher ab.
+- **`risikoFarbe` färbte jeden unbekannten Wert grün** und täuschte damit ein
+  geringes Risiko vor. Neu nimmt sie `null` und färbt neutral.
+- **Die Einfuhrprüfung liess vier Fälle durch**: eine Bildserie ohne Phasen,
+  eine ohne bewertete Phase, einen unbekannten Szenentyp und eine
+  Bildverortung ausserhalb von 0 bis 1. Der letzte fiel gar nicht auf, denn
+  eine Verortung neben dem Bild ist einfach nicht zu treffen.
+
+### Prüfstand
+
+tsc 0, Build grün, **303 Unit-Prüfungen in 26 Dateien**, **69 im Browser in
+11 Dateien**. Neu ein Playwright-Projekt `chromium-webgl` mit
+Software-Rendering und zwei Arbeitern, weil das kopflose Chromium ohne
+Grafikkarte kein WebGL hat und eine Prüfung auf die Canvas-Grösse sonst still
+grün wäre.
+
+Jede neue Prüfung ist gegen einen absichtlich eingebauten Fehler gehalten
+worden. Dabei fielen zwei eigene Prüfungen als wertlos auf und sind ersetzt:
+eine setzte den Fall falsch herum auf, eine zweite brach den Build und lief
+damit nie gegen den Fehler.
+
+---
+
 ### Geändert – Schreibweise in scoringEngine.ts und den letzten Anzeigetexten (v0.19.3)
 
 `src/data/scoringEngine.ts` ist ein Sacred File; die Änderung erfolgte auf

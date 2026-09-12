@@ -15,7 +15,7 @@
 
 | Schicht | Technologie | Version |
 |---|---|---|
-| Version | **v0.19.3** (2026-09-07) | Bildwahl aufgeräumt, Miniaturspeicher, echte Umlaute im ganzen Quellbaum |
+| Version | **v0.20.0** (2026-09-12) | Zweites Beurteilungsverfahren (Deutschland), Szenentyp Bildserie, Beispielszene Niederfrauendorf |
 | Framework | React + Vite + TypeScript | React 18.3, **Vite 7.3**, TS strict |
 | Styling | Tailwind CSS (`@tailwindcss/vite`) | v4.2 |
 | Animation | Framer Motion (motion/react) | v12 |
@@ -26,7 +26,7 @@
 | PDF | pdfmake (dynamisch nachgeladen) | v0.3 |
 | Icons | lucide-react | — |
 | Build | Vite 7 + vite-plugin-pwa | v1.2, Service Worker |
-| Tests | Vitest + Playwright | 200 Unit-Prüfungen in 21 Dateien, 53 im Browser in 10 Dateien |
+| Tests | Vitest + Playwright | 303 Unit-Prüfungen in 26 Dateien, 69 im Browser in 11 Dateien |
 | Hosting | Vercel (Primär) | HTTPS-Pflicht für WebXR |
 | Persistenz | localStorage (`rsi-v3-*`) + **Supabase** | Postgres, Storage, 3 Edge Functions |
 
@@ -50,11 +50,14 @@ RSI_Meta/
 ├── docs/
 │   ├── VR_SMOKE_REPORT.md          # Headset-Testprotokolle (A–J)
 │   ├── NORMREFERENZEN_PRUEFUNG.md  # Normnummern gegen Verzeichnis und Bestand
+│   ├── DE_Unfallkommission_Plan.md # Verfahren DE: Bestand, Entscheide, Befunde
 │   └── METADATEN.md
 ├── daten/                          # Erzeugte Datensätze, nicht gebündelt
 │   ├── entscheide_2026_09_06.py    # Was entschieden wurde, mit Grund
 │   ├── sprachen_2026_09_06.py      # fr, it, en zu allem Erzeugten
 │   ├── merkmale_lesen.py           # Strassenmerkmale aus der Geodatenbank
+│   ├── niederfrauendorf_2026_09_12.py  # Beispielszene DE, mit Abstandsprüfung
+│   ├── NIEDERFRAUENDORF.md         # Anleitung zur Einfuhr der Szene
 │   ├── normlogik.py                # liest scoringEngine.ts und rechnet damit
 │   ├── anlegen.py · pruefe.py · pruefe_die_pruefung.py
 │   ├── einlesen.mjs                # Einfuhr über die Oberfläche, gesteuert
@@ -81,9 +84,11 @@ RSI_Meta/
 │   │   ├── scoringEngine.ts        # WICHTIGKEIT_TABLE (58), Matrizen (SACRED)
 │   │   ├── laender.ts              # 249 Codes ISO 3166-1 alpha-2
 │   │   ├── verfahren.ts            # Zuordnung Land → Verfahren
+│   │   ├── bewertung.ts            # Union der zwei Bewertungsformen, Leseregel
+│   │   ├── punkteUko.ts            # Punkte der Konvention DE (kein Sacred File)
 │   │   ├── zustaendigkeit.ts       # Trägerschaft je Land (nur localStorage)
 │   │   ├── scoreCalc.ts            # calcScore, KATEGORIE_TEILPUNKTE, HINT_ABZUG_*
-│   │   ├── bestandenKriterium.ts   # Bestanden-Logik (Pflicht + 60 %)
+│   │   ├── bestandenKriterium.ts   # Pflicht + 60 % + Gestaltungsbefunde erkannt
 │   │   ├── ergebnisModel.ts        # Matrix-Herleitung für Browser + VR
 │   │   ├── berichtModel.ts         # Aufbereitung PDF-Bericht (rein, ohne React)
 │   │   ├── appData.ts              # localStorage CRUD, Typen, ml(), Seed
@@ -99,13 +104,16 @@ RSI_Meta/
 │   │   ├── supabase.ts · supabaseStorage.ts
 │   │   └── sentry.ts · logger.ts · useFocusTrap.ts · utils.ts
 │   ├── styles/design-tokens.css
-│   ├── i18n/                       # index.ts + de/fr/it/en (521 Blatt-Keys)
-│   │   └── verfahren.bfu.ts        # 104 Verfahrensbezeichnungen (SACRED)
+│   ├── i18n/                       # index.ts + de/fr/it/en (539 Blatt-Keys)
+│   │   ├── verfahren.bfu.ts        # 104 Verfahrensbezeichnungen (SACRED)
+│   │   └── verfahren.uko.ts        # 28 Bezeichnungen der Konvention DE
 │   └── components/
 │       ├── LandingPage.tsx · Navbar.tsx · ZustaendigkeitKarte.tsx
 │       ├── TopicDashboard.tsx · SceneList.tsx · TrainingEinstieg.tsx
 │       ├── SceneViewer.tsx         # 360°-Viewer, Klick-Flow, alle VR-Panels
-│       ├── ScoringFlow.tsx · LernKarte.tsx · SzenenAbschluss.tsx
+│       ├── BildwandViewer.tsx      # Bildserie als flache Wand, Klick-Flow
+│       ├── ScoringFlow.tsx · ScoringFlowUko.tsx
+│       ├── LernKarte.tsx · SzenenAbschluss.tsx
 │       ├── RankingView.tsx · KategoriePanel.tsx · KlickFeedback.tsx
 │       ├── FeedbackModal.tsx · LanguageSwitcher.tsx
 │       ├── AdminDashboard.tsx      # Hülle; Modals ausgelagert (Sprint 3)
@@ -226,14 +234,22 @@ zentral zu berichtigen wäre. Untergeordnete Themen tragen **kein** eigenes
 Feld; ihr Land liefert `getTopicCountry()`.
 
 **Verfahren:** `VERFAHREN_JE_LAND` in `verfahren.ts` ordnet Land und Verfahren
-zu. Hinterlegt ist eines: `CH` → `bfu-fk-rsi-2020`. Für jedes andere Land zeigt
-`ScoringFlow` einen Hinweis und bricht ab – kein Ersatzablauf, keine Punkte.
-Derselbe Riegel steht im VR-Pfad in `App.tsx`, dort allerdings ohne Anzeige,
-weil ein VR-Panel dafür fehlt.
+zu. Hinterlegt sind zwei: `CH` → `bfu-fk-rsi-2020` und, seit v0.20.0,
+`DE` → `de-uko-2`. Für jedes andere Land zeigt `ScoringFlow` einen Hinweis und
+bricht ab – kein Ersatzablauf, keine Punkte. Derselbe Riegel steht im VR-Pfad
+in `App.tsx`, dort allerdings ohne Anzeige, weil ein VR-Panel dafür fehlt; das
+gilt seit v0.20.0 auch für die Konvention.
+
+**Welcher Ablauf läuft, entscheidet der Datensatz, nicht das Land.** Die Weiche
+in `App.tsx` liest `istUko(deficit.correctAssessment)`. Das Land steuert, was
+die Verwaltung zum Anlegen anbietet; ist ein Befund einmal angelegt, trägt er
+sein Verfahren selbst. Ein Vergleich über Land und Datensatz könnte
+auseinanderlaufen, und dann gewinnt immer der Datensatz.
 
 **Sprachtrennung:** Der i18next-Namensraum `verfahren` trägt die Bezeichnungen
-des Verfahrens (104 Schlüssel), `translation` die Bedienung. Aufruf im Code:
-`t('verfahren:step1Title')`.
+des Neunschrittpfades (104 Schlüssel), `verfahrenUko` die der Konvention
+(28 Schlüssel), `translation` die Bedienung. Aufruf im Code:
+`t('verfahren:step1Title')` bzw. `t('verfahrenUko:schritt1Titel')`.
 
 **Regeln:** Ein Kurs gehört zu genau einem Land, abgeleitet aus dem ersten
 zugeordneten Thema. Der Import weist Szenen ab, deren Land nicht zum Thema
@@ -248,11 +264,114 @@ Behördenbezüge aus dem Quellbaum, seit das Werkzeug in v0.12.0 zum privaten
 Projekt wurde. Ohne Eintrag zeigt die Anwendung «noch nicht bestimmt» samt
 Vorläufigkeitshinweis – für jedes Land.
 
-**Offen:** Unter welcher Sprachkennung deutsches Deutsch abgelegt wird, ist
-nicht entschieden. `MultiLang` ist ein festes Gebilde aus `de`, `fr`, `it`,
-`en`, das jeder Inhaltsdatensatz führt; eine fünfte Kennung berührt den ganzen
-Bestand. Diese Frage ist zu klären, **bevor** der erste Datensatz mit
-`country: 'DE'` entsteht.
+**Sprachkennung deutscher Inhalte – entschieden (E-2, 12.09.2026).** Es gibt
+keinen fünften Sprachschlüssel. Deutsche Inhalte stehen im bestehenden Feld
+`de`, geschrieben in Schweizer Orthografie. `MultiLang` bleibt ein festes
+Gebilde aus `de`, `fr`, `it`, `en`; eine fünfte Kennung hätte jeden
+Inhaltsdatensatz berührt, und die Suche nach dem ß bleibt scharf.
+
+---
+
+## Verfahren der Unfallkommission, Deutschland (seit v0.20.0)
+
+**Zwei Schritte statt neun.** Schritt 1: Ist der Befund ein Sicherheitsdefizit
+oder ein Gestaltungsbefund? Schritt 2, nur bei einem Sicherheitsdefizit: wie
+schwer wiegt es, gross, mittel oder klein?
+
+Die Konvention ist eine **Vereinbarung mit Fachexperten, keine Norm**. Ein Norm-
+oder Richtlinienbezug wird ihr nicht zugeschrieben; BASt, FGSV, ESAS und RSAS
+kommen in ihren Texten nicht vor, und ein Wächter prüft das am gerenderten
+Ergebnis.
+
+### Wo was steht
+
+| Teil | Ort |
+|---|---|
+| Datenmodell, Union der Bewertungen | `src/data/bewertung.ts` |
+| Punkte der Konvention | `src/data/punkteUko.ts` |
+| Land auf Verfahren | `src/data/verfahren.ts` |
+| Wörter des Verfahrens | `src/i18n/verfahren.uko.ts`, Namensraum `verfahrenUko` |
+| Ablauf mit zwei Schritten | `src/components/ScoringFlowUko.tsx` |
+| Szenentyp Bildserie | `src/components/BildwandViewer.tsx` |
+
+### Punkte, und woher sie kommen
+
+Jeder Wert stammt aus einem Entscheid, festgehalten in
+`.claude/entscheide/JOURNAL.md`. Wer eine dieser Zahlen ändert, ändert eine
+Vereinbarung; das braucht einen Entscheid, keinen Commit.
+
+| Grösse | Wert | Entscheid |
+|---|---|---|
+| Schritt 1 richtig | 60 | E-7a |
+| Schritt 1 falsch | −60 | F-006 |
+| Schritt 2 richtig | 40 | E-7a |
+| Gewicht eines Gestaltungsbefundes | 60 gegen 100 | E-7b |
+
+**Schritt 2 zählt nur, wenn Schritt 1 stimmt.** Wer einen Gestaltungsbefund für
+ein Sicherheitsdefizit hält und ihn dann «gross» einstuft, hat den Befund
+verkannt; Punkte für die Einstufung eines Befundes, den es so nicht gibt, wären
+eine Belohnung für den Folgefehler.
+
+**Die beiden Teilscores werden nie addiert angezeigt.** Einen Befund als
+sicherheitsrelevant zu erkennen ist eine andere Fähigkeit, als ihn richtig
+einzustufen; eine gemeinsame Zahl verdeckt genau diesen Unterschied.
+
+**Keine Kategoriepunkte.** Im Schweizer Ablauf trägt die Zuordnung zur
+Defizitkategorie 25 Punkte; für die Konvention ist kein Gegenstück vereinbart,
+und einen Wert zu erfinden wäre eine Vereinbarung, die niemand getroffen hat.
+Der Hinweisabzug gilt dagegen, weil er das Auffinden betrifft.
+
+### Bestanden
+
+Seit v0.20.0 hat `bestandenKriterium.ts` eine dritte Bedingung: **jeder
+Gestaltungsbefund muss in Schritt 1 als solcher erkannt sein.** Ohne sie war die
+Beispielszene zu bestehen, ohne Schritt 1 zu beherrschen. Für Szenen des
+Neunschrittpfades ändert sie nichts, weil es dort keine Gestaltungsbefunde gibt.
+Je Szene abschaltbar über `bestandenKriterium.gestaltungErkannt`.
+
+### Der Dateiname punkteUko.ts
+
+Der Auftrag nannte `scoringEngineDE.ts`. Der Norm-Compliance-Hook blockiert das
+Pfadmuster `src/data/scoringEngine` per Präfixtreffer, und der Name wäre
+fachlich falsch: eine «ScoringEngine DE» klingt wie eine zweite Fassung des
+normativen Motors, und genau das ist sie nicht.
+
+---
+
+## Szenentyp Bildserie (seit v0.20.0)
+
+`AppScene.szenentyp` trägt `panorama` oder `bildserie`; fehlt das Feld, gilt
+`panorama`. Eine Bildserie führt `phasen`, je Phase eine Bezeichnung, eine
+mehrsprachige Zeitangabe, die Bilder und das Merkmal `bewertet`.
+
+**Nur in einer bewerteten Phase ist etwas zu finden.** Eine Vergleichsphase
+zeigt denselben Ort zu einer anderen Zeit und trägt keine Verortungen.
+
+**Verortung im Bild:** vierter Fall von `DefizitVerortung` mit normalisierten
+Koordinaten, `{ typ: 'bild', x, y, r }`. Der Schlüssel in
+`AppDeficit.verortungen` ist die vollständige Bildadresse — dasselbe Muster wie
+bei den Perspektiven eines Panoramas.
+
+Das **Seitenverhältnis ist Pflichtparameter** von `trefferImBild()`. Ohne es
+wird der Trefferradius auf einem breiten Bild zum Oval, und weil der Marker rund
+gezeichnet wird, sieht man es nicht.
+
+**Der Canvas liegt absolut**, nicht als Flex-Kind. Mit `flex: 1` in einem Kasten
+ohne eigene Höhe fällt React Three Fiber auf 150 Bildpunkte zurück, und zwar
+stumm.
+
+**Die Wand wird aus dem Sichtfeld gerechnet**, nicht angenommen. Wie viel eine
+feste Breite in Metern einnimmt, hängt am Blickwinkel der Kamera und am
+Seitenverhältnis des Fensters, und beides ist keine Konstante.
+
+**Ein Klick setzt erst eine Marke**, erst «Bestätigen» prüft die Stelle — wie im
+Panorama-Viewer. Zwei Hinweisstufen mit demselben Abzug, 10 und 25 Punkte. Ab
+Stufe 1 zeigt der Bildwahlknopf, wie viele Befunde je Bild offen sind; gratis
+wäre das ein Gratis-Hinweis.
+
+**In der Brille fehlt der Bewertungsablauf für die Konvention.** Die Bildwand
+ist dort sichtbar, bewertet wird im Browser; der VR-Pfad bricht mit einem
+Protokolleintrag ab, statt zu rechnen.
 
 ---
 
@@ -374,6 +493,17 @@ interface AppDeficit {
 - [x] Bericht nachträglich abrufbar über die Szenenkarte (bester Versuch, v0.11.1)
 - [ ] Session-Review im Browser
 
+### Phase 7 – Deutschland (v0.20.0, teilweise)
+- [x] Datenmodell für zwei Beurteilungsverfahren, Leseregel für Altdaten
+- [x] Verfahrensweiche je Land, eigener i18n-Namensraum
+- [x] Ablauf mit zwei Schritten, zwei getrennte Teilscores
+- [x] Szenentyp Bildserie mit Phasen und Zeitangabe
+- [x] Beispielszene Niederfrauendorf, eingelesen und live
+- [ ] Verortungseditor für Bildserien — offen, heute geht Korrektur nur über
+      die Einfuhrdatei
+- [ ] Bewertungsablauf in der Brille — offen, ein VR-Panel fehlt
+- [ ] Strassenmerkmale der Szene aus dem Auditbericht — offen
+
 ### Phase 6 – Meta Horizon Store (geplant)
 - [ ] Bubblewrap-Konfiguration
 - [ ] Store-Listing, Asset Pack
@@ -412,4 +542,4 @@ npm run preview -- --host  # Build lokal testen
 
 ---
 
-*Letzte Aktualisierung: 2026-09-07 (v0.19.3, Bildwahl, Vorschaubilder, Schreibweise)*
+*Letzte Aktualisierung: 2026-09-12 (v0.20.0, Verfahren der Unfallkommission, Szenentyp Bildserie, Szene Niederfrauendorf)*

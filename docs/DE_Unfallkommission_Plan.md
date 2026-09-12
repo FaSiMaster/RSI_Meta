@@ -645,7 +645,7 @@ genügt ein Bruchteil der Kameraauflösung von 4032 mal 2268 Bildpunkten.
 | Registry | `verfahren.ts` erweitert, kein zweiter Ort. `VerfahrensId` ist eine Union, `DE` trägt `de-uko-2`. Neu `namensraumFuer()`, `istNeunschritt()`, `istUkoLand()` |
 | Punkte | Neu `src/data/punkteUko.ts`. Schritt 1 trägt 60, Schritt 2 trägt 40, eine falsche Art kostet 60, ein Gestaltungsbefund zählt 60 gegen 100. Schritt 2 zählt nur, wenn Schritt 1 stimmt |
 | Ablauf | Neu `src/components/ScoringFlowUko.tsx`. Zwei Schritte, die beiden Teilscores stehen im Ergebnis nebeneinander und werden nie addiert |
-| Sprache | Neu `src/i18n/verfahren.uko.ts`, eigener Namensraum `verfahrenUko`, 34 Schlüssel in vier Sprachen. Der Begriff für einen Befund ohne Sicherheitsrelevanz steht nur dort |
+| Sprache | Neu `src/i18n/verfahren.uko.ts`, eigener Namensraum `verfahrenUko`, 28 Schlüssel in vier Sprachen. Der Begriff für einen Befund ohne Sicherheitsrelevanz steht nur dort |
 | Weichen | `App.tsx` rendert den Ablauf je Bewertung und speichert die Teilpunkte getrennt. Das Szenenmaximum kommt aus `szenenMaxPunkte()` und hängt am Datensatz statt an der Anzahl |
 | Nicht geändert | `bestandenKriterium.ts`. Es rechnet auf Prozent, und die Schwelle ist je Szene überschreibbar — genau der Weg, den B-5 braucht |
 

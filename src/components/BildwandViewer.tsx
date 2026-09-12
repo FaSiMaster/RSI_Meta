@@ -10,7 +10,7 @@
 // Dieselbe Szene trägt im Browser und in der Brille; in der Brille hängt die
 // Wand im Raum, und man tritt näher heran, statt zu zoomen.
 //
-// ── Gleicher Ablauf wie im Schweizer Viewer (v0.20.1) ──────────────────────
+// ── Gleicher Ablauf wie im Schweizer Viewer (v0.20.0) ──────────────────────
 //
 // Die erste Fassung liess sich durchklicken: ein Klick auf die richtige Stelle
 // führte unmittelbar in die Bewertung. Das ist nicht, wie die Anwendung sonst
