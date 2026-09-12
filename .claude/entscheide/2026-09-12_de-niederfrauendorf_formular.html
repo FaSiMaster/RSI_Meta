@@ -39,6 +39,8 @@ header{position:sticky;top:0;z-index:10;background:var(--card);
   border-bottom:1px solid var(--line);padding:12px 20px}
 .wrap{max-width:1340px;margin:0 auto}
 .kopfzeile{display:flex;gap:14px;align-items:baseline;flex-wrap:wrap}
+.projekt{font-size:11.5px;text-transform:uppercase;letter-spacing:.08em;
+  color:var(--akz);font-weight:600;margin-bottom:1px}
 h1{font-size:20px;line-height:1.25;margin:0;letter-spacing:-.01em}
 .meta{color:var(--mute);font-size:13px;margin-top:2px}
 .fortschritt{display:flex;align-items:center;gap:10px;margin:9px 0 0}
@@ -216,6 +218,7 @@ const DATEN = {
     titel: "Niederfrauendorf, Befunde aus den Entscheiden",
     projekt: "RSI VR Tool, Verfahren der Unfallkommission Deutschland",
     datum: "2026-09-12",
+    erzeugt: "2026-09-12T17:18:47",
     kontext: "Die Entscheide E-1 bis E-12 sind gefallen. Erst dadurch sind drei Befunde entstanden, dazu kommt die Frage nach dem Baubeginn. B1 und B2 hängen an keinem dieser Punkte, B4 an den ersten zwei.",
     vorentscheide: [
       "Knotenpunkt liegt bei 50.877375, 13.723016. Aus OpenStreetMap als einziger Geometriepunkt bestimmt, den die Wege mit ref S 183 und S 190 teilen. Die Ortssuche nach der Glashütter Strasse allein liegt 160 m daneben.",
@@ -368,6 +371,7 @@ const DATEN = {
 <header><div class="wrap">
   <div class="kopfzeile">
     <div style="flex:1;min-width:240px">
+      <div class="projekt" id="h-projekt"></div>
       <h1 id="h-titel"></h1>
       <div class="meta" id="h-meta"></div>
     </div>
@@ -453,6 +457,25 @@ try { const r = localStorage.getItem(KEY); if(r) state = JSON.parse(r); } catch(
 
 function emp(f){ const o = f.optionen.find(x=>x.empfehlung); return o ? o.id : null; }
 
+// Woher der Titel kommt: Das Projekt steht vorn, weil im Browserreiter nur die
+// ersten Zeichen sichtbar sind und dort erkennbar sein muss, worum es geht.
+// Die Zeit stammt aus meta.erzeugt; fehlt das Feld, bleibt es beim Datum.
+function zeitstempel(){
+  const m = DATEN.meta;
+  const roh = m.erzeugt || m.datum || "";
+  if(!roh) return "";
+  const d = new Date(roh);
+  if(isNaN(d.getTime())) return String(roh);
+  const zwei = n => String(n).padStart(2, "0");
+  const tag = zwei(d.getDate())+"."+zwei(d.getMonth()+1)+"."+d.getFullYear();
+  const mitZeit = m.erzeugt && /[0-9][0-9]:[0-9][0-9]/.test(String(m.erzeugt));
+  return mitZeit ? tag+", "+zwei(d.getHours())+":"+zwei(d.getMinutes())+" Uhr" : tag;
+}
+function volltitel(){
+  const m = DATEN.meta;
+  return [m.projekt, m.titel, zeitstempel()].filter(Boolean).join(" · ");
+}
+
 // Ein Zwischenstand aus einer aelteren Fassung kann Felder vermissen lassen.
 // Fehlende werden ergaenzt, vorhandene nie ueberschrieben.
 fragen.forEach(f => {
@@ -498,10 +521,11 @@ function suchtreffer(f, wort){
 
 function bauen(){
   const m = DATEN.meta;
-  document.title = m.titel;
+  document.title = volltitel();
+  document.getElementById("h-projekt").textContent =
+    [m.projekt, zeitstempel()].filter(Boolean).join(" · ");
   document.getElementById("h-titel").textContent = m.titel;
-  document.getElementById("h-meta").textContent =
-    [m.projekt, m.datum, m.kontext].filter(Boolean).join(" · ");
+  document.getElementById("h-meta").textContent = m.kontext || "";
 
   if(m.vorentscheide && m.vorentscheide.length){
     document.getElementById("vorentscheide").classList.remove("hidden");
@@ -657,6 +681,7 @@ function ergebnis(){
     formular: DATEN.meta.id,
     titel: DATEN.meta.titel,
     projekt: DATEN.meta.projekt || "",
+    formular_erzeugt: DATEN.meta.erzeugt || DATEN.meta.datum || "",
     erzeugt: new Date().toISOString(),
     offen: rel.filter(f=>!beantwortet(f)).map(f=>f.id),
     uebersprungen: fragen.filter(f=>!sichtbar(f)).map(f=>f.id),
@@ -685,7 +710,11 @@ function ergebnis(){
 
 function markdown(){
   const e = ergebnis();
-  const z = ["# Entscheide "+e.formular, "", "Stand: "+e.erzeugt, ""];
+  const z = ["# " + volltitel(), "",
+             "Formular: " + e.formular,
+             "Projekt: " + (e.projekt || "nicht genannt"),
+             "Erzeugt: " + (e.formular_erzeugt || "nicht genannt"),
+             "Ausgefüllt: " + e.erzeugt, ""];
   e.antworten.forEach(a => {
     let l = "- **"+a.id+"** → "+(a.gewaehlt||"offen");
     if(a.abweichung_von_empfehlung && a.status==="beantwortet") l += " (Abweichung von der Empfehlung)";
@@ -699,12 +728,14 @@ function markdown(){
 }
 
 function csv(){
-  const sp = ["id","frage","status","gewaehlt","abweichung_von_empfehlung",
-              "freitext","bemerkung","verantwortlich","termin"];
+  const sp = ["projekt","formular","id","frage","status","gewaehlt",
+              "abweichung_von_empfehlung","freitext","bemerkung","verantwortlich","termin"];
   const q = v => '"'+String(v==null?"":v).replace(/"/g,'""')+'"';
   const e = ergebnis();
   return "﻿" + [sp.join(";")].concat(
-    e.antworten.map(a => sp.map(k=>q(a[k])).join(";"))).join("\r\n");
+    e.antworten.map(a => sp.map(k =>
+      q(k === "projekt" ? e.projekt : k === "formular" ? e.formular : a[k])
+    ).join(";"))).join("\r\n");
 }
 
 function laden(text, name, typ){
