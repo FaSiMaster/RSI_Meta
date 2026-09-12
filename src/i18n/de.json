@@ -582,5 +582,14 @@
     "zust_pflege_hinweis": "Die Angaben gelten für alle Themenbereiche, Szenen und Befunde dieses Landes. Sie werden hier eingetragen und liegen auf diesem Gerät; weitergegeben werden sie über Ausfuhr und Einfuhr.",
     "zust_stand": "Stand",
     "zust_titel": "Zuständigkeit"
+  },
+  "bildserie": {
+    "keine_phasen": "Diese Szene ist als Bildserie angelegt, führt aber keine Phase mit Bildern. Bitte im Admin ergänzen.",
+    "phasen": "Zeitliche Phasen",
+    "vergleich": "Nur Vergleich",
+    "bild_von": "Bild {{n}} von {{gesamt}}",
+    "verkleinern": "Verkleinern",
+    "vergroessern": "Vergrössern",
+    "einpassen": "Einpassen"
   }
 }

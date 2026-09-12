@@ -582,5 +582,14 @@
     "zust_pflege_hinweis": "These entries apply to every topic area, scene and finding of this country. They are entered here and stay on this device; they travel by export and import.",
     "zust_stand": "As at",
     "zust_titel": "Responsibility"
+  },
+  "bildserie": {
+    "keine_phasen": "This scene is set up as an image series but carries no phase with images. Please complete it in the admin area.",
+    "phasen": "Phases over time",
+    "vergleich": "Comparison only",
+    "bild_von": "Image {{n}} of {{gesamt}}",
+    "verkleinern": "Zoom out",
+    "vergroessern": "Zoom in",
+    "einpassen": "Fit to view"
   }
 }

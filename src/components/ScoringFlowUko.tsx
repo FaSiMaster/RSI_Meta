@@ -371,7 +371,7 @@ function Teilscore({
   titel, korrekt, punkte, max, t,
 }: { titel: string; korrekt: boolean | null; punkte: number; max: number; t: TFn }) {
   const farbe = korrekt === null ? 'var(--rsi-color-text-disabled)'
-    : korrekt ? 'var(--rsi-gruen)' : 'var(--rsi-rot)'
+    : korrekt ? 'var(--rsi-grün)' : 'var(--rsi-rot)'
   return (
     <div style={{
       border: '1px solid var(--rsi-color-border)', borderRadius: 'var(--rsi-radius-card)',
@@ -417,7 +417,7 @@ function Zeile({
         </p>
       </div>
       {korrekt === null ? <Minus size={16} style={{ color: 'var(--rsi-color-text-disabled)' }} />
-        : korrekt ? <CheckCircle2 size={16} style={{ color: 'var(--rsi-gruen)' }} />
+        : korrekt ? <CheckCircle2 size={16} style={{ color: 'var(--rsi-grün)' }} />
         : <XCircle size={16} style={{ color: 'var(--rsi-rot)' }} />}
     </div>
   )

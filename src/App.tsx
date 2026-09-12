@@ -8,12 +8,14 @@ import { AnimatePresence, motion, MotionConfig } from 'motion/react'
 import {
   getSession, saveSession, getDeficits, getAllScenes, saveRankingEntry,
   saveSceneResult, getVersuchAnzahl, getGesamtScore, ml,
+  szenentypVon,
 } from './data/appData'
 import { MAX_PUNKTE_PRO_DEFIZIT, calcScoreFromChoices, KATEGORIE_TEILPUNKTE, szenenMaxPunkte } from './data/scoreCalc'
 import { hatVerfahren } from './data/verfahren'
 import { alsBfu, istUko } from './data/bewertung'
 import type { UkoAntwort, UkoErgebnis } from './data/punkteUko'
 import ScoringFlowUko from './components/ScoringFlowUko'
+import BildwandViewer from './components/BildwandViewer'
 import { logger } from './lib/logger'
 import { KATEGORIE_PUNKTE } from './data/scoringEngine'
 import { istBestanden, kriteriumFuerSzene } from './data/bestandenKriterium'
@@ -36,7 +38,7 @@ import TrainingEinstieg from './components/TrainingEinstieg'
 
 type View = 'landing' | 'topics' | 'scenes' | 'einstieg' | 'viewer' | 'scoring' | 'szenenabschluss' | 'admin' | 'ranking'
 
-// Daten fuer das VR-Scoring-Summary-Panel (v0.8.2, VR-Iter 3).
+// Daten für das VR-Scoring-Summary-Panel (v0.8.2, VR-Iter 3).
 // v0.9.1: Alias auf die eine Typ-Quelle in SceneViewer — das fruehere
 // Feld-Duplikat hier ist beim Erweitern (deficit/lang) auseinandergedriftet.
 export type VrScoringFeedback = VRScoringSummary
@@ -201,9 +203,11 @@ export default function App() {
       setPendingKatRichtig(payload.kategorieRichtig)
       setPendingHintPenalty(payload.hintPenalty)
       setPendingHintAbzug(payload.hintAbzug)
-      setPendingWichtigkeit(payload.userWichtigkeit)
-      setPendingAbweichung(payload.userAbweichung)
-      setPendingNacaSchwere(payload.userNacaSchwere)
+      // Der Bildwand-Viewer bewertet nicht selbst; dann bleibt die
+      // Vorbelegung leer und der Ablauf beginnt bei Schritt 1.
+      setPendingWichtigkeit(payload.userWichtigkeit ?? null)
+      setPendingAbweichung(payload.userAbweichung ?? null)
+      setPendingNacaSchwere(payload.userNacaSchwere ?? null)
       deficitStartTime.current = payload.bewertungStartMs
       setView('scoring')
       return
@@ -216,17 +220,29 @@ export default function App() {
     // Der VR-Pfad rechnet den Neunschrittpfad. Traegt das Defizit eine
     // Bewertung nach einem anderen Verfahren, endet der Weg hier still — wie
     // schon beim Land oben, und aus demselben Grund: in der Brille gibt es
-    // kein Panel fuer den Hinweis.
+    // kein Panel für den Hinweis.
     const ca = alsBfu(d.correctAssessment)
     if (!ca) {
       logger.warn(
-        `Bewertung abgebrochen: Defizit ${d.id} folgt nicht dem Neunschrittpfad; fuer sein Verfahren gibt es in der Brille noch keinen Ablauf.`,
+        `Bewertung abgebrochen: Defizit ${d.id} folgt nicht dem Neunschrittpfad; für sein Verfahren gibt es in der Brille noch keinen Ablauf.`,
       )
       return
     }
 
+    // Der VR-Pfad rechnet aus den Auswahlen, die der Viewer selbst erhoben hat.
+    // Fehlen sie, hat kein Panel bewertet — dann ist hier nichts zu rechnen.
+    if (payload.userWichtigkeit == null || payload.userAbweichung == null || payload.userNacaSchwere == null) {
+      logger.warn(
+        `Bewertung abgebrochen: Defizit ${d.id} kam ohne Beurteilung aus dem Viewer. In der Brille fehlt der Ablauf für diesen Szenentyp.`,
+      )
+      return
+    }
+    const userW = payload.userWichtigkeit
+    const userA = payload.userAbweichung
+    const userN = payload.userNacaSchwere
+
     const rohPts = calcScoreFromChoices(
-      payload.userWichtigkeit, payload.userAbweichung, payload.userNacaSchwere,
+      userW, userA, userN,
       ca.wichtigkeit, ca.abweichung, ca.relevanzSD, ca.unfallschwere, ca.unfallrisiko,
     )
     // v0.10.0: Teilpunkte bei falscher Kategorie + gestufter Hinweis-Abzug
@@ -253,13 +269,13 @@ export default function App() {
       punkteRoh:          rohPts,
       punkteFinal:        finalPts,
       dauerSekunden:      Math.round((Date.now() - payload.bewertungStartMs) / 1000),
-      wichtigkeitKorrekt: payload.userWichtigkeit === ca.wichtigkeit,
-      abweichungKorrekt:  payload.userAbweichung  === ca.abweichung,
-      nacaKorrekt:        payload.userNacaSchwere === ca.unfallschwere,
-      // v0.11.0: abgegebene Beurteilung fuer den PDF-Befundbericht
-      userWichtigkeit:    payload.userWichtigkeit,
-      userAbweichung:     payload.userAbweichung,
-      userUnfallschwere:  payload.userNacaSchwere,
+      wichtigkeitKorrekt: userW === ca.wichtigkeit,
+      abweichungKorrekt:  userA === ca.abweichung,
+      nacaKorrekt:        userN === ca.unfallschwere,
+      // v0.11.0: abgegebene Beurteilung für den PDF-Befundbericht
+      userWichtigkeit:    userW,
+      userAbweichung:     userA,
+      userUnfallschwere:  userN,
     }
 
     setFoundDeficits(prev => [...prev, entry])
@@ -274,9 +290,9 @@ export default function App() {
       wichtigkeitKorrekt: defResult.wichtigkeitKorrekt,
       abweichungKorrekt:  defResult.abweichungKorrekt,
       nacaKorrekt:        defResult.nacaKorrekt,
-      userW:   payload.userWichtigkeit,
-      userA:   payload.userAbweichung,
-      userN:   payload.userNacaSchwere,
+      userW:   userW,
+      userA:   userA,
+      userN:   userN,
       correctW: ca.wichtigkeit,
       correctA: ca.abweichung,
       correctN: ca.unfallschwere,
@@ -329,7 +345,7 @@ export default function App() {
       wichtigkeitKorrekt: pendingWichtigkeit === ca.wichtigkeit,
       abweichungKorrekt:  pendingAbweichung === ca.abweichung,
       nacaKorrekt:        pendingNacaSchwere === ca.unfallschwere,
-      // v0.11.0: abgegebene Beurteilung fuer den PDF-Befundbericht
+      // v0.11.0: abgegebene Beurteilung für den PDF-Befundbericht
       userWichtigkeit:    pendingWichtigkeit ?? undefined,
       userAbweichung:     pendingAbweichung ?? undefined,
       userUnfallschwere:  pendingNacaSchwere ?? undefined,
@@ -351,12 +367,12 @@ export default function App() {
   // ── Abschluss nach der Konvention der Unfallkommission (v0.20.0) ──────────
   //
   // Eigener Weg, nicht ein Zweig im Schweizer Abschluss: die beiden Verfahren
-  // speichern verschiedene Felder, und eine Funktion, die beides tut, muesste
+  // speichern verschiedene Felder, und eine Funktion, die beides tut, müsste
   // an jeder Zeile fragen, welches Verfahren gilt.
   //
   // Der Hinweisabzug gilt auch hier, weil er das Auffinden im Bild betrifft und
-  // nicht die Bewertung. Kategoriepunkte gibt es nicht: fuer die Konvention ist
-  // kein Gegenstueck zu den 25 Punkten des Schweizer Ablaufs vereinbart.
+  // nicht die Bewertung. Kategoriepunkte gibt es nicht: für die Konvention ist
+  // kein Gegenstück zu den 25 Punkten des Schweizer Ablaufs vereinbart.
   function handleScoringCompleteUko(ergebnis: UkoErgebnis, antwort: UkoAntwort) {
     if (!scoringDeficit) return
 
@@ -411,7 +427,7 @@ export default function App() {
     setVrScoringFeedback(null)
 
     const dauerSekunden = Math.round((Date.now() - sceneStartTime) / 1000)
-    // Das Maximum haengt am Datensatz, nicht an der Anzahl: ein
+    // Das Maximum hängt am Datensatz, nicht an der Anzahl: ein
     // Gestaltungsbefund der Konvention traegt 60 statt 100 Punkte.
     const maxPunkte = szenenMaxPunkte(sceneDeficits.map(d => d.correctAssessment))
     const prozent = maxPunkte > 0 ? Math.round((Math.max(0, sceneScore) / maxPunkte) * 100) : 0
@@ -579,18 +595,29 @@ export default function App() {
               bevor der View wechselt. ScoringFlow als Overlay darüber. */}
           {(view === 'viewer' || view === 'scoring') && currentScene && (
             <motion.div key="viewer" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.15 }} className="flex-1 flex flex-col" style={{ overflow: 'hidden', position: 'relative' }}>
-              <SceneViewer
-                scene={currentScene}
-                deficits={sceneDeficits}
-                foundDeficits={foundDeficits}
-                hintStufe={hintStufe}
-                sceneStartTime={sceneStartTime}
-                vrScoringFeedback={vrScoringFeedback}
-                onDeficitConfirmed={handleDeficitConfirmed}
-                onHintActivate={handleHintActivate}
-                onBeenden={handleBeenden}
-                onVRScoringContinue={handleVRScoringContinue}
-              />
+              {szenentypVon(currentScene) === 'bildserie' ? (
+                <BildwandViewer
+                  scene={currentScene}
+                  deficits={sceneDeficits}
+                  foundDeficits={foundDeficits}
+                  hintStufe={hintStufe}
+                  onDeficitConfirmed={handleDeficitConfirmed}
+                  onBeenden={handleBeenden}
+                />
+              ) : (
+                <SceneViewer
+                  scene={currentScene}
+                  deficits={sceneDeficits}
+                  foundDeficits={foundDeficits}
+                  hintStufe={hintStufe}
+                  sceneStartTime={sceneStartTime}
+                  vrScoringFeedback={vrScoringFeedback}
+                  onDeficitConfirmed={handleDeficitConfirmed}
+                  onHintActivate={handleHintActivate}
+                  onBeenden={handleBeenden}
+                  onVRScoringContinue={handleVRScoringContinue}
+                />
+              )}
               {view === 'scoring' && scoringDeficit && (
                 <div style={{
                   position: 'absolute', inset: 0,

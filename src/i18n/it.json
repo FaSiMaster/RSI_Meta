@@ -582,5 +582,14 @@
     "zust_pflege_hinweis": "Le indicazioni valgono per tutti gli ambiti tematici, le scene e i rilievi di questo paese. Vengono inserite qui e restano su questo dispositivo; la trasmissione avviene tramite esportazione e importazione.",
     "zust_stand": "Stato",
     "zust_titel": "Responsabilità"
+  },
+  "bildserie": {
+    "keine_phasen": "Questa scena è impostata come serie di immagini, ma non contiene alcuna fase con immagini. Da completare nell’amministrazione.",
+    "phasen": "Fasi temporali",
+    "vergleich": "Solo confronto",
+    "bild_von": "Immagine {{n}} di {{gesamt}}",
+    "verkleinern": "Rimpicciolire",
+    "vergroessern": "Ingrandire",
+    "einpassen": "Adattare"
   }
 }

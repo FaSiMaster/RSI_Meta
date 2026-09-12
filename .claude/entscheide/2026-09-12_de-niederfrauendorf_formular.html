@@ -5,15 +5,18 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Entscheidformular</title>
 <style>
+/* Autark: keine fremde Schrift, kein CDN, kein Netzzugriff. Das bleibt so.
+   Farben sind gegen WCAG 2.1 gemessen, hell wie dunkel; die Messung liegt in
+   tools/pruefe_formular.py und ist gegen einen eingebauten Fehler geeicht. */
 :root{
   --bg:#f4f4f2; --card:#fff; --ink:#1a1a18; --mute:#6b6b66; --line:#dcdcd6;
   --akz:#1f4e79; --krit:#a4262c; --hoch:#a8490e; --mittel:#786018; --gering:#5b6b5b;
   --ok:#2d6a4f;
   --vor-bg:#eef2f6; --vor-line:#d5e0ea; --knopf:#fbfbfa; --knopf-hover:#f0f0ec;
   --opt-hover:#f6f6f3; --emp-bg:#f0f5ef; --emp-line:#cfe0cd; --beleg:#fafaf8;
-  --ctx:#3a3a36; --auf-akz:#ffffff; --auf-krit:#ffffff;
+  --ctx:#3a3a36; --auf-akz:#fff; --auf-krit:#fff; --schatten:0 1px 2px rgba(0,0,0,.05);
+  --r:7px;
 }
-/* Dunkle Fassung: Werte gegen die helle gemessen, jeder Text ueber 6:1. */
 @media (prefers-color-scheme: dark){
   :root{
     --bg:#16171a; --card:#1e2024; --ink:#e8e8e4; --mute:#a0a09a; --line:#343740;
@@ -22,81 +25,185 @@
     --vor-bg:#1b2430; --vor-line:#2c3a4a; --knopf:#262a30; --knopf-hover:#31363e;
     --opt-hover:#262a30; --emp-bg:#1d2a22; --emp-line:#31503c; --beleg:#191b1f;
     --ctx:#cfcfc9; --auf-akz:#10151a; --auf-krit:#16171a;
+    --schatten:0 1px 2px rgba(0,0,0,.4);
   }
 }
 *{box-sizing:border-box}
+html{scroll-behavior:smooth;scroll-padding-top:120px}
 body{margin:0;background:var(--bg);color:var(--ink);
   font:16px/1.55 "Segoe UI",-apple-system,system-ui,Arial,sans-serif}
+:focus-visible{outline:2px solid var(--akz);outline-offset:2px}
+
+/* ---------- Kopf ---------- */
 header{position:sticky;top:0;z-index:10;background:var(--card);
-  border-bottom:1px solid var(--line);padding:14px 20px}
-.wrap{max-width:980px;margin:0 auto}
-h1{font-size:20px;margin:0 0 2px}
-.meta{color:var(--mute);font-size:13px}
-.bar{height:6px;background:var(--line);border-radius:3px;margin:10px 0 8px;overflow:hidden}
-.bar>i{display:block;height:100%;background:var(--ok);width:0;transition:width .2s}
-.tools{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:8px}
+  border-bottom:1px solid var(--line);padding:12px 20px}
+.wrap{max-width:1340px;margin:0 auto}
+.kopfzeile{display:flex;gap:14px;align-items:baseline;flex-wrap:wrap}
+h1{font-size:20px;line-height:1.25;margin:0;letter-spacing:-.01em}
+.meta{color:var(--mute);font-size:13px;margin-top:2px}
+.fortschritt{display:flex;align-items:center;gap:10px;margin:9px 0 0}
+.bar{flex:1;height:7px;background:var(--line);border-radius:4px;overflow:hidden}
+.bar>i{display:block;height:100%;background:var(--ok);width:0;transition:width .25s}
+.zahl{font-size:13px;color:var(--mute);white-space:nowrap;
+  font-variant-numeric:tabular-nums}
+.tools{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:9px}
 button{font:inherit;font-size:13px;padding:7px 12px;border:1px solid var(--line);
-  background:var(--knopf);color:inherit;border-radius:5px;cursor:pointer}
+  background:var(--knopf);color:inherit;border-radius:6px;cursor:pointer}
 button:hover{background:var(--knopf-hover)}
 button.primary{background:var(--akz);color:var(--auf-akz);border-color:var(--akz)}
 button.primary:hover{filter:brightness(1.12)}
-select{font:inherit;font-size:13px;padding:6px;border:1px solid var(--line);border-radius:5px;background:var(--card);color:inherit}
-main{max-width:980px;margin:20px auto 120px;padding:0 20px}
-.vor{background:var(--vor-bg);border:1px solid var(--vor-line);border-radius:6px;padding:12px 16px;margin-bottom:20px}
-.vor h2{font-size:14px;margin:0 0 6px;text-transform:uppercase;letter-spacing:.04em;color:var(--akz)}
+select,input[type=search]{font:inherit;font-size:13px;padding:6px 8px;
+  border:1px solid var(--line);border-radius:6px;background:var(--card);color:inherit}
+input[type=search]{min-width:150px}
+
+/* ---------- Seitenleiste und Spalten ---------- */
+.spalten{max-width:1340px;margin:20px auto 120px;padding:0 20px;
+  display:grid;grid-template-columns:250px minmax(0,1fr);gap:26px;align-items:start}
+nav.uebersicht{position:sticky;top:132px;max-height:calc(100vh - 160px);overflow:auto}
+nav.uebersicht h2{font-size:11px;text-transform:uppercase;letter-spacing:.06em;
+  color:var(--mute);margin:0 0 8px}
+nav.uebersicht ol{list-style:none;margin:0;padding:0}
+nav.uebersicht a{display:grid;grid-template-columns:9px 1fr;gap:9px;align-items:start;
+  padding:6px 8px;border-radius:5px;text-decoration:none;color:inherit;font-size:13px;
+  line-height:1.35;border-left:3px solid transparent}
+nav.uebersicht a:hover{background:var(--knopf-hover)}
+nav.uebersicht a.aktiv{background:var(--knopf-hover);border-left-color:var(--akz)}
+nav.uebersicht .punkt{width:9px;height:9px;border-radius:50%;margin-top:5px;
+  border:1.5px solid var(--mute);background:transparent}
+nav.uebersicht a.fertig .punkt{background:var(--ok);border-color:var(--ok)}
+nav.uebersicht a.zurueck .punkt{background:var(--mittel);border-color:var(--mittel)}
+nav.uebersicht .nkennung{font-family:ui-monospace,Consolas,monospace;font-size:11px;
+  color:var(--mute);display:block}
+nav.uebersicht .ntitel{display:block;overflow:hidden;text-overflow:ellipsis;
+  display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+
+/* ---------- Karten ---------- */
+.vor{background:var(--vor-bg);border:1px solid var(--vor-line);border-radius:var(--r);
+  padding:12px 16px;margin-bottom:18px}
+.vor h2{font-size:12px;margin:0 0 6px;text-transform:uppercase;letter-spacing:.05em;
+  color:var(--akz)}
 .vor ul{margin:0;padding-left:18px}
+.vor li{margin:3px 0;font-size:14px;max-width:74ch}
 .q{background:var(--card);border:1px solid var(--line);border-left:4px solid var(--line);
-  border-radius:6px;padding:16px 18px;margin-bottom:14px}
-.q.offen{border-left-color:var(--krit)}
+  border-radius:var(--r);padding:16px 18px;margin-bottom:14px;box-shadow:var(--schatten);
+  scroll-margin-top:128px}
+.q.s-kritisch{border-left-color:var(--krit)}
+.q.s-hoch{border-left-color:var(--hoch)}
+.q.s-mittel{border-left-color:var(--mittel)}
+.q.s-gering{border-left-color:var(--gering)}
 .q.fertig{border-left-color:var(--ok)}
 .qh{display:flex;flex-wrap:wrap;gap:8px;align-items:baseline}
 .id{font-family:ui-monospace,Consolas,monospace;font-size:12px;color:var(--mute)}
-.qt{font-weight:600;flex:1;min-width:200px}
-.tag{font-size:11px;padding:2px 7px;border-radius:10px;border:1px solid currentColor;white-space:nowrap}
+.qt{font-weight:600;flex:1;min-width:200px;font-size:16.5px;line-height:1.35}
+.tag{font-size:11px;padding:2px 7px;border-radius:10px;border:1px solid currentColor;
+  white-space:nowrap}
 .t-kritisch{color:var(--krit)}.t-hoch{color:var(--hoch)}
 .t-mittel{color:var(--mittel)}.t-gering{color:var(--gering)}
 .t-blocker{color:var(--auf-krit);background:var(--krit);border-color:var(--krit)}
 .t-auf{color:var(--mute)}
-.ctx{margin:8px 0;color:var(--ctx);font-size:14.5px}
+.t-fertig{color:var(--ok)}
+.ctx{margin:8px 0;color:var(--ctx);font-size:14.5px;max-width:74ch}
 details{margin:8px 0;font-size:13.5px}
 summary{cursor:pointer;color:var(--akz)}
-.beleg{background:var(--beleg);border:1px solid var(--line);border-radius:5px;padding:8px 12px;margin-top:6px}
-.beleg div{font-family:ui-monospace,Consolas,monospace;font-size:12.5px;padding:2px 0}
+.beleg{background:var(--beleg);border:1px solid var(--line);border-radius:5px;
+  padding:8px 12px;margin-top:6px}
+.beleg div{font-family:ui-monospace,Consolas,monospace;font-size:12.5px;padding:2px 0;
+  word-break:break-word}
 .opts{margin:10px 0 0}
-label.opt{display:flex;gap:9px;align-items:flex-start;padding:6px 8px;border-radius:5px;cursor:pointer}
+label.opt{display:flex;gap:9px;align-items:flex-start;padding:7px 9px;border-radius:5px;
+  cursor:pointer;border:1px solid transparent}
 label.opt:hover{background:var(--opt-hover)}
-label.opt.emp{background:var(--emp-bg);border:1px solid var(--emp-line)}
-.emp-tag{font-size:11px;color:var(--ok);border:1px solid var(--ok);border-radius:10px;padding:1px 6px;margin-left:6px}
-.begr{font-size:13px;color:var(--mute);margin:2px 0 10px 30px}
-textarea,input[type=text],input[type=date]{width:100%;font:inherit;font-size:14px;padding:7px 9px;
-  border:1px solid var(--line);border-radius:5px;background:var(--card);color:inherit;margin-top:6px}
+label.opt:focus-within{background:var(--opt-hover);outline:2px solid var(--akz);
+  outline-offset:1px}
+label.opt.emp{background:var(--emp-bg);border-color:var(--emp-line)}
+.emp-tag{font-size:11px;color:var(--ok);border:1px solid var(--ok);border-radius:10px;
+  padding:1px 6px;margin-left:6px;white-space:nowrap}
+.begr{font-size:13px;color:var(--mute);margin:2px 0 10px 32px;max-width:70ch}
+textarea,input[type=text],input[type=date]{width:100%;font:inherit;font-size:14px;
+  padding:7px 9px;border:1px solid var(--line);border-radius:5px;background:var(--card);
+  color:inherit;margin-top:6px}
 textarea{min-height:58px;resize:vertical}
 .felder{margin-top:10px;border-top:1px dashed var(--line);padding-top:10px}
-.flabel{font-size:12.5px;color:var(--mute);text-transform:uppercase;letter-spacing:.03em}
+.flabel{font-size:12px;color:var(--mute);text-transform:uppercase;letter-spacing:.04em}
 .row{display:flex;gap:10px;flex-wrap:wrap}
 .row>div{flex:1;min-width:170px}
 .hidden{display:none}
-:focus-visible{outline:2px solid var(--akz);outline-offset:2px}
-label.opt:focus-within{background:var(--opt-hover);outline:2px solid var(--akz);outline-offset:1px}
+
+/* ---------- Dichte ---------- */
+body.dicht .q{padding:11px 14px;margin-bottom:9px}
+body.dicht .ctx{margin:5px 0;font-size:14px}
+body.dicht label.opt{padding:4px 8px}
+body.dicht .begr{margin-bottom:6px}
+body.dicht .felder{margin-top:7px;padding-top:7px}
+body.dicht textarea{min-height:40px}
+
+/* ---------- Abschluss ---------- */
+.abschluss{background:var(--card);border:1px solid var(--line);border-radius:var(--r);
+  padding:16px 18px;margin-top:22px;box-shadow:var(--schatten)}
+.abschluss h2{font-size:15px;margin:0 0 4px}
+.abschluss p{margin:4px 0 12px;color:var(--mute);font-size:13.5px;max-width:74ch}
+table.uebersicht{width:100%;border-collapse:collapse;font-size:13.5px}
+table.uebersicht th{text-align:left;font-size:11.5px;text-transform:uppercase;
+  letter-spacing:.04em;color:var(--mute);border-bottom:1px solid var(--line);
+  padding:6px 8px;font-weight:600}
+table.uebersicht td{border-bottom:1px solid var(--line);padding:7px 8px;
+  vertical-align:top}
+table.uebersicht tr:last-child td{border-bottom:none}
+table.uebersicht td.k{font-family:ui-monospace,Consolas,monospace;font-size:12px;
+  white-space:nowrap;color:var(--mute)}
+table.uebersicht a{color:inherit}
+.abw{color:var(--hoch);font-size:12px;white-space:nowrap}
+.no{color:var(--mute)}
+
+/* ---------- Fuss ---------- */
 footer{position:fixed;bottom:0;left:0;right:0;background:var(--card);
-  border-top:1px solid var(--line);padding:10px 20px}
-.fw{max-width:980px;margin:0 auto;display:flex;flex-wrap:wrap;gap:8px;align-items:center}
-.status{font-size:13px;color:var(--mute);margin-left:auto}
-.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:74px;background:var(--ink);
-  color:var(--bg);padding:9px 16px;border-radius:5px;font-size:14px;opacity:0;transition:opacity .25s;
-  pointer-events:none;z-index:20}
+  border-top:1px solid var(--line);padding:10px 20px;z-index:10}
+.fw{max-width:1340px;margin:0 auto;display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.status{font-size:13px;color:var(--mute);margin-left:auto;
+  font-variant-numeric:tabular-nums}
+.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:74px;
+  background:var(--ink);color:var(--bg);padding:9px 16px;border-radius:6px;font-size:14px;
+  opacity:0;transition:opacity .25s;pointer-events:none;z-index:20;max-width:90vw}
 .toast.on{opacity:1}
+
+/* ---------- Schmale Geraete ----------
+   Gemessen bei 390 px: Kopf und Fuss belegten zusammen 53 bis 60 Prozent der
+   Sichthoehe. Beide laufen deshalb mit, statt stehen zu bleiben. */
+@media (max-width:1099px){
+  .spalten{grid-template-columns:minmax(0,1fr)}
+  nav.uebersicht{position:static;max-height:none;order:-1;
+    background:var(--card);border:1px solid var(--line);border-radius:var(--r);
+    padding:10px 12px;margin-bottom:4px}
+  nav.uebersicht ol{display:flex;flex-wrap:wrap;gap:5px}
+  nav.uebersicht li{flex:0 0 auto}
+  nav.uebersicht a{grid-template-columns:9px auto;border:1px solid var(--line);
+    border-left-width:3px;padding:5px 9px}
+  nav.uebersicht .ntitel{display:none}
+  nav.uebersicht .nkennung{font-size:12px;color:inherit}
+}
 @media (max-width:700px){
-  /* Gemessen bei 390 px: Kopf 319 bis 379 px, Fuss 129 px, zusammen 53 bis 60 %
-     der Sichthoehe. Beide laufen deshalb mit, statt stehen zu bleiben. */
   header{position:static}
   footer{position:static;margin-top:16px;border-top:1px solid var(--line)}
-  main{margin-bottom:20px}
+  .spalten{margin-bottom:20px}
   .meta{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
   .toast{bottom:16px}
+  html{scroll-padding-top:12px}
+  .q{scroll-margin-top:12px}
 }
-@media print{header,footer,.tools{position:static}button{display:none}
-  .q{break-inside:avoid}details{display:block}details>summary{display:none}}
+
+/* ---------- Druck ---------- */
+@media print{
+  header,footer,.tools,nav.uebersicht,.fortschritt{position:static}
+  nav.uebersicht,.tools,.fortschritt,button{display:none}
+  body{background:#fff;color:#000;font-size:11pt}
+  .spalten{display:block;margin:0;padding:0;max-width:none}
+  .q{break-inside:avoid;box-shadow:none;border:1px solid #999;margin-bottom:8pt}
+  .q.hidden{display:block}
+  details{display:block}
+  details>summary{display:none}
+  .beleg{background:#fff}
+  .abschluss{break-before:page}
+}
 </style>
 </head>
 <body>
@@ -259,33 +366,57 @@ const DATEN = {
 </script>
 
 <header><div class="wrap">
-  <h1 id="h-titel"></h1>
-  <div class="meta" id="h-meta"></div>
-  <div class="bar" role="progressbar" aria-labelledby="h-titel"><i id="h-bar"></i></div>
+  <div class="kopfzeile">
+    <div style="flex:1;min-width:240px">
+      <h1 id="h-titel"></h1>
+      <div class="meta" id="h-meta"></div>
+    </div>
+  </div>
+  <div class="fortschritt">
+    <div class="bar" role="progressbar" aria-labelledby="h-titel"><i id="h-bar"></i></div>
+    <span class="zahl" id="h-zahl"></span>
+  </div>
   <div class="tools">
     <button id="b-emp">Alles auf Empfehlung</button>
-    <select id="f-filter">
+    <button id="b-next">Nächste offene Frage</button>
+    <select id="f-filter" aria-label="Fragen filtern">
       <option value="alle">Alle Fragen</option>
       <option value="offen">Nur unbeantwortete</option>
       <option value="blocker">Nur Blocker</option>
       <option value="abw">Nur Abweichungen von der Empfehlung</option>
     </select>
+    <input type="search" id="f-suche" placeholder="Suchen" aria-label="In den Fragen suchen">
+    <button id="b-dicht" aria-pressed="false">Kompakt</button>
     <button id="b-reset">Zurücksetzen</button>
   </div>
 </div></header>
 
-<main>
-  <div class="vor hidden" id="vorentscheide">
-    <h2>Vorentscheide – nicht zur Abstimmung</h2>
-    <ul id="vor-liste"></ul>
-  </div>
-  <div id="liste"></div>
-</main>
+<div class="spalten">
+  <nav class="uebersicht" aria-label="Übersicht der Fragen">
+    <h2>Übersicht</h2>
+    <ol id="nav-liste"></ol>
+  </nav>
+
+  <main>
+    <div class="vor hidden" id="vorentscheide">
+      <h2>Vorentscheide – nicht zur Abstimmung</h2>
+      <ul id="vor-liste"></ul>
+    </div>
+    <div id="liste"></div>
+
+    <section class="abschluss" id="abschluss" aria-labelledby="ab-titel">
+      <h2 id="ab-titel">Stand der Entscheide</h2>
+      <p id="ab-text"></p>
+      <div style="overflow-x:auto"><table class="uebersicht" id="ab-tabelle"></table></div>
+    </section>
+  </main>
+</div>
 
 <footer><div class="fw">
   <button class="primary" id="b-json">JSON herunterladen</button>
   <button id="b-md">Markdown kopieren</button>
   <button id="b-csv">CSV herunterladen</button>
+  <button id="b-druck">Drucken</button>
   <span class="status" id="s-status" role="status" aria-live="polite"></span>
 </div></footer>
 <div class="toast" id="toast"></div>
@@ -336,7 +467,6 @@ function speichern(){
   try { localStorage.setItem(KEY, JSON.stringify(state)); } catch(e){}
   zeichnenStatus();
 }
-
 function sichtbar(f){
   if(!f.bedingung) return true;
   const b = f.bedingung, s = state[b.frage];
@@ -351,8 +481,20 @@ function beantwortet(f){
   if(s.wahl === "__frei" && !s.freitext.trim()) return false;
   return true;
 }
+function zurueckgestellt(f){
+  const s = state[f.id];
+  return !!s && (s.wahl === "__zurueck" || s.wahl === "__unklar");
+}
 function esc(t){ return String(t==null?"":t).replace(/[&<>"']/g,
   c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c])); }
+
+function suchtreffer(f, wort){
+  if(!wort) return true;
+  const w = wort.toLowerCase();
+  const teile = [f.id, f.titel, f.kontext].concat(
+    (f.belege||[]), (f.optionen||[]).map(o=>o.label+" "+(o.begruendung||"")));
+  return teile.join(" ").toLowerCase().indexOf(w) !== -1;
+}
 
 function bauen(){
   const m = DATEN.meta;
@@ -374,7 +516,6 @@ function bauen(){
     if(f.blocker) tags.push('<span class="tag t-blocker">Blocker</span>');
     if(f.schweregrad) tags.push('<span class="tag t-'+esc(f.schweregrad)+'">'+esc(f.schweregrad)+'</span>');
     if(f.aufwand) tags.push('<span class="tag t-auf">Aufwand '+esc(f.aufwand)+'</span>');
-
     if(!emp(f)) tags.push('<span class="tag t-hoch">keine Empfehlung hinterlegt</span>');
 
     const belege = (f.belege&&f.belege.length)
@@ -387,12 +528,11 @@ function bauen(){
       const cls = o.empfehlung ? " emp" : "";
       const tag = o.empfehlung
         ? '<span class="emp-tag">Empfehlung'+(o.konfidenz?" · Konfidenz "+esc(o.konfidenz):"")+'</span>' : "";
-      const begr = o.begruendung ? '<div class="begr">'+esc(o.begruendung)+'</div>' : "";
       const bid = "b-"+f.id+"-"+o.id;
+      const begr = o.begruendung ? '<div class="begr" id="'+esc(bid)+'">'+esc(o.begruendung)+'</div>' : "";
       return '<label class="opt'+cls+'"><input type="radio" name="'+esc(f.id)+'" value="'+esc(o.id)+'"'+sel
         + (o.begruendung ? ' aria-describedby="'+esc(bid)+'"' : '') + '>'
-        + '<span>'+esc(o.label)+tag+'</span></label>'
-        + (o.begruendung ? begr.replace('<div class="begr">', '<div class="begr" id="'+esc(bid)+'">') : begr);
+        + '<span>'+esc(o.label)+tag+'</span></label>' + begr;
     }).join("");
 
     const freiCls = s.wahl==="__frei" ? "" : " hidden";
@@ -405,7 +545,8 @@ function bauen(){
 
     return '<section class="q" id="q-'+esc(f.id)+'" data-id="'+esc(f.id)+'">'
       + '<div class="qh"><span class="id">'+esc(f.id)+'</span>'
-      + '<span class="qt" id="t-'+esc(f.id)+'">'+esc(f.titel)+'</span>'+tags.join("")+'</div>'
+      + '<span class="qt" id="t-'+esc(f.id)+'">'+esc(f.titel)+'</span>'+tags.join("")
+      + '<span class="tag t-fertig hidden" data-fertig="'+esc(f.id)+'">beantwortet</span></div>'
       + (f.kontext ? '<div class="ctx">'+esc(f.kontext)+'</div>' : "")
       + belege
       + '<div class="opts" role="radiogroup" aria-labelledby="t-'+esc(f.id)+'">'+opts+'</div>'
@@ -417,6 +558,15 @@ function bauen(){
       + folge + '</div></section>';
   }).join("");
 
+  // Seitenleiste: je Frage eine Sprungmarke mit Zustandspunkt.
+  document.getElementById("nav-liste").innerHTML = fragen.map(f =>
+    '<li><a href="#q-'+esc(f.id)+'" data-nav="'+esc(f.id)+'">'
+    + '<span class="punkt" aria-hidden="true"></span>'
+    + '<span><span class="nkennung">'+esc(f.id)+(f.blocker?" · Blocker":"")+'</span>'
+    + '<span class="ntitel">'+esc(f.titel)+'</span></span></a></li>').join("");
+
+  // Die Bindung haengt am Behaelter und wird genau einmal gesetzt; sonst
+  // haeufen sich die Handler mit jedem Neuaufbau.
   if(!liste.dataset.gebunden){
     liste.dataset.gebunden = "1";
     liste.addEventListener("change", ev => {
@@ -434,21 +584,37 @@ function bauen(){
 
 function aktualisieren(){
   const filter = document.getElementById("f-filter").value;
+  const wort = document.getElementById("f-suche").value.trim();
   fragen.forEach(f => {
     const el = document.getElementById("q-"+f.id);
     if(!el) return;
     const sicht = sichtbar(f), fertig = beantwortet(f), s = state[f.id];
     el.classList.toggle("fertig", fertig);
-    el.classList.toggle("offen", !fertig);
+    el.classList.remove("s-kritisch","s-hoch","s-mittel","s-gering");
+    if(!fertig && f.schweregrad) el.classList.add("s-"+f.schweregrad);
     const fr = el.querySelector('[data-frei]');
     if(fr) fr.classList.toggle("hidden", s.wahl!=="__frei");
+    const fertigTag = el.querySelector('[data-fertig]');
+    if(fertigTag) fertigTag.classList.toggle("hidden", !fertig);
+
     let zeig = sicht;
     if(zeig && filter==="offen") zeig = !fertig;
     if(zeig && filter==="blocker") zeig = !!f.blocker;
     if(zeig && filter==="abw") zeig = s.wahl !== emp(f);
+    if(zeig) zeig = suchtreffer(f, wort);
     el.classList.toggle("hidden", !zeig);
+
+    const nav = document.querySelector('[data-nav="'+f.id+'"]');
+    if(nav){
+      nav.parentElement.classList.toggle("hidden", !sicht);
+      nav.classList.toggle("fertig", fertig);
+      nav.classList.toggle("zurueck", zurueckgestellt(f));
+      nav.setAttribute("aria-label", f.id + ", " + f.titel + ", "
+        + (fertig ? "beantwortet" : zurueckgestellt(f) ? "zurückgestellt" : "offen"));
+    }
   });
   zeichnenStatus();
+  zeichnenAbschluss();
 }
 
 function zeichnenStatus(){
@@ -456,8 +622,33 @@ function zeichnenStatus(){
   const done = rel.filter(beantwortet).length;
   const blk = rel.filter(f=>f.blocker && !beantwortet(f)).length;
   document.getElementById("h-bar").style.width = rel.length ? (done/rel.length*100)+"%" : "0";
+  document.getElementById("h-zahl").textContent = done + " von " + rel.length;
   document.getElementById("s-status").textContent =
     done+" von "+rel.length+" beantwortet" + (blk ? " · "+blk+" Blocker offen" : "") + " · lokal gespeichert";
+}
+
+function zeichnenAbschluss(){
+  const e = ergebnis();
+  const offen = e.antworten.filter(a=>a.status!=="beantwortet").length;
+  const abw = e.antworten.filter(a=>a.status==="beantwortet" && a.abweichung_von_empfehlung).length;
+  document.getElementById("ab-text").textContent = offen
+    ? offen+" von "+e.antworten.length+" Fragen sind noch offen. Offenes wird nicht umgesetzt, sondern erneut vorgelegt."
+      + (abw ? " " + abw + " Antwort(en) weichen von der Empfehlung ab." : "")
+    : "Alle Fragen sind beantwortet."
+      + (abw ? " " + abw + " Antwort(en) weichen von der Empfehlung ab." : " Keine Abweichung von der Empfehlung.");
+
+  const zeilen = e.antworten.map(a => {
+    const wert = a.status === "beantwortet"
+      ? esc(a.gewaehlt) + (a.freitext ? " – " + esc(a.freitext.slice(0,80)) : "")
+      : '<span class="no">' + ({zurueckgestellt:"zurückgestellt", unklar:"unklar", offen:"offen"}[a.status]||a.status) + '</span>';
+    return '<tr><td class="k"><a href="#q-'+esc(a.id)+'">'+esc(a.id)+'</a></td>'
+      + '<td>'+esc(a.frage)+'</td><td>'+wert+'</td>'
+      + '<td>'+(a.status==="beantwortet"&&a.abweichung_von_empfehlung
+               ? '<span class="abw">weicht ab</span>' : '')+'</td></tr>';
+  }).join("");
+  document.getElementById("ab-tabelle").innerHTML =
+    '<thead><tr><th>ID</th><th>Frage</th><th>Antwort</th><th></th></tr></thead><tbody>'
+    + zeilen + '</tbody>';
 }
 
 function ergebnis(){
@@ -512,7 +703,7 @@ function csv(){
               "freitext","bemerkung","verantwortlich","termin"];
   const q = v => '"'+String(v==null?"":v).replace(/"/g,'""')+'"';
   const e = ergebnis();
-  return "\uFEFF" + [sp.join(";")].concat(
+  return "﻿" + [sp.join(";")].concat(
     e.antworten.map(a => sp.map(k=>q(a[k])).join(";"))).join("\r\n");
 }
 
@@ -559,6 +750,7 @@ document.getElementById("b-md").onclick = () => {
     document.body.removeChild(ta);
   }
 };
+document.getElementById("b-druck").onclick = () => window.print();
 document.getElementById("b-emp").onclick = () => {
   fragen.forEach(f => { const e = emp(f); if(e) state[f.id].wahl = e; });
   speichern(); bauen(); toast("Alle Fragen auf Empfehlung gesetzt");
@@ -570,9 +762,45 @@ document.getElementById("b-reset").onclick = () => {
   fragen.forEach(f => state[f.id] = { wahl: emp(f), freitext:"", bemerkung:"", wer:"", bis:"" });
   speichern(); bauen(); toast("Zurückgesetzt");
 };
+document.getElementById("b-next").onclick = () => {
+  const offen = fragen.filter(f => sichtbar(f) && !beantwortet(f));
+  if(!offen.length){ toast("Keine offene Frage mehr"); return; }
+  const el = document.getElementById("q-"+offen[0].id);
+  el.classList.remove("hidden");
+  el.scrollIntoView({block:"start"});
+  const r = el.querySelector('input[type=radio]');
+  if(r) r.focus({preventScroll:true});
+};
+document.getElementById("b-dicht").onclick = (ev) => {
+  const an = document.body.classList.toggle("dicht");
+  ev.currentTarget.setAttribute("aria-pressed", an ? "true" : "false");
+  ev.currentTarget.textContent = an ? "Normal" : "Kompakt";
+  try { localStorage.setItem(KEY+":dicht", an ? "1" : "0"); } catch(e){}
+};
 document.getElementById("f-filter").onchange = aktualisieren;
+document.getElementById("f-suche").oninput = aktualisieren;
+
+try {
+  if(localStorage.getItem(KEY+":dicht") === "1"){
+    document.body.classList.add("dicht");
+    const b = document.getElementById("b-dicht");
+    b.setAttribute("aria-pressed","true"); b.textContent = "Normal";
+  }
+} catch(e){}
 
 bauen();
+
+// Die Seitenleiste zeigt, wo man steht. Ohne Beobachter muesste bei jedem
+// Bildlauf gerechnet werden.
+if(window.IntersectionObserver){
+  const beobachter = new IntersectionObserver(eintraege => {
+    eintraege.forEach(e => {
+      const nav = document.querySelector('[data-nav="'+e.target.dataset.id+'"]');
+      if(nav) nav.classList.toggle("aktiv", e.isIntersecting);
+    });
+  }, { rootMargin: "-130px 0px -60% 0px" });
+  document.querySelectorAll("section.q").forEach(q => beobachter.observe(q));
+}
 })();
 </script>
 </body>

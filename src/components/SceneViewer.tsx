@@ -2060,10 +2060,16 @@ export interface DeficitConfirmedPayload {
   hintPenalty:      boolean
   /** v0.10.0: Abzug der beim Fund aktiven Hinweis-Stufe (0/10/25) */
   hintAbzug:        number
-  // Bewertungs-Auswahlen aus dem Viewer-Overlay
-  userWichtigkeit:  RSIDimension
-  userAbweichung:   RSIDimension
-  userNacaSchwere:  NACADimension
+  // Bewertungs-Auswahlen aus dem Viewer-Overlay.
+  //
+  // Optional seit v0.20.0: der Panorama-Viewer bewertet selbst und fuellt sie,
+  // der Bildwand-Viewer nicht. Dort folgt die Bewertung im Overlay, weil die
+  // Konvention der Unfallkommission zwei eigene Schritte hat und keine
+  // Wichtigkeit, Abweichung oder Unfallschwere kennt. Fehlen sie, startet der
+  // Ablauf ohne Vorbelegung — genau wie vor der ersten Auswahl.
+  userWichtigkeit?:  RSIDimension
+  userAbweichung?:   RSIDimension
+  userNacaSchwere?:  NACADimension
   // Zeitpunkt des Bewertungsbeginns (für Dauer-Berechnung)
   bewertungStartMs: number
 }

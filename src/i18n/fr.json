@@ -582,5 +582,14 @@
     "zust_pflege_hinweis": "Ces indications valent pour tous les domaines thématiques, scènes et constats de ce pays. Elles sont saisies ici et restent sur cet appareil ; leur transmission passe par l’exportation et l’importation.",
     "zust_stand": "État",
     "zust_titel": "Responsabilité"
+  },
+  "bildserie": {
+    "keine_phasen": "Cette scène est configurée comme série d'images, mais ne comporte aucune phase avec des images. À compléter dans l'administration.",
+    "phasen": "Phases dans le temps",
+    "vergleich": "Comparaison seulement",
+    "bild_von": "Image {{n}} sur {{gesamt}}",
+    "verkleinern": "Réduire",
+    "vergroessern": "Agrandir",
+    "einpassen": "Ajuster"
   }
 }

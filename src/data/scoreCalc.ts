@@ -71,7 +71,7 @@ export const HINT_ABZUG_HOTSPOTS  = 25
 // Das gilt nur, solange jedes Defizit denselben Weg durchlaeuft. Ein Befund
 // nach der Konvention der Unfallkommission traegt 100 Punkte als
 // Sicherheitsdefizit und 60 als Gestaltungsbefund, weil er dann nur Schritt 1
-// durchlaeuft. Die Zahl haengt also am Datensatz, nicht an der Anzahl.
+// durchlaeuft. Die Zahl hängt also am Datensatz, nicht an der Anzahl.
 
 /** Erreichbare Punkte eines Defizits, je nach Verfahren seiner Bewertung. */
 export function maxPunkteFuerDefizit(bewertung: Bewertung): number {
