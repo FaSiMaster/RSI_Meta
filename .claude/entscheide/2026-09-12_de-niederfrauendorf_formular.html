@@ -1,0 +1,540 @@
+<!DOCTYPE html>
+<html lang="de-CH">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Entscheidformular</title>
+<style>
+:root{
+  --bg:#f4f4f2; --card:#fff; --ink:#1a1a18; --mute:#6b6b66; --line:#dcdcd6;
+  --akz:#1f4e79; --krit:#a4262c; --hoch:#c2591a; --mittel:#8a6d1f; --gering:#5b6b5b;
+  --ok:#2d6a4f;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);
+  font:16px/1.55 "Segoe UI",-apple-system,system-ui,Arial,sans-serif}
+header{position:sticky;top:0;z-index:10;background:var(--card);
+  border-bottom:1px solid var(--line);padding:14px 20px}
+.wrap{max-width:980px;margin:0 auto}
+h1{font-size:20px;margin:0 0 2px}
+.meta{color:var(--mute);font-size:13px}
+.bar{height:6px;background:var(--line);border-radius:3px;margin:10px 0 8px;overflow:hidden}
+.bar>i{display:block;height:100%;background:var(--ok);width:0;transition:width .2s}
+.tools{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:8px}
+button{font:inherit;font-size:13px;padding:7px 12px;border:1px solid var(--line);
+  background:#fbfbfa;border-radius:5px;cursor:pointer}
+button:hover{background:#f0f0ec}
+button.primary{background:var(--akz);color:#fff;border-color:var(--akz)}
+button.primary:hover{filter:brightness(1.12)}
+select{font:inherit;font-size:13px;padding:6px;border:1px solid var(--line);border-radius:5px;background:#fff}
+main{max-width:980px;margin:20px auto 120px;padding:0 20px}
+.vor{background:#eef2f6;border:1px solid #d5e0ea;border-radius:6px;padding:12px 16px;margin-bottom:20px}
+.vor h2{font-size:14px;margin:0 0 6px;text-transform:uppercase;letter-spacing:.04em;color:var(--akz)}
+.vor ul{margin:0;padding-left:18px}
+.q{background:var(--card);border:1px solid var(--line);border-left:4px solid var(--line);
+  border-radius:6px;padding:16px 18px;margin-bottom:14px}
+.q.offen{border-left-color:var(--krit)}
+.q.fertig{border-left-color:var(--ok)}
+.qh{display:flex;flex-wrap:wrap;gap:8px;align-items:baseline}
+.id{font-family:ui-monospace,Consolas,monospace;font-size:12px;color:var(--mute)}
+.qt{font-weight:600;flex:1;min-width:200px}
+.tag{font-size:11px;padding:2px 7px;border-radius:10px;border:1px solid currentColor;white-space:nowrap}
+.t-kritisch{color:var(--krit)}.t-hoch{color:var(--hoch)}
+.t-mittel{color:var(--mittel)}.t-gering{color:var(--gering)}
+.t-blocker{color:#fff;background:var(--krit);border-color:var(--krit)}
+.t-auf{color:var(--mute)}
+.ctx{margin:8px 0;color:#3a3a36;font-size:14.5px}
+details{margin:8px 0;font-size:13.5px}
+summary{cursor:pointer;color:var(--akz)}
+.beleg{background:#fafaf8;border:1px solid var(--line);border-radius:5px;padding:8px 12px;margin-top:6px}
+.beleg div{font-family:ui-monospace,Consolas,monospace;font-size:12.5px;padding:2px 0}
+.opts{margin:10px 0 0}
+label.opt{display:flex;gap:9px;align-items:flex-start;padding:6px 8px;border-radius:5px;cursor:pointer}
+label.opt:hover{background:#f6f6f3}
+label.opt.emp{background:#f0f5ef;border:1px solid #cfe0cd}
+.emp-tag{font-size:11px;color:var(--ok);border:1px solid var(--ok);border-radius:10px;padding:1px 6px;margin-left:6px}
+.begr{font-size:13px;color:var(--mute);margin:2px 0 10px 30px}
+textarea,input[type=text],input[type=date]{width:100%;font:inherit;font-size:14px;padding:7px 9px;
+  border:1px solid var(--line);border-radius:5px;background:#fff;margin-top:6px}
+textarea{min-height:58px;resize:vertical}
+.felder{margin-top:10px;border-top:1px dashed var(--line);padding-top:10px}
+.flabel{font-size:12.5px;color:var(--mute);text-transform:uppercase;letter-spacing:.03em}
+.row{display:flex;gap:10px;flex-wrap:wrap}
+.row>div{flex:1;min-width:170px}
+.hidden{display:none}
+footer{position:fixed;bottom:0;left:0;right:0;background:var(--card);
+  border-top:1px solid var(--line);padding:10px 20px}
+.fw{max-width:980px;margin:0 auto;display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.status{font-size:13px;color:var(--mute);margin-left:auto}
+.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:74px;background:var(--ink);
+  color:#fff;padding:9px 16px;border-radius:5px;font-size:14px;opacity:0;transition:opacity .25s;
+  pointer-events:none;z-index:20}
+.toast.on{opacity:1}
+@media print{header,footer,.tools{position:static}button{display:none}}
+</style>
+</head>
+<body>
+
+<script>
+/* DATEN-ANFANG — nur dieser Block wird beim Erzeugen ersetzt */
+const DATEN = {
+  meta: {
+    id: "2026-09-12_de-niederfrauendorf",
+    titel: "Niederfrauendorf, Befunde aus den Entscheiden",
+    projekt: "RSI VR Tool, Verfahren der Unfallkommission Deutschland",
+    datum: "2026-09-12",
+    kontext: "Die Entscheide E-1 bis E-12 sind gefallen. Erst dadurch sind drei Befunde entstanden, dazu kommt die Frage nach dem Baubeginn. B1 und B2 hängen an keinem dieser Punkte, B4 an den ersten zwei.",
+    vorentscheide: [
+      "Knotenpunkt liegt bei 50.877375, 13.723016. Aus OpenStreetMap als einziger Geometriepunkt bestimmt, den die Wege mit ref S 183 und S 190 teilen. Die Ortssuche nach der Glashütter Strasse allein liegt 160 m daneben.",
+      "Chronologie nach E-12: ohne Regelung bis 2015, mobile Lichtsignalanlage Anfang 2016 bis 21. Februar 2020, Minikreisverkehr ab 21. Februar 2020. Der Ausgangsprompt hatte die letzten zwei vertauscht.",
+      "Die Ordnernamen der Bilder, 2016-2022 und 2022-2025, sind irreführend und werden nicht übernommen. Gemessen tragen sie je einen Aufnahmetag: 13. September 2017 und 12. Mai 2022.",
+      "Ein Street-View-Panorama wird nicht heruntergeladen und eingebaut. Das ist keine Abwägung, sondern eine Grenze, weil die Anwendung öffentlich ausgeliefert wird. Was stattdessen möglich ist, steht in F-004.",
+      "Defizit 10 und 14 sind entgegen meiner ersten Einschätzung belegbar. Der Bericht stützt sie auf Verhaltensbeobachtung, die Bilder 3 und 6 zeigen dieses Verhalten unmittelbar."
+    ]
+  },
+  fragen: [
+    {
+      id: "F-002",
+      titel: "Das Nullmodell besteht die Szene. Was wird dagegen getan?",
+      kontext: "Von den sechs gewählten Befunden ist genau einer ein Designproblem, weil Defizit 13 abgewählt wurde. Wer in Schritt 1 immer «Sicherheitsdefizit» antwortet und Schritt 2 rät, erreicht im Erwartungswert 366,7 von 560 Punkten, also 65,5 %, und liegt damit über der Schwelle von 60 %. Die Pflichtbefund-Regel greift dagegen nicht, weil sie das Auffinden im Bild prüft und nicht die Bewertung. Ursache ist das Verhältnis fünf zu eins.",
+      schweregrad: "kritisch",
+      aufwand: "mittel",
+      blocker: true,
+      belege: [
+        "docs/DE_Unfallkommission_Plan.md, Abschnitt B-2, vollständige Rechnung",
+        "src/data/bestandenKriterium.ts, BESTANDEN_DEFAULT, Schwelle 60 %",
+        "Protokoll 12.09.2026, E-7a 60 zu 40 und E-7b Gewicht 60 gegen 100",
+        "Auditbericht S 183/S 190, Kapitel Auditergebnis, Defizit 8 und 13"
+      ],
+      optionen: [
+        { id: "a", label: "Defizit 13 als zweites Designproblem aufnehmen, mit Abbildung 10 als siebtes Bild",
+          empfehlung: true,
+          begruendung: "Behebt die Ursache statt das Symptom. Bei vier Sicherheitsdefiziten und zwei Designproblemen sinkt der Erwartungswert auf 293,3 von 520, also 56,4 %, und das Nullmodell fällt durch. Preis ist ein siebtes Bild, die Nachtrassierung aus dem Bericht.",
+          konfidenz: "hoch" },
+        { id: "b", label: "Eigene Designproblem-Befunde der Fachexperten einholen",
+          begruendung: "Belastbarer als die Ableitung aus der Berichtsstruktur, blockiert B4 aber bis zur Zuarbeit." },
+        { id: "c", label: "Schwelle für DE-Szenen auf 70 % heben",
+          begruendung: "Technisch billig über den Szenen-Override in bestandenKriterium.ts, aber willkürlich und behandelt nur das Symptom." },
+        { id: "d", label: "So lassen, das Nullmodell wird in Kauf genommen",
+          begruendung: "Vertretbar, wenn die Szene als Einstieg und nicht als Prüfung gedacht ist. Dann sollte das im Datensatz stehen." }
+      ],
+      folgeaktion: false,
+      bedingung: null
+    },
+    {
+      id: "F-001",
+      titel: "Bild 4 und Bild 5 tragen nach E-9 keinen Befund mehr. Wie weiter?",
+      kontext: "E-9 wählt Defizit 17, 16 und 12 ab, E-8 behält alle sechs Bilder. Bild 4 war allein für Defizit 17 vorgesehen, Bild 5 für 12 und 7, wobei 7 nie zur Wahl stand. Zur Sachlage gehört, dass Defizit 17 der einzige Befund des Berichts ist, dem die Unfallanalyse das laufende Geschehen unmittelbar zuordnet: fünf der zehn Unfälle, darunter alle drei Längsverkehrsunfälle.",
+      schweregrad: "hoch",
+      aufwand: "klein",
+      blocker: true,
+      belege: [
+        "Protokoll 12.09.2026, E-8 gegen E-9",
+        "Auditbericht, Unfallanalyse, Unfallanzahl und Charakteristik, S. 5",
+        "Auditbericht, Defizit 17, Engstelle in Knotenpunktzufahrt, S. 18",
+        "docs/DE_Unfallkommission_Plan.md, Abschnitt B-1, Tabelle"
+      ],
+      optionen: [
+        { id: "a", label: "Defizit 17 und 12 doch aufnehmen, beide Bilder bleiben",
+          empfehlung: true,
+          begruendung: "Defizit 17 ist der einzige Befund mit unmittelbarer Unfallzuordnung und damit fachlich der stärkste der Auswahl. Die Bilder stehen bereits, der Aufwand ist die Beurteilung zweier weiterer Befunde.",
+          konfidenz: "hoch" },
+        { id: "b", label: "Nur Defizit 17 aufnehmen, Bild 5 weglassen",
+          begruendung: "Nimmt den stärksten Befund mit und lässt die Fahrstreifenbreiten weg, die ohne Messwerte am Bild schwer zu beurteilen sind." },
+        { id: "c", label: "Beide Bilder als Kontext ohne Befund behalten",
+          begruendung: "Zeigt die Engstelle und den Schwerverkehr, ohne dass dort etwas zu finden ist. Lernende suchen erfahrungsgemäss trotzdem." },
+        { id: "d", label: "Bild 4 und 5 weglassen, Übung auf vier Bilder",
+          begruendung: "Konsequent zu E-9. Die Übung verliert dann die Engstelle und den Schwerverkehr vollständig." }
+      ],
+      folgeaktion: false,
+      bedingung: null
+    },
+    {
+      id: "F-003",
+      titel: "Beginne ich mit B1 und B2, bevor diese Punkte entschieden sind?",
+      kontext: "B1 baut das Datenmodell um, B2 die Verfahrensweiche und die Bewertung. Beide hängen an keinem der Punkte oben: die Punkteverteilung steht mit E-7a und E-7b fest, und welche Befunde in die Szene kommen, berührt erst B4. Der Umbau von correctAssessment zu einer diskriminierten Union betrifft 31 Zugriffe in 13 Dateien.",
+      schweregrad: "hoch",
+      aufwand: "gross",
+      blocker: true,
+      belege: [
+        "docs/DE_Unfallkommission_Plan.md, Abschnitt f, Änderungsplan",
+        "src/data/appData.ts:102, AppDeficit.correctAssessment mit sechs Pflichtfeldern",
+        "Messung im Repo: 31 Zugriffe auf correctAssessment in 13 Dateien",
+        "src/utils/sphereCoords.ts:16, DefizitVerortung ist bereits eine Union über das Feld typ"
+      ],
+      optionen: [
+        { id: "a", label: "Ja, B1 und B2 jetzt, B4 nach diesen Entscheiden",
+          empfehlung: true,
+          begruendung: "Nutzt die Zeit für den Teil, der unabhängig ist, und hält die Commit-Reihenfolge des Auftrags ein. B4 wartet ohnehin auf F-001 und F-002.",
+          konfidenz: "hoch" },
+        { id: "b", label: "Nur B1, das Datenmodell",
+          begruendung: "Kleinster sinnvoller Schritt. B2 käme dann mit der Bewertung zusammen, was den Zusammenhang von Weiche und Punkten sichtbar hält." },
+        { id: "c", label: "Warten, bis alle Punkte entschieden sind",
+          begruendung: "Vermeidet jede Nacharbeit, kostet aber Zeit für einen Umbau, den die offenen Punkte nicht berühren." }
+      ],
+      folgeaktion: false,
+      bedingung: null
+    },
+    {
+      id: "F-004",
+      titel: "Welche Bildquelle gilt, nachdem die Panoramaprüfung negativ ausgefallen ist?",
+      kontext: "Geprüft am 12. September 2026 am echten Knotenpunkt. KartaView führt 23 Bilder im Umkreis von 120 m, drei davon 5 m vom Knoten, alle vom 30. Juli 2021 und damit aus der Zeit des Minikreisverkehrs; die Projektion ist durchgehend PLANE, es sind also keine Panoramen. Mapillary antwortet ohne Zugangsschlüssel nicht. Panoramax hat keine Abdeckung. Keine offene Quelle liefert ein Panorama dieses Knotenpunkts.",
+      schweregrad: "hoch",
+      aufwand: "mittel",
+      blocker: false,
+      belege: [
+        "api.kartaview.org, nearby-photos, 50.877375 / 13.723016, Radius 120 m, 23 Treffer",
+        "graph.mapillary.com, Antwort «Invalid OAuth 2.0 Access Token»",
+        "api.panoramax.xyz, Suche über die Umgebung, null Treffer",
+        "OpenStreetMap-Wiki zu KartaView: Bilder unter CC BY-SA 4.0. Die Angabe der Plattform selbst ist nicht gegengelesen, weil die Seite eine Javascript-Anwendung ist",
+        "docs/DE_Unfallkommission_Plan.md, Abschnitt B-3"
+      ],
+      optionen: [
+        { id: "a", label: "Nur die Bildwand aus B3, keine fremde Quelle",
+          empfehlung: true,
+          begruendung: "Die eigenen Bilder sind zahlreicher, neuer und näher am Befund als alles Verfügbare. Ein Panorama löst hier kein Problem, das die Bildwand offen lässt.",
+          konfidenz: "hoch" },
+        { id: "b", label: "Die 23 KartaView-Bilder als lizenzkonforme Ergänzung beschaffen",
+          begruendung: "Aus der richtigen Phase, CC BY-SA 4.0 mit Namensnennung und Weitergabe unter gleichen Bedingungen. Die Weitergabebedingung ist vor dem Einbau zu prüfen, weil sie auf abgeleitete Werke durchschlägt." },
+        { id: "c", label: "Mapillary erst prüfen, Zugangsschlüssel anlegen",
+          begruendung: "Kostenlos und in Minuten erledigt. Ob dort ein Panorama liegt, ist offen; die Abdeckung im ländlichen Sachsen ist typischerweise dünn." },
+        { id: "d", label: "Street View lizenzkonform einbetten, nur im Browserteil",
+          begruendung: "Über die Maps-Javascript-Schnittstelle mit Googles Attribution zulässig. Trägt nicht in die Brille, weil ein eingebetteter Rahmen in der Szene nicht darstellbar ist, und bringt eine Netzabhängigkeit in eine Anwendung, die offline laufen soll." }
+      ],
+      folgeaktion: true,
+      bedingung: null
+    },
+    {
+      id: "F-005",
+      titel: "Wird Defizit 7, die ungenügend breite Kreisfahrbahn, aufgenommen?",
+      kontext: "Defizit 7 liegt auf Bild 5, stand aber in E-9 nie zur Wahl, weil es in meiner Optionsliste fehlte. Der Bericht nennt gemessene Kreisfahrbahnbreiten zwischen 3,9 m und 6,0 m gegen 6,0 m erforderlich und verlangt eine kreisrunde Anlage.",
+      schweregrad: "mittel",
+      aufwand: "klein",
+      blocker: false,
+      belege: [
+        "Auditbericht, Defizit 7, Ungenügend breite Kreisfahrbahn, S. 13",
+        "Merkblatt für die Anlage von Kreisverkehren, Kap. 3.3 und Tab. 2, wie im Bericht zitiert",
+        "Protokoll 12.09.2026, E-9: Defizit 7 fehlt in der Optionsliste"
+      ],
+      optionen: [
+        { id: "a", label: "Ja, als Sicherheitsdefizit aufnehmen",
+          empfehlung: true,
+          begruendung: "Gehört sachlich zur selben Gruppe wie 6 und 8 und ist auf Bild 5 an der Spurführung der begegnenden Fahrzeuge erkennbar. Die Einstufung nach Schritt 2 legst du fest, nicht ich.",
+          konfidenz: "mittel" },
+        { id: "b", label: "Nein, nicht aufnehmen",
+          begruendung: "Ohne Messwerte am Bild schwer zu beurteilen, und die Übung hat mit 6 und 8 schon zwei Befunde zur Geometrie des Kreises." }
+      ],
+      folgeaktion: false,
+      bedingung: { frage: "F-001", wert: ["a", "b", "c"] }
+    }
+  ]
+};
+/* DATEN-ENDE */
+</script>
+
+<header><div class="wrap">
+  <h1 id="h-titel"></h1>
+  <div class="meta" id="h-meta"></div>
+  <div class="bar"><i id="h-bar"></i></div>
+  <div class="tools">
+    <button id="b-emp">Alles auf Empfehlung</button>
+    <select id="f-filter">
+      <option value="alle">Alle Fragen</option>
+      <option value="offen">Nur unbeantwortete</option>
+      <option value="blocker">Nur Blocker</option>
+      <option value="abw">Nur Abweichungen von der Empfehlung</option>
+    </select>
+    <button id="b-reset">Zurücksetzen</button>
+  </div>
+</div></header>
+
+<main>
+  <div class="vor hidden" id="vorentscheide">
+    <h2>Vorentscheide – nicht zur Abstimmung</h2>
+    <ul id="vor-liste"></ul>
+  </div>
+  <div id="liste"></div>
+</main>
+
+<footer><div class="fw">
+  <button class="primary" id="b-json">JSON herunterladen</button>
+  <button id="b-md">Markdown kopieren</button>
+  <button id="b-csv">CSV herunterladen</button>
+  <span class="status" id="s-status"></span>
+</div></footer>
+<div class="toast" id="toast"></div>
+
+<script>
+(function(){
+"use strict";
+
+const STD = [
+  { id:"__zurueck",  label:"Zurückstellen – später entscheiden", std:true },
+  { id:"__na",       label:"Nicht zutreffend – Frage entfällt", std:true },
+  { id:"__unklar",   label:"Unklar – bitte Varianten vertiefen", std:true },
+  { id:"__frei",     label:"Andere Antwort (Freitext)", std:true, freitext:true }
+];
+const RANG = { kritisch:0, hoch:1, mittel:2, gering:3 };
+const AUFW = { klein:0, mittel:1, gross:2 };
+const KEY  = "entscheid:" + DATEN.meta.id;
+
+const fragen = DATEN.fragen.map(f => {
+  const opts = (f.optionen||[]).slice();
+  STD.forEach(s => { if(!opts.some(o=>o.id===s.id)) opts.push(Object.assign({},s)); });
+  return Object.assign({}, f, { optionen: opts });
+});
+
+fragen.sort((a,b) =>
+  (b.blocker?1:0)-(a.blocker?1:0) ||
+  (RANG[a.schweregrad]??9)-(RANG[b.schweregrad]??9) ||
+  (AUFW[a.aufwand]??9)-(AUFW[b.aufwand]??9) ||
+  String(a.id).localeCompare(String(b.id))
+);
+
+let state = {};
+try { const r = localStorage.getItem(KEY); if(r) state = JSON.parse(r); } catch(e){}
+
+function emp(f){ const o = f.optionen.find(x=>x.empfehlung); return o ? o.id : null; }
+fragen.forEach(f => {
+  if(!state[f.id]) state[f.id] = { wahl: emp(f), freitext:"", bemerkung:"", wer:"", bis:"" };
+});
+
+function speichern(){
+  try { localStorage.setItem(KEY, JSON.stringify(state)); } catch(e){}
+  zeichnenStatus();
+}
+
+function sichtbar(f){
+  if(!f.bedingung) return true;
+  const b = f.bedingung, s = state[b.frage];
+  if(!s) return false;
+  const werte = Array.isArray(b.wert) ? b.wert : [b.wert];
+  return werte.indexOf(s.wahl) !== -1;
+}
+function beantwortet(f){
+  const s = state[f.id];
+  if(!s || !s.wahl) return false;
+  if(s.wahl === "__zurueck" || s.wahl === "__unklar") return false;
+  if(s.wahl === "__frei" && !s.freitext.trim()) return false;
+  return true;
+}
+function esc(t){ return String(t==null?"":t).replace(/[&<>"']/g,
+  c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c])); }
+
+function bauen(){
+  const m = DATEN.meta;
+  document.title = m.titel;
+  document.getElementById("h-titel").textContent = m.titel;
+  document.getElementById("h-meta").textContent =
+    [m.projekt, m.datum, m.kontext].filter(Boolean).join(" · ");
+
+  if(m.vorentscheide && m.vorentscheide.length){
+    document.getElementById("vorentscheide").classList.remove("hidden");
+    document.getElementById("vor-liste").innerHTML =
+      m.vorentscheide.map(v=>"<li>"+esc(v)+"</li>").join("");
+  }
+
+  const liste = document.getElementById("liste");
+  liste.innerHTML = fragen.map(f => {
+    const s = state[f.id];
+    const tags = [];
+    if(f.blocker) tags.push('<span class="tag t-blocker">Blocker</span>');
+    if(f.schweregrad) tags.push('<span class="tag t-'+esc(f.schweregrad)+'">'+esc(f.schweregrad)+'</span>');
+    if(f.aufwand) tags.push('<span class="tag t-auf">Aufwand '+esc(f.aufwand)+'</span>');
+
+    if(!emp(f)) tags.push('<span class="tag t-hoch">keine Empfehlung hinterlegt</span>');
+
+    const belege = (f.belege&&f.belege.length)
+      ? '<details><summary>Fundstellen ('+f.belege.length+')</summary><div class="beleg">'
+        + f.belege.map(b=>"<div>"+esc(b)+"</div>").join("") + '</div></details>'
+      : '<div class="begr">Fundstelle: nicht belegbar</div>';
+
+    const opts = f.optionen.map(o => {
+      const sel = s.wahl===o.id ? " checked" : "";
+      const cls = o.empfehlung ? " emp" : "";
+      const tag = o.empfehlung
+        ? '<span class="emp-tag">Empfehlung'+(o.konfidenz?" · Konfidenz "+esc(o.konfidenz):"")+'</span>' : "";
+      const begr = o.begruendung ? '<div class="begr">'+esc(o.begruendung)+'</div>' : "";
+      return '<label class="opt'+cls+'"><input type="radio" name="'+esc(f.id)+'" value="'+esc(o.id)+'"'+sel+'>'
+        + '<span>'+esc(o.label)+tag+'</span></label>'+begr;
+    }).join("");
+
+    const freiCls = s.wahl==="__frei" ? "" : " hidden";
+    const folge = f.folgeaktion
+      ? '<div class="row"><div><div class="flabel">Verantwortlich</div>'
+        + '<input type="text" data-feld="wer" data-id="'+esc(f.id)+'" value="'+esc(s.wer)+'"></div>'
+        + '<div><div class="flabel">Termin</div>'
+        + '<input type="date" data-feld="bis" data-id="'+esc(f.id)+'" value="'+esc(s.bis)+'"></div></div>'
+      : "";
+
+    return '<section class="q" id="q-'+esc(f.id)+'" data-id="'+esc(f.id)+'">'
+      + '<div class="qh"><span class="id">'+esc(f.id)+'</span>'
+      + '<span class="qt">'+esc(f.titel)+'</span>'+tags.join("")+'</div>'
+      + (f.kontext ? '<div class="ctx">'+esc(f.kontext)+'</div>' : "")
+      + belege
+      + '<div class="opts">'+opts+'</div>'
+      + '<div class="felder">'
+      + '<div class="frei'+freiCls+'" data-frei="'+esc(f.id)+'"><div class="flabel">Freitextantwort</div>'
+      + '<textarea data-feld="freitext" data-id="'+esc(f.id)+'">'+esc(s.freitext)+'</textarea></div>'
+      + '<div class="flabel">Bemerkung</div>'
+      + '<textarea data-feld="bemerkung" data-id="'+esc(f.id)+'" placeholder="Optional">'+esc(s.bemerkung)+'</textarea>'
+      + folge + '</div></section>';
+  }).join("");
+
+  liste.addEventListener("change", ev => {
+    const t = ev.target;
+    if(t.type==="radio"){ state[t.name].wahl = t.value; speichern(); aktualisieren(); }
+    else if(t.dataset && t.dataset.feld){ state[t.dataset.id][t.dataset.feld] = t.value; speichern(); aktualisieren(); }
+  });
+  liste.addEventListener("input", ev => {
+    const t = ev.target;
+    if(t.dataset && t.dataset.feld){ state[t.dataset.id][t.dataset.feld] = t.value; speichern(); }
+  });
+  aktualisieren();
+}
+
+function aktualisieren(){
+  const filter = document.getElementById("f-filter").value;
+  fragen.forEach(f => {
+    const el = document.getElementById("q-"+f.id);
+    if(!el) return;
+    const sicht = sichtbar(f), fertig = beantwortet(f), s = state[f.id];
+    el.classList.toggle("fertig", fertig);
+    el.classList.toggle("offen", !fertig);
+    const fr = el.querySelector('[data-frei]');
+    if(fr) fr.classList.toggle("hidden", s.wahl!=="__frei");
+    let zeig = sicht;
+    if(zeig && filter==="offen") zeig = !fertig;
+    if(zeig && filter==="blocker") zeig = !!f.blocker;
+    if(zeig && filter==="abw") zeig = s.wahl !== emp(f);
+    el.classList.toggle("hidden", !zeig);
+  });
+  zeichnenStatus();
+}
+
+function zeichnenStatus(){
+  const rel = fragen.filter(sichtbar);
+  const done = rel.filter(beantwortet).length;
+  const blk = rel.filter(f=>f.blocker && !beantwortet(f)).length;
+  document.getElementById("h-bar").style.width = rel.length ? (done/rel.length*100)+"%" : "0";
+  document.getElementById("s-status").textContent =
+    done+" von "+rel.length+" beantwortet" + (blk ? " · "+blk+" Blocker offen" : "") + " · lokal gespeichert";
+}
+
+function ergebnis(){
+  const rel = fragen.filter(sichtbar);
+  return {
+    formular: DATEN.meta.id,
+    titel: DATEN.meta.titel,
+    projekt: DATEN.meta.projekt || "",
+    erzeugt: new Date().toISOString(),
+    offen: rel.filter(f=>!beantwortet(f)).map(f=>f.id),
+    uebersprungen: fragen.filter(f=>!sichtbar(f)).map(f=>f.id),
+    antworten: rel.map(f => {
+      const s = state[f.id];
+      const o = f.optionen.find(x=>x.id===s.wahl) || {};
+      return {
+        id: f.id,
+        frage: f.titel,
+        blocker: !!f.blocker,
+        schweregrad: f.schweregrad || "",
+        gewaehlt_id: s.wahl || "",
+        gewaehlt: o.label || "",
+        status: beantwortet(f) ? "beantwortet"
+              : (s.wahl==="__zurueck" ? "zurueckgestellt"
+              : (s.wahl==="__unklar" ? "unklar" : "offen")),
+        abweichung_von_empfehlung: s.wahl !== emp(f),
+        freitext: s.freitext.trim(),
+        bemerkung: s.bemerkung.trim(),
+        verantwortlich: s.wer.trim(),
+        termin: s.bis
+      };
+    })
+  };
+}
+
+function markdown(){
+  const e = ergebnis();
+  const z = ["# Entscheide "+e.formular, "", "Stand: "+e.erzeugt, ""];
+  e.antworten.forEach(a => {
+    let l = "- **"+a.id+"** → "+(a.gewaehlt||"offen");
+    if(a.abweichung_von_empfehlung && a.status==="beantwortet") l += " (Abweichung von der Empfehlung)";
+    if(a.freitext) l += " | Freitext: "+a.freitext.replace(/\n/g," ");
+    if(a.bemerkung) l += " | Bemerkung: "+a.bemerkung.replace(/\n/g," ");
+    if(a.verantwortlich || a.termin) l += " | Pendenz: "+[a.verantwortlich,a.termin].filter(Boolean).join(", ");
+    z.push(l);
+  });
+  if(e.offen.length){ z.push("", "Offen geblieben: "+e.offen.join(", ")); }
+  return z.join("\n");
+}
+
+function csv(){
+  const sp = ["id","frage","status","gewaehlt","abweichung_von_empfehlung",
+              "freitext","bemerkung","verantwortlich","termin"];
+  const q = v => '"'+String(v==null?"":v).replace(/"/g,'""')+'"';
+  const e = ergebnis();
+  return "\uFEFF" + [sp.join(";")].concat(
+    e.antworten.map(a => sp.map(k=>q(a[k])).join(";"))).join("\r\n");
+}
+
+function laden(text, name, typ){
+  const b = new Blob([text], {type:typ+";charset=utf-8"});
+  const u = URL.createObjectURL(b), a = document.createElement("a");
+  a.href = u; a.download = name; document.body.appendChild(a); a.click();
+  document.body.removeChild(a); setTimeout(()=>URL.revokeObjectURL(u), 1500);
+}
+function toast(t){
+  const el = document.getElementById("toast");
+  el.textContent = t; el.classList.add("on");
+  setTimeout(()=>el.classList.remove("on"), 2200);
+}
+function warnung(){
+  const e = ergebnis();
+  if(!e.offen.length) return true;
+  return confirm(e.offen.length+" Frage(n) sind noch offen: "+e.offen.join(", ")
+    + "\n\nTrotzdem ausgeben? Offene Punkte werden nicht umgesetzt, sondern erneut vorgelegt.");
+}
+
+document.getElementById("b-json").onclick = () => {
+  if(!warnung()) return;
+  laden(JSON.stringify(ergebnis(), null, 2), DATEN.meta.id+"_antworten.json", "application/json");
+  toast("JSON heruntergeladen – Datei nach .claude/entscheide/ legen");
+};
+document.getElementById("b-csv").onclick = () => {
+  laden(csv(), DATEN.meta.id+"_antworten.csv", "text/csv");
+  toast("CSV heruntergeladen");
+};
+document.getElementById("b-md").onclick = () => {
+  if(!warnung()) return;
+  const t = markdown();
+  const fertig = () => toast("Markdown in der Zwischenablage");
+  if(navigator.clipboard && navigator.clipboard.writeText){
+    navigator.clipboard.writeText(t).then(fertig, ()=>fallback(t));
+  } else fallback(t);
+  function fallback(txt){
+    const ta = document.createElement("textarea");
+    ta.value = txt; ta.style.position="fixed"; ta.style.opacity="0";
+    document.body.appendChild(ta); ta.select();
+    try { document.execCommand("copy"); fertig(); }
+    catch(e){ prompt("Kopieren mit Strg+C:", txt); }
+    document.body.removeChild(ta);
+  }
+};
+document.getElementById("b-emp").onclick = () => {
+  fragen.forEach(f => { const e = emp(f); if(e) state[f.id].wahl = e; });
+  speichern(); bauen(); toast("Alle Fragen auf Empfehlung gesetzt");
+};
+document.getElementById("b-reset").onclick = () => {
+  if(!confirm("Alle Eingaben verwerfen?")) return;
+  try { localStorage.removeItem(KEY); } catch(e){}
+  state = {};
+  fragen.forEach(f => state[f.id] = { wahl: emp(f), freitext:"", bemerkung:"", wer:"", bis:"" });
+  speichern(); bauen(); toast("Zurückgesetzt");
+};
+document.getElementById("f-filter").onchange = aktualisieren;
+
+bauen();
+})();
+</script>
+</body>
+</html>
