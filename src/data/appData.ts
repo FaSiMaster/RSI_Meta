@@ -1,9 +1,9 @@
 // localStorage-basierter Datenspeicher – RSI VR Tool Phase 2/3
 // Typen gemäss Spezifikation Fachkurs FK RSI
 
-import type { RSIDimension, NACADimension, ResultDimension } from '../types'
-import type { NacaRaw } from './scoringEngine'
+import type { RSIDimension, NACADimension } from '../types'
 import type { DefizitVerortung } from '../utils/sphereCoords'
+import { type Bewertung, mitVerfahren } from './bewertung'
 import { LAND_VORGABE, istLandCode, type LandCode } from './laender'
 import { logger } from '../lib/logger'
 import {
@@ -97,6 +97,38 @@ export interface AppScene {
   bestandenKriterium?: { allePflicht?: boolean; minProzent?: number | null } | null
   // Land nach ISO 3166-1 alpha-2 (v0.16.0). Optional; die Leseregel setzt es.
   country?: LandCode
+  // Szenentyp (v0.20.0). Fehlt das Feld, ist die Szene ein Panorama — so war
+  // es bis dahin, und so bleibt der Bestand ohne Wanderung lesbar.
+  // 'bildserie' rendert flache Einzelbilder statt einer Kugel und navigiert
+  // über Phasen mit Zeitangabe.
+  szenentyp?: Szenentyp
+  // Phasen einer Bildserie, zeitlich geordnet. Nur bei szenentyp 'bildserie'.
+  phasen?: BildPhase[]
+}
+
+/** Szenentyp. Ohne Angabe gilt 'panorama'. */
+export type Szenentyp = 'panorama' | 'bildserie'
+
+/** Der Szenentyp einer Szene. Ohne Feld: Panorama. */
+export function szenentypVon(s: Pick<AppScene, 'szenentyp'> | null | undefined): Szenentyp {
+  return s?.szenentyp === 'bildserie' ? 'bildserie' : 'panorama'
+}
+
+/**
+ * Eine Phase einer Bildserie: ein Zustand der Örtlichkeit zu einer Zeit.
+ *
+ * `zeitangabeI18n` ist der Text, der am Bild steht, und bewusst mehrsprachig:
+ * ein Datum schreibt sich je Sprache anders. `bewertet` trennt die Phase, in
+ * der Befunde zu finden sind, von einer Vergleichsphase, die nur gezeigt wird.
+ */
+export interface BildPhase {
+  id: string
+  labelI18n: MultiLang
+  zeitangabeI18n: MultiLang
+  /** Bild-URLs in der Reihenfolge, in der sie gezeigt werden. */
+  bilder: string[]
+  /** Nur in einer bewerteten Phase sind Defizite zu finden. */
+  bewertet: boolean
 }
 
 export interface AppDeficit {
@@ -107,14 +139,10 @@ export interface AppDeficit {
   beschreibungI18n: MultiLang
   kriteriumId: string
   kontext: 'io' | 'ao'
-  correctAssessment: {
-    wichtigkeit:   RSIDimension
-    abweichung:    RSIDimension
-    relevanzSD:    ResultDimension
-    naca:          NacaRaw
-    unfallschwere: NACADimension
-    unfallrisiko:  ResultDimension
-  }
+  // Bewertung je Verfahren, siehe bewertung.ts. Altdaten tragen keinen
+  // Diskriminator; die Leseregel unten setzt ihn, geschrieben wird er beim
+  // nächsten regulären Speichern.
+  correctAssessment: Bewertung
   isPflicht:  boolean
   isBooster:  boolean
   // Bonus-Prozentsatz wenn isBooster=true. 10 oder 20. Default 10
@@ -726,6 +754,27 @@ function alleMitLand<T extends MitLand>(liste: T[]): T[] {
   return liste.map(mitLand)
 }
 
+// ── Leseregel Verfahren (v0.20.0) ───────────────────────────────────────────
+//
+// Dieselbe Begründung wie beim Land: der Bestand liegt verteilt und wird beim
+// Lesen ergänzt, nicht in einer Wanderung berichtigt. Ein Defizit ohne
+// Diskriminator in seiner Bewertung folgt dem Schweizer Neunschrittpfad.
+//
+// Wichtig: Diese Funktion ergänzt nur das Feld. Sie erfindet keine
+// Bewertungswerte und verändert keinen bestehenden. Die sechs Felder der
+// Schweizer Bewertung bleiben unangetastet.
+
+/** Ein Defizit, dessen Bewertung ihren Diskriminator trägt. */
+function mitBewertung(d: AppDeficit): AppDeficit {
+  if (!d.correctAssessment) return d
+  const ergaenzt = mitVerfahren(d.correctAssessment)
+  return ergaenzt === d.correctAssessment ? d : { ...d, correctAssessment: ergaenzt }
+}
+
+function alleMitBewertung(liste: AppDeficit[]): AppDeficit[] {
+  return liste.map(mitBewertung)
+}
+
 /**
  * Themen: nur das oberste trägt ein Land, untergeordnete erben es.
  * Ein Unterthema, das aus Versehen ein Feld trägt, behält es – entfernt wird
@@ -947,12 +996,16 @@ export function deleteScene(id: string): void {
 export function getDeficits(sceneId: string): AppDeficit[] {
   initIfNeeded()
   const synced = getDeficitsSync(sceneId)
-  return synced.length > 0 ? synced : readJSON<AppDeficit>(K_DEFICITS, DEFAULT_DEFICITS).filter(d => d.sceneId === sceneId)
+  return alleMitBewertung(
+    synced.length > 0 ? synced : readJSON<AppDeficit>(K_DEFICITS, DEFAULT_DEFICITS).filter(d => d.sceneId === sceneId),
+  )
 }
 export function getAllDeficits(): AppDeficit[] {
   initIfNeeded()
   const synced = getDeficitsSync()
-  return synced.length > 0 ? synced : readJSON<AppDeficit>(K_DEFICITS, DEFAULT_DEFICITS)
+  return alleMitBewertung(
+    synced.length > 0 ? synced : readJSON<AppDeficit>(K_DEFICITS, DEFAULT_DEFICITS),
+  )
 }
 export function saveDeficit(d: AppDeficit): void {
   const list = getAllDeficits()

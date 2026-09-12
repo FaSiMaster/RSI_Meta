@@ -11,6 +11,7 @@ import { calcRelevanzSD, calcUnfallrisiko } from './scoringEngine'
 import { KRITERIUM_LABELS } from './kriteriumLabels'
 import { MAX_PUNKTE_PRO_DEFIZIT } from './scoreCalc'
 import { ml, type AppDeficit, type AppScene, type DefizitResult, type SceneResult } from './appData'
+import { alsBfu } from './bewertung'
 import type { RSIDimension, NACADimension, ResultDimension } from '../types'
 
 // ── Eine Beurteilungskette (Wichtigkeit → Abweichung → Relevanz → Schwere → Risiko) ──
@@ -33,8 +34,12 @@ export interface BerichtDefizit {
   normRefs:       string[]
   isPflicht:      boolean
   gefunden:       boolean
-  /** Sollbeurteilung gemaess Musterloesung. */
-  soll:           Beurteilung
+  /**
+   * Sollbeurteilung gemaess Musterloesung des Neunschrittpfades.
+   * Null, wenn das Defizit einem anderen Verfahren folgt: die Konvention der
+   * Unfallkommission hat keine Kette aus Wichtigkeit, Abweichung und Schwere.
+   */
+  soll:           Beurteilung | null
   /**
    * Beurteilung des Teilnehmers. Fehlt, wenn das Defizit nicht gefunden wurde
    * oder wenn das Resultat vor v0.11.0 entstand (damals wurde nur gespeichert,
@@ -104,7 +109,7 @@ export function baueDefizitListe(
   return reihenfolge.map((id, i) => {
     const d = deficits.find(x => x.id === id)!
     const r = resultMap.get(id) ?? null
-    const ca = d.correctAssessment
+    const ca = alsBfu(d.correctAssessment)
 
     // Ist-Kette nur, wenn der Teilnehmer das Defizit gefunden UND das Resultat
     // die abgegebenen Werte gespeichert hat (ab v0.11.0).
@@ -123,14 +128,14 @@ export function baueDefizitListe(
       normRefs:       d.normRefs ?? [],
       isPflicht:      d.isPflicht,
       gefunden:       r != null,
-      soll: {
+      soll: ca ? {
         wichtigkeit:   ca.wichtigkeit,
         abweichung:    ca.abweichung,
         relevanzSD:    ca.relevanzSD,
         unfallschwere: ca.unfallschwere,
         unfallrisiko:  ca.unfallrisiko,
         naca:          ca.naca,
-      },
+      } : null,
       ist: hatIst
         ? ketteAus(r!.userWichtigkeit!, r!.userAbweichung!, r!.userUnfallschwere!)
         : null,

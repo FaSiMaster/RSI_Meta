@@ -24,6 +24,7 @@ import KategoriePanel from './KategoriePanel'
 import KlickFeedback, { type KlickFeedbackType } from './KlickFeedback'
 import { useTranslation } from 'react-i18next'
 import { KATEGORIE_PUNKTE, STEP_WEIGHTS, STEP_WEIGHT_UNIT, calcRelevanzSD, calcUnfallrisiko } from '../data/scoringEngine'
+import { alsBfu } from '../data/bewertung'
 import { KATEGORIE_TEILPUNKTE, HINT_ABZUG_STANDORT, HINT_ABZUG_HOTSPOTS } from '../data/scoreCalc'
 import { KRITERIUM_LABELS } from '../data/kriteriumLabels'
 import { ABWEICHUNG_I18N } from '../data/abweichungLabels'
@@ -1216,10 +1217,15 @@ function VRScoringSummaryPanel({ summary, onContinue, t }: VRScoringSummaryPanel
   const footerH = 0.12
 
   // ── Herleitung: Matrizen aus dem gemeinsamen Modell (wie Browser) ──────────
-  const ca            = summary.deficit.correctAssessment
+  // Soll-Relevanz fuer die zweite Matrix. Der VR-Pfad laeuft nur fuer den
+  // Neunschrittpfad; App.tsx riegelt andere Verfahren vorher ab. Faellt die
+  // gespeicherte Bewertung dennoch anders aus, wird die Relevanz aus der
+  // Sollkette gerechnet, statt einen Wert zu erfinden.
+  const caBfu         = alsBfu(summary.deficit.correctAssessment)
+  const sollRelevanz  = caBfu ? caBfu.relevanzSD : calcRelevanzSD(summary.correctW, summary.correctA)
   const abgeleitet    = deriveErgebnisse(summary.userW, summary.userA, summary.userN)
   const relevanzMatrix = buildRelevanzMatrix(summary.userW, summary.userA, summary.correctW, summary.correctA)
-  const risikoMatrix   = buildRisikoMatrix(abgeleitet.relevanzSD, summary.userN, ca.relevanzSD, summary.correctN)
+  const risikoMatrix   = buildRisikoMatrix(abgeleitet.relevanzSD, summary.userN, sollRelevanz, summary.correctN)
 
   // ── Lernkarte: Inhalte wie Browser-LernKarte ───────────────────────────────
   const d              = summary.deficit

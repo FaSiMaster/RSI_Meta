@@ -5,6 +5,8 @@
 import { useEffect, useRef, useState, useCallback } from 'react'
 import { X, Save, Eye, EyeOff, MapPin, ChevronDown, ChevronUp } from 'lucide-react'
 import type { AppScene, AppDeficit } from '../../data/appData'
+import { anzeigeRisiko } from '../../data/bewertung'
+import type { ResultDimension } from '../../types'
 import { Miniatur } from './Miniatur'
 import {
   type SphericalPos,
@@ -39,10 +41,16 @@ interface Props {
 }
 
 // Farbe nach Unfallrisiko
-function risikoFarbe(risiko: string): string {
+// Farbe des Verortungsmarkers nach dem Unfallrisiko.
+//
+// Seit v0.20.0 auch fuer null: eine Bewertung nach der Konvention der
+// Unfallkommission kennt kein Unfallrisiko. Vorher faerbte jeder unbekannte
+// Wert gruen, was eine Aussage vortaeuschte.
+function risikoFarbe(risiko: ResultDimension | null): string {
   if (risiko === 'hoch')   return '#D40053'
   if (risiko === 'mittel') return '#B87300'
-  return '#1A7F1F'
+  if (risiko === 'gering') return '#1A7F1F'
+  return '#6B7280'
 }
 
 // Fadenkreuz zeichnen
@@ -286,7 +294,7 @@ export default function BildEditor({ scene, deficits, onSave, onClose, initialDe
       const verortung = getAktiveVerortung(d)
       if (!verortung && !d.position) return
 
-      const farbe = risikoFarbe(d.correctAssessment.unfallrisiko)
+      const farbe = risikoFarbe(anzeigeRisiko(d.correctAssessment))
       const isSelected = d.id === selectedDeficitId
 
       if (verortung) {
@@ -1129,7 +1137,7 @@ ${b.url}` : `${b.label} — kein Bild hinterlegt`}
             <div style={{ flex: 1, overflowY: 'auto' }}>
               {localDeficits.map(d => {
                 const isSelected = d.id === selectedDeficitId
-                const farbe = risikoFarbe(d.correctAssessment.unfallrisiko)
+                const farbe = risikoFarbe(anzeigeRisiko(d.correctAssessment))
                 const isVisible = sichtbarIds.has(d.id)
                 const vLabel = verortungLabel(d)
                 const showCheckbox = modus === 'gruppe'

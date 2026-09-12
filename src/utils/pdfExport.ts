@@ -153,9 +153,9 @@ function auswertungsTabelle(b: TeilnehmerBericht, t: TFunction): Content {
     return [
       { text: d.name + (d.isPflicht ? ' *' : ''), fontSize: 8, margin: [3, 3, 3, 3] },
       zeichen(d.kategorieRichtig),
-      zeichen(d.ist ? d.ist.wichtigkeit === d.soll.wichtigkeit : null),
-      zeichen(d.ist ? d.ist.abweichung === d.soll.abweichung : null),
-      zeichen(d.ist ? d.ist.unfallschwere === d.soll.unfallschwere : null),
+      zeichen(d.ist && d.soll ? d.ist.wichtigkeit === d.soll.wichtigkeit : null),
+      zeichen(d.ist && d.soll ? d.ist.abweichung === d.soll.abweichung : null),
+      zeichen(d.ist && d.soll ? d.ist.unfallschwere === d.soll.unfallschwere : null),
       { text: `${fmtZahl(d.punkteFinal ?? 0)} / ${fmtZahl(d.punkteMax)}`, fontSize: 8, alignment: 'right', margin: [3, 3, 3, 3] },
     ]
   })
@@ -176,8 +176,10 @@ function auswertungsTabelle(b: TeilnehmerBericht, t: TFunction): Content {
 function befundBlock(d: BerichtDefizit, t: TFunction): Content {
   const zeilen: [string, string][] = [
     [t('bericht.kriterium'), `${d.kriteriumLabel} (${d.kontext === 'io' ? t('bericht.innerorts') : t('bericht.ausserorts')})`],
-    [t('bericht.soll'), ketteText(d.soll, t)],
   ]
+  // Die Sollkette gehoert zum Neunschrittpfad. Folgt das Defizit einem anderen
+  // Verfahren, steht hier keine Zeile statt einer leeren Kette.
+  if (d.soll) zeilen.push([t('bericht.soll'), ketteText(d.soll, t)])
   if (d.ist) {
     zeilen.push([t('bericht.ist'), ketteText(d.ist, t)])
   } else if (d.gefunden) {
@@ -188,7 +190,7 @@ function befundBlock(d: BerichtDefizit, t: TFunction): Content {
   if (d.normRefs.length > 0) zeilen.push([t('bericht.grundlage'), d.normRefs.join(' · ')])
   if (d.gefunden && d.hintAbzug > 0) zeilen.push([t('bericht.hilfe'), `−${fmtZahl(d.hintAbzug)}`])
 
-  const abweichend = d.ist != null && d.ist.unfallrisiko !== d.soll.unfallrisiko
+  const abweichend = d.ist != null && d.soll != null && d.ist.unfallrisiko !== d.soll.unfallrisiko
 
   return {
     unbreakable: true,

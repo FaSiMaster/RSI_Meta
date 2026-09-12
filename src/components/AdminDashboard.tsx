@@ -29,6 +29,7 @@ import {
   emptyDeficit, emptyScene, emptyTopic, emptyKurs, riskBg,
   type AdminTab,
 } from './admin/utils/adminHelpers'
+import { anzeigeStufe } from '../data/bewertung'
 import { landName, istLandCode } from '../data/laender'
 import {
   getZustaendigkeiten, setZustaendigkeiten, type Zustaendigkeit,
@@ -620,7 +621,7 @@ export default function AdminDashboard() {
             ) : (
               <div style={{ borderRadius: 'var(--rsi-radius-card)', border: '1px solid var(--rsi-color-border)', overflow: 'hidden', background: 'var(--rsi-color-surface)' }}>
                 {deficits.map((d, i) => {
-                  const badge = riskBg(d.correctAssessment.wichtigkeit)
+                  const badge = riskBg(anzeigeStufe(d.correctAssessment))
                   return (
                     <div key={d.id} style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '14px 20px', borderBottom: i < deficits.length - 1 ? '1px solid var(--rsi-color-border)' : 'none', justifyContent: 'space-between' }}>
                       <div style={{ display: 'flex', alignItems: 'center', gap: '10px', minWidth: 0, flex: 1 }}>

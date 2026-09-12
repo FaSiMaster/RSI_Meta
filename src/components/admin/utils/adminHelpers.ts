@@ -10,15 +10,22 @@ import {
 } from '../../../data/appData'
 import { generateSceneId, generateDeficitId } from '../../../data/idGenerator'
 import { calcRelevanzSD, calcUnfallrisiko, nacaToSchwere } from '../../../data/scoringEngine'
+import { alsBfu } from '../../../data/bewertung'
 import type { RSIDimension } from '../../../types'
 
 // ── Badge-Farben ──
 // Alpha 0x22 = 13% Opazitaet. color-mix() bindet an das Token, damit der
 // Badge-Hintergrund im Dark-Mode automatisch mit der Token-Variante wechselt.
-export function riskBg(w: RSIDimension): { bg: string; color: string; label: string } {
+// Marke für die Defizitliste im Admin.
+//
+// Seit v0.20.0 nimmt die Funktion auch `null`: ein Befund der Konvention mit der
+// Art «gestaltung» hat keine Einstufung. Dann steht ein Strich statt einer
+// Stufe, damit die Liste nicht «W» zeigt, wo nichts eingestuft wurde.
+export function riskBg(w: RSIDimension | null): { bg: string; color: string; label: string } {
   if (w === 'gross')  return { bg: 'color-mix(in srgb, var(--rsi-rot) 13%, transparent)',    color: 'var(--rsi-rot)',    label: 'N' }
   if (w === 'mittel') return { bg: 'color-mix(in srgb, var(--rsi-orange) 13%, transparent)', color: 'var(--rsi-orange)', label: 'A' }
-  return { bg: 'color-mix(in srgb, var(--rsi-gruen) 13%, transparent)', color: 'var(--rsi-gruen)', label: 'W' }
+  if (w === 'klein')  return { bg: 'color-mix(in srgb, var(--rsi-gruen) 13%, transparent)',  color: 'var(--rsi-gruen)',  label: 'W' }
+  return { bg: 'color-mix(in srgb, var(--rsi-color-text-disabled) 13%, transparent)', color: 'var(--rsi-color-text-secondary)', label: '–' }
 }
 
 export function emptyDeficit(sceneId: string, topicId: string): AppDeficit {
@@ -95,14 +102,20 @@ export function generateKursCode(): string {
 }
 
 // Automatisch Relevanz und Unfallrisiko neu berechnen
+//
+// Gilt nur für den Neunschrittpfad: die beiden Matrizen sind seine Schritte 5
+// und 9. Eine Bewertung nach der Konvention der Unfallkommission hat keine
+// abgeleiteten Felder und wird unverändert zurückgegeben.
 export function recompute(d: AppDeficit): AppDeficit {
-  const rs = calcRelevanzSD(d.correctAssessment.wichtigkeit, d.correctAssessment.abweichung)
-  const us = nacaToSchwere(d.correctAssessment.naca)
+  const ca = alsBfu(d.correctAssessment)
+  if (!ca) return d
+  const rs = calcRelevanzSD(ca.wichtigkeit, ca.abweichung)
+  const us = nacaToSchwere(ca.naca)
   const ur = calcUnfallrisiko(rs, us)
   return {
     ...d,
     correctAssessment: {
-      ...d.correctAssessment,
+      ...ca,
       relevanzSD: rs,
       unfallschwere: us,
       unfallrisiko: ur,

@@ -91,7 +91,8 @@ describe('baueDefizitListe', () => {
     // klein/mittel -> gering, mit leicht -> gering
     expect(liste[0].ist!.relevanzSD).toBe('gering')
     expect(liste[0].ist!.unfallrisiko).toBe('gering')
-    expect(liste[0].soll.unfallrisiko).toBe('hoch')
+    expect(liste[0].soll).not.toBeNull()
+    expect(liste[0].soll!.unfallrisiko).toBe('hoch')
   })
 
   it('lässt die Ist-Kette weg, wenn das Resultat älter als v0.11.0 ist', () => {

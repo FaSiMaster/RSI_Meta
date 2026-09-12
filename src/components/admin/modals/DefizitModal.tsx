@@ -7,6 +7,7 @@ import { X, Save } from 'lucide-react'
 import type { AppDeficit, AppScene } from '../../../data/appData'
 import { WICHTIGKEIT_TABLE, calcRelevanzSD, calcUnfallrisiko, nacaToSchwere } from '../../../data/scoringEngine'
 import type { NacaRaw } from '../../../data/scoringEngine'
+import { alsBfu, type BewertungBfu } from '../../../data/bewertung'
 import { KRITERIUM_LABELS } from '../../../data/kriteriumLabels'
 import type { RSIDimension, NACADimension, ResultDimension } from '../../../types'
 import { useFocusTrap } from '../../../lib/useFocusTrap'
@@ -50,8 +51,18 @@ export default function DefizitModal({ open, initial, scene, onClose, onSave, on
 
   if (!open || !draft) return null
 
-  function setCA<K extends keyof AppDeficit['correctAssessment']>(k: K, v: AppDeficit['correctAssessment'][K]) {
-    setDraft(prev => prev ? { ...prev, correctAssessment: { ...prev.correctAssessment, [k]: v } } : prev)
+  // Die Bewertung des Neunschrittpfades, oder null. Dieses Formular bearbeitet
+  // nur sie; ein Defizit nach der Konvention der Unfallkommission bekommt sein
+  // eigenes Formular, sobald der Ablauf dafuer steht.
+  const caBfu = alsBfu(draft.correctAssessment)
+
+  function setCA<K extends keyof BewertungBfu>(k: K, v: BewertungBfu[K]) {
+    setDraft(prev => {
+      if (!prev) return prev
+      const ca = alsBfu(prev.correctAssessment)
+      if (!ca) return prev
+      return { ...prev, correctAssessment: { ...ca, [k]: v } }
+    })
   }
   function setML(field: 'nameI18n' | 'beschreibungI18n', l: string, v: string) {
     setDraft(prev => prev ? { ...prev, [field]: { ...prev[field], [l]: v } } : prev)
@@ -140,32 +151,41 @@ export default function DefizitModal({ open, initial, scene, onClose, onSave, on
         </Section>
 
         <Section label="RSI-Bewertung (Lösung)">
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '12px' }}>
-            <SelectField label="Wichtigkeit" value={draft.correctAssessment.wichtigkeit}
-              options={[['gross','Gross'],['mittel','Mittel'],['klein','Klein']]}
-              onChange={v => setCA('wichtigkeit', v as RSIDimension)} />
-            <SelectField label="Abweichung" value={draft.correctAssessment.abweichung}
-              options={[['gross','Gross'],['mittel','Mittel'],['klein','Klein']]}
-              onChange={v => setCA('abweichung', v as RSIDimension)} />
-            <SelectField label="NACA (0–7)" value={String(draft.correctAssessment.naca)}
-              options={['0','1','2','3','4','5','6','7'].map(n => [n, `NACA ${n}`])}
-              onChange={v => setCA('naca', Number(v) as NacaRaw)} />
-          </div>
-          <div style={{ marginTop: '12px', padding: '10px 14px', borderRadius: '8px', background: 'var(--rsi-color-bg-secondary)', display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '12px' }}>
-            {(() => {
-              const rs = calcRelevanzSD(draft.correctAssessment.wichtigkeit, draft.correctAssessment.abweichung) as ResultDimension
-              const us = nacaToSchwere(draft.correctAssessment.naca) as NACADimension
-              const ur = calcUnfallrisiko(rs, us) as ResultDimension
-              return (
-                <>
-                  <AutoField label="Relevanz SD" value={rs} />
-                  <AutoField label="Unfallschwere" value={us} />
-                  <AutoField label="Unfallrisiko" value={ur} />
-                </>
-              )
-            })()}
-          </div>
-          <p style={{ fontSize: '11px', color: 'var(--rsi-color-text-disabled)', marginTop: '4px' }}>Relevanz SD, Unfallschwere und Unfallrisiko werden automatisch berechnet.</p>
+          {caBfu ? (
+            <>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '12px' }}>
+                <SelectField label="Wichtigkeit" value={caBfu.wichtigkeit}
+                  options={[['gross','Gross'],['mittel','Mittel'],['klein','Klein']]}
+                  onChange={v => setCA('wichtigkeit', v as RSIDimension)} />
+                <SelectField label="Abweichung" value={caBfu.abweichung}
+                  options={[['gross','Gross'],['mittel','Mittel'],['klein','Klein']]}
+                  onChange={v => setCA('abweichung', v as RSIDimension)} />
+                <SelectField label="NACA (0–7)" value={String(caBfu.naca)}
+                  options={['0','1','2','3','4','5','6','7'].map(n => [n, `NACA ${n}`])}
+                  onChange={v => setCA('naca', Number(v) as NacaRaw)} />
+              </div>
+              <div style={{ marginTop: '12px', padding: '10px 14px', borderRadius: '8px', background: 'var(--rsi-color-bg-secondary)', display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '12px' }}>
+                {(() => {
+                  const rs = calcRelevanzSD(caBfu.wichtigkeit, caBfu.abweichung) as ResultDimension
+                  const us = nacaToSchwere(caBfu.naca) as NACADimension
+                  const ur = calcUnfallrisiko(rs, us) as ResultDimension
+                  return (
+                    <>
+                      <AutoField label="Relevanz SD" value={rs} />
+                      <AutoField label="Unfallschwere" value={us} />
+                      <AutoField label="Unfallrisiko" value={ur} />
+                    </>
+                  )
+                })()}
+              </div>
+              <p style={{ fontSize: '11px', color: 'var(--rsi-color-text-disabled)', marginTop: '4px' }}>Relevanz SD, Unfallschwere und Unfallrisiko werden automatisch berechnet.</p>
+            </>
+          ) : (
+            <p style={{ fontSize: '13px', color: 'var(--rsi-color-text-secondary)', margin: 0 }}>
+              Dieses Defizit folgt einem anderen Beurteilungsverfahren. Seine Bewertung
+              wird hier nicht bearbeitet und bleibt beim Speichern unverändert.
+            </p>
+          )}
         </Section>
 
         <Section label="Eigenschaften">

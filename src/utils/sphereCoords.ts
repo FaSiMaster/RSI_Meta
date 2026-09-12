@@ -11,11 +11,26 @@ export interface SphericalPos {
 // Alias-Typ für SphericalPos
 export type SphereCoord = SphericalPos
 
+// Position in einem flachen Einzelbild, je 0–1 relativ zu Breite und Höhe.
+// Normalisiert, damit die Verortung überlebt, wenn dasselbe Bild später in
+// einer anderen Auflösung ausgeliefert wird.
+export interface BildPos {
+  x: number // 0 = linker Rand, 1 = rechter Rand
+  y: number // 0 = obere Kante, 1 = untere Kante
+}
+
 // Defizit-Verortung Union-Typ
+//
+// Der Fall `bild` gehört zum Szenentyp Bildserie (v0.20.0). Er rechnet nicht in
+// Kugelkoordinaten, weil eine flache Bildwand keine hat; eine Umrechnung in
+// theta und phi wäre eine Angabe ohne Gegenstand. Zu welchem Bild eine solche
+// Verortung gehört, sagt der Schlüssel in `AppDeficit.verortungen` — dasselbe
+// Muster wie bei den Perspektiven eines Panoramas.
 export type DefizitVerortung =
   | { typ: 'punkt';   position: SphereCoord; toleranz: number }
   | { typ: 'polygon'; punkte: SphereCoord[];  toleranz: number }
   | { typ: 'gruppe';  elemente: DefizitVerortung[]; label?: string }
+  | { typ: 'bild';    x: number; y: number; r: number }
 
 // Klick-Punkt auf Sphere-Oberflaeche → sphärische Koordinaten
 // Eingabe: Vector3 Schnittpunkt auf Sphere (Radius beliebig)
@@ -123,6 +138,32 @@ export function trefferprüfung(klick: SphericalPos, verortung: DefizitVerortung
   if (verortung.typ === 'gruppe') {
     return verortung.elemente.some(el => trefferprüfung(klick, el))
   }
+  // 'bild' liegt nicht im Kugelraum. Ein sphärischer Klick kann eine
+  // Bildverortung nicht treffen; dafür gibt es trefferImBild.
+  return false
+}
+
+// Trefferprüfung im flachen Einzelbild.
+//
+// Das Seitenverhältnis ist nötig, damit der Radius ein Kreis bleibt: in
+// normalisierten Koordinaten entspricht eine Strecke in y einer anderen Zahl
+// von Bildpunkten als dieselbe Strecke in x. Gerechnet wird in Einheiten der
+// Bildbreite, und `r` ist ebenfalls ein Anteil der Breite.
+export function trefferImBild(
+  klick: BildPos,
+  verortung: DefizitVerortung,
+  seitenverhaeltnis: number, // Breite geteilt durch Höhe, z.B. 1.778 bei 16:9
+): boolean {
+  if (verortung.typ === 'bild') {
+    if (!(seitenverhaeltnis > 0)) return false
+    const dx = klick.x - verortung.x
+    const dy = (klick.y - verortung.y) / seitenverhaeltnis
+    return Math.hypot(dx, dy) <= verortung.r
+  }
+  if (verortung.typ === 'gruppe') {
+    return verortung.elemente.some(el => trefferImBild(klick, el, seitenverhaeltnis))
+  }
+  // Kugelverortungen gelten im Bildraum nicht.
   return false
 }
 

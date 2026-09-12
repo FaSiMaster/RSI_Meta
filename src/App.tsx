@@ -11,6 +11,7 @@ import {
 } from './data/appData'
 import { MAX_PUNKTE_PRO_DEFIZIT, calcScoreFromChoices, KATEGORIE_TEILPUNKTE } from './data/scoreCalc'
 import { hatVerfahren } from './data/verfahren'
+import { alsBfu } from './data/bewertung'
 import { logger } from './lib/logger'
 import { KATEGORIE_PUNKTE } from './data/scoringEngine'
 import { istBestanden, kriteriumFuerSzene } from './data/bestandenKriterium'
@@ -210,7 +211,17 @@ export default function App() {
     // VR-Scoring-Summary-Panel anzeigen. Logik analog zu ScoringFlow.renderResult +
     // handleScoringComplete, aber ohne HTML-UI-Schritt dazwischen.
     const d  = payload.deficit
-    const ca = d.correctAssessment
+    // Der VR-Pfad rechnet den Neunschrittpfad. Traegt das Defizit eine
+    // Bewertung nach einem anderen Verfahren, endet der Weg hier still — wie
+    // schon beim Land oben, und aus demselben Grund: in der Brille gibt es
+    // kein Panel fuer den Hinweis.
+    const ca = alsBfu(d.correctAssessment)
+    if (!ca) {
+      logger.warn(
+        `Bewertung abgebrochen: Defizit ${d.id} folgt nicht dem Neunschrittpfad; fuer sein Verfahren gibt es in der Brille noch keinen Ablauf.`,
+      )
+      return
+    }
 
     const rohPts = calcScoreFromChoices(
       payload.userWichtigkeit, payload.userAbweichung, payload.userNacaSchwere,
@@ -297,7 +308,14 @@ export default function App() {
     }
 
     // Defizit-Einzelresultat für SceneResult
-    const ca = scoringDeficit.correctAssessment
+    // Der Browser-Pfad ist bis hierhin durch ScoringFlow gelaufen, das eine
+    // Bewertung ohne Neunschrittpfad vorher abfaengt. Die Abfrage haelt die
+    // Typkette geschlossen und faengt einen Datensatz, der von aussen kommt.
+    const ca = alsBfu(scoringDeficit.correctAssessment)
+    if (!ca) {
+      logger.warn(`Abschluss abgebrochen: Defizit ${scoringDeficit.id} folgt nicht dem Neunschrittpfad.`)
+      return
+    }
     const defResult: DefizitResult = {
       deficitId:          scoringDeficit.id,
       kategorieRichtig:   pendingKatRichtig,

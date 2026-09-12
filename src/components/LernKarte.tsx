@@ -5,6 +5,7 @@
 import { CheckCircle2, XCircle, ExternalLink, BookOpen } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { ml, type AppDeficit } from '../data/appData'
+import { alsBfu } from '../data/bewertung'
 import { KRITERIUM_LABELS } from '../data/kriteriumLabels'
 import type { RSIDimension, NACADimension } from '../types'
 
@@ -31,15 +32,20 @@ function nacaLabel(v: NACADimension, t: TFn): string {
 export default function LernKarte({ deficit, kategorieRichtig, wichtigkeitKorrekt, abweichungKorrekt, nacaKorrekt, onWeiter }: Props) {
   const { i18n, t } = useTranslation()
   const lang = i18n.language
-  const ca = deficit.correctAssessment
+  // Die Musterlösung des Neunschrittpfades. Eine Bewertung nach einem anderen
+  // Verfahren hat diese drei Schritte nicht; dann bleibt die Liste leer und die
+  // Karte zeigt nur Norm-Kontext und Erklärung, statt fremdes Feedback zu
+  // erfinden. Die Rückmeldung zur Konvention der Unfallkommission kommt mit
+  // ihrem eigenen Ablauf.
+  const ca = alsBfu(deficit.correctAssessment)
 
   // Review R-25: Soll-NACA-Wert (0-7) sichtbar machen — die Musterlösung
   // unterscheidet z.B. NACA 4 von NACA 7, die Gruppe «Schwer» allein nicht.
-  const feedbackRows: { label: string; korrekt: boolean; korrekterWert: string }[] = [
+  const feedbackRows: { label: string; korrekt: boolean; korrekterWert: string }[] = ca ? [
     { label: t('verfahren:phase_a'), korrekt: wichtigkeitKorrekt, korrekterWert: dimLabel(ca.wichtigkeit, t) },
     { label: t('verfahren:phase_b'), korrekt: abweichungKorrekt,  korrekterWert: dimLabel(ca.abweichung, t) },
     { label: t('verfahren:phase_d'), korrekt: nacaKorrekt,        korrekterWert: `${nacaLabel(ca.unfallschwere, t)} (NACA ${ca.naca})` },
-  ]
+  ] : []
 
   const erklaerung = deficit.erklaerungI18n ? ml(deficit.erklaerungI18n, lang).trim() : ''
   const kriteriumLabel = KRITERIUM_LABELS[deficit.kriteriumId] ?? deficit.kriteriumId
