@@ -701,5 +701,6 @@ Arbeitskopie geparst und verglichen, null Unterschiede. Der Diff auf
 | B-4 | Erledigt durch F-006. Die frühere Lage, 62,6 % beim Raten, ist behoben |
 | Schritt 2 je Befund | Erledigt. Sieben Einstufungen aus F-009 bis F-015, die beiden Designprobleme haben keine |
 | Siebtes Bild | Entschieden über F-008: Abbildung 10 des Auditberichts. Zu klären bleibt die Nutzung des Luftbilds, weil Geobasisdaten Sachsen nicht ohne weiteres frei sind. Blockiert B4 |
-| B3 | Freigegeben, noch nicht begonnen. Nächster Schritt |
+| B3 | Erledigt, Commit `c3d22ff` |
+| **B4, was mir fehlt** | Drei Dinge, und zwei davon kann ich nicht selbst: die Bilder müssen mit der Admin-PIN in den Bildspeicher, und die Nutzung des Luftbilds aus Abbildung 10 ist zu klären. Dazu die Antwort auf B-5 |
 | Kategoriepunkte bei der Konvention | Offen, in B2 bewusst weggelassen. Für den Schweizer Ablauf tragen sie 25 Punkte; für die Konvention ist kein Gegenstück vereinbart. Wenn eines gewünscht ist, braucht es einen Entscheid |
