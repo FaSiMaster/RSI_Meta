@@ -370,6 +370,65 @@ export default function AdminDashboard() {
             return { ok: false, reason: `Szene ${sc.id}: Bild in "${field}" grösser als ${MAX_BASE64_BYTES} Bytes` }
           }
         }
+
+        // Szenentyp Bildserie (v0.20.0): Der Import ist der einzige Weg, eine
+        // solche Szene anzulegen — die Oberfläche bietet es nicht an. Ohne
+        // Phase mit Bild wäre die Szene im Viewer eine Fehlermeldung, und der
+        // Fehler fiele erst dort auf. Hier fällt er sofort auf.
+        if (sc.szenentyp !== undefined && sc.szenentyp !== 'panorama' && sc.szenentyp !== 'bildserie') {
+          return { ok: false, reason: `Szene ${sc.id}: unbekannter szenentyp "${String(sc.szenentyp)}"` }
+        }
+        if (sc.szenentyp === 'bildserie') {
+          if (!Array.isArray(sc.phasen) || sc.phasen.length === 0) {
+            return { ok: false, reason: `Szene ${sc.id}: Bildserie ohne Phasen` }
+          }
+          for (const ph of sc.phasen as Record<string, unknown>[]) {
+            if (!ph || typeof ph.id !== 'string' || !ph.id) {
+              return { ok: false, reason: `Szene ${sc.id}: Phase ohne Kennung` }
+            }
+            if (!isValidMultiLang(ph.labelI18n) || !isValidMultiLang(ph.zeitangabeI18n)) {
+              return { ok: false, reason: `Szene ${sc.id}, Phase ${String(ph.id)}: Bezeichnung oder Zeitangabe unvollständig` }
+            }
+            if (!Array.isArray(ph.bilder) || ph.bilder.length === 0) {
+              return { ok: false, reason: `Szene ${sc.id}, Phase ${String(ph.id)}: keine Bilder` }
+            }
+            if (typeof ph.bewertet !== 'boolean') {
+              return { ok: false, reason: `Szene ${sc.id}, Phase ${String(ph.id)}: Feld bewertet fehlt` }
+            }
+          }
+          if (!(sc.phasen as Record<string, unknown>[]).some(ph => ph.bewertet === true)) {
+            return { ok: false, reason: `Szene ${sc.id}: keine einzige bewertete Phase — dort wäre nichts zu finden` }
+          }
+        }
+      }
+    }
+
+    // Verortungen im Bild (v0.20.0): x, y und r sind Anteile und müssen
+    // zwischen 0 und 1 liegen. Ein Wert daneben verschiebt das Defizit aus dem
+    // Bild, und im Viewer fällt das nicht auf — dort ist einfach nichts zu
+    // treffen.
+    if (Array.isArray(d.deficits)) {
+      for (const df of d.deficits as Record<string, unknown>[]) {
+        const alle: unknown[] = [
+          df.verortung,
+          ...(df.verortungen && typeof df.verortungen === 'object'
+            ? Object.values(df.verortungen as Record<string, unknown>)
+            : []),
+        ]
+        for (const v of alle) {
+          if (!v || typeof v !== 'object') continue
+          const o = v as Record<string, unknown>
+          if (o.typ !== 'bild') continue
+          for (const feld of ['x', 'y', 'r']) {
+            const wert = o[feld]
+            if (typeof wert !== 'number' || !Number.isFinite(wert) || wert < 0 || wert > 1) {
+              return { ok: false, reason: `Defizit ${df.id}: Verortung ${feld} ausserhalb von 0 bis 1 (${String(wert)})` }
+            }
+          }
+          if ((o.r as number) <= 0) {
+            return { ok: false, reason: `Defizit ${df.id}: Verortung ohne Radius` }
+          }
+        }
       }
     }
 
