@@ -607,6 +607,7 @@ export default function App() {
                   foundDeficits={foundDeficits}
                   hintStufe={hintStufe}
                   onDeficitConfirmed={handleDeficitConfirmed}
+                  onHintActivate={handleHintActivate}
                   onBeenden={handleBeenden}
                 />
               ) : (

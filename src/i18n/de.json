@@ -591,6 +591,15 @@
     "bild_von": "Bild {{n}} von {{gesamt}}",
     "verkleinern": "Verkleinern",
     "vergroessern": "Vergrössern",
-    "einpassen": "Einpassen"
+    "einpassen": "Einpassen",
+    "marke_gesetzt": "Marke gesetzt. Liegt hier ein Befund?",
+    "bild_mit_befunden": "Bild {{n}}: {{offen}} von {{total}} Befunden offen",
+    "bilderhinweis_btn": "Bilder mit Befunden",
+    "bilderhinweis_aktiv": "Bilderhinweis aktiv",
+    "markenhinweis_btn": "Marken einblenden",
+    "markenhinweis_aktiv": "Marken aktiv",
+    "hinweis_warnung_bilder": "Anzeigen, in welchen Bildern noch Befunde offen sind? Pro gefundenem Befund werden {{abzug}} Punkte abgezogen.",
+    "hinweis_warnung_marken": "Die Marken aller offenen Befunde einblenden? Pro gefundenem Befund werden {{abzug}} Punkte abgezogen.",
+    "hinweis_trotzdem": "Trotzdem einblenden"
   }
 }

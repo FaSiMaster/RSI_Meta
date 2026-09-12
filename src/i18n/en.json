@@ -591,6 +591,15 @@
     "bild_von": "Image {{n}} of {{gesamt}}",
     "verkleinern": "Zoom out",
     "vergroessern": "Zoom in",
-    "einpassen": "Fit to view"
+    "einpassen": "Fit to view",
+    "marke_gesetzt": "Marker placed. Is there a finding here?",
+    "bild_mit_befunden": "Image {{n}}: {{offen}} of {{total}} findings still open",
+    "bilderhinweis_btn": "Images with findings",
+    "bilderhinweis_aktiv": "Image hint active",
+    "markenhinweis_btn": "Show markers",
+    "markenhinweis_aktiv": "Markers shown",
+    "hinweis_warnung_bilder": "Show which images still have open findings? {{abzug}} points are deducted for each finding you locate.",
+    "hinweis_warnung_marken": "Show the markers of all open findings? {{abzug}} points are deducted for each finding you locate.",
+    "hinweis_trotzdem": "Show anyway"
   }
 }

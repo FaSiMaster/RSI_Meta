@@ -591,6 +591,15 @@
     "bild_von": "Image {{n}} sur {{gesamt}}",
     "verkleinern": "Réduire",
     "vergroessern": "Agrandir",
-    "einpassen": "Ajuster"
+    "einpassen": "Ajuster",
+    "marke_gesetzt": "Repère posé. Y a-t-il un constat ici?",
+    "bild_mit_befunden": "Image {{n}}: {{offen}} constat(s) sur {{total}} en attente",
+    "bilderhinweis_btn": "Images avec constats",
+    "bilderhinweis_aktiv": "Indice d'image actif",
+    "markenhinweis_btn": "Afficher les repères",
+    "markenhinweis_aktiv": "Repères actifs",
+    "hinweis_warnung_bilder": "Afficher dans quelles images des constats restent en attente? {{abzug}} points sont déduits par constat trouvé.",
+    "hinweis_warnung_marken": "Afficher les repères de tous les constats en attente? {{abzug}} points sont déduits par constat trouvé.",
+    "hinweis_trotzdem": "Afficher quand même"
   }
 }

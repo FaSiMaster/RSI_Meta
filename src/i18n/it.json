@@ -591,6 +591,15 @@
     "bild_von": "Immagine {{n}} di {{gesamt}}",
     "verkleinern": "Rimpicciolire",
     "vergroessern": "Ingrandire",
-    "einpassen": "Adattare"
+    "einpassen": "Adattare",
+    "marke_gesetzt": "Segno posto. C'è un rilievo qui?",
+    "bild_mit_befunden": "Immagine {{n}}: {{offen}} rilievi su {{total}} ancora aperti",
+    "bilderhinweis_btn": "Immagini con rilievi",
+    "bilderhinweis_aktiv": "Indizio immagini attivo",
+    "markenhinweis_btn": "Mostrare i segni",
+    "markenhinweis_aktiv": "Segni attivi",
+    "hinweis_warnung_bilder": "Mostrare in quali immagini restano rilievi aperti? Per ogni rilievo trovato vengono detratti {{abzug}} punti.",
+    "hinweis_warnung_marken": "Mostrare i segni di tutti i rilievi aperti? Per ogni rilievo trovato vengono detratti {{abzug}} punti.",
+    "hinweis_trotzdem": "Mostrare comunque"
   }
 }

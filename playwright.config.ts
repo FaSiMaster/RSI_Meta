@@ -46,6 +46,11 @@ export default defineConfig({
     {
       name: 'chromium-webgl',
       testMatch: /bildwand\.spec\.ts/,
+      // Software-Rendering vertraegt keine acht gleichzeitigen Browser. Bei
+      // voller Parallelitaet flackerten die Klickpruefungen: die Marke
+      // verfaellt nach fuenf Sekunden, und unter Last lag mehr dazwischen.
+      // Ein Waechter, der mal gruen und mal rot meldet, ist keiner.
+      workers: 2,
       use: {
         ...devices['Desktop Chrome'],
         launchOptions: {
