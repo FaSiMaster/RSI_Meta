@@ -133,6 +133,36 @@ ersten Blick aber in die Irre.
 5. **Der Ablauf zeigt zwei Schritte**, und bei einem Gestaltungsbefund entfällt
    der zweite.
 
+## Strassenmerkmale
+
+Achtzehn Merkmale, alle aus den Projektangaben des Auditberichts, Seiten 3
+und 4, dazu Befund 1 und Befund 5. Sie stehen am Trainingseinstieg über der
+Bestanden-Bedingung.
+
+Elf tragen eine Kennung aus `src/data/strassenmerkmale.ts`, sieben stehen als
+freier Text. Die Unterscheidung ist keine Geschmacksfrage: **Ein Katalogmerkmal
+wird im Administrationsbereich als Auswahlfeld dargestellt.** Steht sein Wert
+nicht wörtlich in der Optionsliste, zeigt das Feld nichts an, und beim nächsten
+Speichern ist der Wert weg — ohne Meldung. `pruefe_merkmale()` im
+Erzeugungsskript bricht deshalb ab, bevor eine solche Datei entsteht.
+
+Für die Strassenkategorie nach deutscher Systematik, den Netzknoten, die Masse
+des Kreisverkehrs, die Höchstgeschwindigkeit je Arm, die Quelle der
+Verkehrszahlen und die Verkehrsprognose hat der Schweizer Katalog kein
+Gegenstück. Sie stehen deshalb ohne Kennung da, mit Beschriftung und Wert als
+Text, und bleiben im Administrationsbereich als Textfelder bearbeitbar.
+
+**Fünf Merkmale sind bewusst leer geblieben:** Beleuchtung, Längsgefälle,
+Landwirtschaftsverkehr, Verkehrsqualität und der massgebende Begegnungsfall.
+Der Auditbericht sagt dazu nichts, und ein «nein» wäre eine Behauptung. Wer sie
+nachtragen will, braucht eine Quelle, nicht eine Annahme.
+
+**Am Bildschirm gemessen:** Die Tabelle am Einstieg ist auf 302 Bildpunkte
+gedeckelt und scrollt; bei achtzehn Merkmalen sind fünf davon ohne Scrollen zu
+sehen, und der Rollbalken ist zwei Bildpunkte breit. Das gilt für jede Szene,
+auch die Schweizer mit rund zwanzig Merkmalen, und ist nicht mit dieser Szene
+entstanden.
+
 ## Was offen bleibt
 
 **Befund B-5 ist behoben.** Wer in Schritt 1 immer «Sicherheitsdefizit» und in
@@ -157,6 +187,13 @@ bricht mit einem Protokolleintrag ab, statt zu rechnen.
 **Der Verortungseditor kennt Bildserien nicht.** Wer eine Verortung
 verschieben will, ändert heute die Einfuhrdatei und liest neu ein. Der
 bestehende Editor arbeitet in Kugelkoordinaten.
+
+**Die Einfuhr ist wiederholbar.** Der Kennungswächter des Erzeugungsskripts
+unterscheidet seit dem 12. September, wem ein bestehender Datensatz gehört:
+Trägt die Szene das Thema `de-knoten-2026` und das Defizit die Szene
+`SZ_2026_115`, ist es unserer, und die Einfuhr berichtigt ihn. Nur eine fremde
+Kennung bricht ab. Vorher meldete das Skript nach der ersten Einfuhr jede
+eigene Kennung als belegt und lief nicht mehr durch.
 
 ## Bilder
 

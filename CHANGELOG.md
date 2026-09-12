@@ -9,6 +9,33 @@ Versionierung nach [Semantic Versioning](https://semver.org/lang/de/).
 
 ## [Unreleased]
 
+### Neu – Strassenmerkmale der Szene Niederfrauendorf
+
+18 Merkmale aus den Projektangaben des Auditberichts, viersprachig: Form und
+Masse des Knotens, Strassenkategorie, Netzknoten, Höchstgeschwindigkeit je Arm,
+Tagesverkehr je Arm mit Quelle, Lastwagenanteil, Verkehrsprognose, dazu Trottoir,
+Querungen, Veloinfrastruktur, Buslinien und Haltestellen.
+
+Elf davon tragen eine Kennung aus `src/data/strassenmerkmale.ts`, sieben stehen
+als freier Text, weil der Schweizer Katalog für sie kein Gegenstück hat. Was
+der Bericht nicht sagt, bleibt leer: Beleuchtung, Längsgefälle,
+Landwirtschaftsverkehr, Verkehrsqualität und Begegnungsfall.
+
+Zwei neue Wächter, beide gegen eingebaute Fehler gehalten:
+`pruefe_merkmale()` im Erzeugungsskript hält jeden Wert gegen die Optionsliste
+des Katalogs, und `szene-niederfrauendorf.test.ts` prüft am erzeugten Datensatz
+Vollständigkeit, Viersprachigkeit, die Beschriftung und das Zahlenformat nach
+den Weisungen der Bundeskanzlei.
+
+### Behoben
+
+- **Der Kennungswächter des Erzeugungsskripts hielt die eigene Szene für eine
+  fremde.** Nach der ersten Einfuhr steht die Szene selbst in der Datenbank, und
+  eine Berichtigung läuft über dieselbe Einfuhrdatei; das Skript brach seither
+  jedes Mal ab. Massgebend ist neu, wem der bestehende Datensatz gehört — Thema
+  bei der Szene, Szene beim Defizit.
+
+
 ## [0.20.0] – 2026-09-12
 
 Ein zweites Beurteilungsverfahren, ein neuer Szenentyp und die erste deutsche

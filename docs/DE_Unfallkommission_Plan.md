@@ -757,7 +757,8 @@ Feldarbeit und sind zwei Rechtsfragen.
 | B-4 | Behoben durch F-006. Blosses Raten fällt von 62,6 auf 48,0 % |
 | **B-5** | Behoben durch die dritte Bedingung im Bestanden-Kriterium, Commit `d7ab99c`. Die Strategie «immer Sicherheitsdefizit, immer gross» erreicht weiterhin 61,0 %, besteht aber nicht mehr, weil sie beide Gestaltungsbefunde verkennt |
 | Schritt 2 je Befund | Sieben Einstufungen aus F-009 bis F-015 |
-| Kennungskollision | `SZ_2026_101` war belegt, neu `SZ_2026_115`. Das Erzeugungsskript prüft die belegten Kennungen seither vorher |
+| Kennungskollision | `SZ_2026_101` war belegt, neu `SZ_2026_115`. Das Erzeugungsskript prüft die belegten Kennungen seither vorher, und seit dem 12.09. unterscheidet es die eigene Kennung von einer fremden |
+| Strassenmerkmale | 18 Merkmale aus den Projektangaben des Auditberichts, eingelesen und am Einstieg nachgemessen. Fünf Merkmale des Katalogs bleiben leer, weil der Bericht dazu nichts sagt |
 
 ### Nächster Schritt: die Szene in die Datenbank
 

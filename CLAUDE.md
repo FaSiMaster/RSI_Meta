@@ -26,7 +26,7 @@
 | PDF | pdfmake (dynamisch nachgeladen) | v0.3 |
 | Icons | lucide-react | — |
 | Build | Vite 7 + vite-plugin-pwa | v1.2, Service Worker |
-| Tests | Vitest + Playwright | 303 Unit-Prüfungen in 26 Dateien, 69 im Browser in 11 Dateien |
+| Tests | Vitest + Playwright | 312 Unit-Prüfungen in 26 Dateien, 69 im Browser in 11 Dateien |
 | Hosting | Vercel (Primär) | HTTPS-Pflicht für WebXR |
 | Persistenz | localStorage (`rsi-v3-*`) + **Supabase** | Postgres, Storage, 3 Edge Functions |
 
@@ -329,6 +329,36 @@ Beispielszene zu bestehen, ohne Schritt 1 zu beherrschen. Für Szenen des
 Neunschrittpfades ändert sie nichts, weil es dort keine Gestaltungsbefunde gibt.
 Je Szene abschaltbar über `bestandenKriterium.gestaltungErkannt`.
 
+### Strassenmerkmale einer Szene ausserhalb der Schweiz
+
+`STRASSENMERKMALE_KATALOG` in `src/data/strassenmerkmale.ts` bildet die
+Perimeterebene der Schweizer RSI-Erfassung ab. Für eine deutsche Szene passt
+ein Teil davon und ein Teil nicht. Deshalb zwei Wege, und die Wahl richtet sich
+danach, ob der Katalog die Sache überhaupt kennt:
+
+| Fall | Form | Darstellung im Admin |
+|---|---|---|
+| Katalog kennt die Sache und führt Optionen | `id` gesetzt, Wert wörtlich eine Option | Auswahlfeld |
+| Katalog kennt die Sache ohne Optionen (DTV) | `id` gesetzt, Wert freier Text | Textfeld |
+| Katalog kennt die Sache nicht | keine `id`, Beschriftung und Wert als Text | zwei Textfelder |
+
+**Ein Wert ausserhalb der Optionsliste ist lautlos verloren.** Das Auswahlfeld
+im Administrationsbereich zeigt ihn nicht an, und beim nächsten Speichern steht
+dort, was das Feld anzeigt. Weder die Einfuhr noch TypeScript merken etwas
+davon. Zwei Wächter halten das nach: `pruefe_merkmale()` im Erzeugungsskript
+und `szene-niederfrauendorf.test.ts` am erzeugten Datensatz.
+
+**Den Katalog um deutsche Begriffe zu erweitern wäre der falsche Weg.** Die
+Strassenkategorie nach deutscher Systematik und die Schweizer
+Strassenklassierung sind nicht dasselbe Merkmal mit anderen Werten, sondern
+zwei Systematiken. In einer Werteliste nebeneinander liest sich das wie eine
+Wahl zwischen gleichrangigen Möglichkeiten.
+
+**Was die Quelle nicht sagt, bleibt leer.** Beleuchtung, Längsgefälle,
+Landwirtschaftsverkehr, Verkehrsqualität und der massgebende Begegnungsfall
+stehen nicht im Auditbericht. Ein «nein» dort wäre eine Behauptung, keine
+Angabe.
+
 ### Der Dateiname punkteUko.ts
 
 Der Auftrag nannte `scoringEngineDE.ts`. Der Norm-Compliance-Hook blockiert das
@@ -502,7 +532,7 @@ interface AppDeficit {
 - [ ] Verortungseditor für Bildserien — offen, heute geht Korrektur nur über
       die Einfuhrdatei
 - [ ] Bewertungsablauf in der Brille — offen, ein VR-Panel fehlt
-- [ ] Strassenmerkmale der Szene aus dem Auditbericht — offen
+- [x] Strassenmerkmale der Szene aus dem Auditbericht, 18 Stück
 
 ### Phase 6 – Meta Horizon Store (geplant)
 - [ ] Bubblewrap-Konfiguration

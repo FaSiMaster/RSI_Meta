@@ -15,6 +15,9 @@ stammt aus einem Entscheid; die Fundstellen stehen in
     E-10   Die Phase von 2017 kommt als unbewertete Vergleichsphase mit
     E-12   Massgebend ist der Auditbericht: Freigabe am 21. Februar 2020
 
+Die Strassenmerkmale stammen nicht aus einem Entscheid, sondern aus den
+Projektangaben des Auditberichts, Seiten 3 und 4.
+
 Nicht aus einem Entscheid stammen die Verortungen. Sie sind am Bild abgelesen,
 mit einem Gitternetz in Zehnteln, und als Vorschlag zu verstehen: wo genau ein
 Befund im Bild sitzt, ist eine Bildbeurteilung und am Bildschirm zu pruefen.
@@ -31,9 +34,11 @@ save-Funktionen wie eine Einfuhr von Hand.
 
 from __future__ import annotations
 
+import importlib.util
 import json
 import math
 import pathlib
+import re
 import sys
 
 # ── Kennungen und Pfade ─────────────────────────────────────────────────────
@@ -348,6 +353,273 @@ def pruefe_abstaende() -> list[str]:
     return meldungen
 
 
+# ── Strassenmerkmale ────────────────────────────────────────────────────────
+#
+# Alles hier steht im Auditbericht, Seiten 3 und 4 («Detaillierte
+# Projektangaben»), dazu Befund 1 und Befund 5. Was der Bericht nicht sagt,
+# steht nicht hier: Beleuchtung, Längsgefälle, Landwirtschaftsverkehr,
+# Verkehrsqualität und der massgebende Begegnungsfall sind offen, nicht «nein».
+#
+# Zwei Arten von Merkmalen:
+#
+#   KATALOG  Merkmale mit einer Kennung aus src/data/strassenmerkmale.ts. Im
+#            Administrationsbereich erscheinen sie als Auswahlfeld. Der Wert
+#            muss deshalb wörtlich eine der dort hinterlegten Optionen sein —
+#            ein anderer Wert steht im Auswahlfeld leer da und ist beim
+#            nächsten Speichern verloren. pruefe_merkmale() hält das nach.
+#
+#   FREI     Merkmale ohne Kennung, Beschriftung und Wert als freier Text. Der
+#            Weg für alles, wofür der Schweizer Katalog kein Gegenstück hat:
+#            Strassenkategorie nach deutscher Systematik, Netzknoten, die Masse
+#            des Kreisverkehrs. Den Katalog dafür um deutsche Begriffe zu
+#            erweitern hiesse, zwei Systematiken in eine Werteliste zu mischen.
+#
+# Die deutschen Beschriftungen und die zulässigen Werte werden aus
+# src/data/strassenmerkmale.ts gelesen, die Übersetzungen aus
+# daten/sprachen_2026_09_06.py. Keine zweite Abschrift: eine zweite Abschrift
+# wäre eine zweite Wahrheit.
+
+KATALOG_TS = pathlib.Path(__file__).resolve().parents[1] / "src" / "data" / "strassenmerkmale.ts"
+
+
+def lies_katalog() -> dict[str, tuple[str, list[str]]]:
+    """Liest Kennung, deutsche Beschriftung und Optionen aus dem Katalog.
+
+    Zeilenweise statt mit einem mehrzeiligen Ausdruck: Der Katalog schreibt id,
+    label und optionen je auf eine eigene Zeile, und ein Ausdruck ueber mehrere
+    Zeilen haengt an Zeilenenden und Einrueckung, die hier nichts bedeuten.
+    """
+    katalog: dict[str, tuple[str, list[str]]] = {}
+    kennung: str | None = None
+    label: str | None = None
+    for zeile in KATALOG_TS.read_text(encoding="utf-8").splitlines():
+        z = zeile.strip()
+        if z.startswith("id:"):
+            treffer = re.match(r"id:\s*'([^']+)'", z)
+            kennung, label = (treffer.group(1) if treffer else None), None
+        elif z.startswith("label:") and kennung:
+            treffer = re.match(r"label:\s*'(.*)',?$", z)
+            label = treffer.group(1).rstrip("',") if treffer else None
+        elif z.startswith("optionen:") and kennung is not None and label is not None:
+            roh = z[len("optionen:"):]
+            optionen = [t.group(1) for t in re.finditer(r"'([^']*)'", roh)]
+            katalog[kennung] = (label, optionen)
+            kennung, label = None, None
+    if not katalog:
+        raise SystemExit(f"Katalog nicht lesbar: {KATALOG_TS}")
+    return katalog
+
+
+def lies_sprachen() -> tuple[dict, dict]:
+    """Holt die Übersetzungstabellen der Merkmale aus der Sprachdatei."""
+    pfad = pathlib.Path(__file__).with_name("sprachen_2026_09_06.py")
+    spec = importlib.util.spec_from_file_location("rsi_sprachen", pfad)
+    if spec is None or spec.loader is None:
+        raise SystemExit(f"Sprachtabelle nicht ladbar: {pfad}")
+    modul = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(modul)
+    return modul.MERKMAL_LABEL, modul.MERKMAL_WERT
+
+
+# Die Merkmale in der Reihenfolge, in der sie am Einstieg gelesen werden:
+# erst was der Knoten ist, dann der Verkehr, dann wer ihn benutzt.
+#
+#   kat(kennung, wert)   Katalogmerkmal. Der Wert muss woertlich eine Option
+#                        aus src/data/strassenmerkmale.ts sein.
+#   frei(label, wert)    Freies Merkmal, Beschriftung und Wert als Text.
+
+
+def kat(kennung: str, wert: str) -> dict:
+    return {"art": "katalog", "id": kennung, "wert": wert}
+
+
+def frei(label: dict, wert: dict) -> dict:
+    return {"art": "frei", "label": label, "wert": wert}
+
+
+MERKMALE: list[dict] = [
+    # ── Was der Knoten ist ──────────────────────────────────────────────
+    frei(
+        ml("Knotenpunktform", "Type de carrefour", "Tipo di nodo", "Junction form"),
+        ml(
+            "Minikreisverkehr als Verkehrsversuch, freigegeben am 21. Februar 2020",
+            "Mini-giratoire à titre d’essai, ouvert le 21 février 2020",
+            "Minirotatoria come sperimentazione, aperta il 21 febbraio 2020",
+            "Mini-roundabout as a traffic trial, opened on 21 February 2020",
+        ),
+    ),
+    frei(
+        ml(
+            "Masse des Kreisverkehrs",
+            "Dimensions du giratoire",
+            "Dimensioni della rotatoria",
+            "Roundabout dimensions",
+        ),
+        ml(
+            "Aussendurchmesser 13 m, Mittelinsel 3 m gepflastert, Kreisfahrbahn 5 m",
+            "Diamètre extérieur 13 m, îlot central 3 m pavé, chaussée annulaire 5 m",
+            "Diametro esterno 13 m, isola centrale 3 m pavimentata, corona giratoria 5 m",
+            "Outer diameter 13 m, central island 3 m paved, circulatory carriageway 5 m",
+        ),
+    ),
+    frei(
+        ml("Strassenkategorie", "Catégorie de route", "Categoria stradale", "Road category"),
+        ml(
+            "S 190 West, S 190 Ost und S 183 Süd je HS III, S 183 Nord unter HS III",
+            "S 190 ouest, S 190 est et S 183 sud chacune HS III, S 183 nord en dessous de HS III",
+            "S 190 ovest, S 190 est e S 183 sud ciascuna HS III, S 183 nord sotto HS III",
+            "S 190 west, S 190 east and S 183 south each HS III, S 183 north below HS III",
+        ),
+    ),
+    frei(
+        ml("Netzknoten", "Nœud du réseau", "Nodo della rete", "Network node"),
+        ml("5148012", "5148012", "5148012", "5148012"),
+    ),
+    kat("lage_io_ao", "innerorts"),
+    kat("lichtsignalanlage", "nein"),
+
+    # ── Verkehr ─────────────────────────────────────────────────────────
+    kat("signalisierte_geschwindigkeit", "mehrere Geschwindigkeiten"),
+    frei(
+        ml(
+            "Höchstgeschwindigkeit je Arm",
+            "Vitesse maximale par branche",
+            "Velocità massima per ramo",
+            "Speed limit per arm",
+        ),
+        # Das Zusatzzeichen steht so im Bericht und wird hier nicht ausgelegt.
+        ml(
+            "S 190 West 30 km/h mit Z 1006-31, die drei übrigen Arme 50 km/h",
+            "S 190 ouest 30 km/h avec Z 1006-31, les trois autres branches 50 km/h",
+            "S 190 ovest 30 km/h con Z 1006-31, gli altri tre rami 50 km/h",
+            "S 190 west 30 km/h with Z 1006-31, the other three arms 50 km/h",
+        ),
+    ),
+    # Der DTV traegt eine Kennung, weil der Katalog fuer ihn keine Optionen
+    # fuehrt; der Wert ist deshalb freier Text.
+    kat(
+        "dtv",
+        "S 190 West 6238, S 190 Ost 3078, S 183 Süd 1553, S 183 Nord 639",
+    ),
+    frei(
+        ml(
+            "Quelle der Verkehrszahlen",
+            "Source des données de trafic",
+            "Fonte dei dati di traffico",
+            "Source of traffic data",
+        ),
+        ml(
+            "Geoportal Sachsen, Zählung 2019",
+            "Geoportal Sachsen, comptage 2019",
+            "Geoportal Sachsen, rilevamento 2019",
+            "Geoportal Sachsen, 2019 count",
+        ),
+    ),
+    kat("lastwagenanteil", "3–6 %"),
+    frei(
+        ml(
+            "Verkehrsprognose 2030",
+            "Prévision de trafic 2030",
+            "Previsione di traffico 2030",
+            "Traffic forecast 2030",
+        ),
+        ml(
+            "1945 bis 3632 Fahrzeuge je Arm, Schwerverkehr 5,1 bis 5,6 %",
+            "1945 à 3632 véhicules par branche, poids lourds 5,1 à 5,6 %",
+            "da 1945 a 3632 veicoli per ramo, traffico pesante dal 5,1 al 5,6 %",
+            "1945 to 3632 vehicles per arm, heavy goods vehicles 5.1 to 5.6%",
+        ),
+    ),
+    kat("unfallgeschehen", "dokumentiert"),
+
+    # ── Wer ihn benutzt ─────────────────────────────────────────────────
+    kat("trottoir", "lückenhaft oder nicht vorhanden"),
+    kat("fussgaengerstreifen", "nein"),
+    kat("veloinfrastruktur", "keine"),
+    kat("buslinie", "ja, mehrere"),
+    kat("bushaltestellen", "ja"),
+]
+
+# Der DTV traegt zwar eine Kennung, fuehrt aber keine Optionen. Die Pruefung
+# unterscheidet deshalb nicht Katalog gegen frei, sondern Kennung mit Optionen
+# gegen alles andere.
+
+
+def baue_merkmale() -> list[dict]:
+    """Setzt die Merkmale in der Reihenfolge von MERKMALE zusammen."""
+    katalog = lies_katalog()
+    label_tab, wert_tab = lies_sprachen()
+
+    liste: list[dict] = []
+    for m in MERKMALE:
+        if m["art"] == "frei":
+            liste.append({"labelI18n": m["label"], "wertI18n": m["wert"]})
+            continue
+        kennung, wert = m["id"], m["wert"]
+        lab = label_tab[kennung]
+        eintrag = {
+            "id": kennung,
+            "labelI18n": ml(katalog[kennung][0], lab["fr"], lab["it"], lab["en"]),
+        }
+        if katalog[kennung][1]:
+            # Ein Wert aus der Optionsliste, also uebersetzbar.
+            wrt = wert_tab[wert]
+            eintrag["wertI18n"] = ml(wert, wrt["fr"], wrt["it"], wrt["en"])
+        else:
+            # Freier Wert, in allen vier Sprachen gleich: Zahlen und
+            # Streckenbezeichnungen werden nicht uebersetzt.
+            eintrag["wertI18n"] = ml(wert, wert, wert, wert)
+        liste.append(eintrag)
+    return liste
+
+
+def pruefe_merkmale() -> list[str]:
+    """Haelt jedes Katalogmerkmal gegen den Katalog im Quellbaum.
+
+    Anlass: Ein Katalogmerkmal wird im Administrationsbereich als Auswahlfeld
+    dargestellt. Steht der Wert nicht in der Optionsliste, zeigt das Feld nichts
+    an und der Wert ist beim naechsten Speichern verloren — ohne Fehlermeldung,
+    und ohne dass beim Lesen der Einfuhrdatei etwas auffaellt.
+    """
+    katalog = lies_katalog()
+    label_tab, wert_tab = lies_sprachen()
+    meldungen: list[str] = []
+    kennungen: list[str] = []
+
+    for m in MERKMALE:
+        if m["art"] == "frei":
+            if not m["label"]["de"].strip() or not m["wert"]["de"].strip():
+                meldungen.append("Ein freies Merkmal hat keine Beschriftung oder keinen Wert")
+            continue
+        kennung, wert = m["id"], m["wert"]
+        kennungen.append(kennung)
+        if kennung not in katalog:
+            meldungen.append(f"Merkmal {kennung} steht nicht im Katalog")
+            continue
+        if kennung not in label_tab:
+            meldungen.append(f"Merkmal {kennung}: keine Uebersetzung der Beschriftung")
+        optionen = katalog[kennung][1]
+        if not optionen:
+            continue
+        if wert not in optionen:
+            meldungen.append(
+                f"Merkmal {kennung}: Wert «{wert}» ist keine Katalogoption "
+                f"({', '.join(optionen)})"
+            )
+        elif wert not in wert_tab:
+            meldungen.append(f"Merkmal {kennung}: keine Uebersetzung des Wertes «{wert}»")
+
+    doppelt = {k for k in kennungen if kennungen.count(k) > 1}
+    if doppelt:
+        meldungen.append(f"Kennung mehrfach vergeben: {', '.join(sorted(doppelt))}")
+
+    if not meldungen:
+        mit = sum(1 for m in MERKMALE if m["art"] == "katalog")
+        print(f"Merkmale geprueft: {len(MERKMALE)} Stueck, davon {mit} mit Katalogkennung, "
+              f"alle Werte zulaessig.")
+    return meldungen
+
+
 def baue() -> dict:
     thema = {
         "id": THEMA_ID,
@@ -394,6 +666,7 @@ def baue() -> dict:
         "isActive": True,
         "country": "DE",
         "szenentyp": "bildserie",
+        "strassenmerkmale": baue_merkmale(),
         "vorschauBild1": BILD_2022[1],
         "vorschauBild2": BILD_2022[3],
         "phasen": [
@@ -480,6 +753,14 @@ def pruefe_kennungen() -> list[str]:
     es erst beim Messen des Bildspeichers, wo der Ordner mit sechs Dateien
     dastand. Eine Einfuhr haette die bestehende Szene ueberschrieben.
 
+    Eine belegte Kennung ist aber nur dann ein Fehler, wenn sie einem anderen
+    Datensatz gehoert. Nach der ersten Einfuhr steht diese Szene selbst in der
+    Datenbank, und eine Berichtigung ist gerade der Normalfall: Sie wird ueber
+    dieselbe Einfuhrdatei gefahren. Massgebend ist deshalb das Thema — traegt
+    der bestehende Datensatz unser Thema bzw. unsere Szene, ist es unserer.
+    rsi_deficits fuehrt kein Thema, sondern scene_id — deshalb je Tabelle ein
+    anderer Vergleich.
+
     Ohne Netz oder ohne .env.local wird die Pruefung uebersprungen, aber
     sichtbar: eine stille Nachsicht waere hier schlimmer als keine Pruefung.
     """
@@ -512,26 +793,44 @@ def pruefe_kennungen() -> list[str]:
             return _json.loads(antwort.read())
 
     try:
-        szenen = {str(x["id"]) for x in hol("/rest/v1/rsi_scenes?select=id")}
-        defizite = {str(x["id"]) for x in hol("/rest/v1/rsi_deficits?select=id")}
+        szenen = {str(x["id"]): str(x.get("topic_id") or "")
+                  for x in hol("/rest/v1/rsi_scenes?select=id,topic_id")}
+        defizite = {str(x["id"]): str(x.get("scene_id") or "")
+                    for x in hol("/rest/v1/rsi_deficits?select=id,scene_id")}
     except (urllib.error.URLError, urllib.error.HTTPError, OSError) as fehler:
         print(f"Hinweis: Datenbank nicht erreichbar ({fehler}), Kennungen nicht geprueft.")
         return []
 
     meldungen = []
+    eigene = 0
     if SZENE_ID in szenen:
-        meldungen.append(f"Szenenkennung {SZENE_ID} ist belegt")
+        if szenen[SZENE_ID] == THEMA_ID:
+            eigene += 1
+        else:
+            meldungen.append(
+                f"Szenenkennung {SZENE_ID} gehoert dem Thema {szenen[SZENE_ID]!r}"
+            )
     for b in BEFUNDE:
         if b["id"] in defizite:
-            meldungen.append(f"Defizitkennung {b['id']} ist belegt")
+            if defizite[b["id"]] == SZENE_ID:
+                eigene += 1
+            else:
+                meldungen.append(
+                    f"Defizitkennung {b['id']} gehoert der Szene {defizite[b['id']]!r}"
+                )
     if not meldungen:
-        print(f"Kennungen geprueft: {SZENE_ID} und {len(BEFUNDE)} Defizite sind frei "
-              f"({len(szenen)} Szenen und {len(defizite)} Defizite im Bestand).")
+        stand = f"{len(szenen)} Szenen und {len(defizite)} Defizite im Bestand"
+        if eigene:
+            print(f"Kennungen geprueft: {eigene} Datensaetze bestehen bereits unter "
+                  f"{THEMA_ID} und werden berichtigt ({stand}).")
+        else:
+            print(f"Kennungen geprueft: {SZENE_ID} und {len(BEFUNDE)} Defizite sind frei "
+                  f"({stand}).")
     return meldungen
 
 
 def main() -> None:
-    meldungen = pruefe_kennungen() + pruefe_abstaende()
+    meldungen = pruefe_kennungen() + pruefe_abstaende() + pruefe_merkmale()
     if meldungen:
         print("Nicht brauchbar:")
         for m in meldungen:
@@ -556,6 +855,7 @@ def main() -> None:
     print(f"  Phasen: {[p['id'] for p in daten['scenes'][0]['phasen']]}")
     print(f"  Bilder bewertet {len(BILD_2022)}, Vergleich {len(BILD_2017)}")
     print("  Verortungsabstaende geprueft: keine Ueberlappung")
+    print(f"  Strassenmerkmale: {len(daten['scenes'][0]['strassenmerkmale'])}")
     print(f"  Szenenmaximum: {len(sd)} mal 100 plus {len(gest)} mal 60 = {len(sd) * 100 + len(gest) * 60}")
     if "ß" in ziel.read_text(encoding="utf-8"):
         print("  WARNUNG: Eszett in der Ausgabe")

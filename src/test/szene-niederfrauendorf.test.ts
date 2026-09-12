@@ -18,6 +18,7 @@ import {
 } from '../data/punkteUko'
 import { VERFAHREN_UKO_ID, type BewertungUko } from '../data/bewertung'
 import { istBestanden, BESTANDEN_DEFAULT } from '../data/bestandenKriterium'
+import { STRASSENMERKMALE_KATALOG } from '../data/strassenmerkmale'
 import type { RSIDimension } from '../types'
 
 const DATEI = join(process.cwd(), 'daten', 'rsi-import_niederfrauendorf_2026-09-12.json')
@@ -31,6 +32,7 @@ interface Einfuhr {
     country?: string
     szenentyp?: string
     phasen?: { id: string; bilder: string[]; bewertet: boolean; labelI18n: Record<string, string>; zeitangabeI18n: Record<string, string> }[]
+    strassenmerkmale?: { id?: string; labelI18n: Record<string, string>; wertI18n: Record<string, string> }[]
     nameI18n: Record<string, string>
   }[]
   deficits: {
@@ -301,6 +303,96 @@ describe.skipIf(!vorhanden)('Folgen der Musterlösung', () => {
     expect(pflicht).toHaveLength(5)
     for (const d of pflicht) {
       expect(d.correctAssessment.schritt2, d.id).toBe('gross')
+    }
+  })
+})
+
+// ── Strassenmerkmale ────────────────────────────────────────────────────────
+//
+// Die Werte stammen aus den Projektangaben des Auditberichts, Seiten 3 und 4.
+// Geprüft wird hier nicht der Bericht — das kann keine Maschine —, sondern
+// zweierlei: dass die Werte vollständig und viersprachig ankommen, und dass
+// jedes Merkmal mit Katalogkennung einen Wert traegt, den das Auswahlfeld im
+// Administrationsbereich auch anzeigen kann.
+
+describe('Szene Niederfrauendorf, Strassenmerkmale', () => {
+  const merkmale = daten?.scenes[0].strassenmerkmale ?? []
+  const katalog = new Map(
+    STRASSENMERKMALE_KATALOG.flatMap(k => k.merkmale).map(m => [m.id, m.optionen]),
+  )
+
+  it('führt achtzehn Merkmale', () => {
+    expect(merkmale).toHaveLength(18)
+  })
+
+  it('trägt jedes Merkmal in allen vier Sprachen, keines leer', () => {
+    for (const m of merkmale) {
+      for (const sprache of ['de', 'fr', 'it', 'en'] as const) {
+        expect(m.labelI18n[sprache], `${m.labelI18n.de} / ${sprache}`).toBeTruthy()
+        expect(m.wertI18n[sprache], `${m.labelI18n.de} / ${sprache}`).toBeTruthy()
+      }
+    }
+  })
+
+  it('hält jeden Katalogwert in der Optionsliste des Katalogs', () => {
+    // Ein Wert ausserhalb der Liste steht im Auswahlfeld als leer da und ist
+    // beim nächsten Speichern im Administrationsbereich verloren — lautlos.
+    const mitKennung = merkmale.filter(m => m.id)
+    expect(mitKennung.length).toBeGreaterThan(0)
+    for (const m of mitKennung) {
+      expect(katalog.has(m.id!), `${m.id} steht nicht im Katalog`).toBe(true)
+      const optionen = katalog.get(m.id!)!
+      if (optionen.length === 0) continue
+      expect(optionen, `${m.id}: «${m.wertI18n.de}»`).toContain(m.wertI18n.de)
+    }
+  })
+
+  it('übernimmt die deutsche Beschriftung wörtlich aus dem Katalog', () => {
+    const beschriftung = new Map(
+      STRASSENMERKMALE_KATALOG.flatMap(k => k.merkmale).map(m => [m.id, m.label]),
+    )
+    for (const m of merkmale.filter(x => x.id)) {
+      expect(m.labelI18n.de, m.id).toBe(beschriftung.get(m.id!))
+    }
+  })
+
+  it('vergibt keine Kennung zweimal', () => {
+    const kennungen = merkmale.map(m => m.id).filter(Boolean)
+    expect(new Set(kennungen).size).toBe(kennungen.length)
+  })
+
+  it('nennt die Verkehrszahlen des Berichts je Knotenpunktarm', () => {
+    const dtv = merkmale.find(m => m.id === 'dtv')
+    expect(dtv).toBeDefined()
+    // Geoportal Sachsen, Zählung 2019, Auditbericht Seite 3.
+    for (const zahl of ['6238', '3078', '1553', '639']) {
+      expect(dtv!.wertI18n.de).toContain(zahl)
+    }
+  })
+
+  it('schreibt Zahlen nach den Weisungen der Bundeskanzlei', () => {
+    // Vierstellige Zahlen ungegliedert, kein Apostroph als Tausendertrenner,
+    // Dezimalkomma. Der Apostroph ist in keiner Amtssprache zulässig.
+    for (const m of merkmale) {
+      for (const sprache of ['de', 'fr', 'it'] as const) {
+        expect(m.wertI18n[sprache], `${m.labelI18n.de} / ${sprache}`).not.toMatch(/\d['’]\d{3}/)
+        expect(m.wertI18n[sprache], `${m.labelI18n.de} / ${sprache}`).not.toMatch(/\d\.\d(?!\d*\s*(m|km|%))/)
+      }
+    }
+  })
+
+  it('nennt den Netzknoten und die Strassenkategorie des Berichts', () => {
+    const werte = merkmale.map(m => m.wertI18n.de).join(' | ')
+    expect(werte).toContain('5148012')
+    expect(werte).toContain('HS III')
+  })
+
+  it('schreibt kein Eszett', () => {
+    for (const m of merkmale) {
+      for (const sprache of ['de', 'fr', 'it', 'en'] as const) {
+        expect(m.labelI18n[sprache]).not.toContain('\u00df')
+        expect(m.wertI18n[sprache]).not.toContain('\u00df')
+      }
     }
   })
 })

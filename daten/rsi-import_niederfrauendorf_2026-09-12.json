@@ -50,6 +50,271 @@
    "isActive": true,
    "country": "DE",
    "szenentyp": "bildserie",
+   "strassenmerkmale": [
+    {
+     "labelI18n": {
+      "de": "Knotenpunktform",
+      "fr": "Type de carrefour",
+      "it": "Tipo di nodo",
+      "en": "Junction form"
+     },
+     "wertI18n": {
+      "de": "Minikreisverkehr als Verkehrsversuch, freigegeben am 21. Februar 2020",
+      "fr": "Mini-giratoire à titre d’essai, ouvert le 21 février 2020",
+      "it": "Minirotatoria come sperimentazione, aperta il 21 febbraio 2020",
+      "en": "Mini-roundabout as a traffic trial, opened on 21 February 2020"
+     }
+    },
+    {
+     "labelI18n": {
+      "de": "Masse des Kreisverkehrs",
+      "fr": "Dimensions du giratoire",
+      "it": "Dimensioni della rotatoria",
+      "en": "Roundabout dimensions"
+     },
+     "wertI18n": {
+      "de": "Aussendurchmesser 13 m, Mittelinsel 3 m gepflastert, Kreisfahrbahn 5 m",
+      "fr": "Diamètre extérieur 13 m, îlot central 3 m pavé, chaussée annulaire 5 m",
+      "it": "Diametro esterno 13 m, isola centrale 3 m pavimentata, corona giratoria 5 m",
+      "en": "Outer diameter 13 m, central island 3 m paved, circulatory carriageway 5 m"
+     }
+    },
+    {
+     "labelI18n": {
+      "de": "Strassenkategorie",
+      "fr": "Catégorie de route",
+      "it": "Categoria stradale",
+      "en": "Road category"
+     },
+     "wertI18n": {
+      "de": "S 190 West, S 190 Ost und S 183 Süd je HS III, S 183 Nord unter HS III",
+      "fr": "S 190 ouest, S 190 est et S 183 sud chacune HS III, S 183 nord en dessous de HS III",
+      "it": "S 190 ovest, S 190 est e S 183 sud ciascuna HS III, S 183 nord sotto HS III",
+      "en": "S 190 west, S 190 east and S 183 south each HS III, S 183 north below HS III"
+     }
+    },
+    {
+     "labelI18n": {
+      "de": "Netzknoten",
+      "fr": "Nœud du réseau",
+      "it": "Nodo della rete",
+      "en": "Network node"
+     },
+     "wertI18n": {
+      "de": "5148012",
+      "fr": "5148012",
+      "it": "5148012",
+      "en": "5148012"
+     }
+    },
+    {
+     "id": "lage_io_ao",
+     "labelI18n": {
+      "de": "Lage IO/AO",
+      "fr": "Situation en ou hors localité",
+      "it": "Ubicazione in o fuori località",
+      "en": "Inside or outside built-up area"
+     },
+     "wertI18n": {
+      "de": "innerorts",
+      "fr": "en localité",
+      "it": "in località",
+      "en": "inside built-up area"
+     }
+    },
+    {
+     "id": "lichtsignalanlage",
+     "labelI18n": {
+      "de": "Lichtsignalanlage (LSA)",
+      "fr": "Installation de signaux lumineux",
+      "it": "Impianto semaforico",
+      "en": "Traffic signal installation"
+     },
+     "wertI18n": {
+      "de": "nein",
+      "fr": "non",
+      "it": "no",
+      "en": "no"
+     }
+    },
+    {
+     "id": "signalisierte_geschwindigkeit",
+     "labelI18n": {
+      "de": "Signalisierte Geschwindigkeit",
+      "fr": "Vitesse signalée",
+      "it": "Velocità segnalata",
+      "en": "Posted speed limit"
+     },
+     "wertI18n": {
+      "de": "mehrere Geschwindigkeiten",
+      "fr": "plusieurs vitesses",
+      "it": "più velocità",
+      "en": "several speed limits"
+     }
+    },
+    {
+     "labelI18n": {
+      "de": "Höchstgeschwindigkeit je Arm",
+      "fr": "Vitesse maximale par branche",
+      "it": "Velocità massima per ramo",
+      "en": "Speed limit per arm"
+     },
+     "wertI18n": {
+      "de": "S 190 West 30 km/h mit Z 1006-31, die drei übrigen Arme 50 km/h",
+      "fr": "S 190 ouest 30 km/h avec Z 1006-31, les trois autres branches 50 km/h",
+      "it": "S 190 ovest 30 km/h con Z 1006-31, gli altri tre rami 50 km/h",
+      "en": "S 190 west 30 km/h with Z 1006-31, the other three arms 50 km/h"
+     }
+    },
+    {
+     "id": "dtv",
+     "labelI18n": {
+      "de": "Durchschnittlicher täglicher Verkehr (Fz/24 h)",
+      "fr": "Trafic journalier moyen (véh./24 h)",
+      "it": "Traffico giornaliero medio (veic./24 h)",
+      "en": "Average daily traffic (veh./24 h)"
+     },
+     "wertI18n": {
+      "de": "S 190 West 6238, S 190 Ost 3078, S 183 Süd 1553, S 183 Nord 639",
+      "fr": "S 190 West 6238, S 190 Ost 3078, S 183 Süd 1553, S 183 Nord 639",
+      "it": "S 190 West 6238, S 190 Ost 3078, S 183 Süd 1553, S 183 Nord 639",
+      "en": "S 190 West 6238, S 190 Ost 3078, S 183 Süd 1553, S 183 Nord 639"
+     }
+    },
+    {
+     "labelI18n": {
+      "de": "Quelle der Verkehrszahlen",
+      "fr": "Source des données de trafic",
+      "it": "Fonte dei dati di traffico",
+      "en": "Source of traffic data"
+     },
+     "wertI18n": {
+      "de": "Geoportal Sachsen, Zählung 2019",
+      "fr": "Geoportal Sachsen, comptage 2019",
+      "it": "Geoportal Sachsen, rilevamento 2019",
+      "en": "Geoportal Sachsen, 2019 count"
+     }
+    },
+    {
+     "id": "lastwagenanteil",
+     "labelI18n": {
+      "de": "Lastwagenanteil",
+      "fr": "Part de poids lourds",
+      "it": "Quota di autocarri",
+      "en": "Share of heavy goods vehicles"
+     },
+     "wertI18n": {
+      "de": "3–6 %",
+      "fr": "3–6 %",
+      "it": "3–6 %",
+      "en": "3–6%"
+     }
+    },
+    {
+     "labelI18n": {
+      "de": "Verkehrsprognose 2030",
+      "fr": "Prévision de trafic 2030",
+      "it": "Previsione di traffico 2030",
+      "en": "Traffic forecast 2030"
+     },
+     "wertI18n": {
+      "de": "1945 bis 3632 Fahrzeuge je Arm, Schwerverkehr 5,1 bis 5,6 %",
+      "fr": "1945 à 3632 véhicules par branche, poids lourds 5,1 à 5,6 %",
+      "it": "da 1945 a 3632 veicoli per ramo, traffico pesante dal 5,1 al 5,6 %",
+      "en": "1945 to 3632 vehicles per arm, heavy goods vehicles 5.1 to 5.6%"
+     }
+    },
+    {
+     "id": "unfallgeschehen",
+     "labelI18n": {
+      "de": "Unfallgeschehen im Perimeter",
+      "fr": "Accidents dans le périmètre",
+      "it": "Incidenti nel perimetro",
+      "en": "Accidents within the perimeter"
+     },
+     "wertI18n": {
+      "de": "dokumentiert",
+      "fr": "documentés",
+      "it": "documentati",
+      "en": "documented"
+     }
+    },
+    {
+     "id": "trottoir",
+     "labelI18n": {
+      "de": "Trottoir",
+      "fr": "Trottoir",
+      "it": "Marciapiede",
+      "en": "Footway"
+     },
+     "wertI18n": {
+      "de": "lückenhaft oder nicht vorhanden",
+      "fr": "discontinu ou inexistant",
+      "it": "discontinuo o assente",
+      "en": "discontinuous or absent"
+     }
+    },
+    {
+     "id": "fussgaengerstreifen",
+     "labelI18n": {
+      "de": "Fussgängerstreifen",
+      "fr": "Passages piétons",
+      "it": "Passaggi pedonali",
+      "en": "Pedestrian crossings"
+     },
+     "wertI18n": {
+      "de": "nein",
+      "fr": "non",
+      "it": "no",
+      "en": "no"
+     }
+    },
+    {
+     "id": "veloinfrastruktur",
+     "labelI18n": {
+      "de": "Veloinfrastruktur",
+      "fr": "Infrastructure cyclable",
+      "it": "Infrastruttura ciclabile",
+      "en": "Cycle infrastructure"
+     },
+     "wertI18n": {
+      "de": "keine",
+      "fr": "aucune",
+      "it": "nessuna",
+      "en": "none"
+     }
+    },
+    {
+     "id": "buslinie",
+     "labelI18n": {
+      "de": "Buslinie",
+      "fr": "Ligne de bus",
+      "it": "Linea di autobus",
+      "en": "Bus route"
+     },
+     "wertI18n": {
+      "de": "ja, mehrere",
+      "fr": "oui, plusieurs",
+      "it": "sì, più di uno",
+      "en": "yes, several"
+     }
+    },
+    {
+     "id": "bushaltestellen",
+     "labelI18n": {
+      "de": "Bushaltestellen",
+      "fr": "Arrêts de bus",
+      "it": "Fermate del bus",
+      "en": "Bus stops"
+     },
+     "wertI18n": {
+      "de": "ja",
+      "fr": "oui",
+      "it": "sì",
+      "en": "yes"
+     }
+    }
+   ],
    "vorschauBild1": "https://gtweaesunpvwjlttyaab.supabase.co/storage/v1/object/public/rsi-textures/panoramas/SZ_2026_115/nfd_2022_02.jpg",
    "vorschauBild2": "https://gtweaesunpvwjlttyaab.supabase.co/storage/v1/object/public/rsi-textures/panoramas/SZ_2026_115/nfd_2022_04.jpg",
    "phasen": [
